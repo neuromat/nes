@@ -10,6 +10,7 @@ from io import StringIO
 from operator import itemgetter
 
 from django.contrib import messages
+from django.contrib.admin.utils import flatten
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 from django.db.models.deletion import ProtectedError
@@ -597,13 +598,19 @@ def update_survey_acquisitiondate_view(request, survey_id):
     additional_language = languages['additional_languages']
     nes_responses = PatientQuestionnaireResponse.objects.filter(
         survey=survey).exclude(is_completed='N').exclude(is_completed='')
+    responses_updated = []
     for lang in [default_language, additional_language]:
         ls_responses = ls.get_responses(survey.lime_survey_id, lang)
-        update_acquisitiondate(tokens, ls_responses, nes_responses)
+        responses_updated.append(
+            update_acquisitiondate(tokens, ls_responses, nes_responses))
+        responses_updated = flatten(responses_updated)
 
     ls.release_session_key()
 
-    return HttpResponseRedirect(reverse('survey_view', args=(survey.pk,)))
+    make_messages(request, responses_updated)
+
+    return HttpResponseRedirect(
+        reverse('survey_view', args=(survey.pk,)))
 
 
 def update_acquisitiondate(tokens, ls_responses, nes_responses):
@@ -636,6 +643,17 @@ def csv_to_list(responses):
         responses_list.append(row)
 
     return responses_list
+
+
+def make_messages(request, responses):
+    if responses:
+        messages.success(request,
+                         str(len(responses)) + ' '
+                         + _('responses were updated!'))
+    else:
+        messages.success(request,
+            _('No aquistion dates from completed answers were changed in '
+              'LimeSurvey since last update'))
 
 
 @login_required
