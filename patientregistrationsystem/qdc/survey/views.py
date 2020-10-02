@@ -104,15 +104,18 @@ def survey_list(request, template_name='survey/survey_list.html'):
             update = True
 
     for survey in Survey.objects.all():
-        survey_title = get_survey_title_based_on_the_user_language(survey, language_code, update)
+        survey_title = get_survey_title_based_on_the_user_language(
+            survey, language_code, update)
 
         # Get the status of the survey
-        # If there's any inactive survey, search LimeSurvey to see if there's any change in that matter
-        # and update the fields in the database
+        # If there's any inactive survey, search LimeSurvey to see if
+        # there's any change in that matter and update the fields in the
+        # database
         is_active = survey.is_active
 
         if not is_active or update:
-            status = surveys.get_survey_properties(survey.lime_survey_id, 'active')
+            status = surveys.get_survey_properties(
+                survey.lime_survey_id, 'active')
             if status == 'Y':
                 survey.is_active = True
             else:
