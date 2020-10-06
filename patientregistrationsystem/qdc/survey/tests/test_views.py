@@ -214,6 +214,12 @@ class SurveyTest(TestCase):
         self.user, passwd = create_user(Group.objects.all())
         self.client.login(username=self.user.username, password=passwd)
 
+        self.survey = create_survey()
+        self.patient = UtilTests.create_patient(self.user)
+        # token_id=1 from mocks
+        UtilTests.create_response_survey(
+            self.user, self.patient, self.survey, token_id=1)
+
     @patch('survey.abc_search_engine.Server')
     def test_survey_list(self, mockServer):
         mockServer.return_value.get_session_key.return_value = \
@@ -300,22 +306,17 @@ class SurveyTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_survey_view(self):
-        survey = create_survey()
-
-        response = self.client.get(reverse('survey_view', args=(survey.pk,)))
+        response = self.client.get(reverse(
+            'survey_view', args=(self.survey.pk,)))
         self.assertEqual(response.status_code, 200)
 
     def test_GET_survey_view_display_update_acquisitiondate_buttons(self):
-        survey = create_survey()
-        patient = UtilTests.create_patient(self.user)
-        # token_id=1 from mocks
-        UtilTests.create_response_survey(
-            self.user, patient, survey, token_id=1)
-
         # token_id=2 from mocks
-        self.create_experiment_questionnaire_response(patient, 2, survey)
+        self.create_experiment_questionnaire_response(
+            self.patient, 2, self.survey)
 
-        response = self.client.get(reverse('survey_view', args=(survey.pk,)))
+        response = self.client.get(reverse(
+            'survey_view', args=(self.survey.pk,)))
         self.assertContains(
             response, 'Atualizar data de preenchimento do LimeSurvey', 2)
 
@@ -323,13 +324,8 @@ class SurveyTest(TestCase):
     def test_update_acquisitiondate_from_limesurvey(self, mockServer):
         self._set_mocks(mockServer)
 
-        survey = create_survey()
-        patient = UtilTests.create_patient(self.user)
-        # token_id=1 from mocks
-        UtilTests.create_response_survey(
-            self.user, patient, survey, token_id=1)
-
-        self.create_experiment_questionnaire_response(patient, 2, survey)
+        self.create_experiment_questionnaire_response(
+            self.patient, 2, self.survey)
 
         # This dates are in export_responses mock for the acquisitiondate
         # field in the decoded responses
@@ -337,7 +333,7 @@ class SurveyTest(TestCase):
         new_acquisitiondate_2 = '04/09/2021'
 
         self.client.get(reverse(
-            'update_survey_acquisitiondate', args=(survey.pk,)))
+            'update_survey_acquisitiondate', args=(self.survey.pk,)))
 
         entrance_questionnaire_response = \
             PatientQuestionnaireResponse.objects.get(token_id=1)
@@ -352,14 +348,20 @@ class SurveyTest(TestCase):
             new_acquisitiondate_2)
 
     @patch('survey.abc_search_engine.Server')
+    def test_update_acquisitiondate_from_limesurvey_with_date_in_wrong_format_return_message(
+            self, mockServer):
+        self._set_mocks(mockServer)
+
+
+
+    @patch('survey.abc_search_engine.Server')
     def test_GET_update_survey_acquisitiondate_view_redirects_to_survey_view(
             self, mockServer):
         self._set_mocks(mockServer)
-        survey = create_survey()
 
         response = self.client.get(reverse(
-            'update_survey_acquisitiondate', args=(survey.pk,)))
-        survey_view_url = reverse('survey_view', args=(survey.pk,))
+            'update_survey_acquisitiondate', args=(self.survey.pk,)))
+        survey_view_url = reverse('survey_view', args=(self.survey.pk,))
         self.assertRedirects(response, survey_view_url, 302)
 
     @patch('survey.abc_search_engine.Server')
@@ -369,13 +371,11 @@ class SurveyTest(TestCase):
 
         self._set_mocks(mockServer)
 
-        survey = create_survey()
-        patient1 = UtilTests.create_patient(self.user)
         patient2 = UtilTests.create_patient(self.user)
         UtilTests.create_response_survey(
-            self.user, patient1, survey, token_id=1)
+            self.user, self.patient, self.survey, token_id=1)
         UtilTests.create_response_survey(
-            self.user, patient2, survey, token_id=2)
+            self.user, patient2, self.survey, token_id=2)
 
         tokens = mockServer.return_value.list_participants.return_value
         ls_responses = b64decode(
@@ -395,18 +395,16 @@ class SurveyTest(TestCase):
 
         self._set_mocks(mockServer)
 
-        survey = create_survey()
-        patient1 = UtilTests.create_patient(self.user)
         patient2 = UtilTests.create_patient(self.user)
 
         questionnaire_response_1 = UtilTests.create_response_survey(
-            self.user, patient1, survey, token_id=1)
+            self.user, self.patient, self.survey, token_id=1)
         # The date in ls_responses for the first token
         questionnaire_response_1.date = '2021-03-09'
         questionnaire_response_1.save()
 
         questionnaire_response_2 = UtilTests.create_response_survey(
-            self.user, patient2, survey, token_id=2)
+            self.user, patient2, self.survey, token_id=2)
         # The date in ls_responses for the first token
         questionnaire_response_2.date = '2021-04-09'
         questionnaire_response_2.save()
@@ -429,24 +427,23 @@ class SurveyTest(TestCase):
 
         self._set_mocks(mockServer)
 
-        survey = create_survey()
-        patient1 = UtilTests.create_patient(self.user)
         patient2 = UtilTests.create_patient(self.user)
 
         questionnaire_response_1 = UtilTests.create_response_survey(
-            self.user, patient1, survey, token_id=1)
+            self.user, self.patient, self.survey, token_id=1)
         # The date in ls_responses for the first token
         questionnaire_response_1.date = '2021-03-09'
         questionnaire_response_1.save()
 
         questionnaire_response_2 = UtilTests.create_response_survey(
-            self.user, patient2, survey, token_id=2)
+            self.user, patient2, self.survey, token_id=2)
         # The date in ls_responses for the first token
         questionnaire_response_2.date = '2021-04-09'
         questionnaire_response_2.save()
 
         response = self.client.get(reverse(
-            'update_survey_acquisitiondate', args=(survey.pk,)), follow=True)
+            'update_survey_acquisitiondate', args=(self.survey.pk,)),
+            follow=True)
 
         self.assertContains(
             response, 'Nenhuma data de aquisição de respostas concluídas foi '
@@ -459,17 +456,16 @@ class SurveyTest(TestCase):
 
         self._set_mocks(mockServer)
 
-        survey = create_survey()
-        patient1 = UtilTests.create_patient(self.user)
         patient2 = UtilTests.create_patient(self.user)
         # token_id=1 from mocks
         UtilTests.create_response_survey(
-            self.user, patient1, survey, token_id=1)
+            self.user, self.patient, self.survey, token_id=1)
         # token_id=2 from mocks
-        self.create_experiment_questionnaire_response(patient2, 2, survey)
+        self.create_experiment_questionnaire_response(patient2, 2, self.survey)
 
         response = self.client.get(reverse(
-            'update_survey_acquisitiondate', args=(survey.pk,)), follow=True)
+            'update_survey_acquisitiondate', args=(self.survey.pk,)),
+            follow=True)
 
         self.assertContains(response, '2 respostas foram atualizadas!')
 
