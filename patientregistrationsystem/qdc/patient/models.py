@@ -341,17 +341,19 @@ class AlcoholPeriod(models.Model):
 
 class Patient(models.Model):
     code = models.CharField(max_length=10, null=False, unique=True)
-
     name = models.CharField(blank=True, max_length=50, default='')
-    cpf = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_cpf])
+    cpf = models.CharField(
+        null=True, blank=True, max_length=15, unique=True,
+        validators=[validate_cpf])
     origin = models.CharField(max_length=50, null=True, blank=True)
     medical_record = models.CharField(max_length=25, null=True, blank=True)
-    date_birth = models.DateField(null=False, blank=False, validators=[validate_date_birth])
+    date_birth = models.DateField(
+        null=False, blank=False, validators=[validate_date_birth])
     gender = models.ForeignKey(Gender, null=False, blank=False)
     rg = models.CharField(max_length=15, null=True, blank=True)
     marital_status = models.ForeignKey(MaritalStatus, null=True, blank=True)
-
-    country = models.CharField(max_length=30, choices=COUNTRIES, null=True, blank=True)
+    country = models.CharField(
+        max_length=30, choices=COUNTRIES, null=True, blank=True)
     zipcode = models.CharField(max_length=12, null=True, blank=True)
     street = models.CharField(max_length=50, null=True, blank=True)
     address_number = models.IntegerField(null=True, blank=True)
@@ -360,10 +362,7 @@ class Patient(models.Model):
     city = models.CharField(max_length=30, null=True, blank=True)
     state = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
-
     removed = models.BooleanField(null=False, default=False)
-
-    # Audit trail
     history = HistoricalRecords()
     changed_by = models.ForeignKey('auth.User')
 
@@ -386,8 +385,7 @@ class Patient(models.Model):
         return "/patient/%i/" % self.pk
 
     def __str__(self):
-        return \
-            self.name
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -644,15 +642,15 @@ class QuestionnaireResponse(models.Model):
         default=datetime.date.today, null=False,
         validators=[validate_date_questionnaire_response])
     questionnaire_responsible = models.ForeignKey(
-        User, null=False, related_name="+")
-    is_completed = models.CharField(null=False, max_length=50, default="")
+        User, null=False, related_name='+')
+    is_completed = models.CharField(null=False, max_length=50, default='')
 
     class Meta:
         permissions = (
-            ("view_questionnaireresponse", "Can view questionnaire response"),
-            ("export_questionnaireresponse",
-             "Can export questionnaire response"),
+            ('view_questionnaireresponse', 'Can view questionnaire response'),
+            ('export_questionnaireresponse',
+             'Can export questionnaire response'),
         )
 
     def __str__(self):
-        return _("token id: ") + str(self.token_id)
+        return _('token id: ') + str(self.token_id)

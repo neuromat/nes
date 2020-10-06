@@ -7,9 +7,11 @@ import datetime
 
 from csv import reader
 from io import StringIO
+from itertools import chain
 from operator import itemgetter
 
 from django.contrib import messages
+from django.contrib.admin.utils import flatten
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 from django.db.models.deletion import ProtectedError
@@ -103,15 +105,18 @@ def survey_list(request, template_name='survey/survey_list.html'):
             update = True
 
     for survey in Survey.objects.all():
-        survey_title = get_survey_title_based_on_the_user_language(survey, language_code, update)
+        survey_title = get_survey_title_based_on_the_user_language(
+            survey, language_code, update)
 
         # Get the status of the survey
-        # If there's any inactive survey, search LimeSurvey to see if there's any change in that matter
-        # and update the fields in the database
+        # If there's any inactive survey, search LimeSurvey to see if
+        # there's any change in that matter and update the fields in the
+        # database
         is_active = survey.is_active
 
         if not is_active or update:
-            status = surveys.get_survey_properties(survey.lime_survey_id, 'active')
+            status = surveys.get_survey_properties(
+                survey.lime_survey_id, 'active')
             if status == 'Y':
                 survey.is_active = True
             else:
@@ -382,8 +387,8 @@ def recursively_create_list_of_steps(block_id, component_type, list_of_configura
     list_of_configurations += list(configurations)
 
     # Look for steps in descendant blocks.
-    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                 component__component_type="block")
+    block_configurations = ComponentConfiguration.objects.filter(
+        parent_id=block_id, component__component_type="block")
 
     for block_configuration in block_configurations:
         list_of_configurations = recursively_create_list_of_steps(
@@ -508,31 +513,40 @@ def create_experiments_questionnaire_data_list(survey, surveys):
                 'patients': {}  # There is no answers.
             })
 
-    # Sort by experiment title, group title, parent identification, step identification, and name of the use of step.
-    # We considered the lower case version of the strings in the sorting
-    # Empty strings appear after not-empty strings.
-    # Reference: http://stackoverflow.com/questions/9386501/sorting-in-python-and-empty-strings
-    experiments_questionnaire_data_list = sorted(experiments_questionnaire_data_list,
-                                                 key=lambda x: (x['experiment_title'].lower(),
-                                                                x['group_title'] == "",
-                                                                x['group_title'].lower(),
-                                                                x['parent_identification'] == "",
-                                                                x['parent_identification'].lower(),
-                                                                x['component_identification'].lower(),
-                                                                x['use_name'] == "",
-                                                                x['use_name'].lower()))
+    # Sort by experiment title, group title, parent identification, step
+    # identification, and name of the use of step. We considered the lower
+    # case version of the strings in the sorting Empty strings appear after
+    # not-empty strings.
+    # Reference:
+    # http://stackoverflow.com/questions/9386501/sorting-in-python-and-empty-strings
+    experiments_questionnaire_data_list = sorted(
+        experiments_questionnaire_data_list, key=lambda x: (
+            x['experiment_title'].lower(),
+            x['group_title'] == '',
+            x['group_title'].lower(),
+            x['parent_identification'] == '',
+            x['parent_identification'].lower(),
+            x['component_identification'].lower(),
+            x['use_name'] == '',
+            x['use_name'].lower()))
 
     return experiments_questionnaire_data_list
 
 
 def create_patients_questionnaire_data_list(survey, surveys):
-    """Create a list of patients by looking to the answers of this questionnaire. We do this way instead of looking for
-    patients and then looking for answers of each patient to reduce the number of access to the data base.
-    We use a dictionary because it is useful for filtering out duplicate patients from the list.
+    """Create a list of patients by looking to the answers of this
+    questionnaire. We do this way instead of looking for patients and then
+    looking for answers of each patient to reduce the number of access to the
+    data base. Uses a dictionary because it is useful for filtering out
+    duplicate patients from the list.
     """
     patients_questionnaire_data_dictionary = {}
 
-    for response in PatientQuestionnaireResponse.objects.filter(survey=survey).filter(patient__removed=False):
+    # Continue (NES-1032): get token list and responses list from LS and use
+    # the two lists to get de acquisitiondate field for each patient.
+
+    for response in PatientQuestionnaireResponse.objects.filter(
+            survey=survey).filter(patient__removed=False):
         if response.patient.id not in patients_questionnaire_data_dictionary:
             patients_questionnaire_data_dictionary[response.patient.id] = {
                 'patient_id': response.patient.id,
@@ -541,14 +555,18 @@ def create_patients_questionnaire_data_list(survey, surveys):
             }
 
         response_result = surveys.get_participant_properties(
-            response.survey.lime_survey_id, response.token_id, "completed")
+            response.survey.lime_survey_id, response.token_id, 'completed')
 
-        patients_questionnaire_data_dictionary[response.patient.id]['questionnaire_responses'].append({
+        patients_questionnaire_data_dictionary[
+            response.patient.id
+        ]['questionnaire_responses'].append({
             'questionnaire_response': response,
-            'completed': None if response_result is None else response_result != "N" and response_result != ""
+            'completed': None if response_result is None
+            else response_result != 'N' and response_result != ''
         })
 
-    # Add to the dictionary patients that have not answered any questionnaire yet.
+    # Add to the dictionary patients that have not answered any questionnaire
+    # yet.
     if survey.is_initial_evaluation:
         patients = Patient.objects.filter(removed=False)
 
@@ -559,16 +577,111 @@ def create_patients_questionnaire_data_list(survey, surveys):
                     'questionnaire_responses': []
                 }
 
-    # Transform the dictionary into a list, so that we can sort it by patient name.
+    # Transform the dictionary into a list, so that we can sort it by patient
+    # name.
     patients_questionnaire_data_list = []
 
     for key, dictionary in list(patients_questionnaire_data_dictionary.items()):
         dictionary['patient_id'] = key
         patients_questionnaire_data_list.append(dictionary)
 
-    patients_questionnaire_data_list = sorted(patients_questionnaire_data_list, key=itemgetter('patient_name'))
+    patients_questionnaire_data_list = sorted(
+        patients_questionnaire_data_list, key=itemgetter('patient_name'))
 
     return patients_questionnaire_data_list
+
+
+@login_required
+@permission_required('survey.view_survey')
+def update_survey_acquisitiondate_view(request, survey_id):
+    survey = get_object_or_404(Survey, pk=survey_id)
+    ls = Questionnaires()
+    languages = ls.get_survey_languages(survey.lime_survey_id)
+    tokens = ls.find_tokens_by_questionnaire(survey.lime_survey_id)
+    default_language = languages['language']
+    additional_language = languages['additional_languages']
+    nes_responses = get_responses(survey)
+    responses_updated = []
+    for lang in [default_language, additional_language]:
+        ls_responses = ls.get_responses(survey.lime_survey_id, lang)
+        responses_updated.append(
+            update_acquisitiondate(tokens, ls_responses, nes_responses))
+        responses_updated = flatten(responses_updated)
+
+    ls.release_session_key()
+
+    make_messages(request, responses_updated)
+
+    return HttpResponseRedirect(
+        reverse('survey_view', args=(survey.pk,)))
+
+
+def get_responses(survey):
+    nes_responses_patients = PatientQuestionnaireResponse.objects.filter(
+        survey=survey).exclude(is_completed='N').exclude(is_completed='')
+    nes_responses_experiments = QuestionnaireResponse.objects.filter(
+        data_configuration_tree__component_configuration__component__questionnaire__survey=
+        survey).exclude(is_completed='N').exclude(is_completed='')
+    return list(chain(nes_responses_patients, nes_responses_experiments))
+
+
+def update_acquisitiondate(tokens, ls_responses, nes_responses):
+    """Acquisition date from LimeSurvey may be in worng format. So add a try
+    block.
+    :param tokens: list. Tokens from LimeSurvey
+    :param ls_responses: string. Responses from LimeSurvey in csv format
+    :param nes_responses: list of querysets from experiment responses and
+    entrance questionnaire responses
+    :return: list of responses with acquisitiondate updated
+    """
+    ls_responses = csv_to_list(ls_responses)
+    responses_updated = []
+    for response in nes_responses:
+        token = next((
+            item['token'] for item in tokens
+            if item['tid'] == response.token_id), None)
+        if token is not None:
+            ls_response = next((
+                ls_response for ls_response in ls_responses
+                if ls_response['token'] == token), None)
+            if ls_response is not None:
+                try:
+                    new_date = datetime.datetime.strptime(
+                            ls_response['acquisitiondate'],
+                            '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    continue
+                new_date = new_date.date()
+                if response.date != new_date:
+                    response.date = new_date
+                    responses_updated.append(response)
+                response.save()
+
+    return responses_updated
+
+
+def csv_to_list(responses):
+    responses_csv = StringIO(responses)
+    responses_list = []
+    for row in csv.DictReader(responses_csv):
+        responses_list.append(row)
+
+    return responses_list
+
+
+def make_messages(request, responses):
+    if responses:
+        messages.success(request,
+                         str(len(responses)) + ' '
+                         + _('responses were updated!'))
+
+    else:
+        messages.success(request,
+                         _('No acquisition date for completed responses has '
+                           'been changed on LimeSurvey since the last update, '
+                           'the purchase date is not filled in '
+                           'LimeSurvey, or was filled in a non-format '
+                           'recognized by the NES.'))
 
 
 @login_required
@@ -578,41 +691,50 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
 
     surveys = Questionnaires()
 
-    limesurvey_available = check_limesurvey_access(request, surveys)
-    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    limesurvey_available_ = check_limesurvey_access(request, surveys)
+    language = get_questionnaire_language(
+        surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
     survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
 
-    # There is no need to use "request.POST or None" because the data will never be changed here. In fact we have to
-    # use "None" only, because request.POST does not contain any value because the fields are disabled, and this results
-    # in the form being created without considering the initial value.
-    survey_form = SurveyForm(None,
-                             instance=survey,
-                             initial={'title': str(survey.lime_survey_id) + ' - ' + survey_title})
+    # There is no need to use "request.POST or None" because the data will
+    # never be changed here. In fact we have to use "None" only, because
+    # request.POST does not contain any value because the fields are disabled,
+    # and this results in the form being created without considering the
+    # initial value.
+    survey_form = SurveyForm(
+        None, instance=survey, initial={
+            'title': str(survey.lime_survey_id) + ' - ' + survey_title
+        })
 
     for field in survey_form.fields:
         survey_form.fields[field].widget.attrs['disabled'] = True
 
-    if request.method == "POST":
-        if request.POST['action'] == "remove":
-            try:
-                survey.delete()
-                messages.success(request, _('Questionnaire deleted successfully.'))
-                return redirect('survey_list')
-            except ProtectedError:
-                messages.error(request, _("It was not possible to delete questionnaire, because there are experimental "
-                                          "answers or steps associated."))
+    if request.method == "POST" and request.POST['action'] == "remove":
+        try:
+            survey.delete()
+            messages.success(
+                request, _('Questionnaire deleted successfully.'))
+            return redirect('survey_list')
+        except ProtectedError:
+            messages.error(
+                request,
+                _("It was not possible to delete questionnaire, because"
+                  "there are experimental answers or steps associated."))
 
-    patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
+    patients_questionnaire_data_list = create_patients_questionnaire_data_list(
+        survey, surveys)
 
     if request.user.has_perm("experiment.view_researchproject"):
-        experiments_questionnaire_data_list = create_experiments_questionnaire_data_list(survey, surveys)
+        experiments_questionnaire_data_list = \
+            create_experiments_questionnaire_data_list(survey, surveys)
     else:
         experiments_questionnaire_data_list = []
 
     context = {
-        "limesurvey_available": limesurvey_available,
+        "limesurvey_available": limesurvey_available_,
         "patients_questionnaire_data_list": patients_questionnaire_data_list,
-        "experiments_questionnaire_data_list": experiments_questionnaire_data_list,
+        "experiments_questionnaire_data_list":
+            experiments_questionnaire_data_list,
         "survey": survey,
         "survey_form": survey_form,
         "survey_title": survey_title,
@@ -965,11 +1087,16 @@ def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, lang
             if language.lower() != language_code.lower() and result['additional_languages']:
 
                 # search for the right language in addional languages,
-                # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
-                additional_languages_list = result['additional_languages'].split(' ')
-                additional_languages_list_lower = [item.lower() for item in additional_languages_list]
+                # considering that the LimeSurvey uses upper case in the
+                # two-letter language code, like en-US and pt-BR.
+                additional_languages_list = \
+                    result['additional_languages'].split(' ')
+                additional_languages_list_lower = [
+                    item.lower() for item in additional_languages_list
+                ]
                 if language_code.lower() in additional_languages_list_lower:
-                    index = additional_languages_list_lower.index(language_code.lower())
+                    index = additional_languages_list_lower.index(
+                        language_code.lower())
                     language = additional_languages_list[index]
 
     return language

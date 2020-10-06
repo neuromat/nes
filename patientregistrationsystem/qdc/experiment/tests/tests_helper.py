@@ -546,7 +546,8 @@ class ObjectsFactory(object):
     @staticmethod
     def create_data_configuration_tree(component_config, parent=None):
         return DataConfigurationTree.objects.create(
-            component_configuration=component_config, code=random.randint(1, 999), parent=parent)
+            component_configuration=component_config,
+            code=random.randint(1, 999), parent=parent)
 
     @staticmethod
     def create_questionnaire_response(
@@ -554,7 +555,8 @@ class ObjectsFactory(object):
         return QuestionnaireResponse.objects.create(
             data_configuration_tree=dct,
             questionnaire_responsible=responsible, token_id=token_id,
-            subject_of_group=subject_of_group
+            subject_of_group=subject_of_group,
+            is_completed=datetime.datetime.now()
         )
 
     @staticmethod
