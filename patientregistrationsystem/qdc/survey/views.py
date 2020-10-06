@@ -620,12 +620,20 @@ def get_responses(survey):
     nes_responses_patients = PatientQuestionnaireResponse.objects.filter(
         survey=survey).exclude(is_completed='N').exclude(is_completed='')
     nes_responses_experiments = QuestionnaireResponse.objects.filter(
-        data_configuration_tree__component_configuration__component__questionnaire__survey=survey)\
-        .exclude(is_completed='N').exclude(is_completed='')
+        data_configuration_tree__component_configuration__component__questionnaire__survey=
+        survey).exclude(is_completed='N').exclude(is_completed='')
     return list(chain(nes_responses_patients, nes_responses_experiments))
 
 
 def update_acquisitiondate(tokens, ls_responses, nes_responses):
+    """Acquisition date from LimeSurvey may be in worng format. So add a try
+    block.
+    :param tokens: list. Tokens from LimeSurvey
+    :param ls_responses: string. Responses from LimeSurvey in csv format
+    :param nes_responses: list of querysets from experiment responses and
+    entrance questionnaire responses
+    :return: list of responses with acquisitiondate updated
+    """
     ls_responses = csv_to_list(ls_responses)
     responses_updated = []
     for response in nes_responses:
@@ -637,8 +645,12 @@ def update_acquisitiondate(tokens, ls_responses, nes_responses):
                 ls_response for ls_response in ls_responses
                 if ls_response['token'] == token), None)
             if ls_response is not None:
-                new_date = datetime.datetime.strptime(
-                        ls_response['acquisitiondate'], '%Y-%m-%d %H:%M:%S')
+                try:
+                    new_date = datetime.datetime.strptime(
+                            ls_response['acquisitiondate'],
+                            '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    continue
                 new_date = new_date.date()
                 if response.date != new_date:
                     response.date = new_date
@@ -665,8 +677,11 @@ def make_messages(request, responses):
 
     else:
         messages.success(request,
-            _('No aquistion dates from completed answers were changed in '
-              'LimeSurvey since last update'))
+                         _('No acquisition date for completed responses has '
+                           'been changed on LimeSurvey since the last update, '
+                           'the purchase date is not filled in '
+                           'LimeSurvey, or was filled in a non-format '
+                           'recognized by the NES.'))
 
 
 @login_required

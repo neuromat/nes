@@ -172,8 +172,6 @@ class UtilTests:
         if token_id is None:
             token_id = 21
 
-        is_completed = is_completed if is_completed else datetime.now()
-
         return QuestionnaireResponse.objects.create(
             patient=patient, survey=survey, token_id=token_id,
             questionnaire_responsible=responsible, is_completed=is_completed)
@@ -1465,8 +1463,8 @@ class QuestionnaireFormValidation(TestCase):
             survey.lime_survey_id)
         self.assertEqual(len(response.context['patient_questionnaires_data_list'][0]['questionnaire_responses']), 0)
 
-        # including a new survey response...
-        response_survey = self.util.create_response_survey(self.user, patient, survey)
+        self.util.create_response_survey(
+            self.user, patient, survey, is_completed='N')
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
         self.assertEqual(response.status_code, 200)
 
@@ -1477,7 +1475,7 @@ class QuestionnaireFormValidation(TestCase):
         self.assertEqual(response_survey.token_id, int(response_survey.token_id))
 
         completed = entrance_evaluation['questionnaire_responses'][0]['completed']
-        self.assertTrue(not completed)  # questionnaire is not completed
+        self.assertTrue(not completed)
 
     # TODO: this is an integration test. TODO (NES-995): take it to its place
     @skip
@@ -1583,24 +1581,33 @@ class QuestionnaireFormValidation(TestCase):
 
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
-        response_survey = self.util.create_response_survey(self.user, patient, survey)
+        response_survey = self.util.create_response_survey(
+            self.user, patient, survey, token_id=4228, is_completed='N')
 
         # Delete questionnaire response when it is in mode
-        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey.pk], current_app='patient')
+        url1 = reverse(
+            QUESTIONNAIRE_VIEW, args=[response_survey.pk],
+            current_app='patient')
         url2 = url1.replace('experiment', 'patient')
         self.data['action'] = 'remove'
-        response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
+        response = self.client.post(
+            url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-        # Workaround because reverse is getting experiment url instead of patient
-        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')
+        # Workaround because reverse is getting experiment url instead of
+        # patient
+        url1 = reverse(
+            QUESTIONNAIRE_EDIT, args=[response_survey.pk],
+            current_app='patient')
         url2 = url1.replace('experiment', 'patient')
 
         self.data['action'] = 'remove'
-        response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
-        self.assertEqual(response.status_code, 404)  # Error - response already deleted
+        response = self.client.post(
+            url2 + "?origin=subject&status=edit", self.data, follow=True)
+        self.assertEqual(response.status_code, 404)
 
-        response_survey = self.util.create_response_survey(self.user, patient, survey)
+        response_survey = self.util.create_response_survey(
+            self.user, patient, survey)
 
         # Workaround because reverse is getting experiment url instead of patient
         url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')

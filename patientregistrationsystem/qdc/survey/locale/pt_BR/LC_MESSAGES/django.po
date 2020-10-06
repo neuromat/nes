@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-02 10:44-0300\n"
+"POT-Creation-Date: 2020-10-06 14:31-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -225,43 +225,49 @@ msgstr "Código"
 msgid "Description"
 msgstr "Descrição"
 
-#: survey/views.py:165
+#: survey/views.py:166
 msgid "Questionnaire created successfully."
 msgstr "Questionário criado com sucesso."
 
-#: survey/views.py:182
+#: survey/views.py:183
 msgid "No questionnaire found."
 msgstr "Questionário não encontrado"
 
-#: survey/views.py:217
+#: survey/views.py:218
 msgid "Questionnaire updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:219 survey/views.py:298
+#: survey/views.py:220 survey/views.py:299
 msgid "There are no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: survey/views.py:296
+#: survey/views.py:297
 msgid "Questionnaire was updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:655
+#: survey/views.py:676
 msgid "responses were updated!"
 msgstr "respostas foram atualizadas!"
 
-#: survey/views.py:658
+#: survey/views.py:680
+#| msgid ""
+#| "No acquisition date for completed responses hasbeen changed on LimeSurvey "
+#| "since the last update,the purchase date is not filled inLimeSurvey, or "
+#| "was filled in a non-formatrecognized by the NES."
 msgid ""
-"No aquistion dates from completed answers were changed in LimeSurvey since "
-"last update"
+"No acquisition date for completed responses has been changed on LimeSurvey "
+"since the last update, the purchase date is not filled in LimeSurvey, or was "
+"filled in a non-format recognized by the NES."
 msgstr ""
 "Nenhuma data de aquisição de respostas concluídas foi alterada no LimeSurvey "
-"desde a última atualização"
+"desde a última atualização, a data de aquisição não está preenchida no "
+"LimeSurvey, ou foi preenchida em um formato não reconhecido pelo NES."
 
-#: survey/views.py:691
+#: survey/views.py:716
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:696
+#: survey/views.py:721
 msgid ""
 "It was not possible to delete questionnaire, becausethere are experimental "
 "answers or steps associated."
@@ -269,23 +275,30 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:813
+#: survey/views.py:838
 msgid "Other"
 msgstr "Outros"
 
-#: survey/views.py:848
+#: survey/views.py:873
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:909 survey/views.py:921 survey/views.py:947
+#: survey/views.py:934 survey/views.py:946 survey/views.py:972
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:993
+#: survey/views.py:1018
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 "O LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:1036
+#: survey/views.py:1061
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
+
+#~ msgid ""
+#~ "No aquistion dates from completed answers were changed in LimeSurvey "
+#~ "since last update"
+#~ msgstr ""
+#~ "Nenhuma data de aquisição de respostas concluídas foi alterada no "
+#~ "LimeSurvey desde a última atualização"
