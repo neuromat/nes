@@ -569,7 +569,8 @@ class ExportExperimentTest(TestCase):
             mockServer.return_value.export_survey.return_value = first_survey
 
     def test_GET_experiment_export_returns_zip_file(self):
-        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        response = self.client.get(reverse(
+            'experiment_export', kwargs={'experiment_id': self.experiment.id}))
         self.assertEqual(response.status_code, 200)
         self.assertEquals(response.get('Content-Disposition'), 'attachment; filename=%s' % smart_str('experiment.zip'))
         # get zipped file to test against its content

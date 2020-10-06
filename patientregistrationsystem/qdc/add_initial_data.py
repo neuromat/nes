@@ -215,20 +215,31 @@ for permission in attendant_permission_list:
 group_physiotherapist, physiotherapist_created = Group.objects.get_or_create(name='Physiotherapist')
 
 physiotherapist_permission_list = list(attendant_permission_list)
-physiotherapist_permission_list += [Permission.objects.get(codename='view_medicalrecorddata',
-                                                           content_type=medicalrecorddata_content_type),
-                                    Permission.objects.get(codename='view_survey', content_type=survey_content_type),
-                                    Permission.objects.get(codename='add_survey', content_type=survey_content_type),
-                                    Permission.objects.get(codename='change_survey', content_type=survey_content_type),
-                                    Permission.objects.get(codename='delete_survey', content_type=survey_content_type),
-                                    Permission.objects.get(codename='add_questionnaireresponse',
-                                                           content_type=patient_quest_response_content_type),
-                                    Permission.objects.get(codename='change_questionnaireresponse',
-                                                           content_type=patient_quest_response_content_type),
-                                    Permission.objects.get(codename='view_questionnaireresponse',
-                                                           content_type=patient_quest_response_content_type),
-                                    Permission.objects.get(codename='delete_questionnaireresponse',
-                                                           content_type=patient_quest_response_content_type)]
+physiotherapist_permission_list += [
+    Permission.objects.get(
+        codename='view_medicalrecorddata',
+        content_type=medicalrecorddata_content_type),
+    Permission.objects.get(
+        codename='view_survey', content_type=survey_content_type),
+    Permission.objects.get(
+        codename='add_survey', content_type=survey_content_type),
+    Permission.objects.get(
+        codename='change_survey', content_type=survey_content_type),
+    Permission.objects.get(
+        codename='delete_survey', content_type=survey_content_type),
+    Permission.objects.get(
+        codename='add_questionnaireresponse',
+        content_type=patient_quest_response_content_type),
+    Permission.objects.get(
+        codename='change_questionnaireresponse',
+        content_type=patient_quest_response_content_type),
+    Permission.objects.get(
+        codename='view_questionnaireresponse',
+        content_type=patient_quest_response_content_type),
+    Permission.objects.get(
+        codename='delete_questionnaireresponse',
+        content_type=patient_quest_response_content_type)
+]
 
 for permission in physiotherapist_permission_list:
     group_physiotherapist.permissions.add(permission)

@@ -149,8 +149,8 @@
                                                         <td class="col-xs-4 col-md-8">
                                                             {{ response.questionnaire_response.date }}
                                                         </td>
-                                                        {#                                                        Just for debbugging: remove it!#}
-                                                                                                                <td>{{ response.questionnaire_response.token_id }}</td>
+                                                        {#Just for debbugging: remove it!#}
+{#                                                        <td>{{ response.questionnaire_response.token_id }}</td>#}
                                                         <td class="col-xs-4 col-md-4">
                                                             {% if limesurvey_available and response.completed != None %}
                                                                 {% if response.completed %}
@@ -212,7 +212,14 @@
                                             <thead>
                                             <tr>
                                                 <th class="col-xs-6 col-md-6">{% trans "Participant" %}</th>
-                                                <th class="col-xs-6 col-md-6">{% trans "Fills" %}</th>
+                                                <th class="col-xs-6 col-md-6">{% trans "Fills" %} &nbsp;&nbsp;
+                                                    &nbsp;
+                                                    <a href="/survey/update_acquisitiondate/{{ survey.id }}"
+                                                       class="btn btn-primary"
+                                                       data-toggle="tooltip" data- title="{% trans "Update LimeSurvey Fill date" %}"><span
+                                                            class="glyphicon
+                                            glyphicon-refresh"></span></a>
+                                                </th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -228,8 +235,8 @@
                                                                     <td class="col-xs-8 col-md-8">
                                                                         {{ response.questionnaire_response.date }}
                                                                     </td>
-                                                                    {#                                                                    Just for debbugging: remove it!#}
-{#                                                                                                                                        <td>{{ response.questionnaire_response.token_id }}</td>#}
+                                                                    {#Just for debbugging: remove it!#}
+{#                                                                    <td>{{ response.questionnaire_response.token_id }}</td>#}
                                                                     <td class="col-xs-4 col-md-4">
                                                                         {% if limesurvey_available and response.completed != None %}
                                                                             {% if response.completed %}

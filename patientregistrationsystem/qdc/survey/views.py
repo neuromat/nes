@@ -7,6 +7,7 @@ import datetime
 
 from csv import reader
 from io import StringIO
+from itertools import chain
 from operator import itemgetter
 
 from django.contrib import messages
@@ -386,8 +387,8 @@ def recursively_create_list_of_steps(block_id, component_type, list_of_configura
     list_of_configurations += list(configurations)
 
     # Look for steps in descendant blocks.
-    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                 component__component_type="block")
+    block_configurations = ComponentConfiguration.objects.filter(
+        parent_id=block_id, component__component_type="block")
 
     for block_configuration in block_configurations:
         list_of_configurations = recursively_create_list_of_steps(
@@ -599,8 +600,7 @@ def update_survey_acquisitiondate_view(request, survey_id):
     tokens = ls.find_tokens_by_questionnaire(survey.lime_survey_id)
     default_language = languages['language']
     additional_language = languages['additional_languages']
-    nes_responses = PatientQuestionnaireResponse.objects.filter(
-        survey=survey).exclude(is_completed='N').exclude(is_completed='')
+    nes_responses = get_responses(survey)
     responses_updated = []
     for lang in [default_language, additional_language]:
         ls_responses = ls.get_responses(survey.lime_survey_id, lang)
@@ -614,6 +614,15 @@ def update_survey_acquisitiondate_view(request, survey_id):
 
     return HttpResponseRedirect(
         reverse('survey_view', args=(survey.pk,)))
+
+
+def get_responses(survey):
+    nes_responses_patients = PatientQuestionnaireResponse.objects.filter(
+        survey=survey).exclude(is_completed='N').exclude(is_completed='')
+    nes_responses_experiments = QuestionnaireResponse.objects.filter(
+        data_configuration_tree__component_configuration__component__questionnaire__survey=survey)\
+        .exclude(is_completed='N').exclude(is_completed='')
+    return list(chain(nes_responses_patients, nes_responses_experiments))
 
 
 def update_acquisitiondate(tokens, ls_responses, nes_responses):
@@ -653,6 +662,7 @@ def make_messages(request, responses):
         messages.success(request,
                          str(len(responses)) + ' '
                          + _('responses were updated!'))
+
     else:
         messages.success(request,
             _('No aquistion dates from completed answers were changed in '
@@ -666,7 +676,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
 
     surveys = Questionnaires()
 
-    limesurvey_available = check_limesurvey_access(request, surveys)
+    limesurvey_available_ = check_limesurvey_access(request, surveys)
     language = get_questionnaire_language(
         surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
     survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
@@ -706,7 +716,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
         experiments_questionnaire_data_list = []
 
     context = {
-        "limesurvey_available": limesurvey_available,
+        "limesurvey_available": limesurvey_available_,
         "patients_questionnaire_data_list": patients_questionnaire_data_list,
         "experiments_questionnaire_data_list":
             experiments_questionnaire_data_list,

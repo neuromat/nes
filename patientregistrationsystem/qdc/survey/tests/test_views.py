@@ -1,10 +1,13 @@
 from base64 import b64decode
 from unittest.mock import patch
 
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
+from custom_user.tests_helper import create_user
+from experiment.tests.tests_helper import ObjectsFactory
 from patient.tests.tests_orig import UtilTests
 from patient.models import QuestionnaireResponse as \
     PatientQuestionnaireResponse
@@ -13,12 +16,9 @@ from survey.tests.tests_helper import create_survey
 from survey.views import survey_update, update_acquisitiondate
 from survey.abc_search_engine import Questionnaires
 
-from custom_user.views import User
-
 from experiment.models import QuestionnaireResponse, Questionnaire, \
-    Experiment, ComponentConfiguration, Block, Group, Subject,\
-    SubjectOfGroup, ResearchProject, DataConfigurationTree
-
+    Experiment, ComponentConfiguration, Block, Subject, \
+    SubjectOfGroup, ResearchProject, DataConfigurationTree, Component
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -208,20 +208,13 @@ LIME_SURVEY_TOKEN_ID_1 = 1
 class SurveyTest(TestCase):
 
     def setUp(self):
+        # create the groups of users and their permissions
+        exec(open('add_initial_data.py').read())
 
-        self.user = User.objects.create_user(
-            username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.save()
-
-        self.factory = RequestFactory()
-
-        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
-        self.assertEqual(logged, True)
+        self.user, passwd = create_user(Group.objects.all())
+        self.client.login(username=self.user.username, password=passwd)
 
     @patch('survey.abc_search_engine.Server')
-    # def test_survey_list(self):
     def test_survey_list(self, mockServer):
         mockServer.return_value.get_session_key.return_value = \
             'vz224sb7jzkvh8i4kpx8fxbcxd67meht'
@@ -289,6 +282,7 @@ class SurveyTest(TestCase):
         survey = Survey.objects.create(lime_survey_id=212121)
 
         # Create an instance of a GET request.
+        self.factory = RequestFactory()
         request = self.factory.get(reverse('survey_edit', args=[survey.pk, ]))
         request.user = self.user
         request.LANGUAGE_CODE = 'pt-BR'
@@ -311,37 +305,51 @@ class SurveyTest(TestCase):
         response = self.client.get(reverse('survey_view', args=(survey.pk,)))
         self.assertEqual(response.status_code, 200)
 
-    def test_GET_survey_view_display_update_acquisitiondate_button(self):
+    def test_GET_survey_view_display_update_acquisitiondate_buttons(self):
         survey = create_survey()
+        patient = UtilTests.create_patient(self.user)
+        # token_id=1 from mocks
+        UtilTests.create_response_survey(
+            self.user, patient, survey, token_id=1)
+
+        # token_id=2 from mocks
+        self.create_experiment_questionnaire_response(patient, 2, survey)
 
         response = self.client.get(reverse('survey_view', args=(survey.pk,)))
         self.assertContains(
-            response, 'Atualizar data de preenchimento do LimeSurvey')
+            response, 'Atualizar data de preenchimento do LimeSurvey', 2)
 
     @patch('survey.abc_search_engine.Server')
     def test_update_acquisitiondate_from_limesurvey(self, mockServer):
         self._set_mocks(mockServer)
 
-        patient = UtilTests.create_patient(self.user)
         survey = create_survey()
+        patient = UtilTests.create_patient(self.user)
+        # token_id=1 from mocks
         UtilTests.create_response_survey(
             self.user, patient, survey, token_id=1)
 
-        # This date is in export_responses mock for the acquisitiondate
+        self.create_experiment_questionnaire_response(patient, 2, survey)
+
+        # This dates are in export_responses mock for the acquisitiondate
         # field in the decoded responses
-        new_acquisitiondate = '03/09/2021'
+        new_acquisitiondate_1 = '03/09/2021'
+        new_acquisitiondate_2 = '04/09/2021'
 
         self.client.get(reverse(
             'update_survey_acquisitiondate', args=(survey.pk,)))
 
-        # Get questionnaire_response again as questionnaire_response before
-        # is not updated
-        questionnaire_response = \
+        entrance_questionnaire_response = \
             PatientQuestionnaireResponse.objects.get(token_id=1)
+        experiment_questionnaire_response = \
+            QuestionnaireResponse.objects.get(token_id=2)
 
         self.assertEqual(
-            questionnaire_response.date.strftime('%m/%d/%Y'),
-            new_acquisitiondate)
+            entrance_questionnaire_response.date.strftime('%m/%d/%Y'),
+            new_acquisitiondate_1)
+        self.assertEqual(
+            experiment_questionnaire_response.date.strftime('%m/%d/%Y'),
+            new_acquisitiondate_2)
 
     @patch('survey.abc_search_engine.Server')
     def test_GET_update_survey_acquisitiondate_view_redirects_to_survey_view(
@@ -454,10 +462,11 @@ class SurveyTest(TestCase):
         survey = create_survey()
         patient1 = UtilTests.create_patient(self.user)
         patient2 = UtilTests.create_patient(self.user)
+        # token_id=1 from mocks
         UtilTests.create_response_survey(
             self.user, patient1, survey, token_id=1)
-        UtilTests.create_response_survey(
-            self.user, patient2, survey, token_id=2)
+        # token_id=2 from mocks
+        self.create_experiment_questionnaire_response(patient2, 2, survey)
 
         response = self.client.get(reverse(
             'update_survey_acquisitiondate', args=(survey.pk,)), follow=True)
@@ -654,3 +663,22 @@ class SurveyTest(TestCase):
             'IiwiYWJjIgoiNCIsIjE5ODAtMDEtMDEgMDA6MDA6MDAiLCIyIiwiZW4iLCJsaV' \
             'ZnOGFOdnRYcEVGWFAiLCIyIiwiMjAyMS0wNC0wOSAwMDowMDowMCIsIjYiLCJh' \
             'YmMiCgo='
+
+    def create_experiment_questionnaire_response(
+            self, patient, token_id, survey):
+        resource_project = ObjectsFactory.create_research_project(self.user)
+        experiment = ObjectsFactory.create_experiment(resource_project)
+        group = ObjectsFactory.create_group(experiment)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(
+            group, subject)
+        rootcomponent = ObjectsFactory.create_component(
+            experiment, 'block', 'root component')
+        questionnaire = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        component_config = ObjectsFactory.create_component_configuration(
+            rootcomponent, questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(
+            dct, self.user, token_id=token_id,
+            subject_of_group=subject_of_group)
