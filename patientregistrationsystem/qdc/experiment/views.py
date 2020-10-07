@@ -9423,10 +9423,11 @@ def component_create(request, experiment_id, component_type):
 
 
 def find_questionnaire_name(survey, language_code):
-    titles = {'pt-BR': survey.pt_title, 'en': survey.en_title}
-    fallback_language = 'en' if language_code == 'pt-BR' else 'pt-BR'
+    language_code = language_code.lower()
+    titles = {'pt-br': survey.pt_title, 'en': survey.en_title}
+    fallback_language = 'en' if language_code == 'pt-br' else 'pt-br'
 
-    if titles[language_code] is not None and titles[language_code] != "":
+    if titles[language_code] is not None and titles[language_code] != '':
         title = titles[language_code]
     elif titles[fallback_language] is not None \
             and titles[fallback_language] != '':
