@@ -1006,16 +1006,11 @@ def experiment_schedule_of_sending(request, experiment_id,
             new_schedule.experiment = experiment
             new_schedule.responsible = request.user
             new_schedule.status = "scheduled"
-            # TODO: Error on sending "Enviar para o Portal":
-            #  After schedulling sending to portal and clicking on button
-            #  "Enviar para o Portal" gives error. Something like
-            #  "'on' must be True or False". Appears to get 'on' from 
-            #  'send_age' from form, and when saving new_schedule the value
-            #  end_participante_age shoud be True or False
             send_age = request.POST.get('send_age')
-            new_schedule.send_participant_age = send_age if send_age else False
+            new_schedule.send_participant_age = True if send_age else False
             new_schedule.save()
-            messages.success(request, _('Experiment scheduled to be sent successfully.'))
+            messages.success(
+                request, _('Experiment scheduled to be sent successfully.'))
 
             redirect_url = reverse("experiment_view", args=(experiment_id,))
             return HttpResponseRedirect(redirect_url)
@@ -1119,7 +1114,7 @@ def send_all_experiments_to_portal():
                 )
 
             # sending groups
-            for group in schedule_of_sending.experiment.group_set.all():
+            for group in schedule_of_sending.experiment.groups.all():
                 portal_group = send_group_to_portal(group)
 
                 # eeg settings
@@ -1386,7 +1381,8 @@ def send_all_experiments_to_portal():
 
 @login_required
 @permission_required('experiment.add_subject')
-def group_create(request, experiment_id, template_name="experiment/group_register.html"):
+def group_create(request, experiment_id,
+                 template_name="experiment/group_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
     check_can_change(request.user, experiment.research_project)
@@ -9427,12 +9423,13 @@ def component_create(request, experiment_id, component_type):
 
 
 def find_questionnaire_name(survey, language_code):
-    titles = {'pt-br': survey.pt_title, 'en': survey.en_title}
-    fallback_language = 'en' if language_code == 'pt-br' else 'pt-br'
+    titles = {'pt-BR': survey.pt_title, 'en': survey.en_title}
+    fallback_language = 'en' if language_code == 'pt-BR' else 'pt-BR'
 
     if titles[language_code] is not None and titles[language_code] != "":
         title = titles[language_code]
-    elif titles[fallback_language] is not None and titles[fallback_language] != "":
+    elif titles[fallback_language] is not None \
+            and titles[fallback_language] != '':
         title = titles[fallback_language]
     else:
         surveys = Questionnaires()
@@ -9443,12 +9440,14 @@ def find_questionnaire_name(survey, language_code):
 
 
 def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
-    # Create a list of components or component configurations to be able to show the breadcrumb.
+    # Create a list of components or component configurations to be able to
+    # show the breadcrumb.
     list_of_breadcrumbs = []
 
     for idx, id_item in enumerate(list_of_ids_of_components_and_configurations):
         if id_item[0] != "G":
-            if id_item[0] == "U":  # If id_item starts with 'U' (from 'use'), it is a configuration.
+            # If id_item starts with 'U' (from 'use'), it is a configuration.
+            if id_item[0] == "U":
                 cc = get_object_or_404(ComponentConfiguration, pk=id_item[1:])
 
                 if cc.name is not None and cc.name != "":
