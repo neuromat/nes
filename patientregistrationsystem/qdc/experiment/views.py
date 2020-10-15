@@ -10,6 +10,7 @@ import numpy as np
 import nwb
 
 import pydot
+from django.core.mail import send_mail
 
 from nwb.nwbco import *
 
@@ -4653,15 +4654,18 @@ def classification_of_diseases_remove(request, group_id, classification_of_disea
 @permission_required('experiment.view_researchproject')
 def questionnaire_view(request, group_id, component_configuration_id,
                        template_name="experiment/questionnaire_view.html"):
-    questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+    questionnaire_configuration = get_object_or_404(
+        ComponentConfiguration,pk=component_configuration_id)
     group = get_object_or_404(Group, pk=group_id)
-    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+    questionnaire = Questionnaire.objects.get(
+        id=questionnaire_configuration.component.id)
 
     surveys = Questionnaires()
-    survey = Questionnaire.objects.get(id=questionnaire_configuration.component_id).survey
-    lime_survey_id = survey.lime_survey_id
+    survey = Questionnaire.objects.get(
+        id=questionnaire_configuration.component_id).survey
 
-    questionnaire_title = find_questionnaire_name(survey, request.LANGUAGE_CODE)["name"]
+    questionnaire_title = find_questionnaire_name(
+        survey, request.LANGUAGE_CODE)["name"]
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
@@ -5284,17 +5288,22 @@ def subject_questionnaire_response_start_fill_questionnaire(
         request, subject_id, group_id, questionnaire_id, list_of_path):
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
-    data_configuration_tree_id = list_data_configuration_tree(questionnaire_id, list_of_path)
+    data_configuration_tree_id = list_data_configuration_tree(
+        questionnaire_id, list_of_path)
     if not data_configuration_tree_id:
-        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+        data_configuration_tree_id = create_data_configuration_tree(
+            list_of_path)
 
     if questionnaire_response_form.is_valid():
         questionnaire_response = questionnaire_response_form.save(commit=False)
-        questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
+        questionnaire_config = get_object_or_404(
+            ComponentConfiguration, id=questionnaire_id)
         questionnaire_lime_survey = Questionnaires()
         subject = get_object_or_404(Subject, pk=subject_id)
-        subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
-        lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
+        subject_of_group = get_object_or_404(
+            SubjectOfGroup, subject=subject, group_id=group_id)
+        lime_survey_id = Questionnaire.objects.get(
+            id=questionnaire_config.component_id).survey.lime_survey_id
 
         if not questionnaire_lime_survey.survey_has_token_table(lime_survey_id):
             messages.warning(
@@ -5302,7 +5311,8 @@ def subject_questionnaire_response_start_fill_questionnaire(
                 _('Fill not available - Table of tokens was not started.'))
             return None, None
 
-        if questionnaire_lime_survey.get_survey_properties(lime_survey_id, 'active') == 'N':
+        if questionnaire_lime_survey.get_survey_properties(
+                lime_survey_id, 'active') == 'N':
             messages.warning(
                 request,
                 _('Fill not available - Questionnaire is not activated.'))
@@ -5384,12 +5394,14 @@ def subject_questionnaire_response_create(
 
     check_can_change(request.user, group.experiment.research_project)
 
-    questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
+    questionnaire_config = get_object_or_404(
+        ComponentConfiguration, id=questionnaire_id)
     surveys = Questionnaires()
-    survey = Questionnaire.objects.get(id=questionnaire_config.component_id).survey
-    lime_survey_id = survey.lime_survey_id
+    survey = Questionnaire.objects.get(
+        id=questionnaire_config.component_id).survey
 
-    survey_title = find_questionnaire_name(survey, request.LANGUAGE_CODE)["name"]
+    survey_title = find_questionnaire_name(
+        survey, request.LANGUAGE_CODE)["name"]
     surveys.release_session_key()
 
     fail = None
@@ -5399,30 +5411,61 @@ def subject_questionnaire_response_create(
     questionnaire_response_form = QuestionnaireResponseForm(
         request.POST or None)
 
-    if request.method == "POST":
-        if request.POST['action'] == "save":
+    if request.method == 'POST':
+        if request.POST.get('action') == 'save':
             redirect_url, questionnaire_response_id = \
                 subject_questionnaire_response_start_fill_questionnaire(
                     request, subject_id, group_id, questionnaire_id,
                     list_of_path)
 
-            fail = True if not redirect_url else False
+        if request.POST.get('action') == 'send_invite':
+            subject = Subject.objects.get(pk=subject_id)
+            if subject.patient.email is None:
+                messages.warning(
+                    request, _('Could not send email to') + ' '
+                             + subject.patient.name + '. '
+                             + _('Patient has not email registered. Please '
+                                 'register an email for her/him') + '.')
+            else:
+                redirect_url, questionnaire_response_id = \
+                    subject_questionnaire_response_start_fill_questionnaire(
+                        request, subject_id, group_id, questionnaire_id,
+                        list_of_path)
+
+                # TODO: self.update_questionnaire_response()
+                questionnaire_response = QuestionnaireResponse.objects.get(
+                    pk=questionnaire_response_id)
+                questionnaire_response.is_completed = 'invited'
+                questionnaire_response.save()
+                send_mail(
+                    _('Your link to respond the questionnaire'), redirect_url,
+                    'noreply@nes.numec.prp.usp.br', [subject.patient.email])
+                messages.success(request, _('Email sent successfully to') + ' '
+                                 + subject.patient.name)
+
+            return HttpResponseRedirect(reverse('questionnaire_view', kwargs={
+                'group_id': group_id,
+                'component_configuration_id': questionnaire_id
+            }))
+
+        fail = True if not redirect_url else False
 
     origin = get_origin(request)
 
-    context = {"can_change": True,
-               "creating": True,
-               "FAIL": fail,
-               "group": group,
-               "origin": origin,
-               "questionnaire_configuration": questionnaire_config,
-               "questionnaire_response_form": questionnaire_response_form,
-               "questionnaire_response_id": questionnaire_response_id,
-               "questionnaire_responsible": request.user.get_username(),
-               "subject": get_object_or_404(Subject, pk=subject_id),
-               "survey_title": survey_title,
-               "URL": redirect_url
-               }
+    context = {
+        "can_change": True,
+        "creating": True,
+        "FAIL": fail,
+        "group": group,
+        "origin": origin,
+        "questionnaire_configuration": questionnaire_config,
+        "questionnaire_response_form": questionnaire_response_form,
+        "questionnaire_response_id": questionnaire_response_id,
+        "questionnaire_responsible": request.user.get_username(),
+        "subject": get_object_or_404(Subject, pk=subject_id),
+        "survey_title": survey_title,
+        "URL": redirect_url
+    }
 
     return render(request, template_name, context)
 

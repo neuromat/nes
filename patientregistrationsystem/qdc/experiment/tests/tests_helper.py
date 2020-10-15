@@ -48,9 +48,9 @@ class ExperimentTestCase(TestCase):
             self.experiment, self.root_component)
 
         self.patient = UtilTests().create_patient(changed_by=self.user)
-        subject = ObjectsFactory.create_subject(self.patient)
+        self.subject = ObjectsFactory.create_subject(self.patient)
         self.subject_of_group = ObjectsFactory.create_subject_of_group(
-            self.group, subject)
+            self.group, self.subject)
 
 
 USER_USERNAME = 'myadmin'

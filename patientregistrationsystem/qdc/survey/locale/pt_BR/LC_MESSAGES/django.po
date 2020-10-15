@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-06 14:31-0300\n"
+"POT-Creation-Date: 2020-10-15 07:42-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -225,35 +225,31 @@ msgstr "Código"
 msgid "Description"
 msgstr "Descrição"
 
-#: survey/views.py:166
+#: survey/views.py:167
 msgid "Questionnaire created successfully."
 msgstr "Questionário criado com sucesso."
 
-#: survey/views.py:183
+#: survey/views.py:184
 msgid "No questionnaire found."
 msgstr "Questionário não encontrado"
 
-#: survey/views.py:218
+#: survey/views.py:219
 msgid "Questionnaire updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:220 survey/views.py:299
+#: survey/views.py:221 survey/views.py:300
 msgid "There are no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: survey/views.py:297
+#: survey/views.py:298
 msgid "Questionnaire was updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:676
+#: survey/views.py:677
 msgid "responses were updated!"
 msgstr "respostas foram atualizadas!"
 
-#: survey/views.py:680
-#| msgid ""
-#| "No acquisition date for completed responses hasbeen changed on LimeSurvey "
-#| "since the last update,the purchase date is not filled inLimeSurvey, or "
-#| "was filled in a non-formatrecognized by the NES."
+#: survey/views.py:681
 msgid ""
 "No acquisition date for completed responses has been changed on LimeSurvey "
 "since the last update, the purchase date is not filled in LimeSurvey, or was "
@@ -263,11 +259,11 @@ msgstr ""
 "desde a última atualização, a data de aquisição não está preenchida no "
 "LimeSurvey, ou foi preenchida em um formato não reconhecido pelo NES."
 
-#: survey/views.py:716
+#: survey/views.py:717
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:721
+#: survey/views.py:722
 msgid ""
 "It was not possible to delete questionnaire, becausethere are experimental "
 "answers or steps associated."
@@ -275,24 +271,24 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:838
+#: survey/views.py:839
 msgid "Other"
 msgstr "Outros"
 
-#: survey/views.py:873
+#: survey/views.py:874
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:934 survey/views.py:946 survey/views.py:972
+#: survey/views.py:935 survey/views.py:947 survey/views.py:973
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:1018
+#: survey/views.py:1019
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 "O LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:1061
+#: survey/views.py:1062
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
 

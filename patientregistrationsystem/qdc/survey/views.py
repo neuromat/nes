@@ -880,7 +880,8 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                             'hidden': False
                         })
 
-        responses_string = surveys.get_responses_by_token(lime_survey_id, token, language)
+        responses_string = surveys.get_responses_by_token(
+            lime_survey_id, token, language)
         responses_list = []
 
         if responses_string:
@@ -1015,7 +1016,9 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                                 and question['question_id'].split('[')[0] == last_super_question:
                                             mark_off_super_question(groups_of_questions, last_super_question_index)
         else:
-            messages.error(request, _("LimeSurvey did not find fill data for this questionnaire."))
+            messages.error(
+                request,
+                _('LimeSurvey did not find fill data for this questionnaire.'))
 
     surveys.release_session_key()
 
