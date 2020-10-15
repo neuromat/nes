@@ -101,6 +101,7 @@ class UtilTests:
                 return Patient.objects.create(
                     name=faker.name(), date_birth=faker.date(), cpf=faker.ssn(),
                     gender=gender, changed_by=changed_by,
+                    email='lenin@example.com',
                     marital_status=MaritalStatus.objects.create(name=faker.word())
                 )
             except:  #TODO: exception derived from non-unique cpf

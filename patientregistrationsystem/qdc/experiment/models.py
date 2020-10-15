@@ -1212,14 +1212,13 @@ class DataCollection(models.Model):
 class QuestionnaireResponse(DataCollection):
     token_id = models.IntegerField(null=False)
     questionnaire_responsible = models.ForeignKey(
-        User, null=False, related_name="+")
+        User, null=False, related_name='+')
     history = HistoricalRecords()
-    is_completed = models.CharField(max_length=50, default="")
+    is_completed = models.CharField(max_length=50, default='')
 
     class Meta:
         permissions = (
-            ("view_questionnaireresponse", "Can view questionnaire response"),
-        )
+            ('view_questionnaireresponse', 'Can view questionnaire response'),)
 
     @property
     def _history_user(self):

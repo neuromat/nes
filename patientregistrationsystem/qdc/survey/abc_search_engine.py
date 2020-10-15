@@ -511,8 +511,9 @@ class Questionnaires(ABCSearchEngine):
     """ Wrapper class for LimeSurvey API"""
 
     ERROR_CODE = 1
-    ERROR_MESSAGE = 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-    'problem persists please contact System Administrator.'
+    ERROR_MESSAGE = \
+        'Error: some thing went wrong consuming LimeSurvey API. Please try ' \
+        'again. If problem persists please contact System Administrator.'
 
     def find_all_questionnaires(self):
         return super(Questionnaires, self).find_all_questionnaires()

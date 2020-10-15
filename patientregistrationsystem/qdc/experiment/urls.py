@@ -324,7 +324,8 @@ urlpatterns = [
         views.subject_questionnaire_view, name='subject_questionnaire'),
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/'
         r'(?P<questionnaire_id>[0-9-]+)/add_response/$',
-        views.subject_questionnaire_response_create, name='subject_questionnaire_response'),
+        views.subject_questionnaire_response_create,
+        name='subject_questionnaire_response'),
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/'
         r'(?P<questionnaire_id>[0-9-]+)/reuse_fill/(?P<patient_questionnaire_response_id>\d+)$',
         views.subject_questionnaire_response_reuse, name='subject_questionnaire_response_reuse'),
