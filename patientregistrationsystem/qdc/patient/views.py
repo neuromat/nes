@@ -155,14 +155,16 @@ def patient_update(request, patient_id):
         if current_tab == '0':
             return patient_update_personal_data(request, patient, context)
         elif current_tab == '1':
-            return patient_update_social_demographic_data(request, patient, context)
+            return patient_update_social_demographic_data(
+                request, patient, context)
         elif current_tab == '2':
             return patient_update_social_history(request, patient, context)
         elif current_tab == '3':
             return patient_update_medical_record(request, patient, context)
-        else:  # current_tab == '4':
+        else:  # current_tab == '4'
             if request.user.has_perm('survey.view_survey'):
-                return patient_view_questionnaires(request, patient, context, True)
+                return patient_view_questionnaires(
+                    request, patient, context, True)
             else:
                 raise PermissionDenied
 
@@ -478,30 +480,31 @@ def patient_view_questionnaires(request, patient, context, is_update):
                     'is_initial_evaluation': False,
                     'survey_id': patient_questionnaire_response.survey.pk,
                     'questionnaire_title':
-                        find_questionnaire_name(patient_questionnaire_response.survey, language_code)["name"],
+                        find_questionnaire_name(
+                            patient_questionnaire_response.survey,
+                            language_code)["name"],
                     'questionnaire_responses': []
                 }
 
-        if patient_questionnaire_response.is_completed == "N" or patient_questionnaire_response.is_completed == "":
+        if patient_questionnaire_response.is_completed == 'N' \
+                or patient_questionnaire_response.is_completed == '':
             is_completed = surveys.get_participant_properties(
-                limesurvey_id,
-                patient_questionnaire_response.token_id,
-                "completed") or ""
+                limesurvey_id, patient_questionnaire_response.token_id,
+                'completed') or ''
 
             patient_questionnaire_response.is_completed = is_completed
             patient_questionnaire_response.save()
 
         response_result = patient_questionnaire_response.is_completed
 
-        patient_questionnaires_data_dictionary[limesurvey_id]['questionnaire_responses'].append(
-            {
-                'questionnaire_response':
-                patient_questionnaire_response,
+        patient_questionnaires_data_dictionary[
+            limesurvey_id
+        ]['questionnaire_responses'].append({
+                'questionnaire_response': patient_questionnaire_response,
                 'token_id': patient_questionnaire_response.token_id,
-                'completed':
-                None if response_result is None else response_result != "N" and response_result != ""
-            }
-        )
+                'completed': None if response_result is None
+                else response_result != "N" and response_result != ""
+            })
 
     patient_questionnaires_data_list = []
     # Transforming the dictionary to a list in order to sort
@@ -515,8 +518,6 @@ def patient_view_questionnaires(request, patient, context, is_update):
         sorted(patient_questionnaires_data_list, key=itemgetter('questionnaire_title'))
     patient_questionnaires_data_list = \
         sorted(patient_questionnaires_data_list, key=itemgetter('is_initial_evaluation'), reverse=True)
-
-    # additional survey list
 
     additional_survey_list = []
     if is_update:
@@ -1118,7 +1119,8 @@ def questionnaire_response_view(
                     if result == 'Deleted' or result == 'Invalid token ID':
                         can_delete = True
                 else:
-                    if 'status' in result and result['status'] == 'Error: Invalid survey ID':
+                    if 'status' in result and result['status'] == \
+                            'Error: Invalid survey ID':
                         can_delete = True
 
                 if can_delete:
@@ -1127,7 +1129,9 @@ def questionnaire_response_view(
                 else:
                     messages.error(request, _("Error trying to delete"))
 
-                redirect_url = reverse("patient_edit", args=(questionnaire_response.patient.id,)) + "?currentTab=4"
+                redirect_url = reverse(
+                    "patient_edit",
+                    args=(questionnaire_response.patient.id,)) + "?currentTab=4"
                 return HttpResponseRedirect(redirect_url)
             else:
                 raise PermissionDenied
@@ -1225,7 +1229,9 @@ def questionnaire_response_create(
 
                 showing = True
                 for field in questionnaire_response_form.fields:
-                    questionnaire_response_form.fields[field].widget.attrs['disabled'] = True
+                    questionnaire_response_form.fields[
+                        field
+                    ].widget.attrs['disabled'] = True
 
     origin = get_origin(request)
 
@@ -1284,7 +1290,7 @@ def questionnaire_response_update(
         if request.POST['action'] == "save":
             redirect_url = get_limesurvey_response_url(questionnaire_response)
 
-            fail = False if not redirect_url else True
+            fail = True if not redirect_url else False
 
         elif request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):
@@ -1440,16 +1446,23 @@ def get_limesurvey_response_url(questionnaire_response):
     token = questionnaire_lime_survey.get_participant_properties(
         questionnaire_response.survey.lime_survey_id,
         questionnaire_response.token_id, "token")
-    questionnaire_lime_survey.release_session_key()
+
+    survey_base_lang = questionnaire_lime_survey.get_survey_properties(
+        questionnaire_response.survey.lime_survey_id, 'language')
+    date_format = '%m-%d-%Y' if survey_base_lang == 'en'\
+        else '%d-%m-%Y'
 
     redirect_url = \
-        '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
+        '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/' \
+        'subjectid/%s/newtest/Y' % (
             settings.LIMESURVEY['URL_WEB'],
             questionnaire_response.survey.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
-            questionnaire_response.date.strftime('%m-%d-%Y'),
+            questionnaire_response.date.strftime(date_format),
             str(questionnaire_response.patient.id))
+
+    questionnaire_lime_survey.release_session_key()
 
     return redirect_url
 

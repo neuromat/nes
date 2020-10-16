@@ -9,4 +9,7 @@ urlpatterns = [
     url(r'^edit/(?P<survey_id>\d+)/sensitive_questions/$',
         views.survey_update_sensitive_questions,
         name='survey_edit_sensitive_questions'),
+    url(r'^update_acquisitiondate/(?P<survey_id>\d+)',
+        views.update_survey_acquisitiondate_view,
+        name='update_survey_acquisitiondate')
 ]

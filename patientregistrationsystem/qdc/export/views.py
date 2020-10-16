@@ -394,7 +394,10 @@ def export_create(
 def export_view(request, template_name='export/export_data.html'):
     export_form = ExportForm(
         request.POST or None,
-        initial={'title': 'title', 'responses': ['short'], 'headings': 'code', 'filesformat': 'csv'})
+        initial={
+            'title': 'title', 'responses': ['short'], 'headings': 'code',
+            'filesformat': 'csv'
+        })
 
     selected_ev_quest = []
     selected_participant = []

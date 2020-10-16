@@ -48,9 +48,9 @@ class ExperimentTestCase(TestCase):
             self.experiment, self.root_component)
 
         self.patient = UtilTests().create_patient(changed_by=self.user)
-        subject = ObjectsFactory.create_subject(self.patient)
+        self.subject = ObjectsFactory.create_subject(self.patient)
         self.subject_of_group = ObjectsFactory.create_subject_of_group(
-            self.group, subject)
+            self.group, self.subject)
 
 
 USER_USERNAME = 'myadmin'
@@ -546,7 +546,8 @@ class ObjectsFactory(object):
     @staticmethod
     def create_data_configuration_tree(component_config, parent=None):
         return DataConfigurationTree.objects.create(
-            component_configuration=component_config, code=random.randint(1, 999), parent=parent)
+            component_configuration=component_config,
+            code=random.randint(1, 999), parent=parent)
 
     @staticmethod
     def create_questionnaire_response(
@@ -554,7 +555,8 @@ class ObjectsFactory(object):
         return QuestionnaireResponse.objects.create(
             data_configuration_tree=dct,
             questionnaire_responsible=responsible, token_id=token_id,
-            subject_of_group=subject_of_group
+            subject_of_group=subject_of_group,
+            is_completed=datetime.datetime.now()
         )
 
     @staticmethod

@@ -132,10 +132,11 @@ class ABCSearchEngine(ABC):
     def get_survey_properties(self, sid, prop):
         """
         :param sid: survey ID
-        :param prop: the name of the propriety of the survey
+        :param prop: the name of the property of the survey
         :return: value of the property
         """
-        result = self.server.get_survey_properties(self.session_key, sid, {'method': prop})
+        result = self.server.get_survey_properties(
+            self.session_key, sid, {'method': prop})
 
         return result.get(prop)
 
@@ -145,10 +146,11 @@ class ABCSearchEngine(ABC):
         :param sid: survey ID
         :return: the base and the additional idioms
         """
+        result = self.server.get_survey_properties(
+            self.session_key, sid, ['additional_languages', 'language'])
 
-        result = self.server.get_survey_properties(self.session_key, sid, ['additional_languages', 'language'])
-        # If failed to consume API, it return a dict with one element with 'status' as key
-
+        # If failed to consume API, it return a dict with one element with
+        # 'status' as key
         return None if 'status' in result else result
 
     @abstractmethod
@@ -291,7 +293,8 @@ class ABCSearchEngine(ABC):
                     self.session_key, sid, 'csv', language, 'complete',
                     heading_type, response_type)
 
-        return None if isinstance(responses, dict) else b64decode(responses).decode()
+        return None if isinstance(responses, dict) \
+            else b64decode(responses).decode()
 
     def get_header_response(self, sid, language, token, heading_type):
         """Obtain header responses.
@@ -445,7 +448,8 @@ class ABCSearchEngine(ABC):
         :param sid:
         :return: list of tokens | dict with error status
         """
-        tokens = self.server.list_participants(self.session_key, sid, 0, 99999999)
+        tokens = self.server.list_participants(
+            self.session_key, sid, 0, 99999999)
 
         # If some error occurs RPC returns a dict, so return None
         return tokens if isinstance(tokens, list) else None
@@ -507,8 +511,9 @@ class Questionnaires(ABCSearchEngine):
     """ Wrapper class for LimeSurvey API"""
 
     ERROR_CODE = 1
-    ERROR_MESSAGE = 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-    'problem persists please contact System Administrator.'
+    ERROR_MESSAGE = \
+        'Error: some thing went wrong consuming LimeSurvey API. Please try ' \
+        'again. If problem persists please contact System Administrator.'
 
     def find_all_questionnaires(self):
         return super(Questionnaires, self).find_all_questionnaires()

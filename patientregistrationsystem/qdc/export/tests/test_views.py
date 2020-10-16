@@ -379,8 +379,8 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) + '*Test '
-                'questionnaire*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*Test questionnaire*acquisitiondate*acquisitiondate',
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
@@ -420,9 +420,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         )
 
     def test_same_questionnaire_used_in_different_steps_return_correct_responses_content_2(self):
-        """
-        With reuse
-        """
+        """With reuse"""
         # by now: simply testing in browser is working (but, make this test ;)
         pass
 
@@ -457,8 +455,8 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) + '*Test '
-                'questionnaire*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*Test questionnaire*acquisitiondate*acquisitiondate',
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +

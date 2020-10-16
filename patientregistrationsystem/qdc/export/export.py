@@ -137,42 +137,42 @@ def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w')
 
 
 def replace_multiple_choice_question_answers(responses_short, question_list):
-    """Get responses list - after limesurvey participants answers obtained from
-    get_responses_by_token or get_responses limesurvey api methods - that
-    are multiple choices/multiple choices with comments question types (from
-    question_list), and replaces the options that was not selected by
-    participants with a 'N' (options that was selected have 'Y' - or 'S'
-    in Portuguese - filled.
-    :param responses_short: double array with questions in first line and answers
-    in the other lines
+    """Get responses list that are multiple choices/multiple choices with
+    comments question types (from question_list), and replaces the options
+    that was not selected by participants with a 'N' (options that was
+    selected have 'Y' - or 'S' in Portuguese - filled.
+    :param responses_short: double array with questions in first line and
+    answers in the other lines. It's modified.
     :param question_list: list of multiple choice/multiple choice with
     comments questions types
-    Obs.: modifies responses list
     """
-    i = 0
-    m = len(responses_short[0])
-    while i < m:
-        question_match = re.match('(^.+)\[', responses_short[0][i])
-        question = question_match.group(1) if question_match else None
-        if question and question in [
+    parent_questions = extract_parent_questions(responses_short)
+
+    col = 0
+    max_col = len(parent_questions)
+    max_row = len(responses_short)
+    while col < max_col:
+        question = parent_questions[col]
+        if question in [
             q['title'] for q in question_list if q['title'] == question
         ]:
-            index_subquestions = []
-            while i < m and question in responses_short[0][i]:
-                index_subquestions.append(i)
-                i += 1
-            for j in range(1, len(responses_short) - 1):
-                filled = False
-                for k in index_subquestions:
-                    if responses_short[j][k] != '':
-                        filled = True
-                        break
-                if filled:
-                    for k in index_subquestions:
-                        if responses_short[j][k] == '':
-                            responses_short[j][k] = 'N'
+            while col < max_col and question == parent_questions[col]:
+                # responses_short has 1 extra row
+                for row in range(1, max_row - 1):
+                    if responses_short[row][col] == '':
+                        responses_short[row][col] = 'N'
+                col += 1
         else:
-            i += 1
+            col += 1
+
+
+def extract_parent_questions(responses_short):
+    questions = responses_short[0].copy()
+    for index, question in enumerate(questions):
+        if '[' in question:
+            questions[index] = question.partition('[')[0]
+
+    return questions
 
 
 def create_directory(basedir, path_to_create):

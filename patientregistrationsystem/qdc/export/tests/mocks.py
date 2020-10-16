@@ -995,7 +995,8 @@ def update_mocks4_full_and_abbreviated(mock_server):
 
 
 def set_mocks5(mockServer):
-    mockServer.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
+    mockServer.return_value.get_survey_properties.return_value = \
+        {'language': 'en', 'additional_languages': ''}
     mockServer.return_value.get_participant_properties.side_effect = [{'token': 'ceBAtUYdVXOF3ie'}]
     mockServer.return_value.export_responses.return_value = \
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9u' \

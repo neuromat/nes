@@ -90,18 +90,22 @@ class UtilTests:
     def create_patient(changed_by):
         faker = Factory.create()
 
-        # TODO:
-        # create gender before create patient in other helper method
+        # TODO: create gender before create patient in other helper method
         try:
             gender = Gender.objects.get(name='Masculino')
         except ObjectDoesNotExist:
             gender = Gender.objects.create(name='Masculino')
 
-        # TODO: make loop to guarantee unique patient cpf
-        return Patient.objects.create(
-            name=faker.name(), date_birth=faker.date(), cpf=faker.ssn(), gender=gender, changed_by=changed_by,
-            marital_status=MaritalStatus.objects.create(name=faker.word())
-        )
+        while True:
+            try:
+                return Patient.objects.create(
+                    name=faker.name(), date_birth=faker.date(), cpf=faker.ssn(),
+                    gender=gender, changed_by=changed_by,
+                    email='lenin@example.com',
+                    marital_status=MaritalStatus.objects.create(name=faker.word())
+                )
+            except:  #TODO: exception derived from non-unique cpf
+                pass
 
     @staticmethod
     def create_telephone(patient, changed_by):
@@ -140,12 +144,13 @@ class UtilTests:
             medical_record_data=medical_record, classification_of_diseases=cid10
         )
 
+    # TODO (NES-1032): removes from here. Creates in Survey tests helper (
+    #  already exists)
     @staticmethod
     def create_survey(survey_id, is_initial_evaluation):
-        survey = Survey(lime_survey_id=survey_id, is_initial_evaluation=is_initial_evaluation)
-        survey.save()
-
-        return survey
+        return Survey.objects.create(
+            lime_survey_id=survey_id,
+            is_initial_evaluation=is_initial_evaluation)
 
     @staticmethod
     def create_token_id(survey):
@@ -162,13 +167,15 @@ class UtilTests:
         return result
 
     @staticmethod
-    def create_response_survey(responsible, patient, survey, token_id=None):
-        if not token_id:
-            token_id = UtilTests.create_token_id(survey)
+    def create_response_survey(
+            responsible, patient, survey, token_id=None,
+            is_completed=datetime.now()):
+        if token_id is None:
+            token_id = 21
 
         return QuestionnaireResponse.objects.create(
             patient=patient, survey=survey, token_id=token_id,
-            questionnaire_responsible=responsible)
+            questionnaire_responsible=responsible, is_completed=is_completed)
 
 
 class CpfValidationTest(TestCase):
@@ -1457,8 +1464,8 @@ class QuestionnaireFormValidation(TestCase):
             survey.lime_survey_id)
         self.assertEqual(len(response.context['patient_questionnaires_data_list'][0]['questionnaire_responses']), 0)
 
-        # including a new survey response...
-        response_survey = self.util.create_response_survey(self.user, patient, survey)
+        self.util.create_response_survey(
+            self.user, patient, survey, is_completed='N')
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
         self.assertEqual(response.status_code, 200)
 
@@ -1469,7 +1476,7 @@ class QuestionnaireFormValidation(TestCase):
         self.assertEqual(response_survey.token_id, int(response_survey.token_id))
 
         completed = entrance_evaluation['questionnaire_responses'][0]['completed']
-        self.assertTrue(not completed)  # questionnaire is not completed
+        self.assertTrue(not completed)
 
     # TODO: this is an integration test. TODO (NES-995): take it to its place
     @skip
@@ -1575,24 +1582,33 @@ class QuestionnaireFormValidation(TestCase):
 
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
-        response_survey = self.util.create_response_survey(self.user, patient, survey)
+        response_survey = self.util.create_response_survey(
+            self.user, patient, survey, token_id=4228, is_completed='N')
 
         # Delete questionnaire response when it is in mode
-        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey.pk], current_app='patient')
+        url1 = reverse(
+            QUESTIONNAIRE_VIEW, args=[response_survey.pk],
+            current_app='patient')
         url2 = url1.replace('experiment', 'patient')
         self.data['action'] = 'remove'
-        response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
+        response = self.client.post(
+            url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-        # Workaround because reverse is getting experiment url instead of patient
-        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')
+        # Workaround because reverse is getting experiment url instead of
+        # patient
+        url1 = reverse(
+            QUESTIONNAIRE_EDIT, args=[response_survey.pk],
+            current_app='patient')
         url2 = url1.replace('experiment', 'patient')
 
         self.data['action'] = 'remove'
-        response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
-        self.assertEqual(response.status_code, 404)  # Error - response already deleted
+        response = self.client.post(
+            url2 + "?origin=subject&status=edit", self.data, follow=True)
+        self.assertEqual(response.status_code, 404)
 
-        response_survey = self.util.create_response_survey(self.user, patient, survey)
+        response_survey = self.util.create_response_survey(
+            self.user, patient, survey)
 
         # Workaround because reverse is getting experiment url instead of patient
         url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')

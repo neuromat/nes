@@ -569,7 +569,8 @@ class ExportExperimentTest(TestCase):
             mockServer.return_value.export_survey.return_value = first_survey
 
     def test_GET_experiment_export_returns_zip_file(self):
-        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        response = self.client.get(reverse(
+            'experiment_export', kwargs={'experiment_id': self.experiment.id}))
         self.assertEqual(response.status_code, 200)
         self.assertEquals(response.get('Content-Disposition'), 'attachment; filename=%s' % smart_str('experiment.zip'))
         # get zipped file to test against its content
@@ -5279,7 +5280,8 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Não foi possível atualizar todas as respostas.')
+        self.assertEqual(
+            message, 'Não foi possível atualizar todas as respostas.')
 
 
 class ExperimentQuestionnaireTest(ExperimentTestCase):
@@ -5289,15 +5291,259 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
 
         # Create questionnaire data collection in NES
         # TODO: use method already existent in patient.tests. See other places
-        survey = create_survey(212121)
+        self.survey = create_survey(212121)
         self.component_config = self._create_nes_questionnaire(
-            self.root_component, survey)
+            self.root_component, self.survey)
 
         self.client.login(
             username=self.user.username, password=self.user_passwd)
 
     def tearDown(self):
         self.client.logout()
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    def test_create_questionnaire_response_sent_patient_id_in_redirect_url(
+            self, mockCheckRequiredFields, mockServer):
+        mockCheckRequiredFields.return_value = True
+        self._set_mocks_questionnaire_response(mockServer)
+
+        response = self.client.post(
+            reverse('subject_questionnaire_response',
+                    kwargs={
+                        'group_id':  self.group.id,
+                        'subject_id': self.subject_of_group.subject_id,
+                        'questionnaire_id': self.component_config.id
+                    }),
+            data={'action': 'save', 'date': datetime.now().strftime(
+                '%d/%m/%Y'), })
+
+        self.assertIn(str(self.patient.id), response.context['URL'])
+
+    def test_create_questionnaire_response_does_not_display_fill_date_input_field(self):
+        # By now this test is contemplated by
+        # patient.tests.test_views.QuestionnaireFillTest.\
+        # test_create_entrance_evaluation_response_does_not_display_fill_date_input_field
+        pass
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    def test_create_questionnaire_response_build_limesurvey_url_with_correct_date_format(
+            self, mockCheckRequiredFields, mockServer):
+        for lang in ['en', 'pt_BR']:
+            mockServer.return_value.get_session_key.return_value = 'abc'
+            mockServer.return_value.get_summary.return_value = 1
+            mockServer.return_value.add_participants.return_value = [
+                {'token': 'abc', 'tid': 1}
+            ]
+            mockServer.return_value.get_survey_properties.side_effect = \
+                [{'active': True}, {'language': lang}]
+            mockCheckRequiredFields.return_value = True
+
+            date = '24/09/2020'
+            date_limesurvey = '09-24-2020' if lang == 'en' else '24-09-2020'
+
+            response = self.client.post(
+                reverse('subject_questionnaire_response',
+                        kwargs={
+                            'group_id':  self.group.id,
+                            'subject_id': self.subject_of_group.subject_id,
+                            'questionnaire_id': self.component_config.id
+                        }),
+                data={'action': 'save', 'date': date})
+
+            self.assertIn(date_limesurvey, response.context['URL'])
+
+    def test_GET_subject_questionnaire_response_create_view_display_send_email_invitation_button_with_send_invitation_action(self):
+        response = self.client.get(
+            reverse('subject_questionnaire_response', kwargs={
+                'group_id': self.group.id,
+                'subject_id': self.subject.id,
+                'questionnaire_id': self.component_config.id
+            }))
+
+        self.assertContains(response, 'Enviar convite')
+        self.assertContains(response, 'name=\"action\" value=\"send_invite\"')
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    @patch('experiment.views.send_mail')
+    def test_POST_subject_questionnaire_response_with_send_invite_action_creates_questionnaire_response_entry_with_correct_data(
+            self, mock_send_mail, mockCheckRequiredFields, mockServer):
+        mockCheckRequiredFields.return_value = True
+        self._set_mocks_questionnaire_response(mockServer)
+
+        self.client.post(
+            reverse('subject_questionnaire_response',
+                    kwargs={
+                        'group_id': self.group.id,
+                        'subject_id': self.subject_of_group.subject_id,
+                        'questionnaire_id': self.component_config.id
+                    }),
+            data={'action': 'send_invite', 'date': datetime.now().strftime(
+                '%d/%m/%Y'), })
+
+        questionnaire_response = QuestionnaireResponse.objects.first()
+        self.assertEqual(questionnaire_response.is_completed, 'invited')
+
+    def test_GET_subject_questionnaire_response_has_confirm_modal_for_sending_participant_invite(self):
+        response = self.client.get(
+            reverse('subject_questionnaire_response',
+                    kwargs={
+                        'group_id': self.group.id,
+                        'subject_id': self.subject_of_group.subject_id,
+                        'questionnaire_id': self.component_config.id
+                    }))
+
+        self.assertContains(response, 'Enviar convite para participante')
+        self.assertContains(
+            response, 'Tem certeza que deseja enviar um convite para o '
+                      'participante ' + self.subject.patient.name + '?')
+        self.assertContains(response, 'Enviar convite')
+
+    # TODO: NES-1041
+    # def test_GET_questionnaire_view_participante_does_not_have_email_disable_send_email_invitation_button(
+    #         self):
+    #     response = self.client.get(
+    #         reverse('questionnaire_view', kwargs={
+    #             'group_id': self.group.id,
+    #             'component_configuration_id': self.component_config.id
+    #         }))
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    @patch('experiment.views.send_mail')
+    def test_POST_subject_questionnaire_response_with_send_invite_action_redirects_to_experiment_questionnaire_view(
+            self, mock_send_mail, mockCheckRequiredFields, mockServer):
+        mockCheckRequiredFields.return_value = True
+        self._set_mocks_questionnaire_response(mockServer)
+
+        response = self.client.post(
+            reverse('subject_questionnaire_response',
+                    kwargs={
+                        'group_id': self.group.id,
+                        'subject_id': self.subject_of_group.subject_id,
+                        'questionnaire_id': self.component_config.id
+                    }),
+            data={'action': 'send_invite', 'date': datetime.now().strftime(
+                '%d/%m/%Y'), })
+
+        questionnaire_view_url = \
+            reverse('questionnaire_view', kwargs={
+                'group_id': self.group.id,
+                'component_configuration_id': self.component_config.id
+            })
+
+        self.assertRedirects(response, questionnaire_view_url)
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    @patch('experiment.views.send_mail')
+    def test_POST_subject_questionnaire_response_with_send_invite_action_send_email_invitation_to_participant(
+            self, mock_send_mail, mockCheckRequiredFields, mockServer):
+        mockCheckRequiredFields.return_value = True
+        token_mock = self._set_mocks_questionnaire_response(mockServer)
+
+        self.client.post(
+            reverse('subject_questionnaire_response',
+                    kwargs={
+                        'group_id': self.group.id,
+                        'subject_id': self.subject_of_group.subject_id,
+                        'questionnaire_id': self.component_config.id
+                    }),
+            data={'action': 'send_invite', 'date': datetime.now().strftime(
+                '%d/%m/%Y'), })
+
+        questionnaire_response = QuestionnaireResponse.objects.first()
+
+        redirect_url = \
+            '%s/index.php/%s/token/%s/responsibleid/%s/' \
+            'acquisitiondate/%s/subjectid/%s/newtest/Y' % (
+                settings.LIMESURVEY['URL_WEB'],
+                self.component_config.component.survey.lime_survey_id,
+                token_mock,
+                str(self.user.id),
+                questionnaire_response.date.strftime('%d-%m-%Y'),
+                str(questionnaire_response.subject_of_group.subject.patient.id))
+
+        self.assertEqual(mock_send_mail.called, True)
+        (subject, body, from_email, to_list), kwargs = mock_send_mail.call_args
+        self.assertEqual(subject, 'Seu _link_ para responder o questionário')
+        self.assertEqual(from_email, 'noreply@nes.numec.prp.usp.br')
+        self.assertIn(redirect_url, body)
+        self.assertEqual(to_list, [self.subject.patient.email])
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    @patch('experiment.views.send_mail')
+    def test_POST_subject_questionnaire_response_with_send_invite_action_display_success_message(
+            self, mock_send_mail, mockCheckRequiredFields, mockServer):
+        mockCheckRequiredFields.return_value = True
+        self._set_mocks_questionnaire_response(mockServer)
+
+        response = self.client.post(
+            reverse('subject_questionnaire_response',
+                    kwargs={
+                        'group_id': self.group.id,
+                        'subject_id': self.subject_of_group.subject_id,
+                        'questionnaire_id': self.component_config.id
+                    }),
+            data={'action': 'send_invite', 'date': datetime.now().strftime(
+                '%d/%m/%Y'), }, follow=True)
+
+        self.assertContains(
+            response, 'E-mail enviado com sucesso para ' +
+                      self.subject.patient.name)
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    @patch('experiment.views.send_mail')
+    def test_POST_subject_questionnaire_response_with_send_invite_action_subject_has_not_email_display_failed_message(
+            self, mock_send_mail, mockCheckRequiredFields, mockServer):
+        mockCheckRequiredFields.return_value = True
+        self._set_mocks_questionnaire_response(mockServer)
+
+        self.subject.patient.email = None
+        self.subject.patient.save()
+
+        response = self.client.post(
+            reverse('subject_questionnaire_response',
+                    kwargs={
+                        'group_id': self.group.id,
+                        'subject_id': self.subject_of_group.subject_id,
+                        'questionnaire_id': self.component_config.id
+                    }),
+            data={'action': 'send_invite', 'date': datetime.now().strftime(
+                '%d/%m/%Y'), }, follow=True)
+
+        self.assertContains(
+            response, 'Não foi possível enviar e-mail para '
+                      + self.subject.patient.name
+                      + '. O paciente não tem um e-mail cadastrado. Por '
+                        'favor cadastre um e-mail para ela/ele.')
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    @patch('experiment.views.send_mail')
+    def test_POST_subject_questionnaire_response_with_send_invite_action_subject_has_not_email_does_not_create_response(
+            self, mock_send_mail, mockCheckRequiredFields, mockServer):
+        mockCheckRequiredFields.return_value = True
+        self._set_mocks_questionnaire_response(mockServer)
+
+        self.subject.patient.email = None
+        self.subject.patient.save()
+
+        self.client.post(
+            reverse('subject_questionnaire_response',
+                    kwargs={
+                        'group_id': self.group.id,
+                        'subject_id': self.subject_of_group.subject_id,
+                        'questionnaire_id': self.component_config.id
+                    }),
+            data={'action': 'send_invite', 'date': datetime.now().strftime(
+                '%d/%m/%Y'), }, follow=True)
+
+        self.assertFalse(QuestionnaireResponse.objects.exists())
 
     def _create_nes_questionnaire(self, root_component, survey):
         """Create questionnaire component in experimental protocol and return
@@ -5313,31 +5559,14 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
 
         return component_config
 
-    @patch('survey.abc_search_engine.Server')
-    @patch('experiment.views.check_required_fields')
-    def test_create_questionnaire_response_sent_patient_id_in_redirect_url(
-            self, mockCheckRequiredFields, mockServer):
-        mockServer.return_value.get_session_key.return_value = 'abc'
+    def _set_mocks_questionnaire_response(self, mockServer):
+        token_mock = 'abc'
+        mockServer.return_value.get_session_key.return_value = 'ldhfslhdf'
         mockServer.return_value.get_summary.return_value = 1
         mockServer.return_value.add_participants.return_value = [
-            {'token': 'abc', 'tid': 1}
+            {'token': token_mock, 'tid': 1}
         ]
-        mockCheckRequiredFields.return_value = True
+        mockServer.return_value.get_participant_properties.return_value = {
+            'token': token_mock}
 
-        response = self.client.post(
-            reverse('subject_questionnaire_response',
-                    kwargs={
-                        'group_id':  self.group.id,
-                        'subject_id': self.subject_of_group.subject_id,
-                        'questionnaire_id': self.component_config.id
-                    }),
-            data={'action': 'save', 'date': datetime.now().strftime(
-                '%d/%m/%Y'), })
-
-        redirect_url = response.context['URL']
-        self.assertIn(str(self.patient.id), redirect_url)
-
-    def test_create_questionnaire_response_does_not_display_fill_date_input_field(self):
-        # By now this test is contemplated by
-        # patient.tests.test_views.QuestionnaireFillTest.test_create_entrance_evaluation_response_does_not_display_fill_date_input_field
-        pass
+        return token_mock

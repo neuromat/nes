@@ -1050,7 +1050,8 @@ class ComponentConfiguration(models.Model):
 
 
 class Group(models.Model):
-    experiment = models.ForeignKey(Experiment, null=False, blank=False, related_name='groups')
+    experiment = models.ForeignKey(
+        Experiment, null=False, blank=False, related_name='groups')
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)
@@ -1211,14 +1212,13 @@ class DataCollection(models.Model):
 class QuestionnaireResponse(DataCollection):
     token_id = models.IntegerField(null=False)
     questionnaire_responsible = models.ForeignKey(
-        User, null=False, related_name="+")
+        User, null=False, related_name='+')
     history = HistoricalRecords()
-    is_completed = models.CharField(max_length=50, default="")
+    is_completed = models.CharField(max_length=50, default='')
 
     class Meta:
         permissions = (
-            ("view_questionnaireresponse", "Can view questionnaire response"),
-        )
+            ('view_questionnaireresponse', 'Can view questionnaire response'),)
 
     @property
     def _history_user(self):
@@ -1518,7 +1518,8 @@ class ScheduleOfSending(models.Model):
         ("sent", _("sent")),
         ("error_sending", _("error sending")),
     )
-    experiment = models.ForeignKey(Experiment, related_name='schedule_of_sending')
+    experiment = models.ForeignKey(
+        Experiment, related_name='schedule_of_sending')
     schedule_datetime = models.DateTimeField(auto_now_add=True)
     responsible = models.ForeignKey(User)
     status = models.CharField(max_length=50, choices=SCHEDULE_STATUS_OPTIONS)
