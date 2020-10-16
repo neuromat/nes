@@ -1376,7 +1376,8 @@ def search_diagnoses(request):
 def select_experiments_by_study(request, study_id):
     research_project = ResearchProject.objects.filter(pk=study_id)
 
-    experiment_list = Experiment.objects.filter(research_project=research_project)
+    experiment_list = Experiment.objects.filter(
+        research_project=research_project)
 
     json_experiment_list = serializers.serialize('json', experiment_list)
 
