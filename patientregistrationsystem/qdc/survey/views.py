@@ -626,7 +626,7 @@ def get_responses(survey):
 
 
 def update_acquisitiondate(tokens, ls_responses, nes_responses):
-    """Acquisition date from LimeSurvey may be in worng format. So add a try
+    """Acquisition date from LimeSurvey may be in wrong format. So add a try
     block.
     :param tokens: list. Tokens from LimeSurvey
     :param ls_responses: string. Responses from LimeSurvey in csv format
@@ -749,8 +749,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
     surveys = Questionnaires()
     token = surveys.get_participant_properties(
-        lime_survey_id, token_id, "token"
-    )
+        lime_survey_id, token_id, 'token')
     question_properties = []
     groups = surveys.list_groups(lime_survey_id)
 
@@ -1070,25 +1069,23 @@ def limesurvey_available(surveys):
     return surveys.session_key
 
 
-def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_code):
+def get_questionnaire_language(
+        questionnaire_lime_survey, questionnaire_id, language_code):
 
     language = "pt-BR"
 
     if questionnaire_lime_survey.session_key:
-
-        # defining language to be showed
-        result = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+        result = questionnaire_lime_survey.get_survey_languages(
+            questionnaire_id)
         if result is None:
             return Questionnaires.ERROR_CODE
 
         # language to be showed can be the base language, or...
         if "language" in result:
-
             language = result['language']
-
             # ...can be one of the additional languages
-            if language.lower() != language_code.lower() and result['additional_languages']:
-
+            if language.lower() != language_code.lower() \
+                    and result['additional_languages']:
                 # search for the right language in addional languages,
                 # considering that the LimeSurvey uses upper case in the
                 # two-letter language code, like en-US and pt-BR.

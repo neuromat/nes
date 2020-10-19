@@ -182,9 +182,11 @@ class ABCSearchEngine(ABC):
         :param survey_id: survey ID
         :param token_id: token ID
         :param prop: property name
-        :return: on success, dict with value of a determined property, else dict with error status
+        :return: on success, dict with value of a determined property,
+        else dict with error status
         """
-        result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
+        result = self.server.get_participant_properties(
+            self.session_key, survey_id, token_id, {'method': prop})
 
         return result.get(prop) if 'status' not in result else None
 
@@ -195,7 +197,8 @@ class ABCSearchEngine(ABC):
         :return: True if the survey has token table; False, if not.
         """
 
-        result = self.server.get_summary(self.session_key, sid, "token_completed")
+        result = self.server.get_summary(
+            self.session_key, sid, "token_completed")
         return isinstance(result, int)
 
     @abstractmethod
@@ -557,8 +560,10 @@ class Questionnaires(ABCSearchEngine):
     def activate_tokens(self, sid):
         return super(Questionnaires, self).activate_tokens(sid)
 
-    def get_responses_by_token(self, sid, token, language=None, doctype='csv', fields=[]):
-        return super(Questionnaires, self).get_responses_by_token(sid, token, language, doctype, fields)
+    def get_responses_by_token(
+            self, sid, token, language=None, doctype='csv', fields=[]):
+        return super(Questionnaires, self).get_responses_by_token(
+            sid, token, language, doctype, fields)
 
     def get_responses(self, sid, language, response_type='short', fields=None, heading_type='code'):
         return super(Questionnaires, self).get_responses(sid, language, response_type, fields, heading_type)

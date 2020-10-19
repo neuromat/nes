@@ -29,7 +29,8 @@ from patient.models import Patient, Telephone, SocialDemographicData, SocialHist
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
-from survey.views import get_questionnaire_responses, check_limesurvey_access, get_questionnaire_language
+from survey.views import get_questionnaire_responses, check_limesurvey_access, \
+    get_questionnaire_language, csv_to_list
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -52,13 +53,16 @@ def patient_view(request, patient_id):
                 patient.save()
             elif request.POST['action'] == "show_previous":
                 redirect_url = reverse("patient_view", args=(patient_id,))
-                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(int(current_tab) - 1))
+                return HttpResponseRedirect(
+                    redirect_url + "?currentTab=" + str(int(current_tab) - 1))
             elif request.POST['action'] == "show_next":
                 redirect_url = reverse("patient_view", args=(patient_id,))
-                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(int(current_tab) + 1))
+                return HttpResponseRedirect(
+                    redirect_url + "?currentTab=" + str(int(current_tab) + 1))
             else:
                 redirect_url = reverse("patient_edit", args=(patient_id,))
-                return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
+                return HttpResponseRedirect(
+                    redirect_url + "?currentTab=" + current_tab)
 
         return HttpResponseRedirect(redirect_url)
 
@@ -71,14 +75,16 @@ def patient_view(request, patient_id):
         if current_tab == '0':
             return patient_view_personal_data(request, patient, context)
         elif current_tab == '1':
-            return patient_view_social_demographic_data(request, patient, context)
+            return patient_view_social_demographic_data(
+                request, patient, context)
         elif current_tab == '2':
             return patient_view_social_history(request, patient, context)
         elif current_tab == '3':
             return patient_view_medical_record(request, patient, context)
         else:  # current_tab == '4':
             if request.user.has_perm('survey.view_survey'):
-                return patient_view_questionnaires(request, patient, context, False)
+                return patient_view_questionnaires(
+                    request, patient, context, False)
             else:
                 raise PermissionDenied
 
@@ -404,9 +410,6 @@ def patient_view_social_demographic_data(request, patient, context):
     for field in social_demographic_form.fields:
         social_demographic_form.fields[field].widget.attrs['disabled'] = True
 
-    # social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
-    #     attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
-
     context.update({
         'social_demographic_form': social_demographic_form,
         'code': patient.code
@@ -446,7 +449,7 @@ def patient_view_medical_record(request, patient, context):
 
 def patient_view_questionnaires(request, patient, context, is_update):
 
-    if is_update and request.method == "POST":
+    if is_update and request.method == 'POST':
         return finish_handling_post(request, patient.id, 4)
 
     surveys = Questionnaires()
@@ -458,11 +461,14 @@ def patient_view_questionnaires(request, patient, context, is_update):
     # First, add initial evaluation...
     for initial_evaluation in initial_evaluation_list:
 
-        patient_questionnaires_data_dictionary[initial_evaluation.lime_survey_id] = \
+        patient_questionnaires_data_dictionary[
+            initial_evaluation.lime_survey_id] = \
             {
                 'is_initial_evaluation': True,
                 'survey_id': initial_evaluation.pk,
-                'questionnaire_title': find_questionnaire_name(initial_evaluation, language_code)["name"],
+                'questionnaire_title':
+                    find_questionnaire_name(
+                        initial_evaluation, language_code)['name'],
                 'questionnaire_responses': []
             }
 
@@ -488,12 +494,14 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
         if patient_questionnaire_response.is_completed == 'N' \
                 or patient_questionnaire_response.is_completed == '':
-            is_completed = surveys.get_participant_properties(
-                limesurvey_id, patient_questionnaire_response.token_id,
-                'completed') or ''
+            update_completed_status(
+                limesurvey_id, patient_questionnaire_response)
 
-            patient_questionnaire_response.is_completed = is_completed
-            patient_questionnaire_response.save()
+        if patient_questionnaire_response.is_completed != 'N' \
+                and patient_questionnaire_response.is_completed != '':
+            update_acquisition_date(
+                limesurvey_id, patient_questionnaire_response,
+                request.LANGUAGE_CODE)
 
         response_result = patient_questionnaire_response.is_completed
 
@@ -503,7 +511,7 @@ def patient_view_questionnaires(request, patient, context, is_update):
                 'questionnaire_response': patient_questionnaire_response,
                 'token_id': patient_questionnaire_response.token_id,
                 'completed': None if response_result is None
-                else response_result != "N" and response_result != ""
+                else response_result != 'N' and response_result != ''
             })
 
     patient_questionnaires_data_list = []
@@ -514,10 +522,12 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
     # Sorting by questionnaire_title and is_initial_evaluation (reversed),
     # where is_initial_evaluation is more relevant.
-    patient_questionnaires_data_list = \
-        sorted(patient_questionnaires_data_list, key=itemgetter('questionnaire_title'))
-    patient_questionnaires_data_list = \
-        sorted(patient_questionnaires_data_list, key=itemgetter('is_initial_evaluation'), reverse=True)
+    patient_questionnaires_data_list = sorted(
+        patient_questionnaires_data_list,
+        key=itemgetter('questionnaire_title'))
+    patient_questionnaires_data_list = sorted(
+        patient_questionnaires_data_list,
+        key=itemgetter('is_initial_evaluation'), reverse=True)
 
     additional_survey_list = []
     if is_update:
@@ -565,6 +575,38 @@ def patient_view_questionnaires(request, patient, context, is_update):
     })
 
     return render(request, "patient/register_questionnaires.html", context)
+
+
+def update_completed_status(limesurvey_id, patient_questionnaire_response):
+    surveys = Questionnaires()
+
+    is_completed = surveys.get_participant_properties(
+        limesurvey_id, patient_questionnaire_response.token_id,
+        'completed') or ''
+
+    patient_questionnaire_response.is_completed = is_completed
+    patient_questionnaire_response.save()
+
+    surveys.release_session_key()
+
+
+def update_acquisition_date(limesurvey_id, questionnaire_response, language):
+    surveys = Questionnaires()
+
+    token = surveys.get_participant_properties(
+        limesurvey_id, questionnaire_response.token_id, 'token')
+
+    language = get_questionnaire_language(
+        surveys, questionnaire_response.survey.lime_survey_id, language)
+    responses = surveys.get_responses_by_token(limesurvey_id, token, language)
+    responses_list = csv_to_list(responses)
+    new_date = datetime.datetime.strptime(
+        responses_list[0]['acquisitiondate'],
+        '%Y-%m-%d %H:%M:%S').date()
+    questionnaire_response.date = new_date
+    questionnaire_response.save()
+
+    surveys.release_session_key()
 
 
 @login_required
@@ -772,7 +814,8 @@ def medical_record_update(request, patient_id, record_id, template_name="patient
                     return HttpResponseRedirect(redirect_url + "?status=edit")
 
                 except ValueError:
-                    messages.error(request, _("Incorrect date. Use format: mm/dd/yyyy"))
+                    messages.error(
+                        request, _("Incorrect date. Use format: mm/dd/yyyy"))
 
         return render(request, template_name,
                       {'patient': patient,
