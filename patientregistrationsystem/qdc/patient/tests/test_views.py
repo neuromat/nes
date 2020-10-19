@@ -79,7 +79,7 @@ class QuestionnaireFillTest(TestCase):
     def test_view_questionnaires_updates_acquisition_date_for_completed_fills(
             self, mockServer):
         mockServer.return_value.get_participant_properties.return_value = \
-            {'completed': '2018-05-15 15:51'}
+            {'token': 'abc', 'completed': '2018-05-15 15:51'}
         # 2019-01-03 00:00:00
         mockServer.return_value.export_responses_by_token.return_value = \
             'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'

@@ -177,7 +177,6 @@ class ABCSearchEngine(ABC):
 
     @abstractmethod
     def get_participant_properties(self, survey_id, token_id, prop):
-        # TODO: can make prop=null to return all attributes
         """
         :param survey_id: survey ID
         :param token_id: token ID
@@ -185,10 +184,20 @@ class ABCSearchEngine(ABC):
         :return: on success, dict with value of a determined property,
         else dict with error status
         """
-        result = self.server.get_participant_properties(
-            self.session_key, survey_id, token_id, {'method': prop})
+        # Backward compatibility with last method signature.
+        # TODO: refactor the code and remove this if
+        if isinstance(prop, str):
+            prop = [prop]
 
-        return result.get(prop) if 'status' not in result else None
+        result = self.server.get_participant_properties(
+            self.session_key, survey_id, token_id, prop)
+
+        # This if-else for backward compatibility with last method signature
+        # TODO: refactor the code and remove this if-else
+        if prop is not None and len(prop) == 1:
+            return result.get(prop[0]) if 'status' not in result else None
+        else:
+            return result if 'status' not in result else None
 
     @abstractmethod
     def survey_has_token_table(self, sid):
@@ -539,8 +548,9 @@ class Questionnaires(ABCSearchEngine):
     def get_survey_languages(self, sid):
         return super(Questionnaires, self).get_survey_languages(sid)
 
-    def get_participant_properties(self, survey_id, token_id, prop):
-        return super(Questionnaires, self).get_participant_properties(survey_id, token_id, prop)
+    def get_participant_properties(self, survey_id, token_id, prop=None):
+        return super(Questionnaires, self).get_participant_properties(
+            survey_id, token_id, prop)
 
     def get_survey_title(self, sid, language=None):
         return super(Questionnaires, self).get_survey_title(sid, language)

@@ -17,15 +17,17 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.core.cache import cache
 
-from experiment.models import Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse, \
-    Questionnaire
+from experiment.models import Subject, SubjectOfGroup, \
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, Questionnaire
 from experiment.views import find_questionnaire_name
 
 from patient.forms import QuestionnaireResponseForm
-from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm, SocialHistoryDataForm, \
-    ComplementaryExamForm, ExamFileForm
-from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
-    ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam, QuestionnaireResponse
+from patient.forms import PatientForm, TelephoneForm, \
+    SocialDemographicDataForm, SocialHistoryDataForm, ComplementaryExamForm,\
+    ExamFileForm
+from patient.models import Patient, Telephone, SocialDemographicData,\
+    SocialHistoryData, MedicalRecordData, ClassificationOfDiseases, Diagnosis,\
+    ExamFile, ComplementaryExam, QuestionnaireResponse
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -492,16 +494,16 @@ def patient_view_questionnaires(request, patient, context, is_update):
                     'questionnaire_responses': []
                 }
 
-        if patient_questionnaire_response.is_completed == 'N' \
-                or patient_questionnaire_response.is_completed == '':
-            update_completed_status(
-                limesurvey_id, patient_questionnaire_response)
+        properties = surveys.get_participant_properties(
+            limesurvey_id, patient_questionnaire_response.token_id)
 
-        if patient_questionnaire_response.is_completed != 'N' \
-                and patient_questionnaire_response.is_completed != '':
-            update_acquisition_date(
-                limesurvey_id, patient_questionnaire_response,
-                request.LANGUAGE_CODE)
+        update_completed_status(
+            limesurvey_id, properties['completed'],
+            patient_questionnaire_response)
+        update_acquisition_date(
+            limesurvey_id, properties['token'],
+            patient_questionnaire_response,
+            request.LANGUAGE_CODE)
 
         response_result = patient_questionnaire_response.is_completed
 
@@ -577,36 +579,31 @@ def patient_view_questionnaires(request, patient, context, is_update):
     return render(request, "patient/register_questionnaires.html", context)
 
 
-def update_completed_status(limesurvey_id, patient_questionnaire_response):
-    surveys = Questionnaires()
-
-    is_completed = surveys.get_participant_properties(
-        limesurvey_id, patient_questionnaire_response.token_id,
-        'completed') or ''
-
-    patient_questionnaire_response.is_completed = is_completed
-    patient_questionnaire_response.save()
-
-    surveys.release_session_key()
+def update_completed_status(
+        limesurvey_id, is_completed, patient_questionnaire_response):
+    if patient_questionnaire_response.is_completed == 'N' \
+            or patient_questionnaire_response.is_completed == '':
+        patient_questionnaire_response.is_completed = is_completed
+        patient_questionnaire_response.save()
 
 
-def update_acquisition_date(limesurvey_id, questionnaire_response, language):
-    surveys = Questionnaires()
+def update_acquisition_date(
+        limesurvey_id, token, questionnaire_response, language):
+    if questionnaire_response.is_completed != 'N' \
+            and questionnaire_response.is_completed != '':
+        surveys = Questionnaires()
 
-    token = surveys.get_participant_properties(
-        limesurvey_id, questionnaire_response.token_id, 'token')
+        language = get_questionnaire_language(
+            surveys, questionnaire_response.survey.lime_survey_id, language)
+        responses = surveys.get_responses_by_token(
+            limesurvey_id, token, language)
+        responses_list = csv_to_list(responses)
+        new_date = datetime.datetime.strptime(
+            responses_list[0]['acquisitiondate'], '%Y-%m-%d %H:%M:%S').date()
+        questionnaire_response.date = new_date
+        questionnaire_response.save()
 
-    language = get_questionnaire_language(
-        surveys, questionnaire_response.survey.lime_survey_id, language)
-    responses = surveys.get_responses_by_token(limesurvey_id, token, language)
-    responses_list = csv_to_list(responses)
-    new_date = datetime.datetime.strptime(
-        responses_list[0]['acquisitiondate'],
-        '%Y-%m-%d %H:%M:%S').date()
-    questionnaire_response.date = new_date
-    questionnaire_response.save()
-
-    surveys.release_session_key()
+        surveys.release_session_key()
 
 
 @login_required
