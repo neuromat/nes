@@ -19,7 +19,6 @@ from django.core.cache import cache
 
 from experiment.models import Subject, SubjectOfGroup, \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, Questionnaire
-from experiment.views import find_questionnaire_name
 
 from patient.forms import QuestionnaireResponseForm
 from patient.forms import PatientForm, TelephoneForm, \
@@ -31,6 +30,7 @@ from patient.models import Patient, Telephone, SocialDemographicData,\
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
+from survey.survey_utils import find_questionnaire_name
 from survey.views import get_questionnaire_responses, check_limesurvey_access, \
     get_questionnaire_language, csv_to_list
 
@@ -462,10 +462,8 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
     # First, add initial evaluation...
     for initial_evaluation in initial_evaluation_list:
-
         patient_questionnaires_data_dictionary[
-            initial_evaluation.lime_survey_id] = \
-            {
+            initial_evaluation.lime_survey_id] = {
                 'is_initial_evaluation': True,
                 'survey_id': initial_evaluation.pk,
                 'questionnaire_title':
@@ -475,43 +473,41 @@ def patient_view_questionnaires(request, patient, context, is_update):
             }
 
     # ...after, add questionnaire responses
-    patient_questionnaire_response_list = \
+    questionnaire_responses = \
         QuestionnaireResponse.objects.filter(patient=patient).order_by('date')
 
-    for patient_questionnaire_response in patient_questionnaire_response_list:
-
-        limesurvey_id = patient_questionnaire_response.survey.lime_survey_id
-
+    for questionnaire_response in questionnaire_responses:
+        limesurvey_id = questionnaire_response.survey.lime_survey_id
         if limesurvey_id not in patient_questionnaires_data_dictionary:
-            patient_questionnaires_data_dictionary[limesurvey_id] = \
-                {
+            patient_questionnaires_data_dictionary[limesurvey_id] = {
                     'is_initial_evaluation': False,
-                    'survey_id': patient_questionnaire_response.survey.pk,
+                    'survey_id': questionnaire_response.survey.pk,
                     'questionnaire_title':
                         find_questionnaire_name(
-                            patient_questionnaire_response.survey,
+                            questionnaire_response.survey,
                             language_code)["name"],
                     'questionnaire_responses': []
                 }
 
         properties = surveys.get_participant_properties(
-            limesurvey_id, patient_questionnaire_response.token_id)
+            limesurvey_id, questionnaire_response.token_id)
 
         update_completed_status(
             limesurvey_id, properties['completed'],
-            patient_questionnaire_response)
+            questionnaire_response)
+        language = get_questionnaire_language(
+            surveys, limesurvey_id, language_code)
         update_acquisition_date(
             limesurvey_id, properties['token'],
-            patient_questionnaire_response,
-            request.LANGUAGE_CODE)
+            questionnaire_response, language)
 
-        response_result = patient_questionnaire_response.is_completed
+        response_result = questionnaire_response.is_completed
 
         patient_questionnaires_data_dictionary[
             limesurvey_id
         ]['questionnaire_responses'].append({
-                'questionnaire_response': patient_questionnaire_response,
-                'token_id': patient_questionnaire_response.token_id,
+                'questionnaire_response': questionnaire_response,
+                'token_id': questionnaire_response.token_id,
                 'completed': None if response_result is None
                 else response_result != 'N' and response_result != ''
             })
@@ -534,7 +530,10 @@ def patient_view_questionnaires(request, patient, context, is_update):
     additional_survey_list = []
     if is_update:
         for survey in Survey.objects.exclude(
-                lime_survey_id__in=[item['limesurvey_id'] for item in patient_questionnaires_data_list]):
+                lime_survey_id__in=[
+                    item['limesurvey_id']
+                    for item in patient_questionnaires_data_list
+                ]):
             additional_survey_list.append({
                 'id': survey.id, 'lime_survey_id': survey.lime_survey_id,
                 'title': find_questionnaire_name(survey, language_code)["name"]
@@ -545,27 +544,38 @@ def patient_view_questionnaires(request, patient, context, is_update):
     subject = Subject.objects.filter(patient=patient)
     subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
     for subject_of_group in subject_of_group_list:
-        experiment_questionnaire_response_list = \
-            ExperimentQuestionnaireResponse.objects.filter(subject_of_group=subject_of_group)
-        for questionnaire_response in experiment_questionnaire_response_list:
-            component_configuration = questionnaire_response.data_configuration_tree.component_configuration
-            limesurvey_id = component_configuration.component.questionnaire.survey.lime_survey_id
-            if questionnaire_response.is_completed == "N" or questionnaire_response.is_completed == "":
+        experiment_questionnaire_responses = \
+            ExperimentQuestionnaireResponse.objects.filter(
+                subject_of_group=subject_of_group)
+        for questionnaire_response in experiment_questionnaire_responses:
+            component_configuration = \
+                questionnaire_response.data_configuration_tree.component_configuration
+            limesurvey_id = \
+                component_configuration.component.questionnaire.survey.lime_survey_id
+
+            if questionnaire_response.is_completed == 'N' \
+                    or questionnaire_response.is_completed == '':
                 is_completed = surveys.get_participant_properties(
-                    limesurvey_id, questionnaire_response.token_id, "completed") \
-                               or ""
+                    limesurvey_id, questionnaire_response.token_id,
+                    'completed') or ''
                 questionnaire_response.is_completed = is_completed
                 questionnaire_response.save()
+
             response_result = questionnaire_response.is_completed
+
             questionnaires_data.append({
-                    'research_project_title': subject_of_group.group.experiment.research_project.title,
-                    'experiment_title': subject_of_group.group.experiment.title,
+                    'research_project_title':
+                        subject_of_group.group.experiment.research_project.title,
+                    'experiment_title':
+                        subject_of_group.group.experiment.title,
                     'group_title': subject_of_group.group.title,
                     'questionnaire_title': find_questionnaire_name(
-                            component_configuration.component.questionnaire.survey, language_code)["name"],
+                            component_configuration.component.questionnaire.survey,
+                        language_code)["name"],
                     'questionnaire_response': questionnaire_response,
                     'token_id': questionnaire_response.token_id,
-                    'completed': None if response_result is None else response_result != "N" and response_result != ""
+                    'completed': None if response_result is None
+                    else response_result != 'N' and response_result != ''
                 })
     surveys.release_session_key()
     context.update({
@@ -580,11 +590,11 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
 
 def update_completed_status(
-        limesurvey_id, is_completed, patient_questionnaire_response):
-    if patient_questionnaire_response.is_completed == 'N' \
-            or patient_questionnaire_response.is_completed == '':
-        patient_questionnaire_response.is_completed = is_completed
-        patient_questionnaire_response.save()
+        limesurvey_id, is_completed, questionnaire_response):
+    if questionnaire_response.is_completed == 'N' \
+            or questionnaire_response.is_completed == '':
+        questionnaire_response.is_completed = is_completed
+        questionnaire_response.save()
 
 
 def update_acquisition_date(
@@ -593,8 +603,6 @@ def update_acquisition_date(
             and questionnaire_response.is_completed != '':
         surveys = Questionnaires()
 
-        language = get_questionnaire_language(
-            surveys, questionnaire_response.survey.lime_survey_id, language)
         responses = surveys.get_responses_by_token(
             limesurvey_id, token, language)
         responses_list = csv_to_list(responses)
@@ -694,18 +702,23 @@ def search_cid10_ajax(request):
         patient_id = request.POST['patient_id']
 
         if search_text:
-            cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
-                                                                  Q(description__icontains=search_text) |
-                                                                  Q(code__icontains=search_text)).order_by("code")
+            cid_10_list = ClassificationOfDiseases.objects.filter(
+                Q(abbreviated_description__icontains=search_text) |
+                Q(description__icontains=search_text) |
+                Q(code__icontains=search_text)).order_by("code")
 
-        return render_to_response('patient/ajax_cid10.html', {'cid_10_list': cid_10_list,
-                                                              'medical_record': medical_record,
-                                                              'patient_id': patient_id})
+        return render_to_response(
+            'patient/ajax_cid10.html', {
+                'cid_10_list': cid_10_list,
+                'medical_record': medical_record,
+                'patient_id': patient_id
+            })
 
 
 @login_required
 @permission_required('patient.add_medicalrecorddata')
-def medical_record_create(request, patient_id, template_name='patient/medical_record.html'):
+def medical_record_create(
+        request, patient_id, template_name='patient/medical_record.html'):
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
     if current_patient.name:
@@ -713,16 +726,16 @@ def medical_record_create(request, patient_id, template_name='patient/medical_re
     else:
         patient = current_patient.code
 
-    return render(request, template_name,
-                  {'patient': patient,
-                   'patient_id': patient_id,
-                   'creating': True,
-                   'editing': True})
+    return render(request, template_name, {
+        'patient': patient, 'patient_id': patient_id, 'creating': True,
+        'editing': True
+    })
 
 
 @login_required
 @permission_required('patient.view_medicalrecorddata')
-def medical_record_view(request, patient_id, record_id, template_name="patient/medical_record.html"):
+def medical_record_view(
+        request, patient_id, record_id, template_name="patient/medical_record.html"):
     status = ""
     if 'status' in request.GET:
         status = request.GET['status']
@@ -737,29 +750,32 @@ def medical_record_view(request, patient_id, record_id, template_name="patient/m
 
     if medical_record:
 
-        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id).order_by('classification_of_diseases')
+        diagnosis_list = Diagnosis.objects.filter(
+            medical_record_data=record_id).order_by('classification_of_diseases')
         complementary_exams_list = []
         for diagnosis in diagnosis_list:
-            complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
+            complementary_exams_list.append(ComplementaryExam.objects.filter(
+                diagnosis=diagnosis.pk))
 
-        lists_diagnosis_exams = list(zip(diagnosis_list, complementary_exams_list))
+        lists_diagnosis_exams = list(
+            zip(diagnosis_list, complementary_exams_list))
 
-        return render(request, template_name,
-                      {'patient': patient,
-                       'patient_id': patient_id,
-                       'record_id': medical_record.id,
-                       'object_list': diagnosis_list,
-                       'lists_diagnosis_exams': lists_diagnosis_exams,
-                       'complementary_exams_list': complementary_exams_list,
-                       'record_date': medical_record.record_date,
-                       'record_responsible': medical_record.record_responsible,
-                       'editing': False,
-                       'status': status})
+        return render(request, template_name, {
+            'patient': patient, 'patient_id': patient_id,
+            'record_id': medical_record.id, 'object_list': diagnosis_list,
+            'lists_diagnosis_exams': lists_diagnosis_exams,
+            'complementary_exams_list': complementary_exams_list,
+            'record_date': medical_record.record_date,
+            'record_responsible': medical_record.record_responsible,
+            'editing': False,
+            'status': status
+        })
 
 
 @login_required
 @permission_required('patient.add_medicalrecorddata')
-def medical_record_update(request, patient_id, record_id, template_name="patient/medical_record.html"):
+def medical_record_update(
+        request, patient_id, record_id, template_name="patient/medical_record.html"):
     status = ""
     if 'status' in request.GET:
         status = request.GET['status']
@@ -775,13 +791,16 @@ def medical_record_update(request, patient_id, record_id, template_name="patient
         patient = current_patient.code
 
     if medical_record:
-        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id).order_by('classification_of_diseases')
+        diagnosis_list = Diagnosis.objects.filter(
+            medical_record_data=record_id).order_by('classification_of_diseases')
         complementary_exams_list = []
 
         for diagnosis in diagnosis_list:
-            complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
+            complementary_exams_list.append(
+                ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
 
-        lists_diagnosis_exams = list(zip(diagnosis_list, complementary_exams_list))
+        lists_diagnosis_exams = list(
+            zip(diagnosis_list, complementary_exams_list))
 
         if request.method == "POST":
 
@@ -795,37 +814,40 @@ def medical_record_update(request, patient_id, record_id, template_name="patient
                 diagnosis_id = int(request.POST['action'][7:])
                 diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
 
-                diagnosis.description = request.POST['description-' + str(diagnosis_id)]
+                diagnosis.description = \
+                    request.POST['description-' + str(diagnosis_id)]
                 date_text = request.POST['date-' + str(diagnosis_id)]
 
                 try:
                     if date_text:
-                        diagnosis.date = datetime.datetime.strptime(date_text, _('%m/%d/%Y'))
+                        diagnosis.date = datetime.datetime.strptime(
+                            date_text, _('%m/%d/%Y'))
                     else:
                         diagnosis.date = None
 
                     diagnosis.save()
-                    messages.success(request, _('Diagnosis details successfully changed.'))
+                    messages.success(
+                        request, _('Diagnosis details successfully changed.'))
 
-                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
-                    return HttpResponseRedirect(redirect_url + "?status=edit")
+                    redirect_url = reverse(
+                        'medical_record_edit', args=(patient_id, record_id))
+                    return HttpResponseRedirect(redirect_url + '?status=edit')
 
                 except ValueError:
                     messages.error(
-                        request, _("Incorrect date. Use format: mm/dd/yyyy"))
+                        request, _('Incorrect date. Use format: mm/dd/yyyy'))
 
-        return render(request, template_name,
-                      {'patient': patient,
-                       'patient_id': patient_id,
-                       'record_id': medical_record.id,
-                       'object_list': diagnosis_list,
-                       'lists_diagnosis_exams': lists_diagnosis_exams,
-                       'complementary_exams_list': complementary_exams_list,
-                       'record_date': medical_record.record_date,
-                       'record_responsible': medical_record.record_responsible,
-                       'editing': True,
-                       'status': status,
-                       'currentTab': current_tab})
+        return render(request, template_name, {
+            'patient': patient, 'patient_id': patient_id,
+            'record_id': medical_record.id, 'object_list': diagnosis_list,
+            'lists_diagnosis_exams': lists_diagnosis_exams,
+            'complementary_exams_list': complementary_exams_list,
+            'record_date': medical_record.record_date,
+            'record_responsible': medical_record.record_responsible,
+            'editing': True,
+            'status': status,
+            'currentTab': current_tab
+        })
 
 
 @login_required
@@ -845,14 +867,21 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
     medical_record = MedicalRecordData.objects.get(pk=medical_record_id)
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
 
-    if Diagnosis.objects.filter(medical_record_data=medical_record).filter(classification_of_diseases=cid10):
-        messages.warning(request, _('Diagnosis has already exist in this medical assessment.'))
+    if Diagnosis.objects.filter(
+            medical_record_data=medical_record).filter(
+        classification_of_diseases=cid10):
+        messages.warning(
+            request, _('Diagnosis has already exist in this medical assessment.'))
     else:
-        diagnosis = Diagnosis(medical_record_data=medical_record, classification_of_diseases=cid10)
+        diagnosis = Diagnosis(
+            medical_record_data=medical_record,
+            classification_of_diseases=cid10)
         diagnosis.save()
 
-    redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id,))
-    return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
+    redirect_url = reverse(
+        'medical_record_edit', args=(patient_id, medical_record_id,))
+
+    return HttpResponseRedirect(redirect_url + '?status=edit&currentTab=3')
 
 
 @login_required
@@ -867,11 +896,13 @@ def medical_record_create_diagnosis_create(request, patient_id, cid10_id):
 
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
 
-    diagnosis = Diagnosis(medical_record_data=new_medical_record, classification_of_diseases=cid10)
+    diagnosis = Diagnosis(
+        medical_record_data=new_medical_record, classification_of_diseases=cid10)
     diagnosis.save()
 
-    redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id,))
-    return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
+    redirect_url = reverse(
+        'medical_record_edit', args=(patient_id, new_medical_record.id,))
+    return HttpResponseRedirect(redirect_url + '?status=edit&currentTab=3')
 
 
 @login_required
@@ -879,7 +910,8 @@ def medical_record_create_diagnosis_create(request, patient_id, cid10_id):
 def diagnosis_delete(request, patient_id, diagnosis_id):
     exams = ComplementaryExam.objects.filter(diagnosis=diagnosis_id)
     if exams:
-        messages.error(request, _('Diagnosis can not be deleted. You must delete exams before.'))
+        messages.error(
+            request, _('Diagnosis can not be deleted. You must delete exams before.'))
         diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
     else:
         diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
@@ -890,16 +922,19 @@ def diagnosis_delete(request, patient_id, diagnosis_id):
     medical_record = MedicalRecordData.objects.get(pk=medical_record_id)
     if medical_record.diagnosis_set.count() == 0:
         medical_record.delete()
-        redirect_url = reverse("medical_record_new", args=(patient_id, ))
+        redirect_url = reverse('medical_record_new', args=(patient_id, ))
     else:
-        redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id, ))
+        redirect_url = reverse(
+            'medical_record_edit', args=(patient_id, medical_record_id, ))
 
-    return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
+    return HttpResponseRedirect(redirect_url + '?status=edit&currentTab=3')
 
 
 @login_required
 @permission_required('patient.add_medicalrecorddata')
-def exam_create(request, patient_id, record_id, diagnosis_id, template_name="patient/exams.html"):
+def exam_create(
+        request, patient_id, record_id, diagnosis_id,
+        template_name="patient/exams.html"):
     form = ComplementaryExamForm(request.POST or None)
 
     status = ""
@@ -1505,4 +1540,3 @@ def get_limesurvey_response_url(questionnaire_response):
     questionnaire_lime_survey.release_session_key()
 
     return redirect_url
-

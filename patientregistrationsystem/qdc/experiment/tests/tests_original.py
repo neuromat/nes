@@ -668,17 +668,13 @@ class ExperimentTest(TestCase):
 
 
 class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
-    lime_survey = None
 
     def setUp(self):
-        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        logged, self.user, self.factory = \
+            ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
-        # Conecta no Lime Survey
         self.lime_survey = Questionnaires()
-
-        # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
-        self.assertIsNotNone(self.lime_survey.session_key, 'Failed to connect LimeSurvey')
 
     def test_create_questionnaire_for_a_group(self):
         """Testa a criacao de um questionario para um dado grupo"""
@@ -725,125 +721,88 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
             status = self.lime_survey.delete_survey(sid)
             self.assertEqual(status, 'OK')
 
-    def test_list_questionnaire_of_a_group(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_list_questionnaire_of_a_group(self, mockServer):
         """Test exhibition of a questionnaire of a group"""
-
-        # Create a research project
+        mockServer.return_value.get_participant_properties.return_value = \
+            {'token': 'abc', 'completed': '2018-05-15 15:51'}
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
         research_project = ObjectsFactory.create_research_project()
-
-        # Criar um experimento mock para ser utilizado no teste
         experiment = ObjectsFactory.create_experiment(research_project)
-
-        # Create the root of the experimental protocol
         block = ObjectsFactory.create_block(Experiment.objects.first())
+        new_survey, created = Survey.objects.get_or_create(
+            lime_survey_id=LIME_SURVEY_ID)
 
-        # Using a known questionnaire at LiveSurvey to use in this test.
-        new_survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
-
-        # Create a questionnaire
         questionnaire = Questionnaire.objects.create(
             identification='Questionnaire',
             description='Questionnaire description',
             experiment=Experiment.objects.first(),
             component_type='questionnaire',
-            survey=new_survey
-        )
-        questionnaire.save()
+            survey=new_survey)
 
-        # Include the questionnaire in the root.
         component_configuration = ComponentConfiguration.objects.create(
-            name='ComponentConfiguration',
-            parent=block,
-            component=questionnaire
-        )
-        component_configuration.save()
-
+            name='ComponentConfiguration', parent=block,
+            component=questionnaire)
         data_configuration_tree = DataConfigurationTree.objects.create(
-            component_configuration=component_configuration
-        )
-        data_configuration_tree.save()
-
-        # Create a mock group
+            component_configuration=component_configuration)
         group = ObjectsFactory.create_group(experiment, block)
-
-        # Insert subject in the group
         util = UtilTests()
-        patient_mock = util.create_patient(changed_by=self.user)
+        patient = util.create_patient(changed_by=self.user)
+        subject = Subject(patient=patient)
+        subject.save()
 
-        subject_mock = Subject(patient=patient_mock)
-        subject_mock.save()
-
-        subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+        subject_group = SubjectOfGroup(subject=subject, group=group)
         subject_group.save()
 
         group.subjectofgroup_set.add(subject_group)
         experiment.save()
 
-        # Setting the response
         questionnaire_response = QuestionnaireResponse()
         questionnaire_response.data_configuration_tree = data_configuration_tree
-        # questionnaire_response.component_configuration = component_configuration
         questionnaire_response.subject_of_group = subject_group
         questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
         questionnaire_response.questionnaire_responsible = self.user
         questionnaire_response.date = datetime.datetime.now()
         questionnaire_response.save()
 
-        # Show questionnaire screen
-        response = self.client.get(reverse('questionnaire_view', args=(group.pk, component_configuration.pk)))
+        response = self.client.get(
+            reverse('questionnaire_view',
+                    args=(group.pk, component_configuration.pk)))
         self.assertEqual(response.status_code, 200)
 
     def test_questionnaire_response_view_response(self):
-        """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
-
-        # Create a research project
+        """Testa a visualizacao completa do questionario respondido no Lime
+        Survey
+        """
         research_project = ObjectsFactory.create_research_project()
-
-        # Create a mock experiment
         experiment = ObjectsFactory.create_experiment(research_project)
-
-        # Create the root of the experimental protocol
         block = ObjectsFactory.create_block(Experiment.objects.first())
+        new_survey, created = Survey.objects.get_or_create(
+            lime_survey_id=LIME_SURVEY_ID)
+        questionnaire = Questionnaire.objects.create(
+            identification='Questionnaire',
+            description='Questionnaire description',
+            experiment=Experiment.objects.first(),
+            component_type='questionnaire', survey=new_survey)
 
-        # Using a known questionnaire at LiveSurvey to use in this test.
-        new_survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
-
-        # Create a questionnaire
-        questionnaire = Questionnaire.objects.create(identification='Questionnaire',
-                                                     description='Questionnaire description',
-                                                     experiment=Experiment.objects.first(),
-                                                     component_type='questionnaire',
-                                                     survey=new_survey)
-        questionnaire.save()
-
-        # Include the questionnaire in the root.
         component_configuration = ComponentConfiguration.objects.create(
-            name='ComponentConfiguration',
-            parent=block,
-            component=questionnaire
-        )
-        component_configuration.save()
+            name='ComponentConfiguration', parent=block,
+            component=questionnaire)
 
         data_configuration_tree = DataConfigurationTree.objects.create(
-            component_configuration=component_configuration
-        )
-        data_configuration_tree.save()
-
-        # Create a mock group
+            component_configuration=component_configuration)
         group = ObjectsFactory.create_group(experiment, block)
 
-        # Create a subject to the experiment
         util = UtilTests()
         patient_mock = util.create_patient(changed_by=self.user)
         subject_mock = Subject.objects.create(patient=patient_mock)
         subject_group = SubjectOfGroup.objects.create(
-            subject=subject_mock, group=group
-        )
+            subject=subject_mock, group=group)
 
         group.subjectofgroup_set.add(subject_group)
         experiment.save()
 
-        # Setting the response
         questionnaire_response = QuestionnaireResponse()
         questionnaire_response.data_configuration_tree = data_configuration_tree
         questionnaire_response.subject_of_group = subject_group
