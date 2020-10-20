@@ -1417,17 +1417,23 @@ class QuestionnaireFormValidation(TestCase):
         """Test list of entrance evaluation of the entrance
         evaluation questionnaire type
         """
-        mockServer.return_value.get_session_key.return_value = 'gvq89d8y3nn8m9um5makg6qiixkqwai9'
-        mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Rapid Turn Test'}
+        mockServer.return_value.get_session_key.return_value = \
+            'gvq89d8y3nn8m9um5makg6qiixkqwai9'
+        mockServer.return_value.get_language_properties.return_value = {
+            'surveyls_title': 'Rapid Turn Test'
+        }
         mockServer.return_value.add_participants.return_value = [
             {
-                'completed': 'N', 'email': '', 'mpid': None, 'lastname': '', 'participant_id': None,
-                'token': 'xryiz4rvoh78z9v', 'usesleft': 1, 'remindercount': 0, 'remindersent': 'N', 'sent': 'N',
-                'language': None, 'emailstatus': 'OK', 'validfrom': None, 'tid': '4221', 'blacklisted': None,
+                'completed': 'N', 'email': '', 'mpid': None, 'lastname': '',
+                'participant_id': None, 'token': 'xryiz4rvoh78z9v',
+                'usesleft': 1, 'remindercount': 0, 'remindersent': 'N',
+                'sent': 'N', 'language': None, 'emailstatus': 'OK',
+                'validfrom': None, 'tid': '4221', 'blacklisted': None,
                 'firstname': '', 'validuntil': None
             }
         ]
-        mockServer.return_value.get_participant_properties.return_value = {'completed': 'N'}
+        mockServer.return_value.get_participant_properties.return_value = \
+            {'token': 'xryiz4rvoh78z9v', 'completed': 'N'}
 
         patient = self.util.create_patient(self.user)
 
@@ -1563,22 +1569,37 @@ class QuestionnaireFormValidation(TestCase):
         """Test delete from 2 views: update and view
         of the type: entrance evaluation questionnaire
         """
-        mockServer.return_value.get_session_key.return_value = 'smq6aggip5w97mccxhxete7fwfwfs6pr'
+        mockServer.return_value.get_session_key.return_value = \
+            'smq6aggip5w97mccxhxete7fwfwfs6pr'
         mockServer.return_value.add_participants.side_effect = [
             [{'token': 'HjZIlSstGrKqzmV', 'blacklisted': None,
-              'remindersent': 'N', 'email': '', 'mpid': None, 'remindercount': 0, 'lastname': '', 'language': None,
-              'firstname': '', 'validuntil': None, 'validfrom': None, 'completed': 'N', 'tid': '4228', 'sent': 'N',
+              'remindersent': 'N', 'email': '', 'mpid': None,
+              'remindercount': 0, 'lastname': '', 'language': None,
+              'firstname': '', 'validuntil': None, 'validfrom': None,
+              'completed': 'N', 'tid': '4228', 'sent': 'N',
               'usesleft': 1, 'emailstatus': 'OK', 'participant_id': None}],
-            [{'token': '81Um8LUYGob4f2p', 'blacklisted': None, 'remindersent': 'N', 'email': '', 'mpid': None,
-              'remindercount': 0, 'lastname': '', 'language': None, 'firstname': '', 'validuntil': None,
-              'validfrom': None, 'completed': 'N', 'tid': '4229', 'sent': 'N', 'usesleft': 1, 'emailstatus': 'OK',
-              'participant_id': None}]
+            [{'token': '81Um8LUYGob4f2p', 'blacklisted': None,
+              'remindersent': 'N', 'email': '', 'mpid': None,
+              'remindercount': 0, 'lastname': '', 'language': None,
+              'firstname': '', 'validuntil': None, 'validfrom': None,
+              'completed': 'N', 'tid': '4229', 'sent': 'N', 'usesleft': 1,
+              'emailstatus': 'OK', 'participant_id': None}]
         ]
 
-        mockServer.return_value.get_participant_properties.return_value = {'completed': 'N'}
-        mockServer.return_value.delete_participants.side_effect = [{'4228': 'Deleted'}, {'4229': 'Deleted'}]
-        mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Rapid Turn Test'}
-        mockServer.return_value.get_survey_properties.return_value = {'language': 'pt-BR', 'additional_languages': ''}
+        mockServer.return_value.get_participant_properties.return_value = {
+            'token': 'HjZIlSstGrKqzmV', 'completed': 'N'}
+        mockServer.return_value.delete_participants.side_effect = [
+            {'4228': 'Deleted'}, {'4229': 'Deleted'}
+        ]
+        mockServer.return_value.get_language_properties.return_value = {
+            'surveyls_title': 'Rapid Turn Test'
+        }
+        mockServer.return_value.get_survey_properties.return_value = {
+            'language': 'pt-BR', 'additional_languages': ''
+        }
+        # 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
 
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
@@ -1615,7 +1636,8 @@ class QuestionnaireFormValidation(TestCase):
         url2 = url1.replace('experiment', 'patient')
 
         self.data['action'] = 'remove'
-        response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
+        response = self.client.post(
+            url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 200)  # Now it is deleted
 
     @patch('survey.abc_search_engine.Server')
