@@ -95,16 +95,21 @@ def patient_view(request, patient_id):
 @permission_required('patient.add_patient')
 def patient_create(request, template_name="patient/register_personal_data.html"):
     patient_form = PatientForm(request.POST or None)
-    telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
+    telephone_inlineformset = inlineformset_factory(
+        Patient, Telephone, form=TelephoneForm)
 
-    if request.method == "POST":
-        patient_form.city = request.POST['city'] if 'city' in request.POST else ""
-        telephone_formset = telephone_inlineformset(request.POST, request.FILES)
+    if request.method == 'POST':
+        patient_form.city = request.POST['city'] \
+            if 'city' in request.POST \
+            else ''
+        telephone_formset = telephone_inlineformset(
+            request.POST, request.FILES)
 
         if patient_form.is_valid() and telephone_formset.is_valid():
             new_patient = patient_form.save(commit=False)
 
-            # Remove leading and trailing white spaces to avoid problems with homonym search.
+            # Remove leading and trailing white spaces to avoid problems with
+            # homonym search.
             if new_patient.name:
                 new_patient.name = new_patient.name.strip()
 
@@ -491,25 +496,26 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
         properties = surveys.get_participant_properties(
             limesurvey_id, questionnaire_response.token_id)
+        if properties:
+            update_completed_status(
+                limesurvey_id, properties['completed'],
+                questionnaire_response)
+            language = get_questionnaire_language(
+                surveys, limesurvey_id, language_code)
+            acquisitiondate_updated = update_acquisition_date(
+                limesurvey_id, properties['token'],
+                questionnaire_response, language)
 
-        update_completed_status(
-            limesurvey_id, properties['completed'],
-            questionnaire_response)
-        language = get_questionnaire_language(
-            surveys, limesurvey_id, language_code)
-        update_acquisition_date(
-            limesurvey_id, properties['token'],
-            questionnaire_response, language)
+            response_result = questionnaire_response.is_completed
 
-        response_result = questionnaire_response.is_completed
-
-        patient_questionnaires_data_dictionary[
-            limesurvey_id
-        ]['questionnaire_responses'].append({
+            patient_questionnaires_data_dictionary[
+                limesurvey_id
+            ]['questionnaire_responses'].append({
                 'questionnaire_response': questionnaire_response,
                 'token_id': questionnaire_response.token_id,
                 'completed': None if response_result is None
-                else response_result != 'N' and response_result != ''
+                else response_result != 'N' and response_result != '',
+                'acquisitiondate_updated': acquisitiondate_updated
             })
 
     patient_questionnaires_data_list = []
@@ -599,19 +605,26 @@ def update_completed_status(
 
 def update_acquisition_date(
         limesurvey_id, token, questionnaire_response, language):
+    updated = False
     if questionnaire_response.is_completed != 'N' \
             and questionnaire_response.is_completed != '':
         surveys = Questionnaires()
 
         responses = surveys.get_responses_by_token(
             limesurvey_id, token, language)
-        responses_list = csv_to_list(responses)
-        new_date = datetime.datetime.strptime(
-            responses_list[0]['acquisitiondate'], '%Y-%m-%d %H:%M:%S').date()
-        questionnaire_response.date = new_date
-        questionnaire_response.save()
+        if responses:
+            responses_list = csv_to_list(responses)
+            if responses_list[0]['acquisitiondate']:
+                new_date = datetime.datetime.strptime(
+                    responses_list[0]['acquisitiondate'], '%Y-%m-%d %H:%M:%S').date()
+                if questionnaire_response.date != new_date:
+                    questionnaire_response.date = new_date
+                    questionnaire_response.save()
+                    updated = True
 
-        surveys.release_session_key()
+            surveys.release_session_key()
+
+    return updated
 
 
 @login_required

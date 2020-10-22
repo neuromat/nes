@@ -188,6 +188,16 @@
                                                                     <span class="label label-default">{% trans "No status" %}</span>
                                                                 {% endif %}
                                                             </td>
+                                                            {% if response.acquisitiondate_updated %}
+                                                                <td>
+                                                                    <div
+                                                                            class="blink">
+                                                            <span class="label label-info"
+                                                            >
+                                                                {% trans 'Updated' %}</span>
+                                                                    </div>
+                                                                </td>
+                                                            {% endif %}
 
                                                         </tr>
                                                     {% endfor %}

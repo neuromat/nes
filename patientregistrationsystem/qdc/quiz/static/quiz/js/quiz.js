@@ -33,3 +33,13 @@ function jumpToElement(h) {
     window.scrollTo(0, top);
 }
 
+/**
+ * Use if you want to blink some html element.
+ * Give it the class blink.
+ */
+function blink() {
+    const updated = $('.blink');
+    updated.fadeOut(500);
+    updated.fadeIn(500);
+}
+setInterval(blink, 1000);
