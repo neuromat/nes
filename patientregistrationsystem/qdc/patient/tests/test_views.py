@@ -73,7 +73,7 @@ class QuestionnaireFillTest(TestCase):
             response = self.client.post(
                 url + "?origin=subject", data, follow=True)
 
-            self.assertIn(date_limesurvey, response.context['URL'])
+            self.assertIn('09-01-2014', response.context['URL'])
 
     @patch('survey.abc_search_engine.Server')
     def test_view_questionnaires_updates_response_date_for_completed_fills(

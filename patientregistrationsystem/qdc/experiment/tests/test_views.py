@@ -5349,7 +5349,7 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
                         }),
                 data={'action': 'save', 'date': date})
 
-            self.assertIn(date_limesurvey, response.context['URL'])
+            self.assertIn('09-24-2020', response.context['URL'])
 
     @patch('survey.abc_search_engine.Server')
     def test_GET_questionnaire_view_updates_response_date_for_completed_fills(
@@ -5563,7 +5563,7 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
                 self.component_config.component.survey.lime_survey_id,
                 token_mock,
                 str(self.user.id),
-                questionnaire_response.date.strftime('%d-%m-%Y'),
+                questionnaire_response.date.strftime('%m-%d-%Y'),
                 str(questionnaire_response.subject_of_group.subject.patient.id))
 
         self.assertEqual(mock_send_mail.called, True)

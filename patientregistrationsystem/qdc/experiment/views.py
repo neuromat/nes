@@ -5378,11 +5378,6 @@ def get_limesurvey_response_url(questionnaire_response):
         questionnaire.survey.lime_survey_id,
         questionnaire_response.token_id, "token")
 
-    survey_base_lang = questionnaire_lime_survey.get_survey_properties(
-        questionnaire.survey.lime_survey_id, 'language')
-    date_format = '%m-%d-%Y' if survey_base_lang == 'en' \
-        else '%d-%m-%Y'
-
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
@@ -5392,7 +5387,7 @@ def get_limesurvey_response_url(questionnaire_response):
             questionnaire.survey.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
-            questionnaire_response.date.strftime(date_format),
+            questionnaire_response.date.strftime('%m-%d-%Y'),
             str(questionnaire_response.subject_of_group.subject.patient.id))
 
     return redirect_url
