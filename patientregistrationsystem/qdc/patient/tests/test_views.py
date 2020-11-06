@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .tests_orig import QuestionnaireFormValidation, UtilTests
+from ..models import QuestionnaireResponse
 
 USERNAME = 'joaopedro'
 PASSWD = 'password'
@@ -72,4 +73,69 @@ class QuestionnaireFillTest(TestCase):
             response = self.client.post(
                 url + "?origin=subject", data, follow=True)
 
-            self.assertIn(date_limesurvey, response.context['URL'])
+            self.assertIn('09-01-2014', response.context['URL'])
+
+    @patch('survey.abc_search_engine.Server')
+    def test_view_questionnaires_updates_response_date_for_completed_fills(
+            self, mockServer):
+        mockServer.return_value.get_participant_properties.return_value = \
+            {'token': 'abc', 'completed': '2018-05-15 15:51'}
+        # 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
+
+        patient = UtilTests.create_patient(self.user)
+        survey = UtilTests.create_survey(212121, True)
+        UtilTests.create_response_survey(self.user, patient, survey, 1)
+
+        self.client.get(reverse('patient_edit', args=(patient.pk,)), data={
+            'currentTab': 4
+        })
+
+        questionnaire_response = QuestionnaireResponse.objects.first()
+
+        self.assertEqual(
+            questionnaire_response.date.strftime('%Y-%m-%d'), '2019-01-03')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_view_questionnaires_updates_response_date_add_updated_key_to_context(
+            self, mockServer):
+        mockServer.return_value.get_participant_properties.return_value = \
+            {'token': 'abc', 'completed': '2018-05-15 15:51'}
+        # 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
+
+        patient = UtilTests.create_patient(self.user)
+        survey = UtilTests.create_survey(212121, True)
+        UtilTests.create_response_survey(self.user, patient, survey, 1)
+
+        response = self.client.get(
+            reverse('patient_edit', args=(patient.pk,)),
+            data={'currentTab': 4})
+
+        self.assertTrue(response.context[
+                            'patient_questionnaires_data_list'
+                        ][0]['questionnaire_responses'][0][
+                            'acquisitiondate_updated'
+                        ])
+
+    @patch('survey.abc_search_engine.Server')
+    def test_view_questionnaires_updates_response_date_display_tag_updated_in_template(
+            self, mockServer):
+        mockServer.return_value.get_participant_properties.return_value = \
+            {'token': 'abc', 'completed': '2018-05-15 15:51'}
+        # 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
+
+        patient = UtilTests.create_patient(self.user)
+        survey = UtilTests.create_survey(212121, True)
+        UtilTests.create_response_survey(self.user, patient, survey, 1)
+
+        response = self.client.get(
+            reverse('patient_edit', args=(patient.pk,)),
+            data={'currentTab': 4})
+
+        self.assertContains(response, 'Atualizado', 1)
+        self.assertRegex(str(response.content), 'class=.+blink')

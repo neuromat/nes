@@ -69,9 +69,9 @@
                                                             {{ response.questionnaire_response.date }}
                                                         {% endif %}
                                                     </td>
-                                                    <td><span class="label
-                                                    label-info">LS token id:
-                                                        {{ response.token_id }}</span></td>
+                                                    <td>
+                                                        <span class="label label-info">LS token id: {{ response.token_id }}</span>
+                                                    </td>
                                                     <td class="col-md-4">
                                                         {% if limesurvey_available and response.completed != None %}
                                                             {% if response.completed %}
@@ -83,6 +83,15 @@
                                                             <span class="label label-default">{% trans "No status" %}</span>
                                                         {% endif %}
                                                     </td>
+                                                    {% if response.acquisitiondate_updated %}
+                                                        <td>
+                                                        <div class="blink">
+                                                            <span class="label label-info"
+                                                        >
+                                                                {% trans 'Updated' %}</span>
+                                                        </div>
+                                                        </td>
+                                                    {% endif %}
                                                 </tr>
                                             {% endfor %}
 

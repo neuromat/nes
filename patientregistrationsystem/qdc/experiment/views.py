@@ -44,8 +44,9 @@ from django.utils.translation import ugettext as _
 from django.core.cache import cache
 
 from experiment.import_export import ExportExperiment, ImportExperiment
+from patient.views import update_completed_status, update_acquisition_date
 from qdc.settings import MEDIA_ROOT
-from survey.survey_utils import QuestionnaireUtils
+from survey.survey_utils import QuestionnaireUtils, find_questionnaire_name
 from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
@@ -601,7 +602,8 @@ def get_experiments_by_research_project(request, research_project_id):
     if research_project_id == "0":
         list_of_experiments = Experiment.objects.all().order_by('title')
     else:
-        list_of_experiments = Experiment.objects.filter(research_project_id=research_project_id).order_by('title')
+        list_of_experiments = Experiment.objects.filter(
+            research_project_id=research_project_id).order_by('title')
 
     json_experiment_list = serializers.serialize("json", list_of_experiments)
 
@@ -1073,8 +1075,7 @@ def date_of_first_data_collection(subject_of_group):
 def send_all_experiments_to_portal():
     language_code = 'en'
     for schedule_of_sending in ScheduleOfSending.objects.filter(
-            status="scheduled"
-            ).order_by("schedule_datetime"):
+            status='scheduled').order_by('schedule_datetime'):
 
         print("\nExperiment %s - %s\n" % (schedule_of_sending.experiment.id,
                                           schedule_of_sending.experiment.title))
@@ -4655,7 +4656,7 @@ def classification_of_diseases_remove(request, group_id, classification_of_disea
 def questionnaire_view(request, group_id, component_configuration_id,
                        template_name="experiment/questionnaire_view.html"):
     questionnaire_configuration = get_object_or_404(
-        ComponentConfiguration,pk=component_configuration_id)
+        ComponentConfiguration, pk=component_configuration_id)
     group = get_object_or_404(Group, pk=group_id)
     questionnaire = Questionnaire.objects.get(
         id=questionnaire_configuration.component.id)
@@ -4663,6 +4664,8 @@ def questionnaire_view(request, group_id, component_configuration_id,
     surveys = Questionnaires()
     survey = Questionnaire.objects.get(
         id=questionnaire_configuration.component_id).survey
+    language = get_questionnaire_language(
+            surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
 
     questionnaire_title = find_questionnaire_name(
         survey, request.LANGUAGE_CODE)["name"]
@@ -4671,59 +4674,72 @@ def questionnaire_view(request, group_id, component_configuration_id,
 
     subject_list_with_status = []
 
-    for subject_of_group in SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name'):
-        subject_responses = QuestionnaireResponse.objects. \
-            filter(subject_of_group=subject_of_group,
-                   data_configuration_tree__component_configuration=questionnaire_configuration)
+    for subject_of_group in SubjectOfGroup.objects.filter(
+            group=group).order_by('subject__patient__name'):
+        subject_responses = QuestionnaireResponse.objects.filter(
+            subject_of_group=subject_of_group,
+            data_configuration_tree__component_configuration=
+            questionnaire_configuration)
         amount_of_completed_questionnaires = 0
         questionnaire_responses_with_status = []
 
         for subject_response in subject_responses:
-            if subject_response.is_completed == "N" or subject_response.is_completed == "":
-                is_completed = surveys.get_participant_properties(
-                    questionnaire.survey.lime_survey_id,
-                    subject_response.token_id,
-                    "completed") or ""
-                subject_response.is_completed = is_completed
-                subject_response.save()
+            properties = surveys.get_participant_properties(
+                survey.lime_survey_id, subject_response.token_id)
+            update_completed_status(
+                survey.lime_survey_id, properties['completed'],
+                subject_response)
             completed = False
 
-            if subject_response.is_completed != "N" and subject_response.is_completed != "":
+            acquisitiondate_updated = update_acquisition_date(
+                survey.lime_survey_id, properties['token'],
+                subject_response, language)
+
+            if subject_response.is_completed != 'N' \
+                    and subject_response.is_completed != '':
                 amount_of_completed_questionnaires += 1
                 completed = True
 
-            questionnaire_responses_with_status.append(
-                {'questionnaire_response': subject_response,
-                 'completed': completed}
-            )
+            questionnaire_responses_with_status.append({
+                'questionnaire_response': subject_response,
+                'completed': completed,
+                'acquisitiondate_updated': acquisitiondate_updated
+            })
 
-        # If unlimited fills, percentage is related to the number of completed questionnaires
+        # If unlimited fills, percentage is related to the number of completed
+        # questionnaires
         if questionnaire_configuration.number_of_repetitions is None:
             denominator = subject_responses.count()
 
             if subject_responses.count() > 0:
-                percentage = 100 * amount_of_completed_questionnaires / denominator
+                percentage = \
+                    100 * amount_of_completed_questionnaires / denominator
             else:
                 percentage = 0
         else:
             denominator = questionnaire_configuration.number_of_repetitions
 
-            # Handle cases in which number of possible responses was reduced afterwords.
-            if questionnaire_configuration.number_of_repetitions < amount_of_completed_questionnaires:
+            # Handle cases in which number of possible responses was reduced
+            # afterwords.
+            if questionnaire_configuration.number_of_repetitions \
+                    < amount_of_completed_questionnaires:
                 percentage = 100
             else:
-                percentage = 100 * amount_of_completed_questionnaires / denominator
+                percentage = \
+                    100 * amount_of_completed_questionnaires / denominator
 
         subject_list_with_status.append(
             {'subject': subject_of_group.subject,
-             'amount_of_completed_questionnaires': amount_of_completed_questionnaires,
+             'amount_of_completed_questionnaires':
+                 amount_of_completed_questionnaires,
              'denominator': denominator,
              'percentage': int(percentage),
              'questionnaire_responses': questionnaire_responses_with_status})
 
     surveys.release_session_key()
 
-    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+    context = {"can_change": get_can_change(
+                       request.user, group.experiment.research_project),
                "group": group,
                "questionnaire_title": questionnaire_title,
                "questionnaire_configuration": questionnaire_configuration,
@@ -5362,11 +5378,6 @@ def get_limesurvey_response_url(questionnaire_response):
         questionnaire.survey.lime_survey_id,
         questionnaire_response.token_id, "token")
 
-    survey_base_lang = questionnaire_lime_survey.get_survey_properties(
-        questionnaire.survey.lime_survey_id, 'language')
-    date_format = '%m-%d-%Y' if survey_base_lang == 'en' \
-        else '%d-%m-%Y'
-
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
@@ -5376,7 +5387,7 @@ def get_limesurvey_response_url(questionnaire_response):
             questionnaire.survey.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
-            questionnaire_response.date.strftime(date_format),
+            questionnaire_response.date.strftime('%m-%d-%Y'),
             str(questionnaire_response.subject_of_group.subject.patient.id))
 
     return redirect_url
@@ -5513,8 +5524,9 @@ def subject_questionnaire_response_reuse(request, group_id, subject_id, question
 @permission_required('experiment.change_questionnaireresponse')
 def questionnaire_response_edit(
         request, questionnaire_response_id,
-        template_name="experiment/subject_questionnaire_response_form.html"):
-    questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
+        template_name='experiment/subject_questionnaire_response_form.html'):
+    questionnaire_response = get_object_or_404(
+        QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire = Questionnaire.objects.get(
         id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
     group = questionnaire_response.subject_of_group.group
@@ -5522,18 +5534,21 @@ def questionnaire_response_edit(
 
     surveys = Questionnaires()
 
-    survey_title = find_questionnaire_name(questionnaire.survey, request.LANGUAGE_CODE)["name"]
-    if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == '':
+    survey_title = find_questionnaire_name(
+        questionnaire.survey, request.LANGUAGE_CODE)['name']
+    if questionnaire_response.is_completed == 'N' \
+            or questionnaire_response.is_completed == '':
         is_completed = surveys.get_participant_properties(
             questionnaire.survey.lime_survey_id,
             questionnaire_response.token_id,
-            "completed") or ""
+            'completed') or ''
         questionnaire_response.is_completed = is_completed
         questionnaire_response.save()
-    survey_completed = (questionnaire_response.is_completed != "N")
+    survey_completed = (questionnaire_response.is_completed != 'N')
     surveys.release_session_key()
 
-    questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
+    questionnaire_response_form = QuestionnaireResponseForm(
+        None, instance=questionnaire_response)
 
     fail = None
     redirect_url = None
@@ -5688,8 +5703,10 @@ def check_required_fields(surveys, lime_survey_id):
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(
-        request, questionnaire_response_id, template_name="experiment/subject_questionnaire_response_form.html"):
-    questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
+        request, questionnaire_response_id,
+        template_name="experiment/subject_questionnaire_response_form.html"):
+    questionnaire_response = get_object_or_404(
+        QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire = Questionnaire.objects.get(
         id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
     group = questionnaire_response.subject_of_group.group
@@ -5697,15 +5714,19 @@ def questionnaire_response_view(
 
     survey_completed = (questionnaire_response.is_completed != "N")
 
-    questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
+    questionnaire_response_form = QuestionnaireResponseForm(
+        None, instance=questionnaire_response)
 
     limesurvey_id = questionnaire.survey.lime_survey_id
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
-    survey_title_key = request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id) + "_survey_title"
+    survey_title_key = \
+        request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id)\
+        + "_survey_title"
     groups_of_questions_key = \
-        request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id) + "_group_of_questions"
+        request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id)\
+        + "_group_of_questions"
 
     # TODO (NES-991): BROKEN! Made a test and fix this before close this issue.
     #  Before that we are putting a generic exception
@@ -5734,7 +5755,8 @@ def questionnaire_response_view(
         if request.POST['action'] == "remove":
             if request.user.has_perm('experiment.delete_questionnaireresponse'):
 
-                deleted = delete_questionnaire_response(questionnaire, questionnaire_response)
+                deleted = delete_questionnaire_response(
+                    questionnaire, questionnaire_response)
 
                 if deleted:
                     messages.success(request, _('Fill deleted successfully.'))
@@ -5742,10 +5764,15 @@ def questionnaire_response_view(
                     messages.error(request, _("Error trying to delete fill"))
 
                 if origin == "experiment_subject":
-                    redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
+                    redirect_url = reverse(
+                        "subject_questionnaire", args=(group.id, subject.id,))
                 else:
-                    redirect_url = reverse("questionnaire_view",
-                                           args=(group.id, questionnaire_response.component_configuration.id,))
+                    redirect_url = reverse(
+                        "questionnaire_view",
+                        args=(
+                            group.id,
+                            questionnaire_response.component_configuration.id,
+                        ))
 
                 return HttpResponseRedirect(redirect_url)
             else:
@@ -5756,17 +5783,20 @@ def questionnaire_response_view(
         status = request.GET['status']
 
     context = {
-        "can_change": get_can_change(request.user, group.experiment.research_project),
+        "can_change": get_can_change(
+            request.user, group.experiment.research_project),
         "completed": survey_completed,
         "creating": False,
         "group": group,
         "origin": origin,
-        "questionnaire_configuration": questionnaire_response.data_configuration_tree.component_configuration,
+        "questionnaire_configuration":
+            questionnaire_response.data_configuration_tree.component_configuration,
         "questionnaire_response": questionnaire_response,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_response_id": questionnaire_response_id,
         "groups_of_questions": groups_of_questions,
-        "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
+        "questionnaire_responsible":
+            questionnaire_response.questionnaire_responsible,
         "patient": subject.patient,  # This is needed when origin=subject
         "status": status,
         "subject": subject,
@@ -5809,101 +5839,122 @@ def delete_questionnaire_response(questionnaire: Questionnaire,
 
 @login_required
 @permission_required('experiment.view_researchproject')
-def subject_questionnaire_view(request, group_id, subject_id,
-                               template_name="experiment/subject_questionnaire_response_list.html"):
+def subject_questionnaire_view(
+        request, group_id, subject_id,
+        template_name="experiment/subject_questionnaire_response_list.html"):
     subject_questionnaires = []
     surveys = Questionnaires()
-    subject_of_group = get_object_or_404(SubjectOfGroup, group_id=group_id, subject_id=subject_id)
+    subject_of_group = get_object_or_404(
+        SubjectOfGroup, group_id=group_id, subject_id=subject_id)
 
-    list_of_trees = create_list_of_trees(subject_of_group.group.experimental_protocol, "questionnaire")
+    list_of_trees = create_list_of_trees(
+        subject_of_group.group.experimental_protocol, "questionnaire")
 
     used_tokens = {}
 
     for path in list_of_trees:
-
-        questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path[-1][0])
+        questionnaire_configuration = get_object_or_404(
+            ComponentConfiguration, pk=path[-1][0])
 
         # Questionnaire Responses (in the experiment)
         data_configuration_tree_id = \
-            list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path])
+            list_data_configuration_tree(
+                questionnaire_configuration.id, [item[0] for item in path])
         questionnaire_responses = \
-            QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group,
-                                                 data_configuration_tree__id=data_configuration_tree_id)
+            QuestionnaireResponse.objects.filter(
+                subject_of_group=subject_of_group,
+                data_configuration_tree__id=data_configuration_tree_id)
 
-        questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+        questionnaire = Questionnaire.objects.get(
+            id=questionnaire_configuration.component.id)
+        language = get_questionnaire_language(
+            surveys, questionnaire.survey.lime_survey_id,
+            request.LANGUAGE_CODE)
 
         questionnaire_responses_with_status = []
         for questionnaire_response in questionnaire_responses:
-            if questionnaire_response.is_completed == "N" or questionnaire_response.is_completed == "":
-                is_completed = surveys.get_participant_properties(
-                    questionnaire.survey.lime_survey_id,
-                    questionnaire_response.token_id,
-                    "completed") or ""
-
-                questionnaire_response.is_completed = is_completed
-                questionnaire_response.save()
-
-            questionnaire_responses_with_status.append(
-                {'questionnaire_response': questionnaire_response,
-                 'completed': None if questionnaire_response.is_completed is
-                                      None else questionnaire_response.is_completed != "N" and
-                                                questionnaire_response.is_completed != ""})
+            properties = surveys.get_participant_properties(
+                questionnaire.survey.lime_survey_id,
+                questionnaire_response.token_id)
+            update_completed_status(
+                questionnaire.survey.lime_survey_id, properties['completed'],
+                questionnaire_response)
+            acquisitiondate_updated = update_acquisition_date(
+                questionnaire.survey.lime_survey_id, properties['token'],
+                questionnaire_response, language)
+            questionnaire_responses_with_status.append({
+                'questionnaire_response': questionnaire_response,
+                'completed': None if questionnaire_response.is_completed
+                                     is None
+                else questionnaire_response.is_completed != 'N'
+                     and questionnaire_response.is_completed != '',
+                'acquisitiondate_updated': acquisitiondate_updated
+            })
 
             # saving used tokens by questionnaire
             if questionnaire.survey.lime_survey_id not in used_tokens:
-                used_tokens[questionnaire.survey.lime_survey_id] = [questionnaire_response.token_id]
+                used_tokens[questionnaire.survey.lime_survey_id] = \
+                    [questionnaire_response.token_id]
             else:
-                if questionnaire_response.token_id not in used_tokens[questionnaire.survey.lime_survey_id]:
-                    used_tokens[questionnaire.survey.lime_survey_id].append(questionnaire_response.token_id)
+                if questionnaire_response.token_id \
+                        not in used_tokens[questionnaire.survey.lime_survey_id]:
+                    used_tokens[questionnaire.survey.lime_survey_id].append(
+                        questionnaire_response.token_id)
 
         # saving information about the step
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
              'questionnaire': questionnaire,
-             'title': find_questionnaire_name(questionnaire.survey, request.LANGUAGE_CODE)["name"],
+             'title': find_questionnaire_name(
+                 questionnaire.survey, request.LANGUAGE_CODE)['name'],
              'path': path,
              'questionnaire_responses': questionnaire_responses_with_status,
              }
         )
 
-    # responses that could be reused
+    # Responses that could be reused
     for subject_questionnaire in subject_questionnaires:
         questionnaire = subject_questionnaire['questionnaire']
 
         tokens_already_used = used_tokens[
-            questionnaire.survey.lime_survey_id] if questionnaire.survey.lime_survey_id in used_tokens else []
+            questionnaire.survey.lime_survey_id
+        ] if questionnaire.survey.lime_survey_id in used_tokens else []
 
         patient_questionnaire_responses = \
             PatientQuestionnaireResponse.objects.filter(
                 patient=subject_of_group.subject.patient,
-                survey=questionnaire.survey).exclude(token_id__in=tokens_already_used)
+                survey=questionnaire.survey).exclude(
+                token_id__in=tokens_already_used)
         patient_questionnaire_responses_with_status = []
-        for patient_questionnaire_response in patient_questionnaire_responses:
-            if patient_questionnaire_response.is_completed == "N" or patient_questionnaire_response.is_completed == "":
-                is_completed = surveys.get_participant_properties(
-                    questionnaire.survey.lime_survey_id,
-                    patient_questionnaire_response.token_id,
-                    "completed") or ""
+        for questionnaire_response in patient_questionnaire_responses:
+            properties = surveys.get_participant_properties(
+                questionnaire.survey.lime_survey_id,
+                questionnaire_response.token_id)
+            update_completed_status(
+                questionnaire.survey.lime_survey_id, properties['completed'],
+                questionnaire_response)
 
-                patient_questionnaire_response.is_completed = is_completed
-                patient_questionnaire_response.save()
-
-            if patient_questionnaire_response.is_completed is not None and \
-                    patient_questionnaire_response.is_completed != "":
-                patient_questionnaire_responses_with_status.append(
-                    {'patient_questionnaire_response': patient_questionnaire_response,
-                     'completed': True if patient_questionnaire_response.is_completed != "N" else False}
-                )
-        subject_questionnaire['patient_questionnaire_responses'] = patient_questionnaire_responses_with_status
+            if questionnaire_response.is_completed is not None \
+                    and questionnaire_response.is_completed != '':
+                patient_questionnaire_responses_with_status.append({
+                    'patient_questionnaire_response': questionnaire_response,
+                    'completed': True
+                    if questionnaire_response.is_completed != 'N'
+                    else False
+                })
+        subject_questionnaire['patient_questionnaire_responses'] = \
+            patient_questionnaire_responses_with_status
 
     surveys.release_session_key()
 
-    return render(request, template_name,
-                  {"can_change": get_can_change(request.user, subject_of_group.group.experiment.research_project),
-                   'group': subject_of_group.group,
-                   'limesurvey_available': check_limesurvey_access(request, surveys),
-                   'subject': subject_of_group.subject,
-                   'subject_questionnaires': subject_questionnaires})
+    return render(request, template_name, {
+        'can_change': get_can_change(
+            request.user, subject_of_group.group.experiment.research_project),
+        'group': subject_of_group.group,
+        'limesurvey_available': check_limesurvey_access(request, surveys),
+        'subject': subject_of_group.subject,
+        'subject_questionnaires': subject_questionnaires
+    })
 
 
 @login_required
@@ -9453,34 +9504,18 @@ def component_create(request, experiment_id, component_type):
     for questionnaire in questionnaires_list:
         questionnaires_with_names.append(
             {'sid': questionnaire.lime_survey_id,
-             'name': find_questionnaire_name(questionnaire, request.LANGUAGE_CODE)["name"]})
+             'name': find_questionnaire_name(
+                 questionnaire, request.LANGUAGE_CODE)["name"]})
 
-    context = {"back_cancel_url": "/experiment/" + str(experiment.id) + "/components",
-               "component_form": component_form,
-               "creating": True,
-               "can_change": can_change,
-               "experiment": experiment,
-               "questionnaires_list": questionnaires_with_names,
-               "specific_form": specific_form}
+    context = {
+        'back_cancel_url': '/experiment/' + str(experiment.id) + '/components',
+        'component_form': component_form,
+        'creating': True,
+        'can_change': can_change,
+        'experiment': experiment,
+        'questionnaires_list': questionnaires_with_names,
+        'specific_form': specific_form}
     return render(request, template_name, context)
-
-
-def find_questionnaire_name(survey, language_code):
-    language_code = language_code.lower()
-    titles = {'pt-br': survey.pt_title, 'en': survey.en_title}
-    fallback_language = 'en' if language_code == 'pt-br' else 'pt-br'
-
-    if titles[language_code] is not None and titles[language_code] != '':
-        title = titles[language_code]
-    elif titles[fallback_language] is not None \
-            and titles[fallback_language] != '':
-        title = titles[fallback_language]
-    else:
-        surveys = Questionnaires()
-        title = surveys.get_survey_title(survey.lime_survey_id)
-        surveys.release_session_key()
-
-    return {'sid': survey.lime_survey_id, 'name': title}
 
 
 def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):

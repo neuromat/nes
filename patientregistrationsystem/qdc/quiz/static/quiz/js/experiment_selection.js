@@ -19,7 +19,7 @@ $(document).ready(function () {
         }
 
         var url = "/export/get_experiments_by_study/" + study_id;
-        
+
         $.getJSON(url, function(experiments_list) {
             var options = '<option value="" selected="selected">---------</option>';
             for (var i = 0; i < experiments_list.length; i++) {
@@ -28,7 +28,7 @@ $(document).ready(function () {
             select_experiments.html(options);
             select_experiments.change();
         });
-        
+
     });
 
     select_experiments.change(function () {
@@ -55,26 +55,31 @@ $(document).ready(function () {
         });
 
         // Get participants for RandomForests Plugin
-        select_experiment_participants_from.html('<option></option>');
-        if (experiment_id != 0) {
-            // Fill multiselect "from" with a suitable ajax loading gif
+        // Test for undefined as in plugin template for selecting
+        // participants select_research_project is not defined. Otherwise
+        // url bellow is called and causes a silent error.
+        if (select_research_project.val() === undefined) {
             select_experiment_participants_from.html('<option></option>');
-            $('#loading_box').css('display', 'flex');
-            select_experiment_participants_from.prop('disabled', true);
-        }
-
-        var url = "/plugin/get_participants_by_experiment/" + experiment_id;
-        $.getJSON(url, function (participants) {
-            $('#loading_box').css('display', 'none');
-            var options = "";
-            for (var i = 0; i < participants.length; i++) {
-                options += '<option value="' + participants[i].subject_of_group_id + '">' + participants[i].participant_name + ' - ' + participants[i].group_name + '</option>';
+            if (experiment_id != 0) {
+                // Fill multiselect "from" with a suitable ajax loading gif
+                select_experiment_participants_from.html('<option></option>');
+                $('#loading_box').css('display', 'flex');
+                select_experiment_participants_from.prop('disabled', true);
             }
 
-            select_experiment_participants_from.html(options);
-            select_experiment_participants_from.prop('disabled', false);
+            var url = "/plugin/get_participants_by_experiment/" + experiment_id;
+            $.getJSON(url, function (participants) {
+                $('#loading_box').css('display', 'none');
+                var options = "";
+                for (var i = 0; i < participants.length; i++) {
+                    options += '<option value="' + participants[i].subject_of_group_id + '">' + participants[i].participant_name + ' - ' + participants[i].group_name + '</option>';
+                }
 
-        });
+                select_experiment_participants_from.html(options);
+                select_experiment_participants_from.prop('disabled', false);
+
+            });
+        }
     });
 
 });

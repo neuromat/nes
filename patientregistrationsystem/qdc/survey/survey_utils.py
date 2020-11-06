@@ -432,3 +432,21 @@ class QuestionnaireUtils:
             return self.LIMESURVEY_ERROR, _('There\'s no question with name %s' % question_title)
         else:
             return str(limesurvey_id) + 'X' + str(group['gid']) + 'X' + str(questions[index]['qid'])
+
+
+def find_questionnaire_name(survey, language_code):
+    language_code = language_code.lower()
+    titles = {'pt-br': survey.pt_title, 'en': survey.en_title}
+    fallback_language = 'en' if language_code == 'pt-br' else 'pt-br'
+
+    if titles[language_code] is not None and titles[language_code] != '':
+        title = titles[language_code]
+    elif titles[fallback_language] is not None \
+            and titles[fallback_language] != '':
+        title = titles[fallback_language]
+    else:
+        surveys = Questionnaires()
+        title = surveys.get_survey_title(survey.lime_survey_id)
+        surveys.release_session_key()
+
+    return {'sid': survey.lime_survey_id, 'name': title}

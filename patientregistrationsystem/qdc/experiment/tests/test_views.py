@@ -5298,9 +5298,6 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
         self.client.login(
             username=self.user.username, password=self.user_passwd)
 
-    def tearDown(self):
-        self.client.logout()
-
     @patch('survey.abc_search_engine.Server')
     @patch('experiment.views.check_required_fields')
     def test_create_questionnaire_response_sent_patient_id_in_redirect_url(
@@ -5352,7 +5349,109 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
                         }),
                 data={'action': 'save', 'date': date})
 
-            self.assertIn(date_limesurvey, response.context['URL'])
+            self.assertIn('09-24-2020', response.context['URL'])
+
+    @patch('survey.abc_search_engine.Server')
+    def test_GET_questionnaire_view_updates_response_date_for_completed_fills(
+            self, mockServer):
+        # Acquistion date: 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
+
+        ObjectsFactory.create_questionnaire_response(
+            self.dct, self.user, 1, self.subject_of_group)
+        self.client.get(
+            reverse('questionnaire_view',
+                    args=(self.group.id, self.component_config.id,)))
+        questionnaire_response = QuestionnaireResponse.objects.first()
+
+        self.assertEqual(
+            questionnaire_response.date.strftime('%Y-%m-%d'), '2019-01-03')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_GET_questionnaire_view_updates_response_date_add_updated_key_to_context(
+            self, mockServer):
+        # Acquistion date: 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
+
+        ObjectsFactory.create_questionnaire_response(
+            self.dct, self.user, 1, self.subject_of_group)
+        response = self.client.get(
+            reverse('questionnaire_view',
+                    args=(self.group.id, self.component_config.id,)))
+
+        self.assertTrue(
+            response.context['subject_list'][0]['questionnaire_responses'][0][
+                'acquisitiondate_updated'
+            ])
+
+    @patch('survey.abc_search_engine.Server')
+    def test_GET_questionnaire_view_updates_response_date_display_tag_updated_in_template(
+            self, mockServer):
+        # Acquistion date: 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
+
+        ObjectsFactory.create_questionnaire_response(
+            self.dct, self.user, 1, self.subject_of_group)
+        response = self.client.get(
+            reverse('questionnaire_view',
+                    args=(self.group.id, self.component_config.id,)))
+
+        self.assertContains(response, 'Atualizado', 1)
+        self.assertRegex(str(response.content), 'class=.+blink')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_GET_subject_questionnaire_view_updates_response_date_for_completed_fills(
+            self, mockServer):
+        # Acquistion date: 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
+
+        ObjectsFactory.create_questionnaire_response(
+            self.dct, self.user, 1, self.subject_of_group)
+        self.client.get(
+            reverse('subject_questionnaire',
+                    args=(self.group.id, self.subject.id,)))
+        questionnaire_response = QuestionnaireResponse.objects.first()
+
+        self.assertEqual(
+            questionnaire_response.date.strftime('%Y-%m-%d'), '2019-01-03')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_GET_subject_questionnaire_view_updates_response_date_add_updated_key_to_context(
+            self, mockServer):
+        # Acquistion date: 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
+
+        ObjectsFactory.create_questionnaire_response(
+            self.dct, self.user, 1, self.subject_of_group)
+        response = self.client.get(
+            reverse('subject_questionnaire',
+                    args=(self.group.id, self.subject.id,)))
+
+        self.assertTrue(
+            response.context['subject_questionnaires'][0][
+                'questionnaire_responses'
+            ][0]['acquisitiondate_updated'])
+
+    @patch('survey.abc_search_engine.Server')
+    def test_GET_subject_questionnaire_view_updates_response_date_display_tag_updated_in_template(
+            self, mockServer):
+        # Acquistion date: 2019-01-03 00:00:00
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
+
+        ObjectsFactory.create_questionnaire_response(
+            self.dct, self.user, 1, self.subject_of_group)
+        response = self.client.get(
+            reverse('subject_questionnaire',
+                    args=(self.group.id, self.subject.id,)))
+
+        self.assertContains(response, 'Atualizado', 1)
+        self.assertRegex(str(response.content), 'class=.+blink')
 
     def test_GET_subject_questionnaire_response_create_view_display_send_email_invitation_button_with_send_invitation_action(self):
         response = self.client.get(
@@ -5417,10 +5516,11 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
             self, mock_send_mail, mockCheckRequiredFields, mockServer):
         mockCheckRequiredFields.return_value = True
         self._set_mocks_questionnaire_response(mockServer)
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
 
         response = self.client.post(
-            reverse('subject_questionnaire_response',
-                    kwargs={
+            reverse('subject_questionnaire_response', kwargs={
                         'group_id': self.group.id,
                         'subject_id': self.subject_of_group.subject_id,
                         'questionnaire_id': self.component_config.id
@@ -5463,7 +5563,7 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
                 self.component_config.component.survey.lime_survey_id,
                 token_mock,
                 str(self.user.id),
-                questionnaire_response.date.strftime('%d-%m-%Y'),
+                questionnaire_response.date.strftime('%m-%d-%Y'),
                 str(questionnaire_response.subject_of_group.subject.patient.id))
 
         self.assertEqual(mock_send_mail.called, True)
@@ -5480,6 +5580,8 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
             self, mock_send_mail, mockCheckRequiredFields, mockServer):
         mockCheckRequiredFields.return_value = True
         self._set_mocks_questionnaire_response(mockServer)
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImFjcXVpc2l0aW9uZGF0ZSIKIjIwMTktMDEtMDMgMDA6MDA6MDAi'
 
         response = self.client.post(
             reverse('subject_questionnaire_response',
@@ -5540,8 +5642,10 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
                         'subject_id': self.subject_of_group.subject_id,
                         'questionnaire_id': self.component_config.id
                     }),
-            data={'action': 'send_invite', 'date': datetime.now().strftime(
-                '%d/%m/%Y'), }, follow=True)
+            data={
+                'action': 'send_invite', 'date': datetime.now().strftime(
+                    '%d/%m/%Y')
+            }, follow=True)
 
         self.assertFalse(QuestionnaireResponse.objects.exists())
 
@@ -5555,7 +5659,8 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
             self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
         component_config = ObjectsFactory.create_component_configuration(
             root_component, questionnaire)
-        ObjectsFactory.create_data_configuration_tree(component_config)
+        self.dct = ObjectsFactory.create_data_configuration_tree(
+            component_config)
 
         return component_config
 
@@ -5567,6 +5672,6 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
             {'token': token_mock, 'tid': 1}
         ]
         mockServer.return_value.get_participant_properties.return_value = {
-            'token': token_mock}
+            'token': token_mock, 'completed': 'N'}
 
         return token_mock
