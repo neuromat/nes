@@ -14,7 +14,7 @@ In this guide, we will demonstrate how to install and configure LimeSurvey. We'l
 
 Important technical information
 ```````````````````````````````
-* This guide walks through an installation by using packages available through Debian 9 (code name: Stretch), but can easily be adapted to other Unix operating systems.
+* This guide walks through an installation by using packages available through Debian 10 (code name: Buster), but can easily be adapted to other Unix operating systems.
 * For demonstration purposes, we will use the ``/var/www`` directory to deploy the LimeSurvey.
 * Always check the `official LimeSurvey manual <https://manual.limesurvey.org/>`_ for the most up-to-date information!
 
@@ -24,19 +24,25 @@ Initial setup
 `````````````
 1. Before running through the steps of this tutorial, make sure that all of your repositories are up to date::
 
-    apt-get update
+    apt update
 
 2. Install some packages::
 
-    apt-get install php php-pgsql php-gd php-imap php-mbstring php-ldap php-zip php-xml
+    apt install -y wget php php-pgsql php-gd php-imap php-mbstring php-ldap php-zip php-xml
 
-3. Check the latest version of LimeSurvey `here <https://www.limesurvey.org/stable-release>`_ and download the file with the `tar.gz` extension. 
+3. The latest version of LimeSurvey that works with NES is 2.73.1:
+
+    cd /var/www
+
+    wget https://github.com/LimeSurvey/LimeSurvey/archive/2.73.1+171220.tar.gz
 
 4. Extract the file (rename the file according to what you've downloaded)::
 
-    tar xzvf limesurvey2_X.X.tar.gz
+    tar xzvf 2.73.1+171220.tar.gz
 
-    rm limesurvey2_X.X.tar.gz
+    rm 2.73.1+171220.tar.gz
+
+    mv LimeSurvey-2.73.1-171220/ limesurvey
 
 5. Change owner and group::
 
@@ -82,7 +88,7 @@ Insert the following content, but remembering that the paths and the ServerName 
     	    	Options Indexes FollowSymLinks MultiViews
     	    	AllowOverride None
     	    	Order allow,deny
-    	    	allow from all
+    	    	Allow from all
     	    	AcceptPathInfo On
     	</Directory>
 
@@ -95,16 +101,16 @@ Insert the following content, but remembering that the paths and the ServerName 
     	    	Allow from all
     	</Directory>
 
-    	ErrorLog ${APACHE_LOG_DIR}/limesurvey_ssl_error.log
+    	ErrorLog ${APACHE_LOG_DIR}/limesurvey_error.log
     	LogLevel warn
-    	CustomLog ${APACHE_LOG_DIR}/limesurvey_ssl_access.log combined
+    	CustomLog ${APACHE_LOG_DIR}/limesurvey_access.log combined
     </VirtualHost>
 
 9. Enable the virtual host::
 
     a2ensite limesurvey
 
-    systemctl reload apache2
+    service apache2 reload
 
 10. Web-based configuration
 

@@ -8,7 +8,7 @@ In this guide, we will demonstrate how to install and configure NES in a Python 
 
 Important technical information
 -------------------------------
-* This guide walks through an installation by using packages available through Debian 9 (code name: Stretch), but can easily be adapted to other Unix operating systems.
+* This guide walks through an installation by using packages available through Debian 10 (code name: Buster), but can easily be adapted to other Unix operating systems.
 * Using virtualenv to install NES is recommended. This is because when you use virtualenv, you create an isolated environment with its own installation directories.
 * Latest version of NES works only with Python 3.
 * For demonstration purposes, we will use the `/usr/local` directory to deploy NES. This directory seems to be the right place according to the `Linux Foundation <https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch04s09.html>`_. 
@@ -17,21 +17,21 @@ Important technical information
 
 Initial setup
 -------------
-1. Before running through the steps of this tutorial, make sure that all of your repositories are up to date::
+1. Before running through the steps of this tutorial, make sure that all of your repositories are up to date and::
 
-    apt-get update
+    apt update
 
 2. Install some packages::
 
-    apt-get install python-pip git virtualenv graphviz libpq-dev python-dev
+    apt install -y python-pip git virtualenv graphviz libpq-dev python-dev
 
-    apt-get build-dep python-psycopg2
+    apt build-dep -y python-psycopg2
 
 3. Create the virtualenv (check the correct python version you are using)::
 
     cd /usr/local
 
-    virtualenv nes-system -p /usr/bin/python3.5
+    virtualenv nes-system -p /usr/bin/python3.7
 
 4. Run the following to activate this new virtual environment::
 
@@ -41,11 +41,11 @@ Initial setup
 
     cd nes-system
 
-6. Clone the NES. Check the latest TAG version `here <https://github.com/neuromat/nes/releases>`_::
+6. Clone the NES. Check the latest TAG version `here <https://github.com/neuromat/nes/tags>`_::
 
     git clone -b TAG-X.X https://github.com/neuromat/nes.git
 
-7. Install additional python packages::
+7. Install required python packages in your virtual environment::
 
     cd nes/patientregistrationsystem/qdc/
 
@@ -57,9 +57,12 @@ Deploying NES with Apache, PostgreSQL and mod_wsgi
 --------------------------------------------------
 1. Install the packages::
 
-    apt-get install apache2 libapache2-mod-wsgi-py3 postgresql
+    apt install -y apache2 libapache2-mod-wsgi-py3 postgresql
 
 2. Create user and database (you will use this user/password/database in the next step)::
+
+    service apache2 start
+    service postgresql start
 
     su - postgres
 
@@ -73,6 +76,8 @@ Deploying NES with Apache, PostgreSQL and mod_wsgi
 
     cd /usr/local/nes-system/nes/patientregistrationsystem/qdc
 
+    cp -i qdc/settings_local_template.py qdc/settings_local.py
+
     nano qdc/settings_local.py
 
 Edit the database to use the user/password/database created in the previous step::
@@ -83,7 +88,7 @@ Edit the database to use the user/password/database created in the previous step
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'nes',
             'USER': 'nes',
-            'PASSWORD': 'your_password',
+            'PASSWORD': 'YOUR PASSWORD HERE',
             'HOST': 'localhost',
         }
     }
@@ -98,7 +103,7 @@ Edit the database to use the user/password/database created in the previous step
 
 6. Copy wsgi_default.py file to wsgi.py file and edit wsgi.py::
 
-    cp wsgi_default.py wsgi.py
+    cp qdc/wsgi_default.py qdc/wsgi.py
 
     nano qdc/wsgi.py
 
@@ -151,7 +156,8 @@ After, insert the following content remembering that the paths and the ServerNam
     		AllowOverride None
     	</Directory>
     
-    	Alias /media/ /usr/local/nes-system/nes/patientregistrationsystem/qdc/media/ 
+        Alias /media/ /usr/local/nes-system/nes/patientregistrationsystem/qdc/media/ 
+        Alias /static/ /usr/local/nes-system/nes/patientregistrationsystem/qdc/static/ 
     
     	<Directory "/usr/local/nes-system/nes/patientregistrationsystem/qdc">
     		Require all granted
@@ -191,22 +197,21 @@ After, insert the following content remembering that the paths and the ServerNam
 
 11. Collects the static files into ``STATIC_ROOT``::
 
-     python manage.py collecstatic
+    python manage.py collectstatic
 
 12. Create the media directory::
 
-     mkdir media
+    mkdir media
 
-13. Change the owner of the directories ``.git`` and `patientregistrationsystem`::
+13. For Online updates, change the owner of the directories ``.git`` and ``patientregistrationsystem``::
 
-     cd /usr/local/nes-system/nes/
+    cd /usr/local/nes-system/nes/
+    chown -R www-data .git
 
-     chown -R www-data .git
-
-     chown -R www-data patientregistrationsystem 
+    chown -R www-data patientregistrationsystem
 
 14. Enable the virtual host::
 
-     a2ensite nes
+    a2ensite nes
 
-     systemctl reload apache2
+    service apache2 reload
