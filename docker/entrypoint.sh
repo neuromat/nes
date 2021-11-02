@@ -50,6 +50,10 @@ SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
 NES_PROJECT_PATH="${NES_DIR}/patientregistrationsystem/qdc"
 NES_SETUP_PATH="${NES_PROJECT_PATH}/qdc"
 
+# This problem is probably related to alpine:3.12 python version:
+# https://stackoverflow.com/questions/60588431/psycopg2-import-error-ssl-check-private-key-symbol-not-found
+export LD_PRELOAD=/lib/libssl.so.1.1
+
 # INITIALIZE POSTGRESQL ##################################################
 if [ -s "$PGDATA/PG_VERSION" ]
 then
@@ -238,7 +242,7 @@ then
 else
 	echo "INFO: Creating users in postgres"
 	cd /
-	su postgres -c "pg_ctl start -D $PGDATA"
+	su postgres -c "pg_ctl start -w -D $PGDATA"
 	cat <<-EOF | su postgres -c "psql"
 		CREATE USER $NES_DB_USER WITH PASSWORD '$NES_DB_PASSWORD' ;
 		CREATE DATABASE $NES_DB OWNER $NES_DB_USER ;
@@ -248,7 +252,7 @@ else
 		CREATE DATABASE $LIMESURVEY_DB OWNER $LIMESURVEY_DB_USER ;
 		GRANT ALL PRIVILEGES ON DATABASE $LIMESURVEY_DB TO $LIMESURVEY_DB_USER ;
 	EOF
-	su postgres -c "pg_ctl stop -D $PGDATA"
+	su postgres -c "pg_ctl stop -w -D $PGDATA"
 	touch "${PGDATA}"/.db_users.placeholder
 fi
 
@@ -257,14 +261,14 @@ then
 	echo "INFO: LimeSurvey superuser already provisioned"
 else
 	echo "INFO: Creating superuser in LimeSurvey"
-	su postgres -c "pg_ctl start -D $PGDATA"
+	su postgres -c "pg_ctl start -w -D $PGDATA"
 	cd "$LIMESURVEY_DIR"
 	php7 application/commands/console.php install \
 		"$LIMESURVEY_ADMIN_USER" \
 		"$LIMESURVEY_ADMIN_PASSWORD" \
 		"$LIMESURVEY_ADMIN_NAME" \
 		"$LIMESURVEY_ADMIN_EMAIL"
-	cd / && su postgres -c "pg_ctl stop -D $PGDATA"
+	cd / && su postgres -c "pg_ctl stop -w -D $PGDATA"
 	touch "${LIMESURVEY_DIR}"/.limesurvey_superuser.placeholder
 fi
 
@@ -280,7 +284,7 @@ else
 		User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
 	EOF
 
-	su postgres -c "pg_ctl start -D $PGDATA"
+	su postgres -c "pg_ctl start -w -D $PGDATA"
 	python3 manage.py migrate
 	# Different versions may have different commannds
 	python3 manage.py shell < add_initial_data.py || true
@@ -294,7 +298,7 @@ else
 	chown -R nobody "${NES_DIR}"/.git  || true
 	chown -R nobody "${NES_DIR}"/patientregistrationsystem
 
-	su postgres -c "pg_ctl stop -D $PGDATA"
+	su postgres -c "pg_ctl stop -w -D $PGDATA"
 	touch "${NES_DIR}"/.nes_initialization.placeholder
 fi
 

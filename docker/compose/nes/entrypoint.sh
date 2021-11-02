@@ -108,7 +108,7 @@ else
 	EOF
 
 	python3 manage.py migrate
-	# Different versions may have different commannds
+	# Different versions may have different commands
 	python3 manage.py shell < add_initial_data.py  || true
 	python3 manage.py loaddata load_initial_data.json || true
 	python3 manage.py shell < /tmp/create_superuser.py || true
