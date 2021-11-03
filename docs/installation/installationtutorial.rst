@@ -12,6 +12,7 @@ Important technical information
 * Using virtualenv to install NES is recommended. This is because when you use virtualenv, you create an isolated environment with its own installation directories.
 * Latest version of NES works only with Python 3.
 * For demonstration purposes, we will use the `/usr/local` directory to deploy NES. This directory seems to be the right place according to the `Linux Foundation <https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch04s09.html>`_. 
+* All the installation commands should be run as root.
 
 .. _initial-setup-nes:
 
@@ -97,7 +98,7 @@ Edit the database to use the user/password/database created in the previous step
 
     python manage.py migrate
 
-5. Create superuser::
+5. Create superuser (the administrator of NES)::
 
     python manage.py createsuperuser
 
@@ -122,7 +123,7 @@ The file must contain::
     import site
 
     # Add the site-packages of the chosen virtualenv to work with
-    site.addsitedir('/usr/local/nes-system/lib/python3.5/site-packages')
+    site.addsitedir('/usr/local/nes-system/lib/python3.7/site-packages')
 
     # Add the paths according to your installation
     paths = ['/usr/local', '/usr/local/nes-system', '/usr/local/nes-system/nes', '/usr/local/nes-system/nes/patientregistrationsystem', '/usr/local/nes-system/nes/patientregistrationsystem/qdc',]
@@ -197,21 +198,22 @@ After, insert the following content remembering that the paths and the ServerNam
 
 11. Collects the static files into ``STATIC_ROOT``::
 
-    python manage.py collectstatic
+     python manage.py collectstatic
 
 12. Create the media directory::
 
-    mkdir media
+     mkdir media
 
 13. For Online updates, change the owner of the directories ``.git`` and ``patientregistrationsystem``::
 
-    cd /usr/local/nes-system/nes/
-    chown -R www-data .git
+     cd /usr/local/nes-system/nes/
+    
+     chown -R www-data .git
 
-    chown -R www-data patientregistrationsystem
+     chown -R www-data patientregistrationsystem
 
 14. Enable the virtual host::
 
-    a2ensite nes
-
-    service apache2 reload
+     a2ensite nes
+    
+     service apache2 reload
