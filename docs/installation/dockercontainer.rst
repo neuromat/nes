@@ -140,7 +140,7 @@ In order to run the composed version of NES you need to build a docker-compose.y
 
      # Postgres_LimeSurvey
      db_limesurvey:
-       image: postgres:alpine
+       image: postgres:11-alpine
        volumes:
          - "limesurvey_pgdata:/var/lib/postgresql/data"
        environment:
@@ -218,6 +218,7 @@ In order to run the composed version of NES you need to build a docker-compose.y
      limesurvey_data:
      nes_data:
 
+Please note that PostgreSQL version used for LimeSurvey is fixed as `postgres:11-alpine` because the latest version of LimeSurvey that works with NES is 2.73.1 and this version does not work with PostgreSQL12+.
 
 More information regarding environmennt variables and service itegration for the composed version of NES can be found in `NES-compose repository on Docker Hub`_.
 
