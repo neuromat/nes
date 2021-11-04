@@ -59,6 +59,12 @@ Deploying NES with Apache, PostgreSQL and mod_wsgi
 1. Install the packages::
 
     apt install -y apache2 libapache2-mod-wsgi-py3 postgresql
+   
+   **Important Note**::
+   
+   If NES will be used with LimeSurvey and they will share the same PostgreSQL server, then ``postgresql`` should be replaced by ``postgresql-11`` in the command above.
+   
+   The latest version of LimeSurvey that works with NES is 2.73.1, and LimeSurvey 2.73.1 only works with PostgreSQL 11 or older versions.  Check :ref:`how-to-install-limesurvey`.
 
 2. Create user and database (you will use this user/password/database in the next step)::
 
@@ -97,6 +103,8 @@ Edit the database to use the user/password/database created in the previous step
 4. Create tables::
 
     python manage.py migrate
+    
+    python manage.py createcachetable
 
 5. Create superuser (the administrator of NES)::
 
