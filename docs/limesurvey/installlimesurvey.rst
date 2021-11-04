@@ -3,9 +3,9 @@
 How to install LimeSurvey
 =========================
 
-.. _tutorial-to-install-the-latest-version-of-limesurvey:
+.. _tutorial-to-install-limesurvey:
 
-Tutorial to install the latest version of LimeSurvey
+Tutorial to install LimeSurvey
 ----------------------------------------------------
 
 In this guide, we will demonstrate how to install and configure LimeSurvey. We'll assume that you already have a server with Apache and PostgreSQL installed (If you installed NES, then you have it!).
@@ -17,6 +17,11 @@ Important technical information
 * This guide walks through an installation by using packages available through Debian 10 (code name: Buster), but can easily be adapted to other Unix operating systems.
 * For demonstration purposes, we will use the ``/var/www`` directory to deploy the LimeSurvey.
 * Always check the `official LimeSurvey manual <https://manual.limesurvey.org/>`_ for the most up-to-date information!
+* The latest version of LimeSurvey that works with NES is 2.73.1.
+* LimeSurvey 2.73.1 only works with PostgreSQL 11 or older versions.
+
+
+
 
 .. _initial-setup-limesurvey:
 
@@ -30,7 +35,7 @@ Initial setup
 
     apt install -y wget php php-pgsql php-gd php-imap php-mbstring php-ldap php-zip php-xml
 
-3. The latest version of LimeSurvey that works with NES is 2.73.1:
+3. Get the latest version of LimeSurvey that works with NES is 2.73.1::
 
     cd /var/www
 
