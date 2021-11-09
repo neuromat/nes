@@ -15,11 +15,11 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 project = u'NES'
-copyright = u'NeuroMat, 2018'
+copyright = u'NeuroMat, 2021'
 author = u'NeuroMat'
 
-version = u'1.35'
-release = u'1.35'
+version = u'1.72.6'
+release = u'1.72.6'
 
 language = 'en'
 
