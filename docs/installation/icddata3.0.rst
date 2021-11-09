@@ -15,13 +15,13 @@ Before loading ICD, you have to guarantee that all migrations have been applied.
 
 Activate virtualenv::
 
-    cd /var/www/nes-system/
+    cd /usr/local/nes-system/
     
     source bin/activate
 
 Change path to::
  
-    cd /var/www/nes-system/nes/patientregistrationsystem/qdc
+    cd /usr/local/nes-system/nes/patientregistrationsystem/qdc
 
 Update migrations::
 
@@ -39,7 +39,7 @@ Loading ICD data
 
 Commands to execute steps defined above are::
 
-    cd /var/www/nes-system/nes/resources/load-idc-table/
+    cd /usr/local/nes-system/nes/resources/load-idc-table/
 
 
 Verify that the file exists::
@@ -49,13 +49,13 @@ Verify that the file exists::
 
 Activate virtualenv::
 
-    cd /var/www/nes-system/
+    cd /usr/local/nes-system/
     
     source bin/activate
 
 Change path to::
  
-    cd /var/www/nes-system/nes/patientregistrationsystem/qdc
+    cd /usr/local/nes-system/nes/patientregistrationsystem/qdc
 
 Update translation data::
 
