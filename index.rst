@@ -85,6 +85,10 @@ This documentation is divided in 6 parts:
  - :ref:`translation`
  - :ref:`search`
  - :ref:`permissions`
+ 
+- :ref:`For Developers <how-to-run-the-unit-tests-of-nes>`
 
+ - :ref:`how-to-run-the-unit-tests-of-nes`
+ 
 - :ref:`videos`
 - :ref:`training`
