@@ -78,6 +78,12 @@ This documentation is divided in 6 parts:
    userguide/search
    userguide/permissions
 
+.. toctree::
+   :maxdepth: 1
+   :caption: For Developers
+   :titlesonly:
+   
+   developers/tests
 
 .. toctree::
    :maxdepth: 1
