@@ -1,4 +1,4 @@
-FROM alpine:3.12 as wheeler
+FROM python:3.8-alpine3.12 as wheeler
 ENV PYTHONUNBUFFERED=1
 
 RUN apk update && \
@@ -10,8 +10,6 @@ RUN apk update && \
 		postgresql-dev \
 		openblas-dev \
 		libjpeg-turbo-dev \
-		python3-dev \
-		py3-pip \
 		hdf5-dev && \
 	rm -rf /var/cache/apk/* && \
 	ln -s /usr/include/locale.h /usr/include/xlocale.h
@@ -44,7 +42,7 @@ RUN mkdir -p /wheels/requirement && \
 
 WORKDIR /wheels
 
-RUN pip3 install -U wheel && \
+RUN pip3 install -U pip setuptools wheel && \
 	pip3 install -r requirement/requirements.txt && \
 	pip3 wheel -r requirement/requirements.txt
 
@@ -54,12 +52,13 @@ SHELL ["/bin/sh","-exc"]
 
 RUN apk update && \
 	apk add --no-cache \
-	git \
-	libpq \
-	openblas-dev \
-	python3 \
-	py3-pip \
-	hdf5-dev && \
+		git \
+		libpq \
+		openblas-dev \
+		libjpeg-turbo-dev \
+		python3 \
+		py3-pip \
+		hdf5-dev && \
 	rm -rf /var/cache/apk/*
 
 ARG NES_DIR=/nes
@@ -69,7 +68,7 @@ COPY --from=wheeler /wheels /wheels
 
 COPY --from=wheeler $NES_DIR $NES_DIR
 
-RUN pip3 install -U wheel && \
+RUN pip3 install -U pip setuptools wheel && \
 	pip3 install -r /wheels/requirement/requirements.txt -f /wheels && \
 		rm -rf /wheels && \
 		rm -rf /root/.cache/pip*
@@ -83,4 +82,4 @@ ENV NES_PORT ${NES_PORT:-8000}
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD [ "/bin/sh", "-c", "/usr/bin/python3 ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]
+CMD [ "/bin/sh", "-c", "/usr/bin/python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]

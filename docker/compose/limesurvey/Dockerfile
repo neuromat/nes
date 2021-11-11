@@ -24,7 +24,7 @@ ENV APACHE2_CONF_DIR="${LIMESURVEY_DIR}/application/config"
 
 RUN mkdir -p "$LIMESURVEY_DIR" && \
 		wget "$LIMESURVEY_URL_DOWNLOAD" -qO - | \
-			tar xzv --strip-components=1 -C "$LIMESURVEY_DIR" && \
+			tar xz --strip-components=1 -C "$LIMESURVEY_DIR" && \
 		chown -R apache:apache "$LIMESURVEY_DIR" && \
 		chmod -R o-rwx "$LIMESURVEY_DIR" && \
 		chmod -R 770 "${LIMESURVEY_DIR}"/application/config/ && \

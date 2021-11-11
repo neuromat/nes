@@ -1,5 +1,6 @@
-FROM alpine:3.12 as wheeler
+FROM python:3.8-alpine3.12 as wheeler
 ENV PYTHONUNBUFFERED=1
+
 
 RUN apk update && \
 	apk add --no-cache \
@@ -7,12 +8,10 @@ RUN apk update && \
 		freetype-dev \
 		build-base \
 		git \
-		# The limesurvey version compatible with NES isn't compatible with Postgresql11+
+		# The limesurvey version compatible with NES isn't compatible with Postgresql11+ \\
 		postgresql-bdr-dev \
 		openblas-dev \
 		libjpeg-turbo-dev \
-		python3-dev \
-		py3-pip \
 		hdf5-dev && \
 	rm -rf /var/cache/apk/* && \
 	ln -s /usr/include/locale.h /usr/include/xlocale.h
@@ -45,7 +44,7 @@ RUN mkdir -p /wheels/requirement && \
 
 WORKDIR /wheels
 
-RUN pip3 install -U wheel && \
+RUN pip3 install -U pip setuptools wheel && \
 	pip3 install -r requirement/requirements.txt && \
 	pip3 wheel -r requirement/requirements.txt
 
@@ -107,7 +106,7 @@ ENV LIMESURVEY_DIR=$LIMESURVEY_DIR
 
 RUN mkdir -p "$LIMESURVEY_DIR" && \
 		wget "$LIMESURVEY_URL_DOWNLOAD" -qO - | \
-			tar xzv --strip-components=1 -C "$LIMESURVEY_DIR" && \
+			tar xz --strip-components=1 -C "$LIMESURVEY_DIR" && \
 		chown -R apache:apache "$LIMESURVEY_DIR" && \
 		chmod -R o-rwx "$LIMESURVEY_DIR" && \
 		chmod -R 770 "${LIMESURVEY_DIR}"/application/config/ && \
@@ -125,7 +124,7 @@ COPY --from=wheeler /wheels /wheels
 
 COPY --from=wheeler $NES_DIR $NES_DIR
 
-RUN pip3 install -U wheel && \
+RUN pip3 install -U pip setuptools wheel && \
 	pip3 install -r /wheels/requirement/requirements.txt -f /wheels && \
 		rm -rf /wheels && \
 		rm -rf /root/.cache/pip*
@@ -134,6 +133,11 @@ VOLUME $NES_DIR
 
 # RUN ###########################################################
 ENV SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
+
+# This problem is probably related to alpine:3.12 python version:
+# https://stackoverflow.com/questions/60588431/psycopg2-import-error-ssl-check-private-key-symbol-not-found     
+ENV LD_PRELOAD='/lib/libssl.so.1.1'
+
 
 COPY ./entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]

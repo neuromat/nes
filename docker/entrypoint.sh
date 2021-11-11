@@ -50,10 +50,6 @@ SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
 NES_PROJECT_PATH="${NES_DIR}/patientregistrationsystem/qdc"
 NES_SETUP_PATH="${NES_PROJECT_PATH}/qdc"
 
-# This problem is probably related to alpine:3.12 python version:
-# https://stackoverflow.com/questions/60588431/psycopg2-import-error-ssl-check-private-key-symbol-not-found
-export LD_PRELOAD=/lib/libssl.so.1.1
-
 # INITIALIZE POSTGRESQL ##################################################
 if [ -s "$PGDATA/PG_VERSION" ]
 then
@@ -285,12 +281,13 @@ else
 	EOF
 
 	su postgres -c "pg_ctl start -w -D $PGDATA"
-	python3 manage.py migrate
+	python3 -u manage.py migrate
 	# Different versions may have different commannds
-	python3 manage.py shell < add_initial_data.py || true
-	python3 manage.py loaddata load_initial_data.json || true
-	python3 manage.py shell < /tmp/create_superuser.py || true
-	python3 manage.py import_icd_cid --file icd10cid10v2017.csv || true
+	python3 -u manage.py shell < add_initial_data.py || true
+	python3 -u manage.py loaddata load_initial_data.json || true
+	python3 -u manage.py shell < /tmp/create_superuser.py || true
+	python3 -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
+	python3 -u manage.py createcachetable|| true
 
 	rm /tmp/create_superuser.py
 

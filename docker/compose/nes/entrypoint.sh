@@ -107,12 +107,13 @@ else
 		User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
 	EOF
 
-	python3 manage.py migrate
+	python3 -u manage.py migrate
 	# Different versions may have different commands
-	python3 manage.py shell < add_initial_data.py  || true
-	python3 manage.py loaddata load_initial_data.json || true
-	python3 manage.py shell < /tmp/create_superuser.py || true
-	python3 manage.py import_icd_cid --file icd10cid10v2017.csv || true
+	python3 -u manage.py shell < add_initial_data.py  || true
+	python3 -u manage.py loaddata load_initial_data.json || true
+	python3 -u manage.py shell < /tmp/create_superuser.py || true
+	python3 -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
+	python3 -u manage.py createcachetable || true
 
 	rm /tmp/create_superuser.py
 
