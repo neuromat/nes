@@ -336,8 +336,8 @@ else
 		stdout_logfile_maxbytes=0
 
 		[program:nes]
-		; This way we trick djangointo thinking its running on a tty
-		command=sh -c '/usr/bin/python3 $NES_PROJECT_PATH/manage.py runserver -v3 $NES_IP:$NES_PORT > /dev/pts/0'
+		; This way we trick django into thinking its running on a tty and skip error-prone git checks
+		command=sh -c 'GIT_PYTHON_REFRESH=quiet /usr/bin/python3 $NES_PROJECT_PATH/manage.py runserver -v3 $NES_IP:$NES_PORT > /dev/pts/0'
 		user=nobody
 		priority=2 ; must start after limesurvey
 		autostart=true
