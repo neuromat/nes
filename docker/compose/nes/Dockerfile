@@ -58,6 +58,7 @@ RUN apk update && \
 		libjpeg-turbo-dev \
 		python3 \
 		py3-pip \
+		graphviz \
 		hdf5-dev && \
 	rm -rf /var/cache/apk/*
 
