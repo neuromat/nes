@@ -5,8 +5,7 @@
 {
   docker start nes
 } || {
-  docker stop nes
-  docker rm nes
+  docker rm -f nes
   docker run -dit --name nes \
       --mount type=bind,source=$ENTRYPOINT_FILE,target=/entrypoint.sh \
       -v $LIMESURVEY_CONFIG_DIR:/var/www/limesurvey/application/config \
