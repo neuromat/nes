@@ -1,0 +1,4 @@
+ENTRYPOINT_FILE=/home/dreese/Proyectos/dreese/development/FPUNA/nes-1/entrypoint_local_development.sh
+LIMESURVEY_CONFIG_DIR=/home/dreese/Proyectos/dreese/development/FPUNA/volumes/limesurvey
+PG_DB_DIR=/home/dreese/Proyectos/dreese/development/FPUNA/volumes/postgres_db
+NES_DIR=/home/dreese/Proyectos/dreese/development/FPUNA/nes-1
