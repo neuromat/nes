@@ -1,15 +1,15 @@
 .. _solution-settings:
 
-Solution Settings
+Configuración de la solución
 =================
 
-In the majority of electroencephalogram (EEG) examinations, scalp electrodes that are not in direct contact with the tissue are used; the indirect contact is established by an electrolyte bridge formed by an electrode jelly applied between the electrode and the skin. The electrochemical properties of the metal/liquid junction and the skin/electrolyte junction cause a steady electrical potential and an electrical impedance in the connection between tissue and apparatus. Both the electrode potential and the electrode impedance can restrict the performance of the recording system. This page allows to registered the kind of solution used in the experiment.
-This setting allows to register the solution used in the experiment. The following information can be registered:
+En la mayoría de los exámenes de electroencefalograma (EEG), se utilizan electrodos del cuero cabelludo que no están en contacto directo con el tejido; el contacto indirecto se establece por un puente electrolítico formado por una gelatina de electrodo aplicada entre el electrodo y la piel. Las propiedades electroquímicas de la unión metal/líquido y la unión piel/electrolito causan un potencial eléctrico constante y una impedancia eléctrica en la conexión entre el tejido y el aparato. Tanto el potencial del electrodo como la impedancia del electrodo pueden restringir el rendimiento del sistema de grabación. Esta página permite registrar el tipo de solución utilizada en el experimento.
+Esta configuración permite registrar la solución utilizada en el experimento. Se puede registrar la siguiente información:
 
-* :ref:`manufacturer`: The manufacturer of the solution used in the experiment.
-* :ref:`Identification <solution>`: The name of the solution. This can be filtered by manufacturer. 
-When an identification is selected, the description field shows information about the solution used.
+* :ref:`manufacturer`: El fabricante de la solución utilizada en el experimento.
+* :ref:`Identification <solution>`: Nombre de la solución. Esto se puede filtrar por fabricante. 
+Cuando se selecciona una identificación, el campo de descripción muestra información sobre la solución utilizada.
 
-.. note:: If the manufacturer and/or Identification does not exist, it has to be added in the :ref:`equipment-set-up` module. 
+.. nota:: Si el fabricante y/o la identificación no existen, debe añadirse en el modulo :ref:`equipment-set-up` . 
 
 .. images:: ../../../_img/solution_settings.png)

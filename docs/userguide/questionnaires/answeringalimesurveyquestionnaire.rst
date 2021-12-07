@@ -1,66 +1,66 @@
 .. _answering-a-limesurvey-questionnaire:
 
-Answering a LimeSurvey Questionnaire
+Responder a un cuestionario de LimeSurvey
 ====================================
 
-NES interfaces with LimeSurvey for supporting required filling or experiment questionnaires (see :ref:`questionnaires`, :ref:`participant-questionnaires`, and :ref:`questionnaires-of-the-experimental-protocol` for more information).
+NES interactúa con LimeSurvey para admitir los cuestionarios de llenado o experimento requeridos (consulte :ref:`questionnaires`, :ref:`participant-questionnaires`, y :ref:`questionnaires-of-the-experimental-protocol` para más informacion).
 
 .. _answering-a-questionnaire-at-limesurvey:
 
-Answering a Questionnaire at LimeSurvey
+Responder a un cuestionario en LimeSurvey
 ---------------------------------------
 
-This is an example of a LimeSurvey questionnaire:
+Este es un ejemplo de un cuestionario de LimeSurvey:
 
 .. image:: ../../_img/participant_limesurvey_questionnaire.png
 
-At the beginning, LimeSurvey presents the amount of questions presented in the questionnaire.
+Al principio, LimeSurvey presenta la cantidad de preguntas presentadas en el cuestionario.
 
-Each questionnaire is built in a different way, so you either scroll down through the window or if there`s a `Next` button, you may click it to start answering the questionnaire at LimeSurvey.
+Cada cuestionario está construido de una manera diferente, por lo que puede desplazarse hacia abajo a través de la ventana o si hay un boton `Next` , puede hacer clic en él para comenzar a responder el cuestionario en LimeSurvey.
 
-According to each different type of questionnaire, you inform the desired answer(s) and choose one of the buttons described below, in order to take the correct action:
+De acuerdo con cada tipo diferente de cuestionario, usted informa la(s) respuesta(s) deseada(s) y elige uno de los botones que se describen a continuación, con el fin de tomar la acción correcta:
 
-* **Previous, Next:** Navigate the groups of questions by showing the previous or next page;
-* **Submit (Enviar):** Indicates that you finished answering the questionnaire (some questionnaires do not present this button);
-* **Resume later (Retomar mais tarde):** Allows you to stop answering and continue later;
-* **Exit and clear survey (Sair e apagar o questionário):** Deletes all answers already given.
+* **Anterior, Siguiente:** Navegue por los grupos de preguntas mostrando la página anterior o siguiente;
+* **Enviar (Enviar):** Indica que terminó de responder el cuestionario (algunos cuestionarios no presentan este botón);
+* **Reanudar más tarde (Retomar mais tarde):** Le permite dejar de responder y continuar más tarde;
+* **Encuesta de salida y borrado (Sair e apagar o questionário):** Elimina todas las respuestas ya dadas.
 
 .. _correcting-questionnaire:
 
-Correcting Questionnaire
+Cuestionario de corrección
 ------------------------
 
-Unless you answer all obligatory questions (indicated with a red "*"), you can't continue to the next page or submit the questionnaire.
+A menos que responda a todas las preguntas obligatorias (indicadas con un "*" rojo), no puede continuar a la página siguiente ni enviar el cuestionario.
 
 .. image:: ../../_img/participant_limesurvey_answer_error.png 
 
 .. _answering-question-later:
 
-Answering Questions Later
+Responder preguntas más tarde
 -------------------------
 
-If you choose to stop answering the questionnaire by clicking the `Resume later` button, LimeSurvey saves the answers already given.
+Si decide dejar de responder al cuestionario haciendo clic en el botón `Resume later` , LimeSurvey guarda las respuestas ya dadas.
 
 .. image:: ../../_img/participant_limesurvey_resume_later.png
 
-You will be able to go back later and continue filling the questionnaire from the point where you stopped the last time. If you click this option, NES indicates that your questionnaire is not completely answered.
+Podrá regresar más tarde y continuar completando el cuestionario desde el punto en que se detuvo la última vez. Si hace clic en esta opción, NES indica que su cuestionario no se ha respondido completamente.
 
 .. _exiting-and-clearing-questionnaires:
 
-Exiting and Clearing Questionnaires
+Cuestionarios de salida y compensación
 -----------------------------------
 
-Click `Exit and clear survey` button if you want to exit LimeSurvey discarding the answers already given. Important to notice that this is not going to delete the fill in NES, it will take effect only at LimeSurvey.
+Click en el boton `Exit and clear survey` si desea salir de LimeSurvey descartando las respuestas ya dadas. Es importante tener en cuenta que esto no va a eliminar el relleno en NES, tendrá efecto solo en LimeSurvey.
 
 .. image:: ../../_img/participant_limesurvey_exit_clear_survey.png
 
 .. _finishing-questionnaire:
 
-Finishing Questionnaire
+Cuestionario de finalización
 -----------------------
 
-When the process is finished, questions are saved, and a message is presented to indicate this.
+Cuando finaliza el proceso, se guardan las preguntas y se presenta un mensaje para indicarlo.
 
 .. image:: ../../_img/participant_limesurvey_answer_end.png
 
-Some questionnaires will present a `Submit` button that should be clicked to finish the questionnaire, but others won't; in this case, when last page is reached, the screen above is presented.
+Algunos cuestionarios presentarán un boton `Submit` que se debe hacer clic para terminar el cuestionario, pero otros no lo harán; en este caso, cuando se llega a la última página, se presenta la pantalla de arriba.

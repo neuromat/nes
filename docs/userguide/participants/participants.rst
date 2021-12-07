@@ -1,33 +1,33 @@
 .. _participants:
 
-Participants
+Participantes
 ============
 
-Participant is a person who takes part in :ref:`experiments`.
+Participante es una persona que participa en :ref:`experiments`.
 
 .. _searching-a-participant:
 
-Searching a Participant
+Buscando un Participante
 -----------------------
 
-In order to access participants registered at NES, click the `Participants` menu item and the `Search Participant` screen will show up. The best way to find a participant is either writing part of the name or Natural Persons Register number (CPF) and choose a name/CPF from the list that appears.
+Para acceder a los participantes registrados en NES, haga clic en el item de menu  `Participants`  y la pantalla de `Search Participant` aparecerá. La mejor manera de encontrar un participante es escribir parte del nombre o el número de ID y elegir un nombre / ID de la lista que aparece.
 
 .. image:: ../../_img/participant_list.png
 
-You can also insert a new participant, if you have permission to it (see :ref:`permissions` for more information), by clicking `Insert new` button. 
+También puede insertar un nuevo participante, si tiene permiso para ello (consulte :ref:`permissions` para obtener más información), haciendo clic en el boton `Insert new` . 
 
 .. _viewing-a-participant:
 
-Viewing a Participant
+Visualización de un participante
 ---------------------
 
-After selecting a participant from the search result list, the participant's personal information is shown.
+Después de seleccionar un participante de la lista de resultados de búsqueda, se muestra la información personal del participante.
 
 .. image:: ../../_img/participant_personal_data.png
 
-You may delete the participant if you have  the right permission. The `Delete` button will appear in this case (in red, at the bottom of the page), but won't appear if you are at the :ref:`edition mode <creating-and-editing-a-participant>`.
+Puede eliminar al participante si tiene el permiso correcto. El boton `Delete`  aparecerá en este caso (en rojo, en la parte inferior de la página), pero no aparecerá si se encuentra en el :ref:`edition mode <creating-and-editing-a-participant>`.
 
-Participant information is divided in the following tabs:
+La información del participante se divide en las siguientes pestañas:
 
 * :ref:`personal-data`
 * :ref:`social-demographic-data`
@@ -35,28 +35,28 @@ Participant information is divided in the following tabs:
 * :ref:`medical-evaluation`
 * :ref:`participant-questionnaires`
 
-You can change from tab to tab in two different ways: either clicking the tab name or using the navigate buttons at the bottom-right of the screen.
+Puede cambiar de una pestaña a otra de dos maneras diferentes: haciendo clic en el nombre de la pestaña o utilizando los botones de navegación en la parte inferior derecha de la pantalla.
 
-With the right permissions, it is possible to delete the participant (red button).
+Con los permisos correctos, es posible eliminar al participante (botón rojo).
 
-Click the `Edit` button to change the participant's information.
+Haga clic en el botón `Edit` para cambiar la información del participante.
 
 .. _creating-and-editing-a-participant:
 
-Creating and Editing a Participant
+Creación y edición de un participante
 ----------------------------------
 
-If you click either the `Insert new` button of the :ref:`searching-a-participant` screen or the `Edit` button while viewing a participant, NES enters the edition mode.
+Si hace clic en el botón `Insert new` de la pantalla :ref:`searching-a-participant`  o el boton `Edit` al ver a un participante, NES entra en el modo de edición.
 
 .. image:: ../../_img/participant_edit_new.png
 
-You can see that the bottom right buttons changed their descriptions to allow you to save new information, and that the `Delete` button on the bottom left was removed:
+Puede ver que los botones inferior derecho cambiaron sus descripciones para permitirle guardar nueva información, y que el `Delete` se eliminó el botón en la parte inferior izquierda:
 
 .. image:: ../../_img/participant_edit_buttons.png
 
-You can then include new information or change the existing information. Errors found are presented for correction (in red).
+A continuación, puede incluir nueva información o cambiar la información existente. Los errores encontrados se presentan para su corrección (en rojo).
 
-After entering new informations, you may click the *Save* button to save them and leave the edition mode.
+Después de ingresar nuevas informaciones, puede hacer clic en el botón *Guardar* para guardarlas y salir del modo de edición.
 
 .. toctree::
    :maxdepth: 1

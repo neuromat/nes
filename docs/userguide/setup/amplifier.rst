@@ -1,38 +1,38 @@
 .. _amplifier:
 
-Amplifier
+Amplificador
 =========
 
-On this page can be registered information about the amplifier used in any experiment.
+En esta página se puede registrar información sobre el amplificador utilizado en cualquier experimento.
 
-.. _view-the-list-of-amplifier:
+.. _view la lista del amplificador:
 
-View the list of amplifier
+Ver la lista de amplificadores
 --------------------------
 
-This page shows the list of amplifiers registered in NES. By clicking a item of the list you can edit this item.
+Esta página muestra la lista de amplificadores registrados en NES. Al hacer clic en un elemento de la lista, puede editar este elemento.
 
 .. image:: ../../_img/amplifier_list.png
 
 .. _add-amplifier:
 
-Add amplifier
+Añadir amplificador
 -------------
 
-For adding a new amplifier, it is needed to register the following information:
+Para agregar un nuevo amplificador, es necesario registrar la siguiente información:
 
-* :ref:`manufacturer`: the name of the amplifier manufacturer. This information is mandatory.
-* Identification: the name of the model of the amplifier. This information is mandatory.
-* Description: some information about the amplifier.
-* Serial number: the serial number of the equipment.
-* Category: this information indicates if the amplifier can be used in EEG and/or EMG and/or TMS experiments.
-* Gain: in this field is registered the gain by default used by this amplifier.
-* Maximum number of channels;
-* Minimum Common-mode Rejection;
-* Input Impedance: the initial impedance of the electrode model registered;
-* Unit: the unit of the impedance registered;
-* Tethering system; and
-* Amplifier detection type.
+* :ref:`manufacturer`: el nombre del fabricante del amplificador. Esta información es obligatoria.
+* Identificación: el nombre del modelo del amplificador. Esta información es obligatoria.
+* Descripción: alguna información sobre el amplificador.
+* Número de serie: el número de serie del equipo.
+* Categoría: esta información indica si el amplificador se puede utilizar en experimentos EEG y/o EMG y/o TMS.
+* Ganancia: en este campo se registra la ganancia por defecto utilizada por este amplificador.
+* Número máximo de canales;
+* Rechazo mínimo en modo común;
+* Impedancia de entrada: la impedancia inicial del modelo de electrodo registrado;
+* Unidad: la unidad de la impedancia registrada;
+* Sistema de anclaje; y
+* Tipo de detección de amplificador.
 
 .. image:: ../../_img/amplifier_add.png
 

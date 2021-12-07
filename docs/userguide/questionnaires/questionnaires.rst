@@ -1,49 +1,49 @@
 .. _questionnaires:
 
-Questionnaires
+Cuestionarios
 ==============
 
-Questionnaires are a very flexible way to collect data from a participant. In NES, a questionnaire may or may not have required filling. Experiment questionnaires are configured as a step in the experimental protocol of a :ref:`group <group-of-participants>`. Questionnaires that haven't required filling are useful to collect data that are not foreseen in the :ref:`participant's section <participants>`. Any questionnaire can have both functions.
+Los cuestionarios son una forma muy flexible de recopilar datos de un participante. En NES, un cuestionario puede o no haber requerido llenado. Los cuestionarios de experimento se configuran como un paso en el protocolo experimental de un :ref:`group <group-of-participants>`. Los cuestionarios que no han requerido llenado son útiles para recopilar datos que no están previstos en el :ref:`participant's section <participants>`. Cualquier cuestionario puede tener ambas funciones.
 
 .. _questionnaires-list:
 
-Questionnaires List
+Lista de cuestionarios
 -------------------
 
-In order to access all questionnaires registered at NES, click `Questionnaires` menu item and the `Questionnaire List` will show up displaying the informations about each questionnaire, namely `limesurvey ID`, `title`, if its `fill is required` and if the `questionnaire is or isn’t active` at LimeSurvey. Now, as this is an expensive call to LimeSurvey API, the informations are saved in the database at the moment of its registration at NES. If you want to update the informations of that list, you will need to click in the `Update` button at the bottom of the page. This might take a while depending of how many questionnaires you have registered.
+Para acceder a todos los cuestionarios registrados en NES, haga clic en el menu `Questionnaires` y en  `Questionnaire List` aparecerá mostrando la información sobre cada cuestionario, a saber: `limesurvey ID`, `title`, si esto `fill is required` y si el `questionnaire is or isn’t active` en LimeSurvey. Ahora, como esta es una llamada costosa a la API de LimeSurvey, la información se guarda en la base de datos en el momento de su registro en NES. Si desea actualizar la información de esa lista, deberá hacer clic en el botón `Update` en la parte inferior de la página. Esto puede tomar un tiempo dependiendo de cuántos cuestionarios haya registrado.
 
 .. image:: ../../_img/questionnaire_list.png
 
-This screen allows you to:
+Esta pantalla le permite:
 
 * :ref:`Insert a New Questionnaire <inserting-a-new-questionnaire>`
 * :ref:`View a Questionnaire <viewing-a-questionnaire>`
 
 .. _inserting-a-new-questionnaire:
 
-Inserting a New Questionnaire
+Inserción de un nuevo cuestionario
 -----------------------------
 
-Click the `Insert new questionnaire` button to include a new questionnaire.
+Click en el boton `Insert new questionnaire` para incluir un nuevo cuestionario.
 
 .. image:: ../../_img/questionnaire_insert.png
 
-From the questionnaire list, you select the questionnaire you want to register. Questionnaires in this list were previously created in LimeSurvey (see :ref:`limesurvey` to learn how to create a new questionnaire).
+En la lista de cuestionarios, seleccione el cuestionario que desea registrar. Los cuestionarios de esta lista se crearon previamente en LimeSurvey (véase :ref:`limesurvey` para aprender a crear un nuevo cuestionario).
 
-If this questionnaire has required filling, you have to click the `Required fill` checkbox.
+Si este cuestionario ha requerido ser llenado, debe hacer clic en el checkbox `Required fill` .
 
-Click either `Save` button to include the questionnaire, or `Cancel` to go back to previous page without saving.
+Click en `Save` para incluir el cuestionario, o `Cancel` para volver a la página anterior sin guardar.
 
 .. _viewing-a-questionnaire:
 
-Viewing a Questionnaire
+Visualización de un cuestionario
 -----------------------
 
-To see more information about a specific questionnaire, click on the questionnaire link.
+Para ver más información sobre un cuestionario específico, haga clic en el enlace del cuestionario.
 
 .. image:: ../../_img/questionnaire_view_experiment.png
 
-You are seeing 4 sections:
+Estás viendo 4 secciones:
 
 * `Questionnaire Information`_
 * `Sensitive Questions`_
@@ -52,58 +52,58 @@ You are seeing 4 sections:
 
 .. _questionnaire-information:
 
-Questionnaire Information
+Información del cuestionario
 `````````````````````````
 
 .. image:: ../../_img/questionnaire_view_information.png
 
-If you click the `Edit` button, you can change the questionnaire type. Mark the checkbox to indicate that this questionnaire should be answered by all participants registered at NES. Unmark the checkbox if this questionnaire can only be answered from inside an experiment. Questionnaires that have required filling can also be used inside an experiment.
+Si se dá click en el boton `Edit` , puede cambiar el tipo de cuestionario. Marque la casilla de verificación para indicar que este cuestionario debe ser respondido por todos los participantes registrados en NES. Desmarque la casilla de verificación si este cuestionario solo se puede responder desde dentro de un experimento. Los cuestionarios que han requerido llenado también se pueden usar dentro de un experimento.
 
 .. image:: ../../_img/questionnaire_edit_information.png
 
 .. _sensitive-questions:
 
-Sensitive Questions
+Preguntas delicadas
 ```````````````````
 
 .. image:: ../../_img/questionnaire_view_sensitive_questions.png
 
-If you click the `Edit` button, you can choose which questions are about sensitive information. Mark the checkbox to indicate that question should be marked as sensitive. Unmark the checkbox otherwise. Click either `Save` button to mark the sensitive questions, or `Cancel` to go back to previous page without saving.
+Si le dá click en el boton `Edit` , puede elegir qué preguntas son sobre información confidencial. Marque la casilla de verificación para indicar que la pregunta debe marcarse como sensible. Desmarque la casilla de verificación de lo contrario. Haga clic en el boton `Save` para marcar las preguntas delicadas, o `Cancel` Para volver a la página anterior sin guardar.
 
 .. image:: ../../_img/questionnaire_edit_sensitive_questions.png
 
 .. _answered-by-participants:
 
-Answered by Participants
+Contestado por los participantes
 ````````````````````````
 
-This section shows all the participants that have filled the questionnaire. Even if the questionnaire don't have the filling required anymore, the fills made while it was required are also listed here. If it has required filling, you will also see all the participants who should answer this questionnaire.
+Esta sección muestra todos los participantes que han rellenado el cuestionario. Incluso si el cuestionario ya no tiene el llenado requerido, los rellenos realizados mientras se requería también se enumeran aquí. Si ha requerido relleno, también verá a todos los participantes que deben responder a este cuestionario.
 
 .. image:: ../../_img/questionnaire_view_entrance_evaluation.png
 
-You can't start or continue a fill here. If you want to fill it, look at the :ref:`answering-a-questionnaire` section on Participant Questionnaires page.
+No puedes comenzar o continuar un relleno aquí. Si quieres llenarlo, mira la sección :ref:`answering-a-questionnaire` en la página Cuestionarios de los participantes.
 
 .. _used-in-experiments:
 
-Used in Experiments
+Utilizado en experimentos
 ```````````````````
 
-This section shows in which experimental protocols this questionnaire is used and the name of the participant who answered on it.
+Esta sección muestra en qué protocolos experimentales se utiliza este cuestionario y el nombre del participante que respondió en él.
 
 .. image:: ../../_img/questionnaire_view_use_in_experiments.png
 
-This is only an informative section. To be able to start or continue a fill or to get more information about the fields see :ref:`questionnaires-of-the-experimental-protocol`.
+Esta es solo una sección informativa. Para poder iniciar o continuar un relleno o para obtener más información sobre los campos ver :ref:`questionnaires-of-the-experimental-protocol`.
 
 .. _deleting-a-questionnaire:
 
-Deleting a Questionnaire
+Eliminación de un cuestionario
 ````````````````````````
 
-If you have the right :ref:`permissions`, you can stop using this questionnaire in NES by clicking the `Delete` button.
+Si tiene derecho :ref:`permissions`, Puede dejar de utilizar este cuestionario en NES haciendo clic en el botón `Delete` .
 
 .. image:: ../../_img/questionnaire_delete.png
 
-A confirmation pop-up will be shown. Click either the `Delete` button to confirm deletion or Cancel` button if you don't want to delete the questionnaire.
+Se mostrará una ventana emergente de confirmación. Haga clic en el botón `Delete`  para confirmar la eliminación o el botón `Cancelar` si no desea eliminar el cuestionario.
 
 .. toctree::
    :maxdepth: 1

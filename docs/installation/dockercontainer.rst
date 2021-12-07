@@ -1,126 +1,126 @@
 .. _installation-using-a-docker-container:
 
 ####################################
-Installation using Docker containers
+Instalación mediante contenedores Docker
 ####################################
 
 .. _tutorial-to-install-nes-using-a-single-docker-container:
 
 ***************************************************
-Tutorial to run NES using a single Docker container
+Tutorial para ejecutar NES con un único contenedor Docker
 ***************************************************
 
-NeuroMat prepared a Docker container that includes all you need to use NES. This tutorial includes:
+Es posible preparar un contenedor Docker que incluye todo lo que necesita para usar NES. Este tutorial incluye:
 
-* `Docker installation`_
-* `Docker Toolbox installation`_
-* `First NES Docker container loading`_
-* `Accessing NES`_
-* `Accessing LimeSurvey`_
-* `Using NES Docker container after first loading`_
-* `Useful information`_
+* 'Instalación de Docker'_
+* 'Instalación de Docker Toolbox'_
+* 'Primera carga de contenedores NES Docker'_
+* 'Acceso a NES'_
+* 'Acceso a LimeSurvey'_
+* 'Uso del contenedor NES Docker después de la primera carga'_
+* 'Información útil'_
 
 .. _docker-installation:
 
 ===================
-Docker installation
+Instalación del Docker
 ===================
 
-You can download `Docker Community Edition`_ for several operational systems.
+Puedes descargar `Docker Community Edition`_ para varios sistemas operativos.
 
-.. note:: Docker for Windows requires Windows 10 Professional or Windows 10 Enterprise 64-bit. For other versions (Windows 10 Home, Windows 8, or Windows 7), you must get Docker Toolbox.
+.. note:: Docker para Windows requiere Windows 10 Professional o Windows 10 Enterprise de 64 bits. Para otras versiones (Windows 10 Home, Windows 8 o Windows 7), debe obtener Docker Toolbox.
 
 .. _docker-toolbox-installation:
 
 ===========================
-Docker Toolbox installation
+Instalación de Docker Toolbox
 ===========================
 
-If you are using Windows and do not have the requirements to install Docker for Windows (see `Docker installation`_), you can install `Docker Toolbox`_
+Si está utilizando Windows y no tiene los requisitos para instalar Docker para Windows (consulte `Docker installation`_), puede instalar `Docker Toolbox`_
 
-.. note:: In the `Select Components` installation screen, select the option `Git for Windows`;
+.. note:: En la pantalla de instalación 'Seleccionar componentes', seleccione la opción 'Git para Windows`;
 
-.. note:: In the `Select Additional Tasks` installation screen, select the option `Install VirtualBox with NDISS driver (default NDIS6)`;
+.. note:: En la pantalla de instalación 'Seleccionar tareas adicionales', seleccione la opción 'Instalar VirtualBox con el controlador NDISS (NDIS6 predeterminado)`;
 
-.. note:: After installation, running ``Docker Quickstart Terminal``, maybe Windows Firewall block the Docker loading. In this case, stop the firewall, load ``Docker Quickstart Terminal``, and start the firewall again.
+.. note:: Después de la instalación, ejecutando ''Docker Quickstart Terminal'', tal vez Firewall de Windows bloquee la carga de Docker. En este caso, detenga el firewall, cargue ''Docker Quickstart Terminal'' e inicie el firewall nuevamente.
 
 .. _first-nes-docker-container-loading:
 
 ==================================
-First NES Docker container loading
+Primera carga de contenedores de NES Docker
 ==================================
 
-After Docker (or Docker Toolbox) installation, open the terminal (or ``Docker Quickstart Terminal`` if you are using Docker Toolbox) and run the command below to download and run the NES container::
+Después de la instalación de Docker (o Docker Toolbox), abra el terminal (o ``Docker Quickstart Terminal`` Si está utilizando Docker Toolbox) y ejecute el comando siguiente para descargar y ejecutar el contenedor NES::
 
     docker run -it --name nes -p 8080:8080 -p 8000:8000 neuromat/nes
 
-.. note:: For data persistence it its advisable the use of `Volumes`_ which are already created on NES container execution, but won't have mnemonic references compared to manually created named volumes.
+.. note:: Para la persistencia de los datos, es aconsejable el uso de 'Volúmenes'_ que ya se crean en la ejecución del contenedor NES, pero no tendrán referencias mnemotécnicas en comparación con los volúmenes con nombre creados manualmente.
 
-.. note:: Some environment variables may be set at NES container execution to adapt to your setup specific configuration. Such variables are available at `NES repository on Docker Hub`_.
+.. note:: Algunas variables de entorno se pueden establecer en la ejecución del contenedor NES para adaptarse a la configuración específica de la instalación. Dichas variables están disponibles en 'REPOSITORIO NES en Docker Hub'_.
 
 .. _accessing-nes:
 
 =============
-Accessing NES
+Accesando NES
 =============
 
-After load the container, you are able to access the NES system using the port 8000, but the URL depends if you are using Docker or Docker Toolbox.
+Después de cargar el contenedor, puede acceder al sistema NES utilizando el puerto 8000, pero la URL depende de si está utilizando Docker o Docker Toolbox.
 
-if you are using Docker (and not Docker Toolbox), you can access NES using `localhost` or the IP of your machine, e.g.::
+Si utiliza Docker (y no Docker Toolbox), puede acceder a NES mediante `localhost` o la IP de su máquina, e.g.::
 
     http://localhost:8000
 
-However, if you are using Docker Toolbox, you will have to know the IP that the Docker Toolbox designated for this loading. To know this IP, run ``Docker Quickstart Terminal`` and get the IP shown in the first line. Now, you can call the URL::
+Sin embargo, si está utilizando Docker Toolbox, tendrá que conocer la IP que Docker Toolbox designó para esta carga. Para conocer esta IP, ejecute ``Docker Quickstart Terminal`` y obtener la IP que se muestra en la primera línea. Ahora, puede llamar a la URL::
 
     http://<docker ip>:8000
 
-After access the login page, use the user `nes_admin` (password `nes_admin_password`).
+Después de acceder a la página de inicio de sesión, utilice el usuario `nes_admin` (contraseña `nes_admin_password`).
 
 .. _accessing-limesurvey:
 
 ====================
-Accessing LimeSurvey
+Accesando LimeSurvey
 ====================
 
-This container also contains a LimeSurvey installation. Its access is from the port 8080 and the URL depends if you are using Docker or Docker Toolbox (see `Accessing NES`_)::
+Este contenedor también contiene una instalación de LimeSurvey. Su acceso es desde el puerto 8080 y la URL depende de si está utilizando Docker o Docker Toolbox (consulte `Accessing NES`_)::
 
     http://localhost:8080/admin
 
-or::
+o::
 
     http://<docker ip>:8080/admin
 
-After access the LimeSurvey login page, use the user `limesurvey_admin` (password `limesurvey_admin_password`).
+Después de acceder a la página de inicio de sesión de LimeSurvey, utilice el usuario `limesurvey_admin` (contraseña `limesurvey_admin_password`).
 
 .. _using-nes-docker-container-after-first-loading:
 
 ==============================================
-Using NES Docker container after first loading
+Uso del contenedor DOCKER de NES después de la primera carga
 ==============================================
 
-After the first loading, NES container is already downloaded and installed in your machine. However, when you restart the machine, the container is stopped. Then, to load it again, it is necessary to start the NES container using the following command::
+Después de la primera carga, el contenedor NES ya está descargado e instalado en su máquina. Sin embargo, al reiniciar el equipo, el contenedor se detiene. Luego, para cargarlo nuevamente, es necesario iniciar el contenedor NES usando el siguiente comando::
 
     docker start nes
 
 .. _useful-information:
 
 ==================
-Useful information
+Información util
 ==================
 
-* For more detailed information see `NES repository on Docker Hub`_
-* Container NES database access: user `nes_user`, password `nes_password`
-* Container LimeSurvey database access: user `limesurvey_user`, password `limesurvey_password`
+* Para obtener información más detallada, consulte `NES repository on Docker Hub`_
+* Acceso a la base de datos de Container NES: usuario `nes_user`, contraseña `nes_password`
+* Acceso a la base de datos de Container LimeSurvey: usuario `limesurvey_user`, contraseña `limesurvey_password`
 
 .. _tutorial-to-run-nes-using_docker-compose:
 
 ****************************************
-Tutorial to run NES using Docker Compose
+Tutorial para ejecutar NES usando Docker Compose
 ****************************************
 
-Assuming you have already installed Docker (see `Docker installation`_ and `Docker Toolbox installation`_), you have already installed Docker Compose aswell, since they come packed together and there is no need for extra configuration.
+Suponiendo que ya ha instalado Docker (consulte `Docker installation`_ y `Docker Toolbox installation`_), también ha instalado Docker Compose, ya que vienen empaquetados juntos y no hay necesidad de configuración adicional.
 
-This tutorial includes:
+Este tutorial incluye:
 
 * `Building docker-compose file`_
 * `Running the composed NES container`_
@@ -128,10 +128,10 @@ This tutorial includes:
 .. _building-docker-compose-file:
 
 ============================
-Building docker-compose file
+Creación de archivos docker-compose
 ============================
 
-In order to run the composed version of NES you need to build a docker-compose.yml file, for such you may use the following example:
+Para ejecutar la versión compuesta de NES necesita crear un archivo docker-compose.yml, para ello puede utilizar el siguiente ejemplo:
 
 .. code-block:: yaml
 
@@ -140,7 +140,7 @@ In order to run the composed version of NES you need to build a docker-compose.y
 
      # Postgres_LimeSurvey
      db_limesurvey:
-       image: postgres:11-alpine
+       image: postgres:alpine
        volumes:
          - "limesurvey_pgdata:/var/lib/postgresql/data"
        environment:
@@ -218,32 +218,31 @@ In order to run the composed version of NES you need to build a docker-compose.y
      limesurvey_data:
      nes_data:
 
-Please note that PostgreSQL version used for LimeSurvey is fixed as `postgres:11-alpine` because the latest version of LimeSurvey that works with NES is 2.73.1 and this version does not work with PostgreSQL12+.
 
-More information regarding environmennt variables and service itegration for the composed version of NES can be found in `NES-compose repository on Docker Hub`_.
+Puede encontrar más información sobre las variables ambientales y la integración de servicios para la versión compuesta de NES en `NES-compose repository on Docker Hub`_.
 
 .. _running-the-composed-nes-container:
 
 ==================================
-Running the composed NES container
+Ejecución del contenedor NES compuesto
 ==================================
 
-After setting up the docker-compose file in `Building docker-compose file`_ you just need to run the following command to have a fully deployed container version of NES::
+Después de configurar el archivo docker-compose en `Building docker-compose file`_ Sólo tiene que ejecutar el siguiente comando para tener una versión de contenedor completamente implementada de NES::
 
     docker-compose up
 
-From this step onward, NES and LimeSurvey acess will behave the same as in the single container setup (see `Accessing NES`_ and `Accessing LimeSurvey`_).
+A partir de este paso, NES y LimeSurvey se comportarán igual que en la configuración de un solo contenedor (consulte `Accessing NES`_ y `Accessing LimeSurvey`_).
 
 
 **********************
-Additional information
+Información adicional
 **********************
 
-* Any additional information regarding Docker or Docker compose can be found in `docker documentation`_.
-* NES containerization further info, aswell as any other Neuromat's containerization project, may be found on `NeuroMat organization on Docker Hub`_.
+* Cualquier información adicional sobre Docker o Docker compose se puede encontrar en `docker documentation`_.
+* La contenedorización de NES puede encontrar más información, así como cualquier otro proyecto de contenedorización de Neuromat, en `NeuroMat organization on Docker Hub`_.
 
 **********
-References
+Referencias
 **********
 .. target-notes::
 

@@ -1,17 +1,17 @@
 .. _researchers-of-an-experiment:
 
-Researchers of an Experiment
+Investigadores de un experimento
 ============================
 
-The researchers participating of a study may not be involved in all experiments, being necessary to attribute them by experiment. To add researchers to an experiment, they have to be registered at NES system. To do that, you can visit the :ref:`researchers menu <researchers>`. To add researchers to an experiment, you have to click at `Insert new` button at the `Researchers` section at the experiment.
+Los investigadores que participan en un estudio pueden no estar involucrados en todos los experimentos, siendo necesario atribuirlos por experimento. Para agregar investigadores a un experimento, deben estar registrados en el sistema NES. Para ello, puedes visitar :ref:`researchers menu <researchers>`. Para agregar investigadores a un experimento, debe hacer clic en el boton `Insert new` en la sección `Researchers` .
 
 .. image:: ../../_img/researchers_section.png
 
-A list with all researchers registered at NES will be shown. You may mark each researcher checkbox to attribute them to the experiment or you can click at `Select all` checkbox to select all of them. Once you select the researchers for that experiment, you can click in the `Save` button.
+Se mostrará una lista con todos los investigadores registrados en NES. Puede marcar la casilla de verificación de cada investigador para atribuirlos al experimento o puede hacer clic en `Select all` para seleccionarlos todos. Una vez que seleccione a los investigadores para ese experimento, puede hacer clic en el botón `Save` .
 
 .. image:: ../../_img/researcher_list.png
 
-The name and institution of the researchers of the experiment will appear at the Researchers section. To remove one of them you can click at the |delete icon| icon in the same section and click in the `Delete` button at the confirmation window that appears.
+El nombre y la institución de los investigadores del experimento aparecerán en la sección Investigadores. Para eliminar uno de ellos, puede hacer clic en el icono |delete icon| en la misma sección y haga clic en el botón `Delete` en la ventana de confirmación que aparece.
 
 .. |delete icon| image:: ../../_img/delete_icon.png
 

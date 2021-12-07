@@ -3,27 +3,27 @@
 Material
 ========
 
-NES allows to register information about the material of electrode used in experiments.
-On this page you can register the material from which the electrode is made.
+NES permite registrar información sobre el material del electrodo utilizado en experimentos.
+En esta página puede registrar el material del que está hecho el electrodo.
 
 .. _view-the-list-of-materials:
 
-View the list of materials
+Ver la lista de materiales
 --------------------------
 
-This page shows the list of materials contemplated by NES. By clicking a item of the list you can edit this item.
+Esta página muestra la lista de materiales contemplados por NES. Al hacer clic en un elemento de la lista, puede editar este elemento.
 
 .. image:: ../../_img/material_list.png
 
 .. _add-material:
 
-Add Material
+Añadir material
 ------------
 
-For adding a new material, you must register the following information:
+Para agregar un nuevo material, debe registrar la siguiente información:
 
-* Name: the name of the material. This information is mandatory.
-* Description: some description about the material registered.
+* Nombre: el nombre del material. Esta información es obligatoria.
+* Descripción: alguna descripción sobre el material registrado.
 
 .. image:: ../../_img/material_edit.png
 

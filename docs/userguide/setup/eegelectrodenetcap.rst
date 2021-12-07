@@ -1,33 +1,33 @@
 .. _eeg-electrode-net-cap:
 
-EEG Electrode Net Cap
+Tapa de red de electrodo EEG
 =====================
-NES allows to register information about of the electrodes or set of electrodes used in the acquisition of EEG raw data. On this page is possible to register for each kind of electrode (individual or cap) its :ref:`manufacturer`, identification, description, serial number, the type or :ref:`model of the electrode <electrode-model>`, the :ref:`system localization <eeg-electrode-localization-system>` used and if a cap is used.
+NES permite registrar información sobre los electrodos o conjunto de electrodos utilizados en la adquisición de datos brutos de EEG. En esta página es posible registrar para cada tipo de electrodo (individual o tapa) su identificacion :ref:`manufacturer`, descripción, número de serie, el tipo o :ref:`model of the electrode <electrode-model>`, el :ref:`system localization <eeg-electrode-localization-system>` se utiliza y si se utiliza una tapa.
 
 .. _view-the-list-of-electrode-net:
 
-View the list of electrode net
+Ver la lista de redes de electrodos
 ------------------------------
 
-This page shows the list of electrode net contemplated by NES. By clicking a item of the list you can edit this item.
+Esta página muestra la lista de la red de electrodos contemplada por NES. Al hacer clic en un elemento de la lista, puede editar este elemento.
 
 .. image:: ../../_img/eeg_electrode_net_list.png
 
 .. _add-electrode-net:
 
-Add electrode net
+Añadir red de electrodos
 -----------------
 
-To add a new electrode net, you must register the following information:
+Para agregar una nueva red de electrodos, debe registrar la siguiente información:
 
-* :ref:`manufacturer`: the name of the manufacturer of the electrode net; (obligatory)
-* Identification: the name of the model of the electrode net registered; (obligatory)
-* Description: some description about the electrode net registered;
-* Serial number: serial number of the electrode net;
-* :ref:`Electrode Model Default <electrode-model>`: the electrode model by default of the electrode net registered; (obligatory)
-* :ref:`Localization system <eeg-electrode-localization-system>`: the name of the system of localization used by this electrode net.
-* Is a cap: information about if the electrode net registered is a cap (checked) or a set of individual electrodes (no checked).
-* :ref:`material`: this information appear if 'Is a cap' is selected. Here adds the material in which the cap is made.
+* :ref:`manufacturer`: el nombre del fabricante de la red de electrodos; (obligatorio)
+* Identificación: el nombre del modelo de la red de electrodos registrada; (obligatorio)
+* Descripción: alguna descripción sobre la red de electrodos registrada;
+* Número de serie: número de serie de la red de electrodos;
+* :ref:`Electrode Model Default <electrode-model>`: el modelo de electrodo por defecto de la red de electrodos registrada; (obligatorio)
+* :ref:`Localization system <eeg-electrode-localization-system>`: el nombre del sistema de localización utilizado por esta red de electrodos.
+* Es una tapa: información sobre si la red de electrodos registrada es una tapa (verificada) o un conjunto de electrodos individuales (no verificada).
+* :ref:`material`: esta información aparece si se selecciona 'Es un tope'. Aquí se añade el material en el que está hecha la tapa.
 
 .. image:: ../../_img/eeg_electrode_net_add.png
 

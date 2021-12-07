@@ -1,52 +1,52 @@
 .. _permissions:
 
-Permissions
+Permisos
 ===========
 
-NES determines what you are allowed to do in it by looking at the permissions you have.
+NES determina lo que se le permite hacer en él mirando los permisos que tiene.
 
 .. _list-of-permissions-used-by-nes:
 
-List of permissions used by NES
+Lista de permisos utilizados por NES
 -------------------------------
 
-A permission is a binary (yes/no) flag designating whether you may perform a certain task. Here is the list of permissions that NES checks while you use the system:
+Un permiso es un indicador binario (sí/no) que designa si puede realizar una determinada tarea. Aquí está la lista de permisos que NES comprueba mientras usa el sistema:
 
-* `Add user`
-* `Change user`
-* `Delete user`
-* `Add participant`
-* `Change participant`
-* `View participant`
-* `Delete participant`
-* `Export participant`
-* `View sensitive participant data`
-* `Add medical record data`
-* `View medical record data`
-* `Export medical record data`
-* `Add questionnaires`
-* `Change questionnaires`
-* `View lists of questionnaires`
-* `Delete questionnaires`
-* `Add questionnaire response`
-* `Change questionnaire response`
-* `View questionnaire response`
-* `Delete questionnaire response`
-* `Export questionnaire response`
-* `Add research project`
-* `Change research project`
-* `View research project`
-* `Delete research project`
-* `Add experiment`
-* `Change experiment`
-* `Delete experiment`
-* `Change research project created by others`
-* `Register equipment`
+* `Agregar ususario`
+* `Cambiar usuario`
+* `Borrar usuario`
+* `Agregar participante`
+* `Cambiar participante`
+* `Ver participante`
+* `Borrar participante`
+* `Exportar participante`
+* `Ver datos confidenciales de los participantes`
+* `Agregar datos de registros médicos`
+* `Ver datos de registros médicos`
+* `Exportar datos de registros médicos`
+* `Agregar cuestionarios`
+* `Cambiar cuestionarios`
+* `Ver listas de cuestionarios`
+* `Eliminar cuestionarios`
+* `Agregar respuesta al cuestionario`
+* `Cambiar la respuesta al cuestionario`
+* `Ver respuesta al cuestionario`
+* `Eliminar la respuesta al cuestionario`
+* `Exportar respuesta al cuestionario`
+* `Añadir proyecto de investigación`
+* `Proyecto de investigación del cambio`
+* `Ver proyecto de investigación`
+* `Eliminar proyecto de investigación`
+* `Agregar experimento`
+* `Experimento de cambio`
+* `Eliminar experimento`
+* `Proyecto de investigación de cambio creado por otros`
+* `Registrar equipos`
 
 .. _group-of-users-roles:
 
-Group of Users / Roles
+Grupo de Usuarios / Roles
 ----------------------
-To easily apply permissions to more than one user, the administrator of NES can create groups of users. Using groups, instead of applying individual permissions directly to users, the administrator applies permissions to groups and include users in one or more groups. This way, if the group has a certain permission and a user is in this group, he or she will also have this permission.
+Para aplicar fácilmente permisos a más de un usuario, el administrador de NES puede crear grupos de usuarios. Mediante el uso de grupos, en lugar de aplicar permisos individuales directamente a los usuarios, el administrador aplica permisos a los grupos e incluye usuarios en uno o más grupos. De esta manera, si el grupo tiene un determinado permiso y un usuario está en este grupo, él o ella también tendrá este permiso.
 
-In NES, we treat groups of users as roles. Thus, although you may be in more than one group (have more than one role), usually the permissions of a single role will be exactly what you need. The roles we suggest for NES are `Administrator`, `Attendant`, `Physiotherapist`, `Doctor`, `Junior researcher`, and `Senior researcher`. See :ref:`script-for-creating-initial-data` to know the permissions each role has. However, using the :ref:`administration-interface`, the administrator may change the list of roles and the permissions for each role to best suit the needs of the hospital or the research institution.
+En NES, tratamos a los grupos de usuarios como roles. Por lo tanto, aunque puede estar en más de un grupo (tener más de un rol), generalmente los permisos de un solo rol serán exactamente lo que necesita. Los roles que sugerimos para NES son `Administrador`, `Asistente`, `Fisioterapeuta`, `Doctor`, `Investigador Junior`, and `Investigador Senior`. Ver :ref:`script-for-creating-initial-data` para conocer los permisos que tiene cada rol. Sin embargo, utilizando el :ref: `administration-interface`, el administrador puede cambiar la lista de roles y los permisos para cada rol para que se adapte mejor a las necesidades del hospital o la institución de investigación.

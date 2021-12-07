@@ -1,64 +1,64 @@
 .. _export-participant-data:
 
-Export Participant Data
+Exportar datos del Participante
 =======================
 
-In the exportation by participant, you can filter of which participants you want get the data. You can choose between all participants or filter them by gender, marital status, locations, diagnosis and/or age. A list of the participants that go through the filter is shown. Clicking in the `Next` button, you go to the `Structure and fields selection` as you can see in the image bellow:
+En la exportación por participante, puede filtrar de qué participantes desea obtener los datos. Puede elegir entre todos los participantes o filtrarlos por género, estado civil, ubicaciones, diagnóstico y / o edad. Se muestra una lista de los participantes que pasan por el filtro. Haciendo clic en el botón `Next` , vaya a la `Structure and fields selection` como puedes ver en la imagen de abajo:
 
 .. image:: ../../_img/export_participant_data.png
 
 .. _general-information-export-participant:
 
-General Information
+Informacion General
 -------------------
 
-In this section, you are able to configure the structure of the directory where the questionnaires will be stored, the questionnaires evaluation headings and responses format that will be exported from information at LimeSurvey.
-This options only make sense if you set up at least one questionnaire for exporting.
+En esta sección, puede configurar la estructura del directorio donde se almacenarán los cuestionarios, los encabezados de evaluación de los cuestionarios y el formato de respuestas que se exportarán a partir de la información de LimeSurvey.
+Estas opciones solo tienen sentido si configura al menos un cuestionario para exportar.
 
 .. image:: ../../_img/general_information_export.png
 
-Directory structure for evaluation questionnaire. You can choose either one or both options checked. You should not leave all the options unchecked.  All of them are checked by default.
+Estructura de directorios para el cuestionario de evaluación. Puede elegir una o ambas opciones marcadas. No debe dejar todas las opciones sin marcar.  Todos ellos están marcados por defecto.
 
-A questionnaire evaluation data contains 2 types of information: headings, that are presented in the first line of export, and responses, that contains the lines with the selected fields from questionnaire evaluation. 
+Los datos de evaluación de un cuestionario contienen 2 tipos de información: encabezados, que se presentan en la primera línea de exportación, y respuestas, que contiene las líneas con los campos seleccionados de la evaluación del cuestionario. 
 
-There are 3 types of headings:
+Hay 3 tipos de encabezados:
 
-* Question code; 
-* Full question text;
-* Abbreviated question text (partial question text is presented);
+* Código de pregunta; 
+* Texto completo de la pregunta;
+* Texto abreviado de la pregunta (se presenta el texto parcial de la pregunta);
 
-Only one choice can be checked.
+Solo se puede comprobar una opción.
 
-Responses types for export are:
+Los tipos de respuestas para la exportación son:
 
-* Answer codes;
-* Full answers;
+* Códigos de respuesta;
+* Respuestas completas;
 
-Either one or both options can be checked. You should not leave all the options unchecked.  
+Se pueden marcar una o ambas opciones. No debe dejar todas las opciones sin marcar.  
 
 .. _questionnaire-information-export-participant:
 
-Format files can be choose in two types:
+Los archivos de formato se pueden elegir en dos tipos:
 
-* CSV (Comma Separated Values);
+* CSV (valores separados por comas);
 * TSV (TabSeparated Values);
 
-Only one choice can be checked.
+Solo se puede comprobar una opción.
 
-Questionnaire Information
+Información del cuestionario
 -------------------------
 
-A list of questionnaires evaluation that contain the information selected from filters (first pages, as shown :ref:`here <export>` that select them is presented. 
-A circle in blue (blue counter) presents the quantity of fields selected in each questionnaire. At the beginning, as there are no elements selected, zero is presented in all of them.
+Una lista de cuestionarios de evaluación que contienen la información seleccionada de los filtros (primeras páginas, como se muestra :ref:`here <export>` que los selecciona se presenta. 
+Un círculo en azul (contador azul) presenta la cantidad de campos seleccionados en cada cuestionario. Al principio, como no hay elementos seleccionados, se presenta cero en todos ellos.
 
 .. image:: ../../_img/questionnaire_information_export.png
 
-In order to select the fields for specific questionnaire, click in the questionnaire link and a double list with fields drop down: `Fields available` and `Fields chosen` lists. There are many ways to select the fields:
+Para seleccionar los campos para un cuestionario específico, haga clic en el enlace del cuestionario y en una lista doble con campos desplegables: `Fields available` y `Fields chosen` Listas. Hay muchas maneras de seleccionar los campos:
 
-* double click a specific field from `Fields available` list;
-* click in one field and drag up or down in order to select many continuous fields and proceed with next procedure (item below); 
-* choose field(s) from `Fields available` list and use the button with left arrow icon (|questionnaire_left_arrow_export|) to transfer them to the `Fields chosen` list. You can choose more than one field by clicking and holding the control(Windows/Linux)/command(Mac) key many times;
-* click the left double arrow (|questionnaire_double_left_arrow_export|) to transfer all fields from `Fields available` list to `Fields chosen` list; 
+* Haga doble clic en un campo específico desde `Fields available` ;
+* haga clic en un campo y arrastre hacia arriba o hacia abajo para seleccionar muchos campos continuos y continuar con el siguiente procedimiento (elemento a continuación); 
+* elija el campo (s) de `Fields available` enumere y use el botón con el icono de flecha izquierda (|questionnaire_left_arrow_export|) para transferirlos al `Fields chosen` . Puede elegir más de un campo haciendo clic y manteniendo presionada la tecla control(Windows/Linux)/command(Mac) muchas veces;
+* haga clic en la flecha doble izquierda (|questionnaire_double_left_arrow_export|) Para transferir todos los campos desde `Fields available` a `Fields chosen` ; 
 
 .. |questionnaire_left_arrow_export| image:: ../../_img/questionnaire_left_arrow_export.png
 
@@ -66,49 +66,49 @@ In order to select the fields for specific questionnaire, click in the questionn
 
 .. image:: ../../_img/questionnaire_selecting_fields_export.png
 
-At the same way, you can use right arrow (|questionnaire_right_arrow_export|) and right double arrow (|questionnaire_double_right_arrow_export|) to transfer fields from `Fields chosen` list to  `Fields available` list. You can also select fields from `Fields chosen` list using the same mechanism presented above.
+De la misma manera, puede usar la flecha derecha (|questionnaire_right_arrow_export|) y flecha doble derecha (|questionnaire_double_right_arrow_export|) Para transferir campos desde `Fields chosen` a  `Fields available` . También puede seleccionar campos de `Fields chosen` lista utilizando el mismo mecanismo presentado anteriormente.
 
 .. |questionnaire_right_arrow_export| image:: ../../_img/questionnaire_right_arrow_export.png
 
 .. |questionnaire_double_right_arrow_export| image:: ../../_img/questionnaire_double_right_arrow_export.png 
 
-As soon as a new element is inserted/deleted from the `Fields chosen` list, the blue counter (|questionnaire_fields_counter_export|) updates its value. 
+Tan pronto como se inserta/elimina un nuevo elemento del `Fields chosen` , el contador azul (|questionnaire_fields_counter_export|) actualiza su valor. 
 
 .. |questionnaire_fields_counter_export| image:: ../../_img/questionnaire_fields_counter_export.png
 
 .. _participants-export-participant:
 
-Participants
+Participantes
 ------------
 
 .. image:: ../../_img/participants_export.png
 
-At the `Participants` section, you can select one or more participants fields to be exported. You can use the following procedures to select the fields:
+En la sección `Participants` , puede seleccionar uno o más campos de participantes para exportar. Puede utilizar los siguientes procedimientos para seleccionar los campos:
 
-* click one field and drag up or down in order to select many continuous fields;
-* choose more than one field by holding the control(Windows/Linux)/command(Mac) key and clicking each field. You can also unselect the field by clicking a selected field once more while holding control(Windows/Linux)/command(Mac) key.
+* haga clic en un campo y arrastre hacia arriba o hacia abajo para seleccionar muchos campos continuos;
+* elija más de un campo manteniendo presionada la tecla control (Windows / Linux) / comando (Mac) y haciendo clic en cada campo. También puede anular la selección del campo haciendo clic en un campo seleccionado una vez más mientras mantiene presionada la tecla control(Windows/Linux)/command(Mac).
 
-Please pay attention to not to press and release keys, or the selection may be lost and you have to restart it.
+Por favor, preste atención a no presionar y soltar teclas, o la selección puede perderse y debe reiniciarla.
 
-Not all participants fields are available, because there is a concern about data anonymization. 
+No todos los campos de participantes están disponibles, porque existe una preocupación sobre la anonimización de los datos. 
 
 .. _diagnosis-export-participant:
 
-Diagnosis
+Diagnostico
 ---------
 
 .. image:: ../../_img/diagnosis_export.png
 
-The same procedure used with Participants list should be used in the Diagnosis list.
+El mismo procedimiento utilizado con la lista de participantes debe utilizarse en la lista de diagnóstico.
 
 .. _executing-a-export-export-participant:
 
-Executing a export
+Ejecutando una exportación
 ------------------
 
-After selecting fields to be exported, click `Run` button in order to start the process. A zipped file will be generated and downloaded to your machine. This zipped file can contain one or more csv files.
+Después de seleccionar los campos que se exportarán, haga clic en el boton `Run` para iniciar el proceso. Se generará un archivo comprimido y se descargará en su máquina. Este archivo comprimido puede contener uno o más archivos csv.
 
-You can also click `Cancel` button to cancel the export process (only if the process of exportation hasn't been started yet).
+También puede hacer clic en `Cancel` para cancelar el proceso de exportación (solo si el proceso de exportación aún no se ha iniciado).
 
 .. image:: ../../_img/run_cancel_export.png
 

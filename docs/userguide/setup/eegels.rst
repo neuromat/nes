@@ -1,43 +1,43 @@
 .. _eeg-electrode-localization-system:
 
-EEG Electrode Localization System
+Sistema de localización de electrodos EEG
 =================================
 
-NES allows to register the system of the placement where the electrode are localized. The system can be standardized or specifically designed by a manufacturer.
-On this page can be registered information about the Electrode Localization System used in the acquisition of EEG raw data.
+NES permite registrar el sistema de la colocación donde se localizan los electrodos. El sistema puede ser estandarizado o diseñado específicamente por un fabricante.
+En esta página se puede registrar información sobre el Sistema de Localización de Electrodos utilizado en la adquisición de datos brutos de EEG.
 
 
-View the list of electrode localization system
+Ver la lista de sistemas de localización de electrodos
 ----------------------------------------------
 
-This page shows the list of electrode localization system contemplated by NES. By clicking a item of the list you can edit this item.
+Esta página muestra la lista del sistema de localización de electrodos contemplado por NES. Al hacer clic en un elemento de la lista, puede editar este elemento.
 
 .. image:: ../../_img/eeg_electrode_localization_system_list.png
 
-Add electrode localization system
+Agregar sistema de localización de electrodos
 ---------------------------------
 
-For adding a new electrode localization system, you must register the following information:
+Para agregar un nuevo sistema de localización de electrodos, debe registrar la siguiente información:
 
-* Name: the name of the localization system. This information is mandatory.
-* Description: some description about the system registered.
-* Map image file: a file with the image of the electrodes localization used by the system registered.
+* Nombre: el nombre del sistema de localización. Esta información es obligatoria.
+* Descripción: alguna descripción sobre el sistema registrado.
+* Archivo de imagen de mapa: un archivo con la imagen de la localización de electrodos utilizada por el sistema registrado.
 
 .. image:: ../../_img/eeg_electrode_localization_system_edit.png
 
-Insert the coordinates of the electrodes
+Insertar las coordenadas de los electrodos
 ----------------------------------------
 
-After adding an electrode localization system, NES shows a table with the positions and coordinates of each electrode in the system. This table should be filled with the coordinates of each electrode in the registered image file. The next picture shows a example of this screen:
+Después de agregar un sistema de localización de electrodos, NES muestra una tabla con las posiciones y coordenadas de cada electrodo en el sistema. Esta tabla debe rellenarse con las coordenadas de cada electrodo en el archivo de imagen registrado. La siguiente imagen muestra un ejemplo de esta pantalla:
 
 .. image:: ../../_img/eeg_electrode_localization_system_positions.png
 
-NES offers two ways to register these coordinates: using a form and using a image. 
-The next picture shows the screen with the form that should be filled.
+NES ofrece dos formas de registrar estas coordenadas: usando un formulario y usando una imagen. 
+La siguiente imagen muestra la pantalla con el formulario que se debe rellenar.
 
 .. image:: ../../_img/eeg_electrode_localization_system_insert_new_coord_no_image.png
 
-The next picture shows the screen for register the new coordinate with a image
+La siguiente imagen muestra la pantalla para registrar la nueva coordenada con una imagen
 
 .. image:: ../../_img/eeg_electrode_localization_system_insert_new_coord_with_image.png
 

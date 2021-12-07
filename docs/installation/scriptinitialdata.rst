@@ -1,169 +1,169 @@
 .. _script-for-creating-initial-data:
 
-Script for creating initial data
+Script para crear datos iniciales
 ================================
 
-After installing NES, all you have in the database is a single user. However, there are some data that all NES databases should have, such as certain groups of users, options related to fields that describe  participants, and stimulus types. To facilitate the process of writing these data into the database, the development team has created a script. Current version of NES offers only a script that creates these data in Portuguese. An English version of the script will be available in the next version of NES. 
+Después de instalar NES, todo lo que tiene en la base de datos es un solo usuario. Sin embargo, hay algunos datos que todas las bases de datos de NES deberían tener, como ciertos grupos de usuarios, opciones relacionadas con los campos que describen a los participantes y tipos de estímulos. Para facilitar el proceso de escritura de estos datos en la base de datos, el equipo de desarrollo ha creado un script. La versión actual de NES ofrece solo un script que crea estos datos en portugués. Una versión en inglés del script estará disponible en la próxima versión de NES. 
 
 .. _initial-data-created-by-the-script:
 
-Initial Data Created by the Script
+Datos iniciales creados por el script
 ----------------------------------
-The first data created by the script are the groups of users, each having specific :ref:`permissions`. Six groups are created:
+Los primeros datos creados por el script son los grupos de usuarios, cada uno con un contenido específico :ref:`permissions`. Seis grupos son creados:
 
-Administrator
+Administrador
 `````````````
-* *Add user*
-* *Change user*
-* *Delete user*
+* *Agregar usuario*
+* *Cambiar usuario*
+* *Borrar usuario*
 
-Attendant
+Asistente
 `````````
-* *Add participant*
-* *Change participant*
-* *View participant*
-* *Delete participant*
+* *Agregar participante*
+* *Cambiar participante*
+* *Ver participante*
+* *Borrar participante*
 
-Physiotherapist
+Fisioterapeuta
 ```````````````
-* Same permissions from an attendant
-* *View clinical record data*
-* *View lists of questionnaires*
-* *Add questionnaires*
-* *Change questionnaires*
-* *Delete questionnaires*
-* *Add entrance questionnaire response*
-* *Change entrance questionnaire response*
-* *View entrance questionnaire response*
-* *Delete entrance questionnaire response*
+* Los mismos permisos de un asistente
+* *Ver datos de registros clínicos*
+* *Ver listas de cuestionarios*
+* *Agregar cuestionarios*
+* *Cambiar cuestionarios*
+* *Eliminar cuestionarios*
+* *Agregar respuesta al cuestionario de entrada*
+* *Cambiar respuesta al cuestionario de ingreso*
+* *Ver respuesta al cuestionario de entrada*
+* *Eliminar la respuesta al cuestionario de entrada*
 
 Doctor
 ``````
-* Same permissions from a physiotherapist
-* *Add clinical record data*
+* Mismos permisos de un fisioterapeuta
+* *Agregar datos de registros clínicos*
 
-Junior researcher
+Investigador Junior
 `````````````````
-* Same permissions from a physiotherapist
-* *Add research project*
-* *Change research project*
-* *View research project*
-* *Delete research project*
-* *Add experiment*
-* *Change experiment*
-* *Delete experiment*
-* *Add experiment questionnaire response*
-* *Change experiment questionnaire response*
-* *View experiment questionnaire response*
-* *Delete experiment questionnaire response*
-* *Add participant to a group*
-* *Change subject of a group*
-* *Delete participant from a group*
-* *Register equipment*
+* Mismos permisos de un fisioterapeuta
+* *Añadir proyecto de investigación*
+* *Proyecto de investigación del cambio*
+* *Ver proyecto de investigación*
+* *Eliminar proyecto de investigación*
+* *Agregar experimento*
+* *Experimento de cambio*
+* *Eliminar experimento*
+* *Agregar respuesta al cuestionario del experimento*
+* *Respuesta al cuestionario del experimento de cambio*
+* *Ver respuesta al cuestionario del experimento*
+* *Eliminar la respuesta al cuestionario del experimento*
+* *Agregar participante a un grupo*
+* *Cambiar de tema de un grupo*
+* *Eliminar participante de un grupo*
+* *Registrar equipos*
 
-Senior researcher
+Investigador Senior
 `````````````````
-* Same permissions from a junior researcher
-* *Change research project belonging to others*
-* *Export participant*
-* *Export medical record*
-* *Export entrance questionnaire response*
-* *View sensitive participant data*
+* Los mismos permisos de un investigador junior
+* *Cambio de proyecto de investigación perteneciente a otros*
+* *Participante de exportación*
+* * Exportar registro médico *
+* *Respuesta al cuestionario de entrada a la exportación*
+* * Ver datos confidenciales de los participantes *
 
-Then, the script creates options related to fields that describe a participant. This is done for 9 sets of options:
+A continuación, el script crea opciones relacionadas con los campos que describen a un participante. Esto se hace para 9 conjuntos de opciones:
 
-**Alcohol consumption frequency**
+**Frecuencia de consumo de alcohol**
 
-* Every day
-* Every weekend
-* Sporadically
+* Todos los días
+* Todos los fines de semana
+* Esporádicamente
 
-**Alcohol consumption period**
+**Periodo de consumo de alcohol**
 
-* More than 10 years
-* 5-10 years
-* 1-5 years
-* Less than 1 year
+* Más de 10 años
+* 5-10 años
+* 1-5 años
+* Menos de 1 año
 
-**Amount of cigarettes**
+**Cantidad de cigarrillos**
 
-* More than 3 packs
-* 1-2 packs
-* Less than 1 pack
+* Más de 3 packs
+* 1-2 paquetes
+* Menos de 1 paquete
 
-**Skin color**
+**Color de piel**
 
-* Yellow
-* White
-* Indigenous
-* Brown
-* Black
+* Amarillo
+* Blanco
+* Indígenas
+* Marrón
+* Negro
 
-**Gender**
+**Género**
 
-* Male
-* Female
+* Masculino
+* Femenino
 
-**Marital status**
+**Estado civil**
 
-* Not informed
-* Widower
-* Separated/Divorced
-* Married/Live together
-* Single
+* No informado
+* Viudo
+* Separados/Divorciados
+* Casados/Vivir juntos
+* Sencillo
 
-**Payment**
+**Pago**
 
-* Private
-* Health insurance
-* Brazilian public health care system
+* Privado
+* Seguro de salud
+* Sistema público de salud brasileño
 
-**Religion**
+**Religión**
 
-* Buddhism
+* Budismo
 * Candomblé
-* Catholic
-* Spiritist
-* Evangelical
-* The Church of Jesus Christ of Latter-day Saints
-* Judaism
-* Protestant
-* Oriental religions
-* No religion
-* Jehovah's Witness
+* Católica
+* Espírita
+* Evangélico
+* La Iglesia de Jesucristo de los Santos de los Últimos Días
+* Judaísmo
+* Protestante
+* Religiones orientales
+* Sin religión
+* Testigos de Jehová
 * Umbanda
 
-**Education**
+**Educación**
 
-* Graduated
-* Finished high school
-* Finished secondary school
-* Finished primary school
-* Illiterate / Did not finished primary school
+* Graduado
+* Terminó la escuela secundaria
+* Terminó la escuela secundaria
+* Terminó la escuela primaria
+* Analfabeto / No terminó la escuela primaria
 
-Finally, the script create **stimulus types**
+Finalmente, el script crea **tipos de estímulos**
 
-* Auditory
-* Gustative
-* Interoceptive
-* Olfactory
-* Somatosensory
+* Auditiva
+* Gustativo
+* Interoceptivo
+* Olfativo
+* Somatosensorial
 * Visual
 
 .. _running-the-script:
 
-Running the Script
+Ejecución del script
 ------------------
-To run the script, you have to run the following commands.
+Para ejecutar el script, debe ejecutar los siguientes comandos.
 
-#. Enter the folder where the script is located::
+#. Introduzca la carpeta donde se encuentra el script::
 
     cd [folder where NES is installed]/patientregistrationsystem/qdc
 
-#. Give execution permission to the script::
+#. Conceder permiso de ejecución al script::
 
     chmod +x add_initial_data.py
 
-#. Execute the script::
+#. Ejecutar el script::
 
     python manage.py shell < add_initial_data.py
