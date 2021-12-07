@@ -1,133 +1,133 @@
 .. _participant-questionnaires:
 
-Participant Questionnaires
+Cuestionarios para participantes
 ==========================
 
-Questionnaires is the tab where you can view or add participant's answers to questionnaires (fills).
+Cuestionarios es la pestaña donde puede ver o agregar las respuestas de los participantes a los cuestionarios (rellenos).
 
 .. _participant-questionnaires-tab:
 
-Participant Questionnaires Tab
+Ficha Cuestionarios de participantes
 ------------------------------
 
-You can visit the :ref:`Participants` page to understand how to navigate between tabs.
+Puede visitar :ref:`Participants`  para entender como navegar entre las fichas.
 
 .. image:: ../../_img/participant_questionnaires_data.png
 
-These questionnaires types are discussed in the :ref:`questionnaires` page.
+Estos tipos de cuestionarios se discuten en el :ref:`questionnaires` .
 
 .. _list-of-questionnaire-fills:
 
-List of Questionnaire Fills
+Lista de cumplimentaciones de cuestionarios
 ```````````````````````````
 
-This section shows a list of all questionnaire that the participant has already filled and the ones that the participant still has to answer. 
+Esta sección muestra una lista de todos los cuestionarios que el participante ya ha llenado y los que el participante aún tiene que responder. 
 
 .. image:: ../../_img/participant_questionnaires_entrance_evaluation.png
 
-In this list you see 3 different fields per line:
+En esta lista se ven 3 campos diferentes por línea:
 
-* Questionnaire - the name of the questionnaire;
-* Fills - the date that the participant filled the questionnaire (default value is the date you started giving the answers);
-* Message - this is an indicator that informs if the participant filled the questionnaire. The message is yellow if the questionnaire is incomplete and still has to be filled, and it is green if the participant completely filled the questionnaire at least once. 
+* Cuestionario - el nombre del cuestionario;
+* Rellenos: la fecha en que el participante completó el cuestionario (el valor predeterminado es la fecha en que comenzó a dar las respuestas);
+* Mensaje - este es un indicador que informa si el participante completó el cuestionario. El mensaje es amarillo si el cuestionario está incompleto y aún tiene que ser llenado, y es verde si el participante completó el cuestionario al menos una vez. 
 
-As an example, in the image above, you see 2 questionnaires:
+Como ejemplo, en la imagen de arriba, ves 2 cuestionarios:
 
-* the first questionnaire has 3 fills, the first two fills are completed and the third is incomplete
-* the second questionnaire has not been filled before, so there is no information of fills, but the message that informs a lack of fill (in yellow).  
+* el primer cuestionario tiene 3 rellenos, los dos primeros rellenos se completan y el tercero está incompleto
+* el segundo cuestionario no se ha rellenado antes, por lo que no hay información de rellenos, sino el mensaje que informa una falta de relleno (en amarillo).  
 
 .. _viewing-a-participant-questionnaire:
 
-Viewing a Questionnaire
+Visualización de un cuestionario
 ```````````````````````
 
-If the questionnaire is completely filled (green message), the `Fills` field becomes a link that takes you to the screen that shows the answers given by the participant.
+Si el cuestionario está completamente cumplimentados (mensaje verde), el campo `Fills`  se convierte en un enlace que te lleva a la pantalla que muestra las respuestas dadas por el participante.
 
 .. image:: ../../_img/participant_questionnaires_entrance_evaluation_view.png
 
 .. _deleting-a-participant-questionnaire:
 
-Deleting a Questionnaire
+Eliminación de un cuestionario
 ````````````````````````
 
-While viewing a questionnaire fill, if you have the right :ref:`permissions`, you can delete the questionnaire by clicking the red `Delete` button.
+Mientras visualiza un cuestionario, si tiene derecho :ref:`permissions`, Puede eliminar el cuestionario haciendo clic en el botón rojo `Delete`.
 
 .. image:: ../../_img/participant_questionnaires_entrance_evaluation_survey_del.png
 
-Click either `Delete` button to confirm deletion of the questionnaire or `Cancel` button if you don't want to delete it.
+Haga clic en `Delete` para confirmar la eliminación del cuestionario o `Cancel` si no desea eliminarlo.
 
 .. _answering-a-questionnaire:
 
-Answering a Questionnaire
+Responder a un cuestionario
 `````````````````````````
 
-When you enter the :ref:`edition mode <creating-and-editing-a-participant>` different actions can be taken:
+Al entrar en el :ref:`edition mode <creating-and-editing-a-participant>` se pueden tomar diferentes acciones:
 
-* If the fill status is complete (green message) - you can view the questionnaire fill (see `Viewing a Questionnaire`_). In this case, you will not be able to change the questionnaire fill.
+* Si el estado de llenado está completo (mensaje verde) - puede ver el relleno del cuestionario (ver `Viewing a Questionnaire`_). En este caso, no podrá cambiar el relleno del cuestionario.
 
-* If the fill status is incomplete (yellow message) - you can click `Fill` field link and access the questionnaire once more (see `Editing a Questionnaire`_).
+* Si el estado de relleno está incompleto (mensaje amarillo) - puede hacer clic en el campo `Fill` enlace y acceda al cuestionario una vez más (ver `Editing a Questionnaire`_).
 
-* Start a new fill - you can see `Including a New Fill`_, for more information.
+* Comience un nuevo relleno - puede ver `Including a New Fill`_, para más información.
 
 .. _editing-a-questionnaire:
 
-Editing a Questionnaire
+Edición de un cuestionario
 ```````````````````````
 
-Clinking at the link with the date of the beginning of the questionnaire filling of an incomplete questionnaire will take you to a `Fill information` page where you can see data about the participant and the responsible for filling the questionnaire; Clicking on `Continue filling` will take you to a page where you can fill the questionnaire.
+Hacer clic en el enlace con la fecha de inicio del cuestionario rellenando un cuestionario incompleto le llevará a un `Fill information` página donde se pueden ver datos sobre el participante y el responsable de rellenar el cuestionario; Haciendo clic en `Continue filling` te llevará a una página donde podrás rellenar el cuestionario.
 
 .. _including-a-new-fill:
 
-Including a New Fill
+Incluyendo un nuevo relleno
 ````````````````````
 
-A `New fill` button is available for users with the right :ref:`permissions`. You can include as many fills as you want.
+Un boton `New fill` está disponible para usuarios con derecho :ref:`permissions`. Puedes incluir tantos rellenos como quieras.
 
 .. image:: ../../_img/participant_questionnaires_entrance_evaluation_edit.png
 
-Please look at :ref:`managing-a-questionnaire-fill` to see procedures on starting and continuing a questionnaire fill or what to do after closing the LimeSurvey tab.
+Por favor vea :ref:`managing-a-questionnaire-fill` para ver los procedimientos para iniciar y continuar un cuestionario, rellene o qué hacer después de cerrar la pestaña LimeSurvey.
 
 .. _list-og-experiment-questionnaires:
 
-List of Experiment Questionnaires
+Lista de cuestionarios de experimentos
 `````````````````````````````````
 
 .. image:: ../../_img/participant_questionnaires_of_experiments.png
 
-This list is a bit different from the list of questionnaires fills, because it shows informations about questionnaires that are specific used within experiments.
+Esta lista es un poco diferente de la lista de cuestionarios que se completa, porque muestra información sobre cuestionarios que son específicos utilizados dentro de los experimentos.
 
-The experiments questionnaires section lists the following fields (sorted by date):
+La sección de cuestionarios de experimentos enumera los siguientes campos (ordenados por fecha):
 
 * :ref:`Research project <studies>`
 * :ref:`experiments`
 * :ref:`group-of-participants`
 * :ref:`Questionnaire <managing-steps-for-experimental-protocol>`
-* Fill (date that a questionnaire was filled)
-* message (indicator that informs if the participant filled the questionnaire, as explained `here <list-of-questionnaire-fills>`_)
+* Rellenar (fecha en que se llenó un cuestionario)
+* mensaje (indicador que informa si el participante rellenó el cuestionario, como se explica `here <list-of-questionnaire-fills>`_)
 
-Even if you are in the :ref:`edition mode <creating-and-editing-a-participant>` you can only see information here. If you want to add/continue/remove an experiment questionnaire fill, see :ref:`questionnaires-of-the-experimental-protocol`.
+Incluso si estás en el :ref:`edition mode <creating-and-editing-a-participant>` solo puedes ver información aquí. Si desea agregar/continuar/quitar un relleno de cuestionario de experimento, consulte :ref:`questionnaires-of-the-experimental-protocol`.
 
 .. _viewing-a-questionnaire-of-experiment:
 
-Viewing a Questionnaire of Experiment
+Visualización de un cuestionario de experimento
 `````````````````````````````````````
 
-When the questionnaire is completely filled, a link at the `Date` field is enabled and you can see the details of the questionnaire fill.
+Cuando el cuestionario esté completamente lleno, un enlace en el `Date` el campo está habilitado y puede ver los detalles del relleno del cuestionario.
 
 .. image:: ../../_img/participant_questionnaires_of_experiments_view.png
 
-This image show 2 different tabs: 
+Esta imagen muestra 2 pestañas diferentes: 
 
-* Fill information - questionnaire name, participant who answered the questionnaire, responsible for filling it, and date that questionnaire was filled.
-* Questionnaire details - this changes from one questionnaire to another. It shows answers to the specific questionnaire.
+* Completar información: nombre del cuestionario, participante que respondió el cuestionario, responsable de completarlo y fecha en que se completó el cuestionario.
+* Detalles del cuestionario: esto cambia de un cuestionario a otro. Muestra las respuestas al cuestionario específico.
 
 .. _deleting-a-questionnaire-of-experiment:
 
-Deleting a Questionnaire of Experiment
+Eliminación de un cuestionario de experimento
 ``````````````````````````````````````
 
-You can delete a questionnaire of experiment if you have the right. Click `Delete` button and a confirmation message will show up:
+Puede eliminar un cuestionario de experimento si tiene derecho. Clic `Delete` y aparecerá un mensaje de confirmación:
 
 .. image:: ../../_img/participant_questionnaires_of_experiments_questionnaire_del.png
 
-Click either on the `Delete` button to confirm deletion of the questionnaire or on the `Cancel` button if you don't want to delete it.
+Haga clic en cualquiera de los dos en el botón `Delete` para confirmar la eliminación del cuestionario o en el botón `Cancel` si no desea eliminarlo.

@@ -1,26 +1,26 @@
 .. _emg-settings:
 
-EMG Settings
+Configuración de EMG
 ============
 
-NES allows to register all the information related to settings and parameters of the equipments and materials involving in the acquisition of EMG raw data. In the EMG experiments the main settings are the electrode(s), the A/D converter and digital filters that are used in the experiment. In the picture below is showed a screenshot for register a new EMG setting: 
+NES permite registrar toda la información relacionada con la configuración y los parámetros de los equipos y materiales que intervienen en la adquisición de datos brutos de EMG. En los experimentos EMG, los ajustes principales son los electrodos, el convertidor A/D y los filtros digitales que se utilizan en el experimento. En la imagen de abajo se muestra una captura de pantalla para registrar una nueva configuración de EMG: 
 
 .. image:: ../../../_img/emg_setting_add.png
 
-The fields that compose the new EMG setting screen are:
+Los campos que componen la nueva pantalla de configuración de EMG son:
 
-* Name: the setting name (obligatory).
-* Description: a description about the EMG setting (obligatory).
-* Acquisition software version: the name and version of the software that is used for the acquisition of the data (mandatory).
+* Nombre: el nombre de la configuración (obligatorio).
+* Descripción: una descripción sobre la configuración de EMG (obligatorio).
+* Versión del software de adquisición: el nombre y la versión del software que se utiliza para la adquisición de los datos (obligatorio).
 
-After saving the new EMG setting, the menu to register the settings of the devices used in the EMG experiment will be showed. The picture below shows this screen:
+Después de guardar la nueva configuración de EMG, se mostrará el menú para registrar la configuración de los dispositivos utilizados en el experimento EMG. La siguiente imagen muestra esta pantalla:
 
 .. image:: ../../../_img/emg_setting_add_settings_devices.png
 
-The settings that are part of EMG experiments are:
+Los ajustes que forman parte de los experimentos EMG son:
 
 * :ref:`emg-electrode-settings`
 * :ref:`emg-digital-filter-settings`
-* EMG A/D converter : In the EMG A/D converter setting (picture below) you can register the model and the sampling rate configured in the EMG experiment, other details about the model of the A/D converter can be seen in the :ref:`a-d-converter configuration.
+* Convertidor EMG A/D: En la configuración del convertidor EMG A/D (imagen de abajo) puede registrar el modelo y la frecuencia de muestreo configurada en el experimento EMG, otros detalles sobre el modelo del convertidor A/D se pueden ver en el :ref:`a-d-converter configuration.
 
 .. image:: ../../../_img/emg_settings_a-d_converter_settings.png

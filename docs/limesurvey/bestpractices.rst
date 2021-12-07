@@ -1,12 +1,12 @@
 .. _best-pratices-and-recommendations:
 
-Best Practices and Recommendations
+Mejores prácticas y recomendaciones
 ==================================
 
-1. Recommendations on Array Dual Scale issues (they should always be used with the same answer options on both scales).
+1. Recomendaciones sobre problemas de array dual scale (siempre deben usarse con las mismas opciones de respuesta en ambas escalas).
 
-2. Whenever possible, give preference to issues of mandatory completion.
+2. Siempre que sea posible, dar preferencia a las cuestiones de finalización obligatoria.
 
-3. Include Not informed/Not evaluated option, instead of leaving the question unfilled. The intention is to leave the null values only for issues that do not apply.
+3. Incluya la opción No informado/No evaluado, en lugar de dejar la pregunta sin llenar. La intención es dejar los valores nulos solo para los problemas que no se aplican.
 
-4. Preferably do not include "file upload" questions in your surveys, because NES can’t retrieve files uploaded on LimeSurvey. Alternatively, use the :ref:`additional NES data functionality <attach-additional-files>`.
+4. Preferiblemente no incluya preguntas de "carga de archivos" en sus encuestas, ya que NES no puede recuperar archivos cargados en LimeSurvey. Alternativamente, utilice el :ref:`Funcionalidades adicionales de NES <attach-additional-files>`.

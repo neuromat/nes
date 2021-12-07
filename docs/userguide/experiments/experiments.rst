@@ -1,67 +1,58 @@
 .. _experiments:
 
-Experiments
+Experimentos
 ===========
 
-Each study can have several experiments. To manage an experiment, NES provide a page where all details and configuration of it can be registered. This section is about experiments and it is divided into the following topics:
+Cada estudio puede tener varios experimentos. Para gestionar un experimento, NES proporciona una página donde se pueden registrar todos los detalles y la configuración del mismo. Esta sección trata sobre experimentos y se divide en los siguientes temas::
 
-* `Creating and Editing an Experiment`_
-* `Visualizing an Experiment`_
-* `Exporting an Experiment`_
-* :ref:`researchers-of-an-experiment`
-* :ref:`group-of-participants`
-* :ref:`raw-data-and-additional-files`
-* :ref:`recording-settings`
+* `Creación y edición de un experimento`_
+* `Visualización de un experimento`_
+* `Exportación de un experimento`_
+* :ref:`investigadores de un experimento`
+* :ref:`grupo de participantes`
+* :ref:`datos sin procesar y archivos adicionales`
+* :ref:`configuración de grabación`
 * :ref:`managing-steps-for-experimental-protocol`
-* :ref:`configuring-an-experimental-protocol`
-* :ref:`how-to-send-experiment-data-from-nes`
+* :ref:`configurar-un-protocolo-experimental`
+* :ref:`Cómo enviar datos de experimentos desde NES`
 
 .. _creating-and-editing-an-experiment:
 
-Creating and Editing an Experiment
+Creación y edición de un experimento
 ----------------------------------
 
-To create an experiment, NES allows to register relevant information about it. An experiment contains:
+Para crear un experimento, NES permite registrar información relevante sobre el mismo. Un experimento contiene:
 
-* **A title:** title of the experiment (obligatory);
-* **A description:** brief description about the experiment (obligatory);
-* **Project info URL:** Url of the project to which the experiment belongs, if it exists;
-* **URL of the project approved by the ethics committee:** Url that refers the ethics committee.
-* **Project file approved by the ethics committee:** Upload of the file of the approval by the ethics committé.
-
-If the :ref:`NeuroMat Open Database <neuromat-open-database>` is :ref:`configured <how-to-send-experiment-data-from-nes>`, the following fields will be displayed:
-
-* **Is public:** Checkbox to indicate if the experiment will be published.
-* **Data acquisition is concluded:** Checkbox to indicate if the data acquisition of all participants in the experiment is completed.
+* **Un título:** título del experimento (obligatorio);
+* **Una descripción:** breve descripción sobre el experimento (obligatorio);
+* **URL de información del proyecto:** URL del proyecto al que pertenece el experimento, si existe;
+* **URL del proyecto aprobado por el comité de ética:** Url que remite al comité de ética.
+* **Expediente del proyecto aprobado por el comité de ética:** Carga del archivo de la aprobación por parte del comité de ética.
 
 .. image:: ../../_img/experiment_create.png
 
-After register the experiment primary information you can start configuring your experiment registering informations such as:
+Después de registrar la información principal del experimento, puede comenzar a configurar el experimento registrando información como:
 
-* A list of :ref:`group-of-participants`: group of participants involved in the experiment. An experiment can have an unlimited number of group of participants. Only authorized users can see the `Insert new` button and include new groups to an experiment.
-* :ref:`Equipment settings <recording-settings>`: record of the settings of the equipments involved at the data acquisition. 
-* A list of :ref:`steps for experimental protocol <managing-steps-for-experimental-protocol>`: description of the experimental protocol used by each group of participants. An experimental protocol is composed of steps, that may be of one of the following types: `instruction`, `pause`, `questionnaire`, `stimulus`, `task for participant`, `task for the experimenter`, `EEG`, `EMG`, `TMS`, `goalkeeper game phase`, `generic data collection` or another `set of steps`. A single step may be used more than once in the same experiment. The protocol of an experiment is defined by organizing the uses of steps in a way that determines the moment in which they should happen. This is done inside each group of participant, because the experimental protocol of a group might be different from the experimental protocol of another group. However, as it is possible to use a specific step in more than one group, you access the screen for :ref:`managing-steps-for-experimental-protocol` from the screen for visualizing the experiment.
+* Una lista de :ref:`group-of-participants`: grupo de participantes involucrados en el experimento. Un experimento puede tener un número ilimitado de grupos de participantes. Solo los usuarios autorizados pueden ver el boton `Insert new` e incluir nuevos grupos en un experimento.
+* :ref:`Equipment settings <recording-settings>`: registro de la configuración de los equipos involucrados en la adquisición de datos. 
+* Una lista de :ref:`steps for experimental protocol <managing-steps-for-experimental-protocol>`: descripción del protocolo experimental utilizado por cada grupo de participantes. Un protocolo experimental se compone de pasos, que pueden ser de uno de los siguientes tipos: `instruction`, `pause`, `questionnaire`, `stimulus`, `task for participant`, `task for the experimenter`, `EEG`, `EMG`, `TMS`, `goalkeeper game phase`, `generic data collection` o otros `set of steps`. Se puede usar un solo paso más de una vez en el mismo experimento. El protocolo de un experimento se define organizando los usos de los pasos de una manera que determina el momento en el que deben suceder. Esto se hace dentro de cada grupo de participantes, porque el protocolo experimental de un grupo puede ser diferente del protocolo experimental de otro grupo. Sin embargo, como es posible utilizar un paso específico en más de un grupo, se accede a la pantalla para :ref:`managing-steps-for-experimental-protocol` desde la pantalla para visualizar el experimento.
 
 .. _visualizing-an-experiment:
 
-Visualizing an Experiment
+Visualización de un experimento
 -------------------------
 
-While in the screen for visualizing a study, you can see more information about an existing experiment by clicking on its title in the list of experiments. A page with the detail of the experiment is displayed (see figure below). Through this page is possible manage the experiment settings, groups, equipment configurations and the experimental protocol.
-Also, you can delete the experiment by clicking the *Delete* button. However, this button is visible only for the users that have :ref:`permissions` to update the experiment.
+Mientras está en la pantalla para visualizar un estudio, puede ver más información sobre un experimento existente haciendo clic en su título en la lista de experimentos. Se muestra una página con el detalle del experimento (ver figura a continuación). A través de esta página es posible gestionar los ajustes del experimento, los grupos, las configuraciones de los equipos y el protocolo experimental.
+Además, puede eliminar el experimento haciendo clic en el botón *Eliminar*. Sin embargo, este botón sólo es visible para los usuarios que tienen :ref:`permissions` Para actualizar el experimento.
 
 .. image: ../../_img/experiment_view.png
 
-If the experiment was sent to the NeuroMat Open Database, then it will be showing the experiment sending status. The information about the "Last update of the experiment" and "Last sending status" will be shown as well. To know how to make an experiment publicly available go to :ref:`how-to-send-experiment-data-from-nes`.
-
-.. image: ../../_img/experiment_data_sending_status.png
-
 .. _exporting-an-experiment:
 
-Exporting an Experiment
+Exportación de un experimento
 -----------------------
 
-You can export an experiment by clicking in the `Export experiment` icon in the lis of experiments of a study (see :ref:`_exporting-importing-an-experiment-of-a-study`) or by clicking the Export button at the bottom of the page of description of the experiment, if you have the right permissions.
+Puede exportar un experimento haciendo clic en el botón `Export experiment` icono en el lis de los experimentos de un estudio (véase :ref:`_exporting-importing-an-experiment-of-a-study`) o haciendo clic en el botón Exportar en la parte inferior de la página de descripción del experimento, si tiene los permisos correctos.
 
 .. image: ../../_img/experiment_export.png
 

@@ -1,68 +1,52 @@
-# -*- coding: utf-8 -*-
+# Configuration file for the Sphinx documentation builder.
 #
-# NES documentation
+# This file only contains a selection of the most common options. For a full
+# list see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- General configuration ------------------------------------------------
+# -- Path setup --------------------------------------------------------------
 
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here. If the directory is relative to the
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+#
+# import os
+# import sys
+# sys.path.insert(0, os.path.abspath('.'))
+
+
+# -- Project information -----------------------------------------------------
+
+project = 'Documentación NES'
+copyright = '2021, Proyecto de Investigación PINV18-665'
+author = 'Andres Fernandez'
+
+
+# -- General configuration ---------------------------------------------------
+
+# Add any Sphinx extension module names here, as strings. They can be
+# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
+# ones.
 extensions = [
-    'sphinx.ext.autodoc'
 ]
 
+# Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-source_suffix = '.rst'
+# List of patterns, relative to source directory, that match files and
+# directories to ignore when looking for source files.
+# This pattern also affects html_static_path and html_extra_path.
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-master_doc = 'index'
 
-project = u'NES'
-copyright = u'NeuroMat, 2021'
-author = u'NeuroMat'
+# -- Options for HTML output -------------------------------------------------
 
-version = u'1.72.7'
-release = u'1.72.7'
-
-language = 'en'
-
-exclude_patterns = []
-
-pygments_style = 'sphinx'
-
-todo_include_todos = False
-
-# -- Options for HTML output ----------------------------------------------
-
-import sphinx_rtd_theme
-
+# The theme to use for HTML and HTML Help pages.  See the documentation for
+# a list of builtin themes.
+#
 html_theme = 'sphinx_rtd_theme'
 
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
-html_theme_options = {
-    "collapse_navigation" : False
-}
-
-html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
-
-latex_elements = {
-}
-
-latex_documents = [
-    (master_doc, 'NES.tex', u'NES Documentation',
-     u'NeuroMat', 'manual'),
-]
-
-# latex_logo = None
-
-# -- Options for manual page output ---------------------------------------
-
-man_pages = [
-    (master_doc, 'nes', u'NES Documentation',
-     [author], 1)
-]
-
-# -- Options for Texinfo output -------------------------------------------
-texinfo_documents = [
-    (master_doc, 'NES', u'NES Documentation',
-     author, 'NES', 'One line description of project.',
-     'Miscellaneous'),
-]
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ['_static']

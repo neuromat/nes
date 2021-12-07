@@ -1,20 +1,20 @@
 .. _eeg-filter-settings:
 
-EEG Filter Settings
+Configuración del filtro EEG
 ===================
 
-The fact that the potential differences fluctuate as a function of time implies that the recorded EEG signals have a certain bandwith. For the majority of EEG investigations the recorded signal lies between 1 Hz and 70 Hz. Information will be lost if the frequency response of the recording channel is narrower than the frequency range of the EEG signal. If the frequency range of the recording channel is wider than the bandwith of the EEG signal, noise in the recorded data will contain additional irrelevant information. EEG recording channels are equipped with adjustable high pass and low pass filters by which the frequency response can be restricted to the frequency band of interest.
-This setting allows to register the information about the filter used in each experiment. The information that can be registered are the following:
+El hecho de que las diferencias de potencial fluctúen en función del tiempo implica que las señales de EEG grabadas tienen una cierta banda. Para la mayoría de las investigaciones de EEG, la señal grabada se encuentra entre 1 Hz y 70 Hz. La información se perderá si la respuesta de frecuencia del canal de grabación es más estrecha que el rango de frecuencia de la señal de EEG. Si el rango de frecuencia del canal de grabación es más amplio que la banda de la señal EEG, el ruido en los datos grabados contendrá información irrelevante adicional. Los canales de grabación EEG están equipados con filtros ajustables de paso alto y paso bajo mediante los cuales la respuesta de frecuencia se puede restringir a la banda de frecuencia de interés.
+Esta configuración permite registrar la información sobre el filtro utilizado en cada experimento. La información que se puede registrar son las siguientes:
 
-* :ref:`filter-type`: Once data are stored, digital filtering can be used. It is possible to choose from linear (FIR, IIR) filtering or novel non-linear filtering methods. The choice should be done according to the objectives put on the signal processing;
-* High pass cutoff(Hz): is a filter that passes signals with a frequency higher than a certain cutoff frequency and attenuates signals with frequencies lower than the cutoff frequency;
-* Low pass cutoff(Hz): is a filter that passes signals with a frequency lower than a certain cutoff frequency and attenuates signals with frequencies higher than the cutoff frequency;
-* Low band pass (Hz): a band-pass filter is a device that passes frequencies within a certain range and rejects (attenuates) frequencies outside that range. This field represents the lowest value of this range;
-* High band pass (Hz): a band-pass filter is a device that passes frequencies within a certain range and rejects (attenuates) frequencies outside that range. This field represents the highest value of this range;
-* Low Notch (Hz): also called a band-stop filter or band-rejection filter is a filter that passes most frequencies unaltered, but attenuates those in a specific range to very low levels. It is the opposite of a band-pass filter. A notch filter is a band-stop filter with a narrow stopband. This is the lowest value of this range;
-* High Notch (Hz): complementary to Low Notch, this is the highest value of this range.
-* Order: is the maximum delay, in samples, used in creating each output sample. In specific way the filter order is the (effective) impulse response duration. Its unit of measurement is integer
+* :ref:`filter-type`: Una vez que se almacenan los datos, se puede utilizar el filtrado digital. Es posible elegir entre el filtrado lineal (FIR, IIR) o nuevos métodos de filtrado no lineal. La elección debe hacerse de acuerdo con los objetivos puestos en el procesamiento de la señal.;
+* Corte de paso alto (Hz): es un filtro que pasa señales con una frecuencia superior a una cierta frecuencia de corte y atenúa las señales con frecuencias inferiores a la frecuencia de corte;
+* Corte de paso bajo (Hz): es un filtro que pasa señales con una frecuencia inferior a una cierta frecuencia de corte y atenúa las señales con frecuencias superiores a la frecuencia de corte;
+* Paso de banda baja (Hz): un filtro de paso de banda es un dispositivo que pasa frecuencias dentro de un cierto rango y rechaza (atenúa) frecuencias fuera de ese rango. Este campo representa el valor más bajo de este rango;
+* Paso de banda alta (Hz): un filtro de paso de banda es un dispositivo que pasa frecuencias dentro de un cierto rango y rechaza (atenúa) frecuencias fuera de ese rango. Este campo representa el valor más alto de este rango;
+* Low Notch (Hz): también llamado filtro de parada de banda o filtro de rechazo de banda es un filtro que pasa la mayoría de las frecuencias inalteradas, pero atenúa las de un rango específico a niveles muy bajos. Es lo opuesto a un filtro de paso de banda. Un filtro de muesca es un filtro de parada de banda con una banda de parada estrecha. Este es el valor más bajo de este rango;
+* High Notch (Hz): complementario a Low Notch, este es el valor más alto de este rango.
+* Orden: es el retardo máximo, en muestras, utilizado en la creación de cada muestra de salida. De manera específica, el orden del filtro es la duración (efectiva) de la respuesta al impulso. Su unidad de medida es entera
 
-.. note:: If the filter type does not exist, this has to be added in the :ref:`equipment-set-up` module.
+.. nota:: Si el tipo de filtro no existe, debe agregarse en el cuadro :ref:`equipment-set-up` .
 
 .. image:: ../../../_img/eeg_filter_settings.png

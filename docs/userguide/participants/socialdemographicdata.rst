@@ -1,44 +1,40 @@
 .. _social-demographic-data:
 
-Social Demographic Data
+Datos demográficos sociales
 =======================
 
-Social Demographic data is the tab where you can view or update, among other things, participant's place of birth, profession, religion, race, and social class.
+Los datos demográficos sociales son la pestaña donde puede ver o actualizar, entre otras cosas, el lugar de nacimiento, la profesión, la religión, la raza y la clase social del participante.
 
-Social Demographic Data Tab
+Pestaña Datos demográficos sociales
 ---------------------------
 
-You can visit the :ref:`participants` page to understand how to navigate between tabs.
+Puedes visitar la pagina :ref:`participants` para comprender cómo navegar entre pestañas.
 
 .. image:: ../../_img/participant_socialdemographic_data.png
 
-Social demographic data tab is divided into the following sections:
+La pestaña de datos demográficos sociales se divide en las siguientes secciones:
 
-Basic Information
+Información básica
 `````````````````
 
-In this section, you can see or edit some social demographic data of the participant:
+En esta sección, puede ver o editar algunos datos demográficos sociales del participante:
 
-* Natural of;
-* Citizenship;
-* Profession;
-* Occupation;
-* Indication if the participant receives a benefit from government;
-* Payment method;
-* Religion; and
-* Skin tone.
+* Natural de;
+* Ciudadanía;
+* Profesión;
+* Ocupación;
+* Indicación si el participante recibe un beneficio del gobierno;
+* Forma de pago;
+* Religión; y
+* Tono de piel.
 
 .. image:: ../../_img/participant_socialdemographic_basic_info.png
 
-Social Class 
+Clase social 
 ````````````
 
-The address section contains (all information is optional):
+La sección de dirección contiene (toda la información es opcional):
 
-* Schooling;
-* Amount of comfort items; and
-* Social class.
-
-This section calculates the social class of the participant according to the `Critério Brasil 2013` classification. For that, you have to inform the amount comfort items that the participant's family has, like TV, DVD, Radio, number of bathrooms in the house, Automobile, number of housekeeping employees, Wash machine, Refrigerator and Freezer. You can select from the options the quantities for each item. The resulting social class is shown in the `Calculated social class` field.
-
-.. image:: ../../_img/participant_socialdemographic_social_class.png
+* Escolarización;
+* Cantidad de artículos de confort; y
+* Clase social.

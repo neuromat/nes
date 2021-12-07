@@ -1,18 +1,16 @@
 .. _limesurvey:
 
-About LimeSurvey
+Sobre LimeSurvey
 ================
 
-LimeSurvey is an open-source survey application used by NES to manage questionnaires applied to experiment participants.
+LimeSurvey es una aplicación de encuestas de código abierto utilizada por NES para administrar cuestionarios aplicados a los participantes del experimento.
 
-The LimeSurvey application can be downloaded `here <https://www.limesurvey.org/stable-release>`_. A `comprehensive manual <https://manual.limesurvey.org/LimeSurvey_Manual>`_ can be found in the same website. Important topics:
+La aplicación LimeSurvey se puede descargar `aquí <https://www.limesurvey.org/stable-release>`_. Un `manual completo <https://manual.limesurvey.org/LimeSurvey_Manual>`_ se puede encontrar en el mismo sitio web. Temas importantes:
 
-1. :ref:`how-to-install-limesurvey`: explains how to install the system;
+1. :ref:`how-to-install-limesurvey`: explica cómo instalar el sistema;
 
-2. :ref:`guidelines-to-integrate-nes-and-limesurvey`: In order to integrate NES and LimeSurvey, it is necessary to follow some guidelines.
+2. :ref:`guidelines-to-integrate-nes-and-limesurvey`: Para integrar NES y LimeSurvey, es necesario seguir algunas pautas..
 
-3. `Creating surveys - Introduction <https://manual.limesurvey.org/Creating_surveys_-_Introduction>`_: gives the main concepts and some instructions about how to create surveys using LimeSurvey.
+3. `Creando encuestas - Introduction <https://manual.limesurvey.org/Creating_surveys_-_Introduction>`_: da los conceptos principales y algunas instrucciones sobre cómo crear encuestas utilizando LimeSurvey.
 
 4. :ref:`best-pratices-and-recommendations`
-
-We have produced a video tutorial explaining `how to create a LimeSurvey questionnaire <https://vimeo.com/137290143>`_ (in Portuguese).

@@ -1,23 +1,23 @@
 .. _naming-conventions-for-question-codes:
 
-Naming Conventions for Question Codes
+Convenciones de nomenclatura para códigos de preguntas
 =====================================
 
-This section presents a suggestion on how to name codes that identify questions in LimeSurvey. 
+Esta sección presenta una sugerencia sobre cómo nombrar códigos que identifican preguntas en LimeSurvey. 
 
-To make it easy the understand and manipulate data collected using questionnaires, we recommend to use a prefix in the code (identifier) of each question. The intention of this prefix is to inform the type of the data "collected" by the question. For example, for a question like "How old are you?", ``intAge`` would be a good code. The ``int`` prefix indicates that the value for the age is an integer number.
+Para facilitar la comprensión y manipulación de los datos recogidos mediante cuestionarios, recomendamos utilizar un prefijo en el código (identificador) de cada pregunta. La intención de este prefijo es informar el tipo de datos "recogidos" por la pregunta. Por ejemplo, para una pregunta como "¿Cuántos años tienes?", ``intAge`` sería un buen código. El prefijo ``int`` indica que el valor de la edad es un número entero.
 
-The following list contains prefix suggestions for the most frequent types of responses:
+La siguiente lista contiene sugerencias de prefijos para los tipos de respuestas más frecuentes:
 
-* All types of single choice question → ``lst``
-* All types of multiple choice questions → ``mul``
-* All types of text questions → ``txt``
-* Array (Numbers) → ``int`` or ``dec``
-* Array (Text) → ``txt``
-* Other types of array → ``lst``
-* Date/Time → ``dat``
-* Equation → ```equ``
-* Numerical input → ``int`` or ``dec``
-* Multiple numerical input → ``int`` or ``dec``
-* Yes/No → ``yn``
-* Other types of question → ``txt``
+* Todos los tipos de preguntas de opción única → ``lst``
+* Todos los tipos de preguntas de opción múltiple → ``mul``
+* Todos los tipos de preguntas de texto → ``txt``
+* Matriz (números) → ``int`` o ``dec``
+* Matriz (texto) → ``txt``
+* Otros tipos de matriz → ``lst``
+* Fecha/Hora → ``dat``
+* Ecuación → ``equ``
+* Entrada numérica → ``int`` o ``dec``
+* Entrada numérica múltiple → ``int`` o ``dec``
+* Sí/No → ``yn``
+* Otros tipos de preguntas → ``txt``

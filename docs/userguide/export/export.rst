@@ -1,24 +1,24 @@
 .. _export:
 
-Export
+Exportar
 ======
 
-Export is a way to transfer data from NES and LimeSurvey questionnaires (connected to NES) to files in "csv" (comma separated values) format. A zipped file is created with various types of data, like questionnaire, participant and diagnosis. 
+La exportación es una forma de transferir datos de cuestionarios NES y LimeSurvey (conectados a NES) a archivos en formato "csv" (valores separados por comas). Se crea un archivo comprimido con varios tipos de datos, como cuestionario, participante y diagnóstico. 
 
-Only users that have :ref:`permissions` to run export can see this option in the menu.
+Solo usuarios que tienen :ref:`permissions` Para ejecutar la exportación, puede ver esta opción en el menú.
 
-NES offers two types of exportation:
+NES ofrece dos tipos de exportación:
 
 * :ref:`Per participant <export-participant-data>`
 * :ref:`Per experiment <export-experiment-data>`
 
 .. image:: ../../_img/export_menu.png
 
-For each type of export, you can filter the group of participants whose data you want to export. 
+Para cada tipo de exportación, puede filtrar el grupo de participantes cuyos datos desea exportar. 
 
 .. image:: ../../_img/participants_election.png
 
-The participants can be filtered by gender, marital status, locations, diagnosis and age. As shows the picture below.
+Los participantes pueden ser filtrados por género, estado civil, ubicaciones, diagnóstico y edad. Como se muestra en la imagen de abajo.
 
 .. image:: ../../_img/participant_selection_options.png
 
