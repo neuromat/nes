@@ -1,83 +1,83 @@
 .. _researchers:
 
-Researchers
+Investigadores
 ===========
 
-If you have the right :ref:`permissions`, NES allows you to register the researchers that are working in your studies. While you are registering the researcher, you can choose whether or not that researcher can access the study at NES. If so, an username, a password and a profile will be required. NES also allows you to register the Institutions involved in your studies. The instructions of these functionalities are presented below.
+Si tiene derecho :ref:`permissions`, NES le permite registrar a los investigadores que están trabajando en sus estudios. Mientras registra al investigador, puede elegir si ese investigador puede o no acceder al estudio en NES. Si es así, se requerirá un nombre de usuario, una contraseña y un perfil. NES también le permite registrar las instituciones involucradas en sus estudios. Las instrucciones de estas funcionalidades se presentan a continuación.
 
 .. _list-of-researchers:
 
-List of Researchers and Institutions
+Lista de investigadores e instituciones
 ------------------------------------
 
-To access the list of researchers and institutions registered in the system, click in the `Researchers` menu item. This screen allows the creation of a new researcher or institution or the visualization of the existing ones.
+Para acceder a la lista de investigadores e instituciones registradas en el sistema, haga clic en el item de menu  `Researchers` . Esta pantalla permite la creación de un nuevo investigador o institución o la visualización de los existentes.
 
 .. image:: ../_img/list_of_researchers.png
 
-The researchers are organized in a list showing their names, e-mails, institution they belong to and their usernames if they have access to NES (if they don`t have the access, the username field is filled with "---").
+Los investigadores están organizados en una lista que muestra sus nombres, correos electrónicos, institución a la que pertenecen y sus nombres de usuario si tienen acceso a NES (si no tienen acceso, el campo de nombre de usuario se rellena con "---").
 
-Creating and Editing a User
+Creación y edición de un usuario
 ---------------------------
-A researcher register contains:
+Un registro de investigadores contiene:
 
-* A first name (obligatory);
-* A last name (obligatory);
-* An e-mail (obligatory);
-* An institution.
+* Un nombre de pila (obligatorio);
+* Un apellido (obligatorio);
+* Un correo electrónico (obligatorio);
+* Una institución.
 
-If the researcher must have access the system, you have to choose `Yes, a username and password must be configured` in the `Can this researcher access the system?` field. The default option to that question is `No`. 
+Si el investigador debe tener acceso al sistema, hay que elegir `Yes, a username and password must be configured` en el campo `Can this researcher access the system?` . La opción predeterminada para esa pregunta es `No`. 
 
-By clicking `Yes, a username and password must be configured` two sections appear, the first one to configure the username and password and the second one for you to choose the profile for the researcher. See :ref:`script-for-creating-initial-data` to know the permissions each profile has.
+Clickando `Yes, a username and password must be configured` aparecen dos secciones, la primera para configurar el nombre de usuario y la contraseña y la segunda para que elijas el perfil del investigador. Ver :ref:`script-for-creating-initial-data` para conocer los permisos que tiene cada perfil.
 
-All these fields can be set while creating or updating a user. You have always to inform the password twice, and it has to have at least 8 characters, including at least one upper case letter, digit or a special character. An explanation about roles is given in :ref:`group-of-users-roles`. Only authorized users can update a user (See :ref:`permissions` for more information).
+Todos estos campos se pueden establecer al crear o actualizar un usuario. Siempre tiene que informar la contraseña dos veces, y debe tener al menos 8 caracteres, incluyendo al menos una letra mayúscula, dígito o un carácter especial. Una explicación sobre los roles se da en :ref:`group-of-users-roles`. Solo los usuarios autorizados pueden actualizar un usuario (consulte :ref:`permissions` para más información).
 
 .. image:: ../_img/create_researcher.png
 
-Institution register
+Registro de instituciones
 --------------------
 
-Each institution have a name, is settled in a country, has an acronym and may have a parent institution. The informations that can be registered in this item are:
+Cada institución tiene un nombre, está establecida en un país, tiene un acrónimo y puede tener una institución matriz. Las informaciones que se pueden registrar en este ítem son:
 
-* Name: the official name of the institution (obligatory);
-* Acronym: the word(s) or name formed as an abbreviation of the institution name (obligatory);
-* Country: the country to which the institution belongs (obligatory); and
-* Parent: the parent institution to which the institution belongs, if it exists.
+* Nombre: el nombre oficial de la institución (obligatorio);
+* Acrónimo: la palabra (s) o nombre formado como una abreviatura del nombre de la institución (obligatorio);
+* País: el país al que pertenece la institución (obligatorio); y
+* Padre: la institución matriz a la que pertenece la institución, si existe.
 
 .. image:: ../_img/institutions.png
 
-Logging in and out
+Iniciar y cerrar sesión
 ------------------
-After typing the url of NES, the first screen you see is the log in screen. This allows the system to control the access to the information managed by NES. It is asked for you only your username and password.
+Después de escribir la url de NES, la primera pantalla que ve es la pantalla de inicio de sesión. Esto permite al sistema controlar el acceso a la información gestionada por NES. Se le pide solo su nombre de usuario y contraseña.
 
 .. image:: ../_img/login.png
 
-To log out, you have to click in your username at the top-right of the page and choose the `Exit` option.
+Para cerrar sesión, debe hacer clic en su nombre de usuario en la parte superior derecha de la página y elegir la opción `Exit`.
 
 .. image:: ../_img/logout.png
 
-Changing the password
+Cambiar la contraseña
 ---------------------
-In the same menu where the option to log out is located, you can access the screen to change your password. You have to inform your current password once and the new password twice. The rules to create the password are the same as indicated in the section about `Creating and Editing a User`_.
+En el mismo menú donde se encuentra la opción de cerrar sesión, puede acceder a la pantalla para cambiar su contraseña. Debe informar su contraseña actual una vez y la nueva contraseña dos veces. Las reglas para crear la contraseña son las mismas que se indican en la sección sobre `Creating and Editing a User`_.
 
 .. image:: ../_img/change_password.png
 
-After confirming, you are redirected to the home screen.
+Después de confirmar, se le redirige a la pantalla de inicio.
 
-Resetting the password
+Restablecimiento de la contraseña
 ----------------------
 
-If you forgot your password and no longer can log in, you can reset your password. In the log in screen, click the `Forgot my password` link. Your registered e-mail will be asked, so that a message can be sent to you with a link that allows you to set up a new password.
+Si olvidó su contraseña y ya no puede iniciar sesión, puede restablecerla. En la pantalla de inicio de sesión, haga clic en el link `Forgot my password` . Se le pedirá su correo electrónico registrado, para que se le pueda enviar un mensaje con un enlace que le permita configurar una nueva contraseña.
 
 .. image:: ../_img/reset_password_email_form.png
 
-After typing your e-mail address, you will see a message explaining about the e-mail with instructions on how to proceed. Even if you typed a wrong e-mail address, you will see the same message, however, no e-mail will be sent.
+Después de escribir su dirección de correo electrónico, verá un mensaje explicando sobre el correo electrónico con instrucciones sobre cómo proceder. Incluso si escribió una dirección de correo electrónico incorrecta, verá el mismo mensaje, sin embargo, no se enviará ningún correo electrónico.
 
 .. image:: ../_img/reset_password_message.png
 
-After clicking the link in the e-mail you received, you will see a screen where you will be asked to type your new password twice. Rules to create a password in this screen are more restrictive. The more complex your new password, higher the chances that it gets accepted. A possible password has at least 8 characters, including upper case letters and digits or special characters.
+Después de hacer clic en el enlace en el correo electrónico que recibió, verá una pantalla donde se le pedirá que escriba su nueva contraseña dos veces. Las reglas para crear una contraseña en esta pantalla son más restrictivas. Cuanto más compleja sea su nueva contraseña, mayores serán las posibilidades de que sea aceptada. Una posible contraseña tiene al menos 8 caracteres, incluidas letras mayúsculas y dígitos o caracteres especiales.
 
 .. image:: ../_img/reset_password.png
 
-Then, you will see a success screen with a button that takes you back to the log in screen.
+Luego, verá una pantalla de éxito con un botón que lo lleva de regreso a la pantalla de inicio de sesión.
 
 .. image:: ../_img/reset_password_success.png

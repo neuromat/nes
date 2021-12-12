@@ -1,17 +1,17 @@
 .. _emg-electrode-settings:
 
-EMG Electrode Settings
+Configuración del electrodo EMG
 ======================
 
-The electrode settings menu allows you to register the type of electrode used in the EMG experiment as the manufacturer, the model, the placement details and other remarks that you consider relevant for describe the electrode. In addition, you can describe the amplifier and/or pre-amplifier setting used with the electrode.
-The fields that are part of this settings are:
+El menú de configuración del electrodo le permite registrar el tipo de electrodo utilizado en el experimento EMG como fabricante, el modelo, los detalles de colocación y otras observaciones que considere relevantes para describir el electrodo. Además, puede describir el amplificador y/o la configuración del preamplificador utilizado con el electrodo.
+Los campos que forman parte de esta configuración son:
 
-* Electrode type : this indicates if the electrode is surface, intramuscular or needle.
-* Electrode model: in this field you must to select the model of electrode used, this model is defined in :ref:`electrode-model` menu.
-* Electrode placement: here you select the system used in the placement of the electrode, this system is defined in the :ref:`electrode-placement-system` menu. The system shows details about the start posture, orientation, fixation on the skin, reference electrode and clinical test.
-* Remarks: here you can register some additional information about the experiment.
+* Tipo de electrodo: indica si el electrodo es superficial, intramuscular o aguja.
+* Modelo de electrodo: en este campo debe seleccionar el modelo de electrodo utilizado, este modelo se define en :ref:`electrode-model` .
+* Colocación del electrodo: aquí se selecciona el sistema utilizado en la colocación del electrodo, este sistema se define en el :ref:`electrode-placement-system` . El sistema muestra detalles sobre la postura de inicio, la orientación, la fijación en la piel, el electrodo de referencia y la prueba clínica.
+* Observaciones: aquí puede registrar información adicional sobre el experimento.
 
-In the picture below is showed a screenshot of this menu:
+En la imagen de abajo se muestra una captura de pantalla de este menú:
 
 .. image:: ../../../_img/emg_setting_electrode_settings_view_1.png
 
@@ -19,31 +19,31 @@ In the picture below is showed a screenshot of this menu:
 
 .. _emg-amplifier-settings:
 
-EMG Amplifier Settings
+Configuración del amplificador EMG
 ----------------------
 
-Each electrode works with a amplifier or pre-amplifier, the description of this settings are in the following sections:
+Cada electrodo funciona con un amplificador o preamplificador, la descripción de esta configuración se encuentra en las siguientes secciones:
 
-The EMG amplifier settings page allows to register settings about the EMG amplifier used in the experiment.
+La página de configuración del amplificador EMG permite registrar la configuración sobre el amplificador EMG utilizado en el experimento.
 
-* :ref:`manufacturer`: The name of the amplifier manufacturer.
-* :ref:`Identification <amplifier>`: The model name of the amplifier. When the Identification is selected some informations about the amplifier are shown, such as the description and gain.
-* Gain setted: In this item is registered the gain used in the experiment. An amplifier multiplies an input voltage by a constant usually lying in the range of up to 1000000. The amplification factor is referred to as gain and may be expressed as Vout/ Vin. The unit of the gain is the decibel (dB): dB = 20 X log(Vout/Vin).
-* Analog filter settings: in this setting you can register the configuration used for the analog filter.
+* :ref:`manufacturer`: El nombre del fabricante del amplificador.
+* :ref:`Identification <amplifier>`: Nombre del modelo del amplificador. Cuando se selecciona la identificación, se muestran algunas informaciones sobre el amplificador, como la descripción y la ganancia.
+* Ganancia establecida: En este ítem se registra la ganancia utilizada en el experimento. Un amplificador multiplica un voltaje de entrada por una constante que generalmente se encuentra en el rango de hasta 1000000. El factor de amplificación se conoce como ganancia y puede expresarse como Vout / Vin. La unidad de la ganancia es el decibelio (dB): dB = 20 X log(Vout/Vin).
+* Configuración del filtro analógico: en este ajuste puede registrar la configuración utilizada para el filtro analógico.
 
-.. note:: If the manufacturer and/or Identification does not exist, it must to be added in the :ref:`equipment-set-up` module.
+.. nota:: Si el fabricante y/o la identificación no existen, deberá añadirse en el :ref:`equipment-set-up` .
 
 .. image:: ../../../_img/emg_amplifier_settings.png
 
-EMG Pre-amplifier Settings
+Configuración del preamplificador EMG
 --------------------------
-The EMG Pre-amplifier settings page allows to register settings about the EMG amplifier used in the experiment. The information registered here are:
+La página de configuración del preamplificador EMG permite registrar la configuración sobre el amplificador EMG utilizado en el experimento. La información registrada aquí es:
 
-* :ref:`manufacturer`: The name of the amplifier manufacturer.
-* :ref:`Identification <amplifier>`: The model name of the amplifier. When the Identification is selected some informations about the amplifier are shown, such as the description and gain.
-* Gain setted: In this item is registered the gain used in the experiment. An amplifier multiplies an input voltage by a constant usually lying in the range of up to 1000000. The amplification factor is referred to as gain and may be expressed as Vout/ Vin. The unit of the gain is the decibel (dB): dB = 20 X log(Vout/Vin).
-* Analog filter settings: in this setting you can register the configuration used for the analog filter.
+* :ref:`fabricante`: El nombre del fabricante del amplificador.
+* :ref:`Identificacion <amplifier>`: Nombre del modelo del amplificador. Cuando se selecciona la identificación, se muestran algunas informaciones sobre el amplificador, como la descripción y la ganancia.
+* Ganancia establecida: En este ítem se registra la ganancia utilizada en el experimento. Un amplificador multiplica un voltaje de entrada por una constante que generalmente se encuentra en el rango de hasta 1000000. El factor de amplificación se conoce como ganancia y puede expresarse como Vout / Vin. La unidad de la ganancia es el decibelio (dB): dB = 20 X log(Vout/Vin).
+* Configuración del filtro analógico: en este ajuste puede registrar la configuración utilizada para el filtro analógico.
 
-.. note:: If the manufacturer and/or Identification does not exist, it must to be added in the :ref:`equipment-set-up` module.
+.. nota:: Si el fabricante y/o la identificación no existen, deberá añadirse en el :ref:`equipment-set-up` .
 
 .. image:: ../../../_img/emg_pre-amplifier_settings.png

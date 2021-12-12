@@ -1,46 +1,46 @@
 .. _muscle:
 
-Muscle
+Músculo
 ========
 
-NES allows to register the muscle and the subdivision of the muscle where the electrodes will be placed. This information will assist in the description of the experiment configuration.
+NES permite registrar el músculo y la subdivisión del músculo donde se colocarán los electrodos. Esta información ayudará en la descripción de la configuración del experimento.
 
 .. _view-the-list-of-muscles:
 
-View the list of muscles
+Ver la lista de músculos
 ------------------------
 
-This page shows a example of the list of muscles available to select. By clicking a item of the list you can edit this item.
+Esta página muestra un ejemplo de la lista de músculos disponibles para seleccionar. Al hacer clic en un elemento de la lista, puede editar este elemento.
 
 .. image:: ../../_img/muscle_list.png
 
 .. _add-a-muscle:
 
-Add a muscle
+Añadir un músculo
 ------------
 
-To add a new muscle, you have to insert the name of the muscle and save it.
-After saving a new muscle, you can insert the subdivision of the muscle and its side. The picture below shows a example of this screen.
+Para agregar un nuevo músculo, debe insertar el nombre del músculo y guardarlo.
+Después de guardar un nuevo músculo, puede insertar la subdivisión del músculo y su lado. La siguiente imagen muestra un ejemplo de esta pantalla.
 
 .. image:: ../../_img/muscle_save.png
 
 .. _add-a-subdivision-of-the-muscle:
 
-Add a subdivision of the muscle
+Añadir una subdivisión del músculo
 -------------------------------
 
-To add a subdivision of the muscle, you must insert the following information:
+Para agregar una subdivisión del músculo, debe insertar la siguiente información:
 
-* **Name:** the name of the subdivision of the muscle; (obligatory)
-* **Anatomy origin:** The description of the origin of the subdivision of the muscle registered; and
-* **Anatomy insertion:** the localization of the insertion of the subdivision of the muscle; and
-* **Anatomy function:** the function of the subdivision of the muscle.
+* **Nombre:** el nombre de la subdivisión del músculo; (obligatorio)
+* **Origen de la anatomía:** La descripción del origen de la subdivisión del músculo registrado; y
+* **Inserción de anatomía:** la localización de la inserción de la subdivisión del músculo; y
+* **Función de anatomía:** la función de la subdivisión del músculo.
 
-The picture below shows a example of the screen for add a subdivision of the muscle.
+La siguiente imagen muestra un ejemplo de la pantalla para agregar una subdivisión del músculo.
 
 .. image:: ../../_img/muscle_subdivision_add.png
 
-If necessary you can register the side of the muscle. The picture below shows a example of a view of the muscle, the subdivision and the muscle side.
+Si es necesario, puede registrar el lado del músculo. La siguiente imagen muestra un ejemplo de una vista del músculo, la subdivisión y el lado muscular.
 
 .. image:: ../../_img/muscle_view.png
 

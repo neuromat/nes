@@ -1,35 +1,35 @@
 .. _managing-steps-for-experimental-protocol:
 
-Managing Steps for Experimental Protocol
+Administración de pasos para el protocolo experimental
 ========================================
 
-An experimental protocol is composed of steps. A single step may be used more than once in the same experiment. The protocol of an experiment is defined by organizing the uses of steps in a way that determines the moment in which they should happen. This is done inside each group of participant, because the experimental protocol of a group might be different from the experimental protocol of another group. NES allows register the following types of steps:
+Un protocolo experimental se compone de pasos. Se puede usar un solo paso más de una vez en el mismo experimento. El protocolo de un experimento se define organizando los usos de los pasos de una manera que determina el momento en el que deben suceder. Esto se hace dentro de cada grupo de participantes, porque el protocolo experimental de un grupo puede ser diferente del protocolo experimental de otro grupo. NES permite registrar los siguientes tipos de pasos:
 
 .. _list-of-steps:
 
-List of Steps
+Lista de pasos
 -------------
 
-All the steps already created for specifying the protocols of the experiments are listed when you click the `Manage` button while visualizing an :ref:`experiments`. Steps that are still not in use anywhere in the experiment are also listed.
+Todos los pasos ya creados para especificar los protocolos de los experimentos se enumeran al hacer clic en el botón `Manage` mientras visualiza un :ref:`experiments`. También se enumeran los pasos que aún no están en uso en ninguna parte del experimento.
 
 .. image:: ../../_img/list_of_steps.png
 
-From this screen, you can create new steps by clicking the `Insert New Step` button and choosing one of the available types. All types have at least an identification, and may have a description and a duration, which is composed of a value and a unit. Possible units are: millisecond, second, minute, hour, day, week, month and year. From this screen you can also see / edit information of a specific step by clicking the link that shows its identification. While viewing / editing a step, you can delete it by clicking the *Delete* button. However, this button is visible only for the users that have :ref:`permissions` to update the experiment. If you remove a step, you are also removing all the uses of this step.
+Desde esta pantalla, puede crear nuevos pasos haciendo clic en el botón `Insert New Step`  y elegir uno de los tipos disponibles. Todos los tipos tienen al menos una identificación, y pueden tener una descripción y una duración, que se compone de un valor y una unidad. Las unidades posibles son: milisegundo, segundo, minuto, hora, día, semana, mes y año. Desde esta pantalla también se puede ver/editar información de un paso concreto haciendo clic en el enlace que muestra su identificación. Mientras ve / edita un paso, puede eliminarlo haciendo clic en el botón *Eliminar* . Sin embargo, este botón sólo es visible para los usuarios que tienen :ref:`permissions` para actualizar el experimento. Si quita un paso, también está eliminando todos los usos de este paso.
 
-See the following sections for specificities of each type of step:
+Consulte las siguientes secciones para conocer las especificidades de cada tipo de paso:
 
 .. _instruction-step:
 
-Instruction
+Instrucción
 -----------
 
-An `instruction` contains:
+Una `instruction` contiene:
 
-* An identification (obligatory);
-* A description;
-* A duration;
-* The text of the instruction (obligatory); and
-* Additional files.
+* Una identificación (obligatoria);
+* Una descripción;
+* Una duración;
+* El texto de la instrucción (obligatorio); y
+* Archivos adicionales.
 
 .. image:: ../../_img/edit_instruction.png
 
@@ -37,15 +37,15 @@ An `instruction` contains:
 
 .. _pause-step:
 
-Pause
+Pausa
 -----
 
-A `pause` contains:
+Una `pause` contiene:
 
-* An identification (obligatory);
-* A description; and
-* A duration (obligatory); and
-* Additional files.
+* Una identificación (obligatoria);
+* Una descripción; y
+* Una duración (obligatoria); y
+* Archivos adicionales.
 
 .. image:: ../../_img/create_pause.png
 
@@ -53,16 +53,16 @@ A `pause` contains:
 
 .. _questionnaire-step:
 
-Questionnaire
+Cuestionario
 -------------
 
-A `questionnaire` contains:
+Un `questionnaire` contiene:
 
-* An identification (obligatory);
-* A description;
-* A duration;
-* The name of a questionnaire at LimeSurvey (obligatory); and
-* Additional files.
+* Una identificación (obligatoria);
+* Una descripción;
+* Una duración;
+* El nombre de un cuestionario en LimeSurvey (obligatorio); y
+* Archivos adicionales.
 
 .. image:: ../../_img/edit_questionnaire.png
 
@@ -70,28 +70,28 @@ A `questionnaire` contains:
 
 .. _set-of-steps:
 
-Set of Steps
+Conjunto de pasos
 ------------
 
-The `set of steps` is a special type of step, because it is used to aggregate uses of other steps in a way that defines the moment in which they should happen. Thus, we explain about a `set of steps` in detail in :ref:`configuring-an-experimental-protocol`.
+El `set of steps` es un tipo especial de paso, porque se utiliza para agregar usos de otros pasos de una manera que define el momento en el que deben suceder. Así, te explicamos acerca de un `set of steps` en detalle en :ref:`configuring-an-experimental-protocol`.
 
 :ref:`Back to top <managing-steps-for-experimental-protocol>`
 
 .. _stimulus-step:
 
-Stimulus
+Estimulo
 --------
 
-A `stimulus` contains:
+Un `stimulus` contiene:
 
-* An identification (obligatory);
-* A description;
-* A duration;
-* A type (obligatory);
-* A media file containing the file of the stimulus; and
-* Additional files.
+* Una identificación (obligatoria);
+* Una descripción;
+* Una duración;
+* Un tipo (obligatorio);
+* Un archivo multimedia que contiene el archivo del estímulo; y
+* Archivos adicionales.
 
-The type of stimulus may be one of the types registered in the NES database. The :ref:`script-for-creating-initial-data` includes the following types: Auditory, Olfactory, Visual, Somatosensory, Interoceptive and Gustative.
+El tipo de estímulo puede ser uno de los tipos registrados en la base de datos NES. El :ref:`script-for-creating-initial-data` incluye los siguientes tipos: Auditivo, Olfativo, Visual, Somatosensorial, Interoceptivo y Gustativo.
 
 .. image:: ../../_img/stimulus_step.png
 
@@ -99,15 +99,15 @@ The type of stimulus may be one of the types registered in the NES database. The
 
 .. _task-step:
 
-Task for the Experimenter or Task for the Subject
+Tarea para el experimentador o Tarea para el sujeto
 -------------------------------------------------
 
-Both a `task for the experimenter` or a `task for the subject` contains:
+Ambos, una `task for the experimenter` o una `task for the subject` contienen:
 
-* An identification (obligatory);
-* A description;
-* A duration; and
-* Additional files.
+* Una identificación (obligatoria);
+* Una descripción;
+* Una duración; y
+* Archivos adicionales.
 
 .. image:: ../../_img/edit_task_for_the_participant.png
 
@@ -118,12 +118,12 @@ Both a `task for the experimenter` or a `task for the subject` contains:
 EEG
 ---
 
-A `EEG` step represents that an `Electroencephalography <https://en.wikipedia.org/wiki/Electroencephalography>`_ will be performed at this moment of the experiment. The setting of this step must be registered previously and defines how all EEG equipment are configured. An EEG step contains:
+Un paso `EEG`  representa que un `Electroencephalography <https://en.wikipedia.org/wiki/Electroencephalography>`_ se realizará en este momento del experimento. La configuración de este paso debe registrarse previamente y define cómo se configuran todos los equipos de EEG. Un paso de EEG contiene:
 
-* An identification (obligatory);
-* A duration;
-* A description; and
-* An EEG setting (obligatory).
+* Una identificación (obligatoria);
+* Una duración;
+* Una descripción; y
+* Una configuración de EEG (obligatoria).
 
 .. image:: ../../_img/eeg_step.png
 
@@ -134,12 +134,13 @@ A `EEG` step represents that an `Electroencephalography <https://en.wikipedia.or
 EMG
 ---
 
-An `EMG` step represents that an `Electromyography <https://en.wikipedia.org/wiki/Electromyography>`_ will be performed at this moment of the experiment. An EMG step contains:
+Un paso `EMG` representa que un `Electromyography <https://en.wikipedia.org/wiki/Electromyography>`_ se realizará en este momento del experimento. Un paso de EMG contiene:
 
-* An identification (obligatory);
-* A duration;
-* A description; and
-* An EMG setting (obligatory).
+* Una identificación (obligatoria);
+* Una duración;
+* Una descripción; y
+* Una configuración EMG (obligatoria).
+
 
 .. image:: ../../_img/emg_step.png
 
@@ -150,12 +151,13 @@ An `EMG` step represents that an `Electromyography <https://en.wikipedia.org/wik
 TMS
 ---
 
-An `TMS` step represents that a `Transcranial Magnetic Stimulation <https://en.wikipedia.org/wiki/Transcranial_magnetic_stimulation>`_ will be performed at this moment of the experiment. An TMS step contains:
+Un paso `TMS` representa que una `Transcranial Magnetic Stimulation <https://en.wikipedia.org/wiki/Transcranial_magnetic_stimulation>`_ se realizará en este momento del experimento. Un paso de TMS contiene:
 
-* An identification (obligatory);
-* A duration;
-* A description; and
-* An TMS setting (obligatory).
+* Una identificación (obligatoria);
+* Una duración;
+* Una descripción; y
+* Una configuración TMS (obligatoria).
+
 
 .. image:: ../../_img/tms_step.png
 
@@ -163,16 +165,16 @@ An `TMS` step represents that a `Transcranial Magnetic Stimulation <https://en.w
 
 .. _goalkeeper-game-phase:
 
-Goalkeeper game phase
+Fase de juego del portero
 ---------------------
 
-An `Goalkeeper game phase` step represents that an `Goalkeeper game phase <http://game.numec.prp.usp.br>`_ will be performed at this moment of the experiment. An Goalkeeper game phase step contains:
+Un paso `Goalkeeper game phase` representa que una `Goalkeeper game phase <http://game.numec.prp.usp.br>`_ se realizará en este momento del experimento. Un paso de fase de juego de porteros contiene:
 
-* An identification (obligatory);
-* A duration;
-* A description;
-* The software version of the Goalkeeper game used in the experiment (obligatory); and
-* The context tree (obligatory).
+* Una identificación (obligatoria);
+* Una duración;
+* Una descripción;
+* La versión de software del juego Goalkeeper utilizada en el experimento (obligatorio); y
+* El árbol de contexto (obligatorio).
 
 .. image:: ../../_img/goalkeeper_game_phase_step.png
 
@@ -180,17 +182,17 @@ An `Goalkeeper game phase` step represents that an `Goalkeeper game phase <http:
 
 .. _generic-data-collection:
 
-Generic data collection
+Recopilación de datos genéricos
 -----------------------
 
-A `Generic data collection` contains:
+Una `Generic data collection` contiene:
 
-* An identification (obligatory);
-* A description;
-* A duration; and
-* A type (obligatory).
+* Una identificación (obligatoria);
+* Una descripción;
+* Una duración; y
+* Un tipo (obligatorio).
 
-The type of Generic data collection may be one of the types registered in the NES database. They can be of the following types: kinematic measures, Stabilometry, Response time, Psychophysical measures, Verbal response, Psychometric scale, Unit recording and Multiunit recording.
+El tipo de recopilación de datos genéricos puede ser uno de los tipos registrados en la base de datos NES. Pueden ser de los siguientes tipos: medidas cinemáticas, estabilometría, tiempo de respuesta, medidas psicofísicas, respuesta verbal, escala psicométrica, grabación de unidades y grabación multiunidad.
 
 .. image:: ../../_img/generic_data_step.png
 

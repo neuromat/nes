@@ -1,78 +1,74 @@
 .. _personal-data:
 
-Personal Data
+Datos Personales
 =============
 
-Personal data is the tab where you can view or update participant's basic information, address and telephone numbers.
+Datos personales es la pestaña donde puede ver o actualizar la información básica, la dirección y los números de teléfono del participante.
 
-Personal Data Tab
+Pestaña Datos personales
 -----------------
-You can visit the :ref:`participants` page to understand how to navigate between tabs.
+Puedes visitar el :ref:`participants` para comprender cómo navegar entre pestañas.
 
 .. image:: ../../_img/participant_personal_data.png
 
-Basic Information
+Información basica
 `````````````````
 
-In this section, you can visualize/edit participant's basic information:
+En esta sección, puede visualizar/editar la información básica del participante:
 
-* Full name (obligatory);
-* CPF (not obligatory, but recommended);
-* Origin;
-* Medical record;
-* Date of birth (obligatory);
-* Gender (obligatory);
-* ID; and
-* Marital status.
-
-.. note:: The `Cadastro de Pessoas Físicas` (CPF) is a number attributed by the Brazilian Federal Revenue to both Brazilians and resident aliens, which is widely used as an identification number in Brazil.
-
-Once the CPF number is unique for each person, it is very important when one is trying to verify `Participant Homonym`_. If you don't fill in this information, a confirmation message will show up, but you can just ignore if it is not an important information for you (click either the `Save` button if you want to continue the saving process without CPF or the `Cancel` button if you'd rather go back and inform the CPF number).
+* Nombre completo (obligatorio);
+* ID (no obligatorio, pero recomendado);
+* Origen;
+* Registro médico;
+* Fecha de nacimiento (obligatoria);
+* Género (obligatorio);
+* IDENTIFICACIÓN; y
+* Estado civil.
 
 .. image:: ../../_img/participant_cpf_not_filled.png
 
-Address 
+Dirección 
 ```````
 
-The address section contains (all information is optional):
+La sección de dirección contiene (toda la información es opcional):
 
-* Country;
-* Zip code;
-* Address;
-* Number;
-* Complement;
-* District;
-* City;
-* State; and
-* E-mail.
+* País;
+* Código postal;
+* Dirección;
+* Número;
+* Complemento;
+* Distrito;
+* Ciudad;
+* Estado; y
+* Correo electrónico.
 
 .. image:: ../../_img/participant_address.png
 
-The zip code field has a mask that forces the field to accept only numbers with 8 digits. This is the format used in Brazil. Zip code of future versions will have this mask only if you choose Brazil as the country.
+El campo de código postal tiene una máscara que obliga al campo a aceptar solo números con 8 dígitos.
 
-Telephones
+Teléfonos
 ``````````
 
-The telephones section contains:
+La sección de teléfonos contiene:
 
-* Number;
-* Type;
-* Observation; and
-* Delete - it is possible to delete specific telephones.
+* Número;
+* Tipo;
+* Observación; y
+* Eliminar - es posible eliminar teléfonos específicos.
 
 .. image:: ../../_img/participant_phone.png
 
-You have to click the `Save and include more telephones` button (:ref:`only in edition mode <creating-and-editing-a-participant>`) if you need more room for entering new telephones. If you want to delete one telephone number, mark the delete box of it and click this button as well.
+Tienes que hacer clic en el botón `Save and include more telephones`  (:ref:`only in edition mode <creating-and-editing-a-participant>`) si necesita más espacio para ingresar nuevos teléfonos. Si desea eliminar un número de teléfono, marque la casilla de eliminación del mismo y haga clic en este botón también.
 
 .. _participant-homonym:
 
-Participant Homonym
+Participante Homónimo
 ```````````````````
 
-When you create a new participant, NES searches for homonyms by the full name or the CPF number that was previously registered in the system.
+Cuando crea un nuevo participante, NES busca homónimos por el nombre completo o el número CPF que se registró previamente en el sistema.
 
-If this occurs, an warning message is presented:
+Si esto ocurre, se presenta un mensaje de advertencia:
 
 .. image:: ../../_img/participant_homonym.png
 
-You can either continue inserting a new participant (click `Cancel` button) or click the participant's CPF-name link to view the registered one.
+Puede continuar insertando un nuevo participante (haga clic en `Cancel` ) o haga clic en el enlace del nombre del ID del participante para ver el registrado.

@@ -1,50 +1,50 @@
 .. _export-experiment-data:
 
-Export Experiment Data
+Exportar datos del experimento
 ======================
-To export data from experiments, you have to select the study, the experiment and the group(s) whose data you can export.
-The image below shows these options.
+Para exportar datos de experimentos, debe seleccionar el estudio, el experimento y los grupos cuyos datos puede exportar.
+La siguiente imagen muestra estas opciones.
 
 .. image:: ../../_img/export_experiment_selection.png
 
-The next step shows four information tabs to select the data to be exported.
+El siguiente paso muestra cuatro pestañas de información para seleccionar los datos que se exportarán.
 
 .. image:: ../../_img/export_experiment_tab_information.png
 
-The tabs are divided in: `General Information`_,`Questionnaire Answered by Participants`_, `Questionnaire from Experiments`_ and `Participants and Diagnosis`_
+Las pestañas se dividen en: `General Information`_, `Questionnaire Answered by Participants`_ , `Questionnaire from Experiments`_ y `Participants and Diagnosis`_
 
 .. _general-information-export-experiment:
 
-General Information
+Información General
 -------------------
 
-In this section, you configure the structure of the directory where questionnaire will be stored, the questionnaire evaluation headings and responses format that will be exported from information at LimeSurvey.
-This options only make sense if you set up at least one questionnaire for exporting. See :ref:`general-information-export-participant` at `Export participant data` for more details of this section.
+En esta sección, se configura la estructura del directorio donde se almacenará el cuestionario, los encabezados de evaluación del cuestionario y el formato de respuestas que se exportará a partir de la información de LimeSurvey.
+Estas opciones solo tienen sentido si configura al menos un cuestionario para exportar. Ver :ref:`general-information-export-participant` en `Export participant data` para obtener más detalles de esta sección.
 
 .. _questionnaire-answered-by-participants-export-experiment:
 
-Questionnaire Answered by Participants
+Cuestionario respondido por los participantes
 --------------------------------------
 
-A list of questionnaires evaluation that contain the information selected from filters (first pages, as shown here) that select them is presented. A circle in blue (blue counter) presents the quantity of fields selected in each questionnaire. At the beginning, as there are no elements selected, zero is presented. See :ref:`questionnaire-information-export-participant` at `Export participant data` for more details of this section.
+Se presenta una lista de cuestionarios de evaluación que contienen la información seleccionada de los filtros (primeras páginas, como se muestra aquí) que los seleccionan. Un círculo en azul (contador azul) presenta la cantidad de campos seleccionados en cada cuestionario. Al principio, como no hay elementos seleccionados, se presenta cero. Ver :ref:`questionnaire-information-export-participant` en `Export participant data` para obtener más detalles de esta sección.
 
 .. image:: ../../_img/export_experiment_tab_entrance_questionnaire.png
 
 .. _questionnaire-from-experiments-export-experiment:
 
-Questionnaire from Experiments
+Cuestionario de Experimentos
 ------------------------------
 
-In this tab is presented a list of questionnaires from the experiment selected. As the former tab, a circle in blue (blue counter) presents the quantity of fields selected in each questionnaire. At the beginning, as there are no elements selected, zero is presented. This section should be managed like the previous one.
+En esta pestaña se presenta una lista de cuestionarios del experimento seleccionado. Al igual que la pestaña anterior, un círculo en azul (contador azul) presenta la cantidad de campos seleccionados en cada cuestionario. Al principio, como no hay elementos seleccionados, se presenta cero. Esta sección debe gestionarse como la anterior.
 
 .. image:: ../../_img/export_tab_experiment_questionnaire.png
 
 .. _participants-and-diagnosis-export-experiment:
 
-Participants and Diagnosis
+Participantes y diagnóstico
 --------------------------
 
-You can see :ref:`participants-export-participant` and :ref:`general-information-export-participant` at `Export participant data` to see details about this tab.
+Puede ver :ref:`participants-export-participant` y :ref:`general-information-export-participant` at `Export participant data` to see details about this tab.
 
 .. image:: ../../_img/export_experiment_tab_participants_diagnosis.png
 

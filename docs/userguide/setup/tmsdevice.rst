@@ -1,26 +1,26 @@
 .. _tms-device:
 
-TMS Device
+Dispositivo TMS
 ==========
 
-NES allows to register the TMS devices used in experiments. `Magstim 200` is a example of a localization system.
+NES permite registrar los dispositivos TMS utilizados en los experimentos. `Magstim 200` es un ejemplo de un sistema de localización.
 
 .. _view-the-list-of-tms-devices:
 
-View the list of TMS devices
+Ver la lista de dispositivos TMS
 ----------------------------
 
-This page shows the list of TMS devices registered in NES. By clicking a item of the list you can edit this item.
+Esta página muestra la lista de dispositivos TMS registrados en NES. Al hacer clic en un elemento de la lista, puede editar este elemento.
 
 .. image:: ../../_img/tms_device_list.png
 
 .. _add-a-tms-devices:
 
-Add a TMS device
+Agregar un dispositivo TMS
 ----------------
 
-To add a new TMS device, you have to insert the manufacturer and the identification of the device; optionally, a description, the pulse type and the serial number.
-The picture below show a example of this screen:
+Para agregar un nuevo dispositivo TMS, debe insertar el fabricante y la identificación del dispositivo; opcionalmente, una descripción, el tipo de pulso y el número de serie.
+La siguiente imagen muestra un ejemplo de esta pantalla:
 
 .. image:: ../../_img/tms_device_add.png
 

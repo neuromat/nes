@@ -1,12 +1,12 @@
 .. _publications:
 
-Publications
+Publicaciones
 ============
 
-The articles, papers, abstracts and/or any material related to the studies performed by the lab can be registered at NES. This functionality shall be filled with the following information:
+Los artículos, trabajos, resúmenes y/o cualquier material relacionado con los estudios realizados por el laboratorio pueden ser registrados en NES. Esta funcionalidad se rellenará con la siguiente información:
 
-* **Title:** the title of the article, paper, abstract or material.
-* **Citation:** this field refers to how the publication must to be cited by others works.
-* **URL:** the URL of the web site where the publication is settled.
+* **Título:** el título del artículo, artículo, resumen o material.
+* **Citación:** este campo se refiere a cómo funciona la publicación debe ser citada por otros.
+* **URL:** la URL del sitio web donde se asienta la publicación.
 
 .. image:: ../_img/publications_view.png

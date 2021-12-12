@@ -1,65 +1,65 @@
 .. _raw-data-and-additional-files:
 
-Raw data and additional files
+Datos sin procesar y archivos adicionales
 =============================
 
-NES allows to attach files by each participant in several types of data formats. These can be raw data obtained from collect of EEG, EMG or TMS, or additional files related with each step of the experimental protocol.
-Once the group of participants and their experimental protocol is determined, the system will show, each participant by row, as is shown in the picture below. The list of registered participants includes a link (represented by the paperclip) to a screen that allows you to attach the file that stores the term of consent signed by the participant. In case the experimental protocol includes questionnaires, a column named `Completed questionnaires` is shown with a link to fill the questionnaires and a graphical representation of the number of filled questionnaires for that participant. If included in the experimental protocol, EEG, EMG, TMS and Generic data collections are shown in the last column as well as a link to attach additional files. This screen is shown in the picture below. 
+NES permite adjuntar archivos de cada participante en varios tipos de formatos de datos. Estos pueden ser datos en bruto obtenidos de la recopilación de EEG, EMG o TMS, o archivos adicionales relacionados con cada paso del protocolo experimental.
+Una vez determinado el grupo de participantes y su protocolo experimental, el sistema mostrará, cada participante por fila, como se muestra en la imagen de abajo. La lista de participantes inscritos incluye un enlace (representado por el clip) a una pantalla que permite adjuntar el fichero que almacena el plazo de consentimiento firmado por el participante. En caso de que el protocolo experimental incluya cuestionarios, una columna denominada `Completed questionnaires` se muestra con un enlace para rellenar los cuestionarios y una representación gráfica del número de cuestionarios cumplimentados para ese participante. Si se incluyen en el protocolo experimental, las colecciones de datos EEG, EMG, TMS y Generic se muestran en la última columna, así como un enlace para adjuntar archivos adicionales. Esta pantalla se muestra en la imagen de abajo. 
 
 .. image:: ../../_img/files_upload.png
 
-More details about the screens for attaching files are in the following topics:
+Encontrará más detalles sobre las pantallas para adjuntar archivos en los siguientes temas:
 
 .. _attach-term-of-consent:
 
-Attach term of consent
+Adjuntar plazo de consentimiento
 ----------------------
 
-The picture below shows the screen that allows you to attach the file that stores the term of consent signed by the participant:
+La siguiente imagen muestra la pantalla que permite adjuntar el fichero que almacena el plazo de consentimiento firmado por el participante:
 
 .. image:: ../../_img/term_of_consent_upload.png
 
 .. _attach-questionnaire-file:
 
-Attach Questionnaire file
+Adjuntar archivo de cuestionario
 -------------------------
 
-The picture below shows the screen to attach the questionnaire filled by the participant. If the questionnaire is not filled, then you will see a "New fill" button that leads to a screen that allows you to complete the questionnaire: 
+La siguiente imagen muestra la pantalla para adjuntar el cuestionario rellenado por el participante. Si el cuestionario no se completa, verá un botón "Nuevo relleno" que conduce a una pantalla que le permite completar el cuestionario: 
 
 .. image:: ../../_img/questionnairefile_upload.png
 
 .. _attach-eeg-raw-file-format:
 
-Attach EEG raw file format
+Adjuntar formato de archivo RAW EEG
 --------------------------
 
-The picture below shows the screen to attach EEG raw file. In this screen you will see a row by each EEG step defined in the experimental protocol. NES allows validate the EEG files of type 'raw binary format'.
+La siguiente imagen muestra la pantalla para adjuntar el archivo RAW EEG. En esta pantalla verá una fila por cada paso de EEG definido en el protocolo experimental. NES permite validar los archivos EEG de tipo 'formato binario raw'.
 
 .. image:: ../../_img/eegfile_upload.png
 
 .. _attach-emg-raw-file-format:
 
-Attach EMG raw file format
+Adjuntar formato de archivo raw EMG
 --------------------------
 
-The picture below shows the screen to attach EMG raw file. In this screen you will see a row by each EMG step defined in the experimental protocol.
+La siguiente imagen muestra la pantalla para adjuntar el archivo RAW EMG. En esta pantalla verá una fila por cada paso EMG definido en el protocolo experimental.
 
 .. image:: ../../_img/emgfile_upload.png
 
 .. _attach-tms-raw-file-format:
 
-Attach TMS raw file format
+Adjuntar formato de archivo RAW TMS
 --------------------------
 
 .. image:: ../../_img/tms_subject_datafile.png
 
-* [[New TMS data file description | New TMS data file]]
+* [[Nueva descripción del archivo de datos TMS | Nuevo archivo de datos TMS]]
 
 .. _attach-additional-files:
 
-Attach additional files
+Adjuntar archivos adicionales
 -----------------------
 
-The picture below shows the screen to attach additional files. In this screen you will see a row by each step defined in the experimental protocol that was not EEG, EMG or TMS. For each additional file is possible to register the start and end time.
+La siguiente imagen muestra la pantalla para adjuntar archivos adicionales. En esta pantalla verás una fila por cada paso definido en el protocolo experimental que no era EEG, EMG o TMS. Para cada archivo adicional es posible registrar la hora de inicio y finalización.
 
 .. image:: ../../_img/additionaldata_upload.png
