@@ -2,9 +2,25 @@
 
 . local_environment.list
 
+if [ ! -z $1 ] && [ $1 = "--clean" ]
+then
+  echo "###########################"
+  echo "Cleaning existing container"
+  echo "###########################"
+  docker stop nes
+  docker rm -f nes
+fi
+
 {
+  echo "###########################"
+  echo "Trying to start container"
+  echo "###########################"
   docker start nes
 } || {
+  echo "###########################"
+  echo "Failed to start container."
+  echo "Creating a new container."
+  echo "###########################"
   docker rm -f nes
   docker run -dit --name nes \
       --mount type=bind,source=$ENTRYPOINT_FILE,target=/entrypoint.sh \
