@@ -17,7 +17,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, Software, SoftwareVersion, CoilModel, TMSDevice, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, TMSData, HotSpot, \
     CoilOrientation, DirectionOfTheInducedCurrent, TMSLocalizationSystem, DigitalGamePhase, ContextTree, \
-    DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending
+    DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending, \
+    FRMI, FRMISetting
 
 
 class ExperimentForm(ModelForm):
@@ -1397,3 +1398,19 @@ class ResendExperimentForm(ModelForm):
                                                     'data-error': _('Reason must be filled.'),
                                                     'autofocus': ''}),
         }
+
+class FRMIForm(ModelForm):
+    class Meta:
+        model = FRMI
+        fields = ['frmi_setting']
+
+        widgets = {
+            'frmi_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('FRMI setting type must be filled.')})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(FRMIForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial:
+            self.fields['frmi_setting'].queryset = FRMISetting.objects.filter(experiment=initial['experiment'])

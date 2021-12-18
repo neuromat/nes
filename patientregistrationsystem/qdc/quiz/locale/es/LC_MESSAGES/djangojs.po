@@ -1,0 +1,162 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 11:54-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: static/quiz/jquery-ui-1.11.2/jquery-ui.min.js:8
+msgid "'"
+msgstr ""
+
+#: static/quiz/js/block_component.js:52
+msgid "Collapse"
+msgstr "Colapsar"
+
+#: static/quiz/js/block_component.js:66
+msgid "Expand"
+msgstr "Expandir"
+
+#: static/quiz/js/block_component.js:89
+msgid "Are you sure you want to delete this use of step from list?"
+msgstr "¿Está seguro de que desea eliminar este uso de paso de la lista?"
+
+#: static/quiz/js/block_component.js:98
+msgid "Are you sure you want to delete these "
+msgstr "¿Estás seguro de que quieres eliminar estos "
+
+#: static/quiz/js/block_component.js:98
+msgid "  uses of step from list?"
+msgstr " usos de paso de la lista?"
+
+#: static/quiz/js/custom_user_validation.js:10
+#: static/quiz/js/password_ext.js:11
+msgid ""
+"Password must contain at least 8 characters, including at least one "
+"uppercase letter, digit or special character."
+msgstr ""
+"La contraseña debe contener al menos 8 caracteres, incluyendo al menos una "
+"letra mayúscula, dígito o carácter especial"
+
+
+
+#: static/quiz/js/custom_user_validation.js:18
+msgid "You have to choose at least one user profile!"
+msgstr "Elija al menos un perfil de usuario"
+
+#: static/quiz/js/custom_user_validation.js:49
+msgid "E-mail have to be filled!"
+msgstr "Debe completar el correo electrónico"
+
+#: static/quiz/js/data_collection_manage.js:45
+msgid "No data collection selected."
+msgstr "No se seleccionó ninguna recopilación de datos"
+
+#: static/quiz/js/data_collection_manage.js:60
+msgid "No target step selected."
+msgstr "No se ha seleccionado ningún paso de destino"
+
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:77
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:218
+msgid "delete"
+msgstr "borrar"
+
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:122
+msgid "Please click on a new position on the image to update this point"
+msgstr "Haga clic en una nueva posición en la imagen para actualizar este punto."
+
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:283
+msgid ""
+"This coodinates can't be modified because is being used by some EEG layout "
+"setting! "
+msgstr ""
+"Estas coordenadas no se pueden modificar porque están siendo utilizadas por algunos diseños de EEG "
+" "
+
+
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:291
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:332
+msgid "Updating point "
+msgstr "Actualizando punto "
+
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:292
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:334
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:355
+#: static/quiz/js/tms_position_setting.js:137
+msgid "Confirms the coordinates? x - y: "
+msgstr "¿Confirma las coordenadas? x - y:"
+
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:293
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:335
+msgid "Please enter the name of the point"
+msgstr "Por favor ingrese el nombre del punto"
+
+#: static/quiz/js/eeg_electrode_cap_coordinates.js:357
+msgid "Please enter the name this point"
+msgstr "Por favor ingrese el nombre de este punto"
+
+#: static/quiz/js/password.js:19
+msgid "Passwords don't match"
+msgstr "Las contraseñas no coinciden"
+
+#: static/quiz/js/password.js:54
+msgid "Weak"
+msgstr "Débil"
+
+#: static/quiz/js/password.js:60
+msgid "Fair"
+msgstr "Moderado"
+
+#: static/quiz/js/password.js:66
+msgid "Strong"
+msgstr "Fuerte"
+
+#: static/quiz/js/password.js:72
+msgid "Excellent"
+msgstr "Excelente"
+
+#: static/quiz/js/patient_personal_data.js:183
+#: static/quiz/js/patient_personal_data.js:188 static/quiz/js/register.js:75
+msgid "Obligatory fields must be filled."
+msgstr "Se deben completar los campos obligatorios"
+
+#: static/quiz/js/patient_personal_data.js:197
+msgid "Please fill the fields correctly. E-mail is invalid"
+msgstr "Por favor complete los campos correctamente. El correo electrónico no es válido"
+
+#: static/quiz/js/questionnaire_export.js:95
+msgid "Either one or both Per participant/Per questionnaire must be set."
+msgstr "Se debe configurar uno o ambos Por participante / Por cuestionario."
+
+#: static/quiz/js/questionnaire_export.js:99
+msgid "At least one questionnaire field have to be set"
+msgstr "Se debe establecer al menos un campo de cuestionario"
+
+#: static/quiz/js/questionnaire_export.js:103
+msgid "At least one field from participant have to be set"
+msgstr "Se debe configurar al menos un campo del participante"
+
+#: static/quiz/js/questionnaire_export.js:130
+msgid "At least one field from participant/questionnaire have to be set."
+msgstr "Se debe establecer al menos un campo del participante / cuestionario."
+
+#: static/quiz/js/questionnaire_export.js:135
+msgid "At least one field from participant have to be set."
+msgstr "Se debe configurar al menos un campo del participante."
+
+#: static/quiz/js/tms_position_setting.js:138
+msgid "Please enter the name of the position"
+msgstr "Por favor ngrese el nombre de la posición"

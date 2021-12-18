@@ -848,6 +848,7 @@ class Component(models.Model):
     EEG = 'eeg'
     EMG = 'emg'
     TMS = 'tms'
+    FRMI = 'frmi'
     DIGITAL_GAME_PHASE = 'digital_game_phase'
     GENERIC_DATA_COLLECTION = 'generic_data_collection'
     COMPONENT_TYPES = (
@@ -861,6 +862,7 @@ class Component(models.Model):
         (EEG, _('EEG')),
         (EMG, _('EMG')),
         (TMS, _('TMS')),
+        (FRMI, _('FRMI')),
         (DIGITAL_GAME_PHASE, _('Goalkeeper game phase')),
         (GENERIC_DATA_COLLECTION, _('Generic data collection')),
     )
@@ -1535,3 +1537,26 @@ class PortalSelectedQuestion(models.Model):
 
     class Meta:
         unique_together = ('experiment', 'survey', 'question_code')
+
+class FRMISetting(models.Model):
+    experiment = models.ForeignKey(Experiment)
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+    mracquisition_type=models.CharField(max_length=150)
+    scan_options: models.CharField(max_length=150)
+    pulse_sequence_type=models.CharField(max_length=150)
+
+    copied_from = models.ForeignKey('self', null=True, related_name='children')
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        super(FRMISetting, self).save(*args, **kwargs)
+        self.experiment.save()
+
+class FRMI(Component):
+    frmi_setting = models.ForeignKey(FRMISetting)
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
