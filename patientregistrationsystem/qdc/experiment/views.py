@@ -4,12 +4,14 @@ import re
 import json
 import random
 import tempfile
-
+import logging
+from requests.auth import HTTPBasicAuth
 import numpy as np
 
 import nwb
 
 import pydot
+import httplib2
 from django.core.mail import send_mail
 
 from nwb.nwbco import *
@@ -64,7 +66,8 @@ from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResp
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
     GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending, \
     GoalkeeperGameConfig, GoalkeeperGameResults, EEGFile, EMGFile, AdditionalDataFile, GenericDataCollectionFile, \
-    DigitalGamePhaseFile, PortalSelectedQuestion, ComponentAdditionalFile, GoalkeeperPhase
+    DigitalGamePhaseFile, PortalSelectedQuestion, ComponentAdditionalFile, GoalkeeperPhase, \
+    FRMISetting, DataFile
 
 from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -84,7 +87,8 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
     HotSpotForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
-    GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm, ResearchProjectOwnerForm
+    GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm, ResearchProjectOwnerForm, \
+    FRMISettingForm
 
 from .portal import get_experiment_status_portal, \
     send_experiment_to_portal, get_portal_status, \
@@ -119,6 +123,9 @@ from survey.models import Survey, SensitiveQuestion
 from survey.views import get_questionnaire_responses, check_limesurvey_access, create_list_of_trees, \
     get_questionnaire_language, get_survey_header, questionnaire_evaluation_fields_excluded
 
+
+# This retrieves a Python logging instance (or creates it)
+logger = logging.getLogger(__name__)
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -645,6 +652,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_list = Group.objects.filter(experiment=experiment).order_by('title')
     eeg_setting_list = EEGSetting.objects.filter(experiment=experiment).order_by('name')
+    frmi_setting_list = FRMISetting.objects.filter(experiment=experiment).order_by('name')
     emg_setting_list = EMGSetting.objects.filter(experiment=experiment).order_by('name')
     tms_setting_list = TMSSetting.objects.filter(experiment=experiment).order_by('name')
     context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
@@ -715,6 +723,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
         "experiment_form": experiment_form,
         "group_list": group_list,
         "eeg_setting_list": eeg_setting_list,
+        "frmi_setting_list": frmi_setting_list,
         "emg_setting_list": emg_setting_list,
         "tms_setting_list": tms_setting_list,
         "context_tree_list": context_tree_list,
@@ -8910,6 +8919,26 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
                     additional_data_file = AdditionalDataFile(additional_data=additional_data_added,
                                                               file=file_to_upload)
                     additional_data_file.save()
+                
+                    idFormato = FileFormat.objects.filter(name=additional_data_form.instance.file_format)
+                    idFormatoValor = idFormato.values_list('pk', flat=True)
+                    logger.debug(idFormatoValor)
+                    for elemento in idFormatoValor:
+                        if elemento== 5: # es un dato frmi
+                            dato_orthanc=additional_data_file.file
+                            dato_orthanc=dato_orthanc.read()
+                            httpreq = httplib2.Http()
+                            httpreq.add_credentials('orthanc','orthanc')
+                            (resp, content)= httpreq.request('http://172.18.0.3:8042/instances','POST',body=dato_orthanc,headers={'content-type':'application/octet-stream'})
+                            logger.debug(resp)
+                            respuesta=json.loads(content)
+                            logger.debug(respuesta)
+                            if respuesta['Status']=='Success' or respuesta['Status']=='AlreadyStored':
+                                additional_data_file.idorthanc=respuesta['ID']
+                                additional_data_file.save()
+                                messages.success(request, _('Guardado exitosamente.'))
+                            else:
+                                messages.error(request, _('Error de orthanc'))
 
                 messages.success(request, _('Additional data collection created successfully.'))
 
@@ -9010,6 +9039,9 @@ def additional_data_edit(request, additional_data_id, template_name="experiment/
                     has_changed = True
                     additional_data_file = AdditionalDataFile(additional_data=additional_data, file=file_to_upload)
                     additional_data_file.save()
+                    dato_orthanc=additional_data_form.cleaned_data['file_format']
+
+
 
                 if has_changed:
                     messages.success(request, _('Additional data updated successfully.'))
@@ -13377,5 +13409,235 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
 
     context = {"basic_register_list": basic_register_list,
                "device_register_list": device_register_list}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_subject')
+def frmi_setting_create(request, experiment_id, template_name="experiment/frmi_setting_register.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    check_can_change(request.user, experiment.research_project)
+
+    frmi_setting_form = FRMISettingForm(request.POST or None, request.FILES)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if frmi_setting_form.is_valid():
+                frmi_setting_added = frmi_setting_form.save(commit=False)
+                frmi_setting_added.experiment_id = experiment_id
+                frmi_setting_added.save()
+                messages.success(request, _('FRMI setting included successfully.'))
+
+                redirect_url = reverse("frmi_setting_view", args=(frmi_setting_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"frmi_setting_form": frmi_setting_form,
+               "creating": True,
+               "editing": True,
+               "experiment": experiment}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def frmi_solution_create(request, template_name="experiment/frmi_solution_register.html"):
+
+    frmi_solution_form = FRMISolutionRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if frmi_solution_form.is_valid():
+
+                frmi_solution_added = frmi_solution_form.save(commit=False)
+                frmi_solution_added.save()
+
+                messages.success(request, _('FRMI solution created successfully.'))
+                redirect_url = reverse("frmi_solution_view", args=(frmi_solution_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"equipment_form": frmi_solution_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def frmi_solution_list(request, template_name="experiment/frmi_solution_list.html"):
+    return render(request, template_name, {"equipments": FRMISolution.objects.all().order_by('name')})
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def frmi_solution_view(request, frmi_solution_id, template_name="experiment/frmi_solution_register.html"):
+    frmi_solution = get_object_or_404(FRMISolution, pk=frmi_solution_id)
+
+    frmi_solution_form = FRMISolutionRegisterForm(request.POST or None, instance=frmi_solution)
+
+    for field in frmi_solution_form.fields:
+        frmi_solution_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                frmi_solution.delete()
+                messages.success(request, _('FRMI solution removed successfully.'))
+                return redirect('frmi_solution_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete frmi_solution."))
+                redirect_url = reverse("frmi_solution_view", args=(frmi_solution_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "equipment": frmi_solution,
+               "equipment_form": frmi_solution_form
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def frmi_solution_update(request, frmi_solution_id, template_name="experiment/frmi_solution_register.html"):
+    frmi_solution = get_object_or_404(FRMISolution, pk=frmi_solution_id)
+    frmi_solution.equipment_type = 'frmi_solution'
+
+    frmi_solution_form = FRMISolutionRegisterForm(request.POST or None, instance=frmi_solution)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if frmi_solution_form.is_valid():
+                if frmi_solution_form.has_changed():
+
+                    frmi_solution_form.save()
+                    messages.success(request, _('FRMI solution updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("eegsolution_view", args=(frmi_solution.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"equipment": frmi_solution,
+               "equipment_form": frmi_solution_form,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def frmi_setting_view(request, frmi_setting_id, template_name="experiment/frmi_setting_register.html"):
+
+    frmi_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
+    frmi_setting_form = FRMISettingForm(
+        request.POST or None,
+        instance=frmi_setting
+    )
+    for field in frmi_setting_form.fields:
+        frmi_setting_form.fields[field].widget.attrs['disabled'] = True
+
+    can_change = get_can_change(request.user, frmi_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST['action'] == "remove":
+                # TODO: checking if there is some FRMI Data using it
+
+                # TODO: checking if there is some FRMI Step using it
+
+                experiment_id = frmi_setting.experiment_id
+
+                frmi_setting.delete()
+
+                messages.success(request, _('FRMI setting was removed successfully.'))
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            if request.POST['action'][:7] == "remove-":
+                # If action starts with 'remove-' it means that an equipment should be removed from the eeg_setting.
+                frmi_setting_type = request.POST['action'][7:]
+
+                setting_to_be_deleted = None
+
+                if frmi_setting_type == "frmi_amplifier":
+                    setting_to_be_deleted = get_object_or_404(FRMIAmplifierSetting, pk=frmi_setting_id)
+                elif frmi_setting_type == "frmi_solution":
+                    setting_to_be_deleted = get_object_or_404(FRMISolutionSetting, pk=frmi_setting_id)
+                elif frmi_setting_type == "frmi_filter":
+                    setting_to_be_deleted = get_object_or_404(FRMIFilterSetting, pk=frmi_setting_id)
+                elif frmi_setting_type == "frmi_electrode_net_system":
+                    setting_to_be_deleted = get_object_or_404(FRMIElectrodeLayoutSetting, pk=frmi_setting_id)
+
+                # eeg_setting.eeg_machine_setting.delete()
+                if setting_to_be_deleted:
+                    setting_to_be_deleted.delete()
+
+                messages.success(request, _('Setting was removed successfully.'))
+
+                redirect_url = reverse("frmi_setting_view", args=(frmi_setting.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": can_change,
+               "frmi_setting_form": frmi_setting_form,
+               "experiment": frmi_setting.experiment,
+               "frmi_setting": frmi_setting,
+               "editing": False}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def frmi_setting_update(request, frmi_setting_id, template_name="experiment/frmi_setting_register.html"):
+    frmi_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
+
+    check_can_change(request.user, frmi_setting.experiment.research_project)
+
+    frmi_setting_form = FRMISettingForm(request.POST or None, instance=frmi_setting)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            
+            if frmi_setting_form.is_valid():
+                #if frmi_setting_form.has_changed():
+                dato_orthanc=request.FILES['archivo']
+                dato_orthanc=dato_orthanc.read()
+                httpreq = httplib2.Http()
+                httpreq.add_credentials('orthanc','orthanc')
+                (resp, content)= httpreq.request('http://172.18.0.3:8042/instances','POST',body=dato_orthanc,headers={'content-type':'application/octet-stream'})
+                logger.debug(resp)
+                respuesta=json.loads(content)
+                logger.debug(respuesta)
+                if respuesta['Status']=='Success' or respuesta['Status']=='AlreadyStored':
+                    frmi_setting_form.instance.idorthanc=respuesta['ID']
+                    frmi_setting_form.save()
+                    messages.success(request, _('Guardado exitosamente.'))
+                else:
+                    messages.error(request, _('Error de orthanc'))
+
+                redirect_url = reverse("frmi_setting_view", args=(frmi_setting_id,))
+                return HttpResponseRedirect(redirect_url)
+            else:
+                messages.error(request, _('Ocurrio un error'))
+                logger.debug(frmi_setting_form.errors)
+
+    context = {"frmi_setting_form": frmi_setting_form,
+               "editing": True,
+               "experiment": frmi_setting.experiment,
+               "frmi_setting": frmi_setting}
 
     return render(request, template_name, context)

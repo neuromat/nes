@@ -12,9 +12,21 @@ RUN apk update && \
 		postgresql-bdr-dev \
 		openblas-dev \
 		libjpeg-turbo-dev \
+        libc6-compat \
 		hdf5-dev && \
 	rm -rf /var/cache/apk/* && \
-	ln -s /usr/include/locale.h /usr/include/xlocale.h
+	ln -s /usr/include/locale.h /usr/include/xlocale.h \
+
+# For Work with DCM2BIDS
+RUN apk --update add libstdc++ curl ca-certificates && \
+        curl -sSL https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.34-r0/glibc-2.34-r0.apk -o /tmp/glibc-2.34-r0.apk && \
+        curl -sSL https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.34-r0/glibc-bin-2.34-r0.apk -o /tmp/glibc-bin-2.34-r0.apk && \
+        apk add --allow-untrusted /tmp/*.apk && \
+        rm -v /tmp/*.apk && \
+        /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib && \
+    wget https://github.com/rordenlab/dcm2niix/releases/download/v1.0.20211006/dcm2niix_lnx.zip -P /tmp && \
+    unzip /tmp/dcm2niix_lnx.zip -d /usr/bin/.
+
 
 ARG NES_TAG=unset
 ARG NES_BRANCH=unset
@@ -30,6 +42,8 @@ RUN mkdir -p "$NES_DIR"  && \
 			sed -i '1isetuptools>=40.6.3' /nes/patientregistrationsystem/qdc/requirements.txt ;\
 			sed -i '1ipip>=18.1' /nes/patientregistrationsystem/qdc/requirements.txt ;\
 			echo 'mne>=0.17.0' >> /nes/patientregistrationsystem/qdc/requirements.txt ;\
+			echo 'pydicom>=2.2.0' >> /nes/patientregistrationsystem/qdc/requirements.txt ;\
+            echo 'dcm2bids>=2.1.6' >> /nes/patientregistrationsystem/qdc/requirements.txt ;\
 			echo '-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"' >> /nes/patientregistrationsystem/qdc/requirements.txt ;\
 		elif [ "$NES_BRANCH" != "unset" ]; then \
 			echo Cloning "$NES_BRANCH" branch ;\

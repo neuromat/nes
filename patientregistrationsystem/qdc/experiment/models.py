@@ -375,6 +375,7 @@ class EEGElectrodeLocalizationSystem(models.Model):
             self.map_image_file = None
             super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
             self.map_image_file = saved_file
+            super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
         else:
             super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
 
@@ -1000,6 +1001,7 @@ class ContextTree(models.Model):
             self.setting_file = None
             super(ContextTree, self).save(*args, **kwargs)
             self.setting_file = saved_file
+            super(ContextTree, self).save(*args, **kwargs)
         else:
             super(ContextTree, self).save(*args, **kwargs)
 
@@ -1397,6 +1399,7 @@ class EMGFile(models.Model):
 class AdditionalDataFile(models.Model):
     additional_data = models.ForeignKey(AdditionalData, related_name='additional_data_files')
     file = models.FileField(upload_to=get_data_file_dir)
+    idorthanc= models.TextField(name="idorthanc", default="")
 
 
 class DigitalGamePhaseFile(models.Model):
@@ -1535,3 +1538,35 @@ class PortalSelectedQuestion(models.Model):
 
     class Meta:
         unique_together = ('experiment', 'survey', 'question_code')
+
+
+def get_frmi_settings_dir(instance, filename):
+    return "frmi_settings/%s/%s" % (instance.id, filename)
+
+
+class FRMISetting(models.Model):
+    experiment = models.ForeignKey(Experiment)
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+    archivo = models.FileField(upload_to=get_frmi_settings_dir, null=True, blank=True)
+    copied_from = models.ForeignKey('self', null=True, related_name='children')
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            saved_file = self.archivo
+            self.archivo = None
+            super(FRMISetting, self).save(*args, **kwargs)
+            self.archivo = saved_file
+            super(FRMISetting, self).save(*args, **kwargs)
+        else:
+            super(FRMISetting, self).save(*args, **kwargs)
+            self.experiment.save()
+
+class FRMI(Component):
+    frmi_setting = models.ForeignKey(FRMISetting)
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
