@@ -31,7 +31,7 @@ from experiment.models import (
     FRMI, FRMISetting, MRIScanner, SpoilingType,
     PulseShape, PulseSequence, ParallelImaging, SpoilingSetting,
     FMRIMachineSettings, SliceAcceleration, RFContrast, TimingParameters,
-    InPlaneSpatialEncoding,
+    InPlaneSpatialEncoding, SequenceSpecific
 )
 
 
@@ -1558,6 +1558,23 @@ class PulseShapeForm(ModelForm):
         }
 
 
+class PulseSequenceForm(ModelForm):
+    class Meta:
+        model = PulseSequence
+
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+        }
+
+
 class ParallelImagingForm(ModelForm):
     class Meta:
         model = ParallelImaging
@@ -1576,99 +1593,6 @@ class ParallelImagingForm(ModelForm):
 
 
 # FRMI Section Added
-class InPlaneSpatialEncodingForm(ModelForm):
-    class Meta:
-        model = InPlaneSpatialEncoding
-
-        fields = [
-            'parallel_acquisition_technique',
-            'number_shots',
-            'parallel_reduction_factor_in_plane',
-            'partial_fourier',
-            'partial_fourier_direction',
-            'phase_encoding_direction',
-            'effective_echo_spacing',
-            'total_readout_time',
-            'mixing_time',
-        ]
-
-        widgets = {
-            'parallel_acquisition_technique': Select(
-                attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    'data-error': _('Data must be filled.'),
-                }
-            ),
-            'number_shots': TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'required': '',
-                    'data-error': _('Data must be filled.'),
-                    'type': 'number',
-                }
-            ),
-            'parallel_reduction_factor_in_plane': TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    'data-error': _('Data must be filled.'),
-                },
-            ),
-            'partial_fourier': TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    'data-error': _('Data must be filled.'),
-                    'type': 'number',
-                },
-            ),
-            'partial_fourier_direction': TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    'data-error': _('Data must be filled.'),
-                },
-            ),
-            'phase_encoding_direction': TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    'data-error': _('Data must be filled.'),
-                },
-            ),
-            'effective_echo_spacing': TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    'data-error': _('Data must be filled.'),
-                    'type': 'number',
-                },
-            ),
-            'total_readout_time': TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    'data-error': _('Data must be filled.'),
-                    'type': 'number',
-                },
-            ),
-            'mixing_time': TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    'data-error': _('Data must be filled.'),
-                    'type': 'number',
-                },
-            ),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(InPlaneSpatialEncodingForm, self).__init__(*args, **kwargs)
-
-        self.fields['parallel_acquisition_technique'].queryset = ParallelImaging.objects.filter()
-
-
 class InPlaneSpatialEncodingForm(ModelForm):
     class Meta:
         model = InPlaneSpatialEncoding
@@ -1882,6 +1806,239 @@ class FRMISettingForm(ModelForm):
                 },
             ),
         }
+
+
+class SliceAccelerationForm(ModelForm):
+    class Meta:
+        model = SliceAcceleration
+
+        fields = ['name', 'multiband_acceleration_factor']
+
+        widgets = {
+            'name': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Name must be filled.'),
+                    'autofocus': '',
+                },
+            ),
+            'multiband_acceleration_factor': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'data-error': _('Data must be filled.'),
+                    'required': "",
+                    'type': 'number',
+                },
+            ),
+        }
+
+
+class RFContrastForm(ModelForm):
+    class Meta:
+        model = RFContrast
+
+        fields = ['flip_angle', 'negative_contrast']
+
+        widgets = {
+            'flip_angle': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'data-error': _('Data must be filled.'),
+                    'required': "",
+                    'type': 'number',
+                },
+            ),
+            'negative_contrast': CheckboxInput(
+                attrs={
+                    'class': 'form-control',
+                },
+            ),
+        }
+
+
+class TimingParametersForm(ModelForm):
+    class Meta:
+        model = TimingParameters
+
+        fields = [
+            'echo_time',
+            'inversion_time',
+            'slice_timing',
+            'slice_encoding_direction',
+            'dwell_time',
+        ]
+
+        widgets = {
+            'echo_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'data-error': _('Data must be filled.'),
+                    'required': "",
+                    'type': 'number',
+                },
+            ),
+            'inversion_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'data-error': _('Data must be filled.'),
+                    'required': "",
+                    'type': 'number',
+                },
+            ),
+            'slice_timing': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'data-error': _('Data must be filled.'),
+                    'required': "",
+                },
+            ),
+            'slice_encoding_direction': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'data-error': _('Data must be filled.'),
+                    'required': "",
+                    'type': 'number',
+                },
+            ),
+            'dwell_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'data-error': _('Data must be filled.'),
+                    'required': "",
+                    'type': 'number',
+                },
+            ),
+        }
+
+
+class SequenceSpecificForm(ModelForm):
+    class Meta:
+        model = SequenceSpecific
+
+        fields = [
+            'pulse_sequence_type',
+            'mt_pulse_shape',
+            'scanning_sequence',
+            'sequence_variant',
+            'scan_options',
+            'sequence_name',
+            'pulse_sequence_details',
+            'non_linear_gradient_collection',
+            'mr_acquisition_type',
+            'mt_state',
+            'mt_offset_frequency',
+            'mt_pulse_bandwith',
+            'mt_number_of_pulses',
+            'mt_pulse_duration',
+        ]
+
+        widgets = {
+            'pulse_sequence_type': Select(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'mt_pulse_shape': Select(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'scanning_sequence': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'sequence_variant': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'scan_options': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'sequence_name': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'pulse_sequence_details': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'non_linear_gradient_collection': CheckboxInput(
+                attrs={
+                    'class': 'form-control',
+                },
+            ),
+            'mr_acquisition_type': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'mt_state': CheckboxInput(
+                attrs={
+                    'class': 'form-control',
+                },
+            ),
+            'mt_offset_frequency': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'mt_pulse_bandwith': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'mt_number_of_pulses': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'mt_pulse_duration': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(FMRIMachineSettingsForm, self).__init__(*args, **kwargs)
+
+        self.fields['pulse_sequence_type'].queryset = PulseSequence.objects.filter()
+        self.fields['mt_pulse_shape'].queryset = PulseShape.objects.filter()
 
 
 # Dummy class until final version is defined
