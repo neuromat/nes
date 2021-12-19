@@ -8,4 +8,4 @@ patientregistrationsystem/qdc/qdc/settings.py
 patientregistrationsystem/qdc/.DS_Store
 
 _build/
-
+venv/
