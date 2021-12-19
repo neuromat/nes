@@ -22,6 +22,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending, \
     FRMI,FRMISetting
 
+from patientregistrationsystem.qdc.experiment.models import MRIScanner
+
 
 class ExperimentForm(ModelForm):
     class Meta:
@@ -1419,6 +1421,22 @@ class ResendExperimentForm(ModelForm):
         }
 
 
+# FRMI Setup Section Added
+class MRIScannerForm(ModelForm):
+    class Meta:
+        model = MRIScanner
+
+        fields = ['reason_for_resending']
+
+        widgets = {
+            'reason_for_resending': Textarea(attrs={'class': 'form-control',
+                                                    'rows': '4', 'required': "",
+                                                    'data-error': _('Reason must be filled.'),
+                                                    'autofocus': ''}),
+        }
+
+
+# FRMI Section Added
 class FRMISettingForm(ModelForm):
     class Meta:
         model = FRMISetting
