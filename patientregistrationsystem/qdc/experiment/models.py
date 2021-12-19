@@ -1543,14 +1543,15 @@ class PortalSelectedQuestion(models.Model):
 # FRMI Section Setup Added
 class MRIScanner(models.Model):
     equipment = models.ForeignKey(Equipment)
-    manufacturer_model_name = models.CharField(max_length=255)
-    software_version = models.CharField(max_length=40)
-    magnetic_field_strength = models.CharField(max_length=150)
-    receive_coil_name = models.CharField(max_length=150)
-    gradient_set_type = models.CharField(max_length=150)
-    mr_transmit_coil_sequence = models.CharField(max_length=150)
-    matrix_coil_mode = models.CharField(max_length=150)
-    coil_combination_method = models.CharField(max_length=150)
+    manufacturer_model_name = models.CharField(max_length=255, null=True, blank=True)
+    software_version = models.CharField(max_length=40, null=True, blank=True)
+    magnetic_field_strength = models.CharField(max_length=150, null=True, blank=True)
+    receive_coil_name = models.CharField(max_length=150, null=True, blank=True)
+    receive_coil_active_elements = models.CharField(max_length=255, null=True, blank=True)
+    gradient_set_type = models.CharField(max_length=150, null=True, blank=True)
+    mr_transmit_coil_sequence = models.CharField(max_length=150, null=True, blank=True)
+    matrix_coil_mode = models.CharField(max_length=150, null=True, blank=True)
+    coil_combination_method = models.CharField(max_length=150, null=True, blank=True)
 
 
 class SpoilingType(models.Model):
@@ -1642,6 +1643,23 @@ class TimingParameters(models.Model):
     slice_timing = models.CharField(max_length=255)
     slice_encoding_direction = models.CharField(max_length=255)
     dwell_time = models.IntegerField()
+
+
+class SequenceSpecific(models.Model):
+    pulse_sequence_type = models.ForeignKey(PulseSequence)
+    mt_pulse_shape = models.ForeignKey(PulseShape)
+    scanning_sequence = models.CharField(max_length=255)
+    sequence_variant = models.CharField(max_length=255)
+    scan_options = models.CharField(max_length=255)
+    sequence_name = models.CharField(max_length=255)
+    pulse_sequence_details = models.CharField(max_length=255)
+    non_linear_gradient_collection = models.BooleanField()
+    mr_acquisition_type = models.CharField(max_length=255)
+    mt_state = models.BooleanField()
+    mt_offset_frequency = models.IntegerField()
+    mt_pulse_bandwith = models.IntegerField()
+    mt_number_of_pulses = models.IntegerField()
+    mt_pulse_duration = models.IntegerField()
 
 
 # Dummy class until final version is defined
