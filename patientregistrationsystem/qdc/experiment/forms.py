@@ -20,9 +20,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, TMSData, HotSpot, \
     CoilOrientation, DirectionOfTheInducedCurrent, TMSLocalizationSystem, DigitalGamePhase, ContextTree, \
     DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending, \
-    FRMI,FRMISetting
-
-from patientregistrationsystem.qdc.experiment.models import MRIScanner
+    FRMI, FRMISetting, MRIScanner
 
 
 class ExperimentForm(ModelForm):
