@@ -1,5 +1,6 @@
 .idea/
 *.pyc
+*.placeholder
 patientregistrationsystem/qdc/.idea
 patientregistrationsystem/qdc/qdc/settings.py
 .nes_initialization.placeholder

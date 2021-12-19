@@ -1,0 +1,283 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-10 10:54-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: patient/forms.py:26 patient/tests.py:546
+msgid "Name must be included"
+msgstr "Se debe ingresar el nombre"
+
+#: patient/forms.py:31 patient/forms.py:135 patient/forms.py:160
+#: patient/views.py:715 patient/views.py:1226
+msgid "%m/%d/%Y"
+msgstr "%d/%m/%Y"
+
+#: patient/forms.py:32 patient/forms.py:136 patient/forms.py:161
+msgid "mm/dd/yyyy"
+msgstr "dd/mm/yyyy"
+
+#: patient/forms.py:33
+msgid "Date of birth must be completed"
+msgstr "Se debe ingresar la fecha de nacimiento."
+
+#: patient/forms.py:35
+msgid "Gender must be filled"
+msgstr "Se debe ingresar el género"
+
+#: patient/forms.py:50 patient/tests.py:531
+msgid "Incorrect e-mail"
+msgstr "Correo electrónico incorrecto"
+
+#: patient/forms.py:71 patient/forms.py:106 patient/forms.py:110
+#: patient/forms.py:114
+msgid "Yes"
+msgstr "Si"
+
+#: patient/forms.py:71 patient/forms.py:106 patient/forms.py:110
+#: patient/forms.py:114
+msgid "No"
+msgstr ""
+
+#: patient/forms.py:87
+msgid "Type in profession"
+msgstr "Ingrese su profesión"
+
+#: patient/forms.py:88
+msgid "Inform occupation"
+msgstr "Ingrese su ocupación"
+
+#: patient/forms.py:90 patient/forms.py:91 patient/forms.py:92
+#: patient/forms.py:93 patient/forms.py:94 patient/forms.py:95
+#: patient/forms.py:96 patient/forms.py:97 patient/forms.py:98
+msgid "4 or +"
+msgstr "4 o +"
+
+#: patient/forms.py:125
+msgid "Have already used"
+msgstr "Ya se usó"
+
+#: patient/forms.py:125
+msgid "It is using"
+msgstr "Se está usando"
+
+#: patient/forms.py:126
+msgid "Have never used"
+msgstr "Nunca ha sido usado"
+
+#: patient/forms.py:137
+msgid "Date must be completed"
+msgstr "Se debe ingresar la fecha"
+
+#: patient/forms.py:138
+msgid "Description"
+msgstr "Descripción"
+
+#: patient/forms.py:139
+msgid "Description must be filled in"
+msgstr "Se debe ingresar la descripción"
+
+#: patient/forms.py:140
+msgid "Doctor"
+msgstr ""
+
+#: patient/forms.py:141
+msgid "CRM"
+msgstr ""
+
+#: patient/forms.py:142
+msgid "Place of execution"
+msgstr "Lugar de ejecución"
+
+#: patient/models.py:19
+msgid "Fill date can not be bigger than today's date."
+msgstr "La fecha de llenado no puede ser mayor que la fecha de hoy"
+
+#: patient/models.py:27
+msgid "CPF %(CPF)s invalid"
+msgstr "CPF %(CPF)s no es válido"
+
+#: patient/models.py:34
+msgid "Date of birth can't be greater than today date."
+msgstr "La fecha de nacimiento no puede ser mayor que la fecha de hoy"
+
+#: patient/models.py:175
+msgid "Cell phone"
+msgstr "Celular"
+
+#: patient/models.py:176
+msgid "Home phone"
+msgstr "Número de linea baja"
+
+#: patient/models.py:177
+msgid "Business"
+msgstr "Negocio"
+
+#: patient/models.py:178
+msgid "Main"
+msgstr "Principal"
+
+#: patient/models.py:179
+msgid "Business fax"
+msgstr "Fax comercial"
+
+#: patient/models.py:180
+msgid "Home fax"
+msgstr "Fax residencial"
+
+#: patient/models.py:181
+msgid "Pager"
+msgstr "Beeper (buscapersonas)"
+
+#: patient/models.py:182
+msgid "Other"
+msgstr "Otro"
+
+#: patient/models.py:213
+msgid "Schooling of the patient"
+msgstr "Escolaridad del paciente"
+
+#: patient/models.py:215
+msgid "Schooling of the householder"
+msgstr "Escolaridad del jefe de hogar"
+
+#: patient/models.py:396
+msgid "token id: "
+msgstr ""
+
+#: patient/templates/patient/exams.html:99
+msgid "Exam was not saved. Please, correct fields highlighted."
+msgstr "Examen no guardado. Corrija los campos resaltados."
+
+#: patient/templates/patient/medical_record.html:87
+msgid "Medical evaluation was not saved. Fields with (*) are obligatory."
+msgstr "Evaluación médica no guardada. Los campos con (*) son obligatorios."
+
+#: patient/templates/patient/register_personal_data.html:41
+msgid "Participant was not saved. Please, correct fields highlighted."
+msgstr "Participante no guardado. Corrija los campos resaltados."
+
+#: patient/tests.py:284
+msgid " is not valid"
+msgstr " no es válido"
+
+#: patient/tests.py:450 patient/tests.py:462 patient/tests.py:473
+msgid "Social class was not calculated"
+msgstr "No se calculó la clase social"
+
+#: patient/tests.py:461 patient/views.py:242
+msgid "Social demographic data successfully written."
+msgstr "Datos sociodemográficos escritos con éxito"
+
+#: patient/tests.py:476
+msgid "Less than 1 pack"
+msgstr "Menos de un paquete"
+
+#: patient/tests.py:479
+msgid "Sporadically"
+msgstr "Esporádicamente"
+
+#: patient/tests.py:482
+msgid "Less than 1 year"
+msgstr "Menos de 1 año"
+
+#: patient/tests.py:516 patient/views.py:267
+msgid "Social history successfully recorded."
+msgstr "Datos sociodemográficos guardados con éxito"
+
+#: patient/views.py:70 patient/views.py:167
+msgid "Personal data successfully written."
+msgstr "Datos personales escritos con éxito"
+
+#: patient/views.py:78
+msgid "Participant with this CPF has already removed."
+msgstr "El participante con este CPF ya ha sido eliminado"
+
+#: patient/views.py:80
+msgid "There is already registered participant with this CPF."
+msgstr "Ya hay un participante registrado con este CPF"
+
+#: patient/views.py:236
+msgid "Social class was not calculated, "
+msgstr "No se calculó la clase social"
+
+#: patient/views.py:720
+msgid "Diagnosis details successfully changed."
+msgstr "Los detalles del diagnóstico se cambiaron correctamente"
+
+#: patient/views.py:726
+msgid "Incorrect date. Use format: mm/dd/yyyy"
+msgstr ""
+
+#: patient/views.py:747
+msgid "Medical evaluation successfully deleted."
+msgstr "Medical evaluation successfully deleted"
+
+#: patient/views.py:760
+msgid "Diagnosis has already exist in this medical assessment."
+msgstr "El diagnóstico ya ha existido en esta valoración médica"
+
+#: patient/views.py:793
+msgid "Diagnosis can not be deleted. You must delete exams before."
+msgstr "El diagnóstico no se puede eliminar. Debes eliminar los exámenes antes"
+
+#: patient/views.py:798
+msgid "Diagnosis successfully deleted."
+msgstr "Diagnóstico eliminado con éxito"
+
+#: patient/views.py:840 patient/views.py:906
+msgid "Exam successfully saved."
+msgstr "Examen guardado correctamente"
+
+#: patient/views.py:856 patient/views.py:916
+msgid "It is not possible to save exam without files."
+msgstr "No es posible guardar el examen sin archivos"
+
+#: patient/views.py:981
+msgid "Exam successfully deleted."
+msgstr "Examen eliminado correctamente"
+
+#: patient/views.py:1005
+msgid "Attachment successfully deleted."
+msgstr "Adjunto eliminado correctamente"
+
+#: patient/views.py:1144 patient/views.py:1332
+msgid "Fill deleted successfully"
+msgstr "Formulario eliminado con éxito"
+
+#: patient/views.py:1146 patient/views.py:1334
+msgid "Error trying to delete"
+msgstr "Error al intentar eliminar"
+
+#: patient/views.py:1200
+msgid "Not available filling - tokens table not started"
+msgstr "Formulario no disponible - tabla de tokens no iniciada"
+
+#: patient/views.py:1205
+msgid "Not available filling - questionnaire not active"
+msgstr "Formulario no disponible - cuestionario inactivo"
+
+#: patient/views.py:1210
+msgid "Not available filling - questionnaire does not contain standard fields"
+msgstr "Relleno no disponible: el cuestionario no contiene campos estándar"
+
+#: patient/views.py:1219
+msgid "Failed to generate token to answer the questionnaire. "
+msgstr "No se pudo generar el token para responder al cuestionario"
+
+#: patient/forms.py:176
+msgid "Fill date must be filled."
+msgstr "Se debe completar la fecha de llenado"

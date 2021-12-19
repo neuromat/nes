@@ -1,0 +1,201 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-11-13 14:58-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: admin/js/SelectFilter2.js:45
+#, javascript-format
+msgid "Available %s"
+msgstr "Disponible %s"
+
+#: admin/js/SelectFilter2.js:46
+#, javascript-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+"Esta es la lista de %s disponibles. Puede elegir algunos seleccionándolos en "
+"el cuadro de abajo y luego haciendo clic en la flecha \"Elegir\" entre los dos cuadros."
+
+#: admin/js/SelectFilter2.js:53
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr "Escriba en este cuadro para filtrar la lista de %s disponibles."
+
+#: admin/js/SelectFilter2.js:57
+msgid "Filter"
+msgstr "Filtro"
+
+#: admin/js/SelectFilter2.js:61
+msgid "Choose all"
+msgstr "Elegir todos"
+
+#: admin/js/SelectFilter2.js:61
+#, javascript-format
+msgid "Click to choose all %s at once."
+msgstr "Haga clic para elegir todos los %s a la vez."
+
+#: admin/js/SelectFilter2.js:67
+msgid "Choose"
+msgstr "Elegir"
+
+#: admin/js/SelectFilter2.js:69
+msgid "Remove"
+msgstr "Eliminar"
+
+#: admin/js/SelectFilter2.js:75
+#, javascript-format
+msgid "Chosen %s"
+msgstr "Elegido %s"
+
+#: admin/js/SelectFilter2.js:76
+#, javascript-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+"Esta es la lista de %s disponibles. Puede elegir algunos seleccionándolos en "
+"el cuadro de abajo y luego haciendo clic en la flecha \"Elegir\" entre los dos cuadros."
+
+#: admin/js/SelectFilter2.js:80
+msgid "Remove all"
+msgstr "Eliminar todo"
+
+#: admin/js/SelectFilter2.js:80
+#, javascript-format
+msgid "Click to remove all chosen %s at once."
+msgstr "Haga clic para eliminar todos los %s elegidos a la vez."
+
+#: admin/js/actions.js:18 admin/js/actions.min.js:1
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] "%(sel)s de %(cnt)s seleccionado"
+msgstr[1] "%(sel)s de %(cnt)s seleccionados"
+
+#: admin/js/actions.js:109 admin/js/actions.min.js:5
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+"Tiene cambios sin guardar en campos editables individuales. Si ejecuta "
+"una acción, los cambios que no haya guardado se perderán."
+
+#: admin/js/actions.js:121 admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+"Ha seleccionado una acción, pero aún no ha guardado los cambios en los campos "
+"individuales. Haga clic en Aceptar para guardar. Deberá volver a ejecutar la "
+"acción."
+
+#: admin/js/actions.js:123 admin/js/actions.min.js:6
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+"Ha seleccionado una acción y no ha realizado ningún cambio en campos individuales. "
+"Probablemente esté buscando el botón Ir en lugar del botón Guardar.."
+
+#: admin/js/admin/DateTimeShortcuts.js:52
+#: admin/js/admin/DateTimeShortcuts.js:88
+msgid "Now"
+msgstr "Ahora"
+
+#: admin/js/admin/DateTimeShortcuts.js:56
+msgid "Clock"
+msgstr "Reloj"
+
+#: admin/js/admin/DateTimeShortcuts.js:84
+msgid "Choose a time"
+msgstr "Seleccione una hora"
+
+#: admin/js/admin/DateTimeShortcuts.js:89
+msgid "Midnight"
+msgstr "Medianoche"
+
+#: admin/js/admin/DateTimeShortcuts.js:90
+msgid "6 a.m."
+msgstr "6 a.m."
+
+#: admin/js/admin/DateTimeShortcuts.js:91
+msgid "Noon"
+msgstr "Mediodía"
+
+#: admin/js/admin/DateTimeShortcuts.js:95
+#: admin/js/admin/DateTimeShortcuts.js:208
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: admin/js/admin/DateTimeShortcuts.js:148
+#: admin/js/admin/DateTimeShortcuts.js:201
+msgid "Today"
+msgstr "Hoy"
+
+#: admin/js/admin/DateTimeShortcuts.js:152
+msgid "Calendar"
+msgstr "Calendario"
+
+#: admin/js/admin/DateTimeShortcuts.js:199
+msgid "Yesterday"
+msgstr "Ayer"
+
+#: admin/js/admin/DateTimeShortcuts.js:203
+msgid "Tomorrow"
+msgstr "Mañana"
+
+#: admin/js/calendar.js:8
+msgid ""
+"January February March April May June July August September October November "
+"December"
+msgstr ""
+"Enero Febrero Marzo Abril Mayo Junio ​​Julio Agosto Septiembre Octubre "
+"Noviembre Diciembre"
+
+#: admin/js/calendar.js:9
+msgid "S M T W T F S"
+msgstr "D L M M J V S"
+
+#: admin/js/collapse.js:8 admin/js/collapse.js:19 admin/js/collapse.min.js:1
+msgid "Show"
+msgstr "Mostrar"
+
+#: admin/js/collapse.js:16 admin/js/collapse.min.js:1
+msgid "Hide"
+msgstr "Ocultar"
+
+#~ msgid "Password incompatible with defined standard."
+#~ msgstr "Senha incompatível com o padrão definido."
+
+#~ msgid "Invalid fill. Make sure the passwords entered are the same"
+#~ msgstr "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
+
+#~ msgid "Invalid password. Please, try again."
+#~ msgstr "Senha inválida. Por favor tente novamente."
+
+#~ msgid "Invalid user or password."
+#~ msgstr "Usuário ou senha inválidos."
+
+#~ msgid "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
+#~ msgstr "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
+
+#~ msgid "Senha inválida. Por favor tente de novo."
+#~ msgstr "Senha inválida. Por favor tente de novo."
+
+#~ msgid "Senha incompatível com o padrão definido."
+#~ msgstr "Senha incompatível com o padrão definido."
