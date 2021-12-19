@@ -1542,7 +1542,6 @@ class PortalSelectedQuestion(models.Model):
         unique_together = ('experiment', 'survey', 'question_code')
 
 
-
 # FRMI Section Setup Added
 class MRIScanner(models.Model):
     equipment = models.ForeignKey(Equipment)
@@ -1607,16 +1606,12 @@ def get_frmi_settings_dir(instance, filename):
     return "frmi_settings/%s/%s" % (instance.id, filename)
 
 
-
 class FRMISetting(models.Model):
     experiment = models.ForeignKey(Experiment)
     name = models.CharField(max_length=150)
     description = models.TextField()
-#    archivo = models.FileField(upload_to=get_frmi_settings_dir, null=True, blank=True)
+    archivo = models.FileField(upload_to=get_frmi_settings_dir, null=True, blank=True)
     # consultar a Luis G. sobre la idea de este campo
-    mracquisition_type=models.CharField(max_length=150)
-    scan_options: models.CharField(max_length=150)
-    pulse_sequence_type=models.CharField(max_length=150)
     copied_from = models.ForeignKey('self', null=True, related_name='children')
 
     def __str__(self):
@@ -1670,9 +1665,6 @@ class SequenceSpecific(models.Model):
 
 
 # Dummy class until final version is defined
-#        super(FRMISetting, self).save(*args, **kwargs)
-#        self.experiment.save()
-
 class FRMI(Component):
     frmi_setting = models.ForeignKey(FRMISetting)
 
