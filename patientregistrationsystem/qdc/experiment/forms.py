@@ -1424,6 +1424,15 @@ class MRIScannerForm(ModelForm):
     class Meta:
         model = MRIScanner
 
+        fields = ['manufacturer_model_name']
+
+        widgets = {
+            'manufacturer_model_name': Textarea(attrs={'class': 'form-control',
+                                                    'rows': '4', 'required': "",
+                                                    'data-error': _('Reason must be filled.'),
+                                                    'autofocus': ''}),
+        }
+
 
 # FRMI Section Added
 class FRMISettingForm(ModelForm):
