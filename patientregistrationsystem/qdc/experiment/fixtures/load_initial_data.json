@@ -139,6 +139,24 @@
     "model": "experiment.fileformat"
   },
   {
+    "fields": {
+      "tags": [
+        1,
+        2
+      ],
+      "name_en": "fRMI raw data",
+      "name": "fRMI raw data",
+      "description_en": "File format to store fRMI archives (.dcm) in dicom format",
+      "description": null,
+      "name_pt_br": "Datos Brutos de fRMI",
+      "extension": ".dcm",
+      "nes_code": "dcm",
+      "description_pt_br": "Formato de archivo para almacenar archivos fRMI (.dcm) obtenidos en formato dicom"
+    },
+    "pk": 5,
+    "model": "experiment.fileformat"
+  },
+  {
     "model": "experiment.tetheringsystem",
     "pk": 1,
     "fields": {

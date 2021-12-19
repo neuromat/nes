@@ -2,10 +2,12 @@
 
 from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect, \
-    ValidationError, Form, IntegerField, NumberInput, TimeInput, URLInput, ModelChoiceField
+    ValidationError, Form, IntegerField, NumberInput, TimeInput, URLInput, ModelChoiceField, FileField, \
+    FileInput
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
+
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, Component, Stimulus, Block, \
     Instruction, ComponentConfiguration, ResearchProject, EEGData, EEGSetting, Equipment, EEG, EMG, Amplifier, \
@@ -18,8 +20,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, TMSData, HotSpot, \
     CoilOrientation, DirectionOfTheInducedCurrent, TMSLocalizationSystem, DigitalGamePhase, ContextTree, \
     DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending, \
-    FRMI, FRMISetting
-
+    FRMI, FRMISetting, MRIScanner
 
 class ExperimentForm(ModelForm):
     class Meta:
@@ -186,6 +187,23 @@ class EEGForm(ModelForm):
         widgets = {
             'eeg_setting': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('EEG setting type must be filled.')})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(EEGForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial:
+            self.fields['eeg_setting'].queryset = EEGSetting.objects.filter(experiment=initial['experiment'])
+
+
+class FRMIForm(ModelForm):
+    class Meta:
+        model = FRMI
+        fields = ['frmi_setting']
+
+        widgets = {
+            'frmi_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('FRMI setting type must be filled.')})
         }
 
     def __init__(self, *args, **kwargs):
@@ -1399,6 +1417,43 @@ class ResendExperimentForm(ModelForm):
                                                     'autofocus': ''}),
         }
 
+
+# FRMI Setup Section Added
+class MRIScannerForm(ModelForm):
+    class Meta:
+        model = MRIScanner
+
+        fields = ['manufacturer_model_name']
+
+        widgets = {
+            'manufacturer_model_name': Textarea(attrs={'class': 'form-control',
+                                                    'rows': '4', 'required': "",
+                                                    'data-error': _('Reason must be filled.'),
+                                                    'autofocus': ''}),
+        }
+
+
+# FRMI Section Added
+class FRMISettingForm(ModelForm):
+    class Meta:
+        model = FRMISetting
+
+        fields = ['name', 'description', 'archivo']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+            'archivo': FileInput(attrs={'class': 'form-control', 'required': "",
+                                        'data-error': _('Archivo must be filled.')})
+        }
+
+
+
 class FRMIForm(ModelForm):
     class Meta:
         model = FRMI
@@ -1414,3 +1469,4 @@ class FRMIForm(ModelForm):
         initial = kwargs.get('initial')
         if initial:
             self.fields['frmi_setting'].queryset = FRMISetting.objects.filter(experiment=initial['experiment'])
+

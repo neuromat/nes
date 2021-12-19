@@ -375,6 +375,7 @@ class EEGElectrodeLocalizationSystem(models.Model):
             self.map_image_file = None
             super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
             self.map_image_file = saved_file
+            super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
         else:
             super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
 
@@ -1002,6 +1003,7 @@ class ContextTree(models.Model):
             self.setting_file = None
             super(ContextTree, self).save(*args, **kwargs)
             self.setting_file = saved_file
+            super(ContextTree, self).save(*args, **kwargs)
         else:
             super(ContextTree, self).save(*args, **kwargs)
 
@@ -1399,6 +1401,7 @@ class EMGFile(models.Model):
 class AdditionalDataFile(models.Model):
     additional_data = models.ForeignKey(AdditionalData, related_name='additional_data_files')
     file = models.FileField(upload_to=get_data_file_dir)
+    idorthanc= models.TextField(name="idorthanc", default="")
 
 
 class DigitalGamePhaseFile(models.Model):
@@ -1538,22 +1541,119 @@ class PortalSelectedQuestion(models.Model):
     class Meta:
         unique_together = ('experiment', 'survey', 'question_code')
 
+
+
+# FRMI Section Setup Added
+class MRIScanner(models.Model):
+    equipment = models.ForeignKey(Equipment)
+    manufacturer_model_name = models.CharField(max_length=255)
+    software_version = models.CharField(max_length=40)
+    magnetic_field_strength = models.CharField(max_length=150)
+    receive_coil_name = models.CharField(max_length=150)
+    gradient_set_type = models.CharField(max_length=150)
+    mr_transmit_coil_sequence = models.CharField(max_length=150)
+    matrix_coil_mode = models.CharField(max_length=150)
+    coil_combination_method = models.CharField(max_length=150)
+
+
+class SpoilingType(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=False, blank=False)
+
+
+class PulseShape(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=False, blank=False)
+
+
+class PulseSequence(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=False, blank=False)
+
+
+class ParallelImaging(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=False, blank=False)
+
+
+# FRMI Section Added
+class InPlaneSpatialEncoding(models.Model):
+    parallel_acquisition_technique = models.ForeignKey(ParallelImaging)
+    number_shots = models.IntegerField()
+    parallel_reduction_factor_in_plane = models.CharField(max_length=255)
+    partial_fourier = models.IntegerField()
+    partial_fourier_direction = models.CharField(max_length=255)
+    phase_encoding_direction = models.CharField(max_length=255)
+    effective_echo_spacing = models.IntegerField()
+    total_readout_time = models.IntegerField()
+    mixing_time = models.IntegerField()
+
+
+class SpoilingSetting(models.Model):
+    type = models.ForeignKey(SpoilingType)
+    rf_phase_increment = models.IntegerField()
+    gradent_moment = models.IntegerField()
+    gradent_duration = models.IntegerField()
+    state = models.BooleanField()
+
+
+class FMRIMachineSettings(models.Model):
+    mri_machine = models.ForeignKey(MRIScanner)
+    station_name = models.CharField(max_length=255)
+
+
+def get_frmi_settings_dir(instance, filename):
+    return "frmi_settings/%s/%s" % (instance.id, filename)
+
+
+
 class FRMISetting(models.Model):
     experiment = models.ForeignKey(Experiment)
     name = models.CharField(max_length=150)
     description = models.TextField()
+#    archivo = models.FileField(upload_to=get_frmi_settings_dir, null=True, blank=True)
+    # consultar a Luis G. sobre la idea de este campo
     mracquisition_type=models.CharField(max_length=150)
     scan_options: models.CharField(max_length=150)
     pulse_sequence_type=models.CharField(max_length=150)
-
     copied_from = models.ForeignKey('self', null=True, related_name='children')
 
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
-        super(FRMISetting, self).save(*args, **kwargs)
-        self.experiment.save()
+        if self.pk is None:
+            saved_file = self.archivo
+            self.archivo = None
+            super(FRMISetting, self).save(*args, **kwargs)
+            self.archivo = saved_file
+            super(FRMISetting, self).save(*args, **kwargs)
+        else:
+            super(FRMISetting, self).save(*args, **kwargs)
+            self.experiment.save()
+
+
+class SliceAcceleration(models.Model):
+    multiband_acceleration_factor = models.IntegerField()
+    name = models.CharField(max_length=150)
+
+
+class RFContrast(models.Model):
+    flip_angle = models.CharField(max_length=150)
+    negative_contrast = models.BooleanField()
+
+
+class TimingParameters(models.Model):
+    echo_time = models.IntegerField()
+    inversion_time = models.IntegerField()
+    slice_timing = models.CharField(max_length=255)
+    slice_encoding_direction = models.CharField(max_length=255)
+    dwell_time = models.IntegerField()
+
+
+# Dummy class until final version is defined
+#        super(FRMISetting, self).save(*args, **kwargs)
+#        self.experiment.save()
 
 class FRMI(Component):
     frmi_setting = models.ForeignKey(FRMISetting)

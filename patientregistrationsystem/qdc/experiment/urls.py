@@ -958,11 +958,24 @@ urlpatterns = [
         name="component_change_the_order",
     ),
     # Questionnaire
-    url(
-        r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
-        views.questionnaire_view,
-        name="questionnaire_view",
-    ),
+    url(r'^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$', views.questionnaire_view,
+        name='questionnaire_view'),
+
+    # register frmi solution
+    url(r'^(?P<experiment_id>\d+)/frmi_setting/new/$', views.frmi_setting_create, name='frmi_setting_new'),
+        url(r'^frmi_setting/(?P<frmi_setting_id>\d+)/$', views.frmi_setting_view, name='frmi_setting_view'),
+    url(r'^frmi_setting/edit/(?P<frmi_setting_id>\d+)/$', views.frmi_setting_update, name='frmi_setting_edit'),
+    url(r'^frmi_solution/list/$', views.frmi_solution_list, name='frmi_solution_list'),
+    url(r'^frmi_solution/new/$', views.frmi_solution_create, name='frmi_solution_new'),
+    url(r'^frmi_solution/(?P<frmi_solution_id>\d+)/$', views.frmi_solution_view, name='frmi_solution_view'),
+    url(r'^frmi_solution/edit/(?P<frmi_solution_id>\d+)/$', views.frmi_solution_update, name='frmi_solution_edit'),
+
+
+    #url(
+    #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
+    #    views.questionnaire_view,
+    #    name="questionnaire_view",
+    #),
     # # register frmi solution
     # url(r'^(?P<experiment_id>\d+)/frmi_setting/new/$', views.frmi_setting_create, name='frmi_setting_new'),
     #     url(r'^frmi_setting/(?P<frmi_setting_id>\d+)/$', views.frmi_setting_view, name='frmi_setting_view'),
