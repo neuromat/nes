@@ -1,26 +1,38 @@
 # coding=utf-8
 
 from django.contrib.auth.models import User
-from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect, \
-    ValidationError, Form, IntegerField, NumberInput, TimeInput, URLInput, ModelChoiceField, FileField, \
-    FileInput
+from django.forms import (
+    ModelForm, TextInput, Textarea, Select,
+    DateInput, TypedChoiceField, RadioSelect, ValidationError,
+    Form, IntegerField, NumberInput, TimeInput,
+    URLInput, ModelChoiceField, FileInput, CheckboxInput,
+)
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
-
-
-from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, Component, Stimulus, Block, \
-    Instruction, ComponentConfiguration, ResearchProject, EEGData, EEGSetting, Equipment, EEG, EMG, Amplifier, \
-    EEGAmplifierSetting, EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
-    EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
-    AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodeSetting, EMGElectrodePlacementSetting, EMGPreamplifierSetting, EMGAmplifierSetting, \
-    EMGAnalogFilterSetting, EMGSurfacePlacement, ADConverter, StandardizationSystem, Muscle, MuscleSide, \
-    MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, Software, SoftwareVersion, CoilModel, TMSDevice, \
-    EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, TMSData, HotSpot, \
-    CoilOrientation, DirectionOfTheInducedCurrent, TMSLocalizationSystem, DigitalGamePhase, ContextTree, \
-    DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending, \
-    FRMI, FRMISetting, MRIScanner
+from experiment.models import (
+    Experiment, QuestionnaireResponse, SubjectOfGroup, Group,
+    Component, Stimulus, Block, Instruction,
+    ComponentConfiguration, ResearchProject, EEGData, EEGSetting,
+    Equipment, EEG, EMG, Amplifier,
+    EEGAmplifierSetting, EEGSolution, EEGFilterSetting, FilterType,
+    EEGElectrodeLocalizationSystem, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition,
+    Manufacturer, ElectrodeModel, EEGElectrodeNet, Material,
+    AdditionalData, EMGData, FileFormat, EMGSetting,
+    EMGDigitalFilterSetting, EMGADConverterSetting, EMGElectrodeSetting, EMGElectrodePlacementSetting,
+    EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement,
+    ADConverter, StandardizationSystem, Muscle, MuscleSide,
+    MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting,
+    Software, SoftwareVersion, CoilModel, TMSDevice,
+    EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting,
+    TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent,
+    TMSLocalizationSystem, DigitalGamePhase, ContextTree, DigitalGamePhaseData,
+    Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending,
+    FRMI, FRMISetting, MRIScanner, SpoilingType,
+    PulseShape, PulseSequence, ParallelImaging, SpoilingSetting,
+    FMRIMachineSettings, SliceAcceleration, RFContrast, TimingParameters,
+    InPlaneSpatialEncoding,
+)
 
 
 class ExperimentForm(ModelForm):
@@ -1424,22 +1436,99 @@ class MRIScannerForm(ModelForm):
     class Meta:
         model = MRIScanner
 
-        fields = ['manufacturer_model_name']
+        fields = ['equipment', 'manufacturer_model_name', 'software_version', 'magnetic_field_strength',
+                  'receive_coil_name', 'receive_coil_active_elements', 'gradient_set_type', 'mr_transmit_coil_sequence',
+                  'matrix_coil_mode', 'coil_combination_method']
 
         widgets = {
-            'manufacturer_model_name': Textarea(attrs={'class': 'form-control',
-                                                    'rows': '4', 'required': "",
-                                                    'data-error': _('Reason must be filled.'),
-                                                    'autofocus': ''}),
+            'equipment': Select(
+                attrs={'class': 'form-control', 'required': "", 'data-error': _('Equipment must be filled.')},
+            ),
+            'manufacturer_model_name': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'autofocus': ''
+                },
+            ),
+            'software_version': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'autofocus': ''
+                },
+            ),
+            'magnetic_field_strength': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'autofocus': ''
+                },
+            ),
+            'receive_coil_name': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'autofocus': ''
+                },
+            ),
+            'receive_coil_active_elements': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'autofocus': ''
+                },
+            ),
+            'gradient_set_type': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'autofocus': ''
+                },
+            ),
+            'mr_transmit_coil_sequence': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'autofocus': ''
+                },
+            ),
+            'matrix_coil_mode': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'autofocus': ''
+                },
+            ),
+            'coil_combination_method': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'autofocus': ''
+                },
+            ),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(MRIScannerForm, self).__init__(*args, **kwargs)
 
-# FRMI Section Added
-class FRMISettingForm(ModelForm):
+        self.fields['equipment'].queryset = Equipment.objects.filter(tags__name="MRI")
+
+
+class SpoilingTypeForm(ModelForm):
     class Meta:
-        model = FRMISetting
+        model = SpoilingType
 
-        fields = ['name', 'description', 'archivo']
+        fields = ['name', 'description']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control',
@@ -1449,19 +1538,366 @@ class FRMISettingForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
-            'archivo': FileInput(attrs={'class': 'form-control', 'required': "",
-                                        'data-error': _('Archivo must be filled.')})
         }
 
 
+class PulseShapeForm(ModelForm):
+    class Meta:
+        model = PulseShape
+
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+        }
+
+
+class ParallelImagingForm(ModelForm):
+    class Meta:
+        model = ParallelImaging
+
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+        }
+
+
+# FRMI Section Added
+class InPlaneSpatialEncodingForm(ModelForm):
+    class Meta:
+        model = InPlaneSpatialEncoding
+
+        fields = [
+            'parallel_acquisition_technique',
+            'number_shots',
+            'parallel_reduction_factor_in_plane',
+            'partial_fourier',
+            'partial_fourier_direction',
+            'phase_encoding_direction',
+            'effective_echo_spacing',
+            'total_readout_time',
+            'mixing_time',
+        ]
+
+        widgets = {
+            'parallel_acquisition_technique': Select(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                }
+            ),
+            'number_shots': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                }
+            ),
+            'parallel_reduction_factor_in_plane': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'partial_fourier': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'partial_fourier_direction': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'phase_encoding_direction': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'effective_echo_spacing': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'total_readout_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'mixing_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(InPlaneSpatialEncodingForm, self).__init__(*args, **kwargs)
+
+        self.fields['parallel_acquisition_technique'].queryset = ParallelImaging.objects.filter()
+
+
+class InPlaneSpatialEncodingForm(ModelForm):
+    class Meta:
+        model = InPlaneSpatialEncoding
+
+        fields = [
+            'parallel_acquisition_technique',
+            'number_shots',
+            'parallel_reduction_factor_in_plane',
+            'partial_fourier',
+            'partial_fourier_direction',
+            'phase_encoding_direction',
+            'effective_echo_spacing',
+            'total_readout_time',
+            'mixing_time',
+        ]
+
+        widgets = {
+            'parallel_acquisition_technique': Select(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                }
+            ),
+            'number_shots': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                }
+            ),
+            'parallel_reduction_factor_in_plane': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'partial_fourier': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'partial_fourier_direction': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'phase_encoding_direction': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'effective_echo_spacing': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'total_readout_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'mixing_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(InPlaneSpatialEncodingForm, self).__init__(*args, **kwargs)
+
+        self.fields['parallel_acquisition_technique'].queryset = ParallelImaging.objects.filter()
+
+
+class SpoilingSettingForm(ModelForm):
+    class Meta:
+        model = SpoilingSetting
+
+        fields = [
+            'type',
+            'rf_phase_increment',
+            'gradent_moment',
+            'gradent_duration',
+            'state',
+        ]
+
+        widgets = {
+            'type': Select(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                }
+            ),
+            'rf_phase_increment': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                }
+            ),
+            'gradent_moment': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'gradent_duration': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                    'type': 'number',
+                },
+            ),
+            'state': CheckboxInput(
+                attrs={
+                    'class': 'form-control',
+                },
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(SpoilingSettingForm, self).__init__(*args, **kwargs)
+
+        self.fields['type'].queryset = SpoilingType.objects.filter()
+
+
+class FMRIMachineSettingsForm(ModelForm):
+    class Meta:
+        model = FMRIMachineSettings
+
+        fields = [
+            'mri_machine',
+            'station_name',
+        ]
+
+        widgets = {
+            'mri_machine': Select(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+            'station_name': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': '',
+                    'data-error': _('Data must be filled.'),
+                },
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(FMRIMachineSettingsForm, self).__init__(*args, **kwargs)
+
+        self.fields['mri_machine'].queryset = MRIScanner.objects.filter()
+
+
+class FRMISettingForm(ModelForm):
+    class Meta:
+        model = FRMISetting
+
+        fields = ['name', 'description', 'archivo']
+
+        widgets = {
+            'name': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Name must be filled.'),
+                    'autofocus': '',
+                },
+            ),
+            'description': Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': '4',
+                    'required': "",
+                    'data-error': _('Description must be filled.'),
+                }
+            ),
+            'archivo': FileInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Archivo must be filled.'),
+                },
+            ),
+        }
+
+
+# Dummy class until final version is defined
 class FRMIForm(ModelForm):
     class Meta:
         model = FRMI
         fields = ['frmi_setting']
 
         widgets = {
-            'frmi_setting': Select(attrs={'class': 'form-control', 'required': "",
-                                         'data-error': _('FRMI setting type must be filled.')})
+            'frmi_setting': Select(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('FRMI setting type must be filled.'),
+                },
+            ),
         }
 
     def __init__(self, *args, **kwargs):
