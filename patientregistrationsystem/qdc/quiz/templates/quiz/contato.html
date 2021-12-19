@@ -8,95 +8,108 @@
 
 {% block content %}
 
-    {% get_solo 'configuration.LocalInstitution' as institution_config %}
-    {% get_solo 'configuration.Contact' as contact_config %}
+{% get_solo 'configuration.LocalInstitution' as institution_config %}
+{% get_solo 'configuration.Contact' as contact_config %}
 
-    {% if messages %}
-        {% for message in messages %}
+{% if messages %}
+{% for message in messages %}
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
+{% if message.tags == "success" %}
+<script>showSuccessMessage('{{ message }}')</script>
+{% endif %}
 
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
+{% if message.tags == "warning" %}
+<script>showWarningMessage('{{ message }}')</script>
+{% endif %}
 
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
+{% if message.tags == "error" %}
+<script>showErrorMessage('{{ message }}')</script>
+{% endif %}
 
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
+{% if message.tags == "info" %}
+<script>showInfoMessage('{{ message }}')</script>
+{% endif %}
 
-        {% endfor %}
-    {% endif %}
+{% endfor %}
+{% endif %}
 
-    <div class="tab-pane fade in active" id="mainMenuContactTab">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-10">
-
-            <h3>{% trans "Neuroscience Experiments System - NES" %}</h3>
-
-            {% if institution_config.name %}
-                <h4><span class="fa fa-institution"></span> {{ institution_config.name }}</h4>
-            {% endif %}
-
-            {% if contact_config.name %}
-                <h5><span class="fa fa-user"></span> {{ contact_config.name }}</h5>
-            {% endif %}
-
-            {% if contact_config.email %}
-                <h5><span class="fa fa-envelope"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES" target="_top">{{ contact_config.email }}</a></h5>
-            {% endif %}
-
-            <br/>
-
-            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                <a class="thumbnail" href="http://ccsl.ime.usp.br/">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ccsl.jpg' %}" alt="Logo do CCSL">
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-xs-6 thumb" >
-                <a class="thumbnail" href="http://www.ime.usp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ime.jpg' %}" alt="Logo do IME">
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                <a class="thumbnail" href="http://www.usp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-usp.jpg' %}" alt="Logo da USP">
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                <a class="thumbnail"  href="http://www.ufrj.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ufrj.jpg' %}" alt="Logo da UFRJ">
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                <a class="thumbnail" href="http://neuromat.numec.prp.usp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-neuromat.jpg' %}" alt="Logo do NeuroMat">
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                <a class="thumbnail" href="http://www.fapesp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-fapesp.jpg' %}" alt="Logo da FAPESP">
-                </a>
-            </div>
-            {% if institution_config.url %}
-                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                    <a class="thumbnail" href="{{ institution_config.url }}">
-
-                    {% if institution_config.logo %}
-                        <img class="img-responsive" src="/media/{{ institution_config.logo }}" alt="Logo do {{ institution_config.name }}">
-                    {% else %}
-                        <img class="img-responsive" src="{{STATIC_URL}}quiz/imgs/{{ logo_institution }}" alt="Logo do {{ institution_config.name }}">
-                    {% endif %}
-
-                    </a>
-                </div>
-            {% endif %}
-        </div>
+<div class="tab-pane fade in active" id="mainMenuContactTab">
+    <div class="col-md-1">
     </div>
+    <div class="col-md-10">
+
+        <h3>{% trans "Neuroscience Experiments System - NES" %}</h3>
+
+        {% if institution_config.name %}
+        <h4><span class="fa fa-institution"></span> {{ institution_config.name }}</h4>
+        {% endif %}
+
+        {% if contact_config.name %}
+        <h5><span class="fa fa-user"></span> {{ contact_config.name }}</h5>
+        {% endif %}
+
+        {% if contact_config.email %}
+        <h5><span class="fa fa-envelope"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES"
+                target="_top">{{ contact_config.email }}</a></h5>
+        {% endif %}
+
+        <br />
+
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <a class="thumbnail" href="http://ccsl.ime.usp.br/">
+                <img class="img-responsive" src="{% static 'quiz/imgs/logo-ccsl.jpg' %}" alt="Logo do CCSL">
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <a class="thumbnail" href="http://www.ime.usp.br">
+                <img class="img-responsive" src="{% static 'quiz/imgs/logo-ime.jpg' %}" alt="Logo do IME">
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <a class="thumbnail" href="http://www.usp.br">
+                <img class="img-responsive" src="{% static 'quiz/imgs/logo-usp.jpg' %}" alt="Logo da USP">
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <a class="thumbnail" href="http://www.ufrj.br">
+                <img class="img-responsive" src="{% static 'quiz/imgs/logo-ufrj.jpg' %}" alt="Logo da UFRJ">
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <a class="thumbnail" href="http://neuromat.numec.prp.usp.br">
+                <img class="img-responsive" src="{% static 'quiz/imgs/logo-neuromat.jpg' %}" alt="Logo do NeuroMat">
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <a class="thumbnail" href="http://www.fapesp.br">
+                <img class="img-responsive" src="{% static 'quiz/imgs/logo-fapesp.jpg' %}" alt="Logo da FAPESP">
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <a class="thumbnail" href="https://www.pol.una.py">
+                <img class="img-responsive" src="{% static 'quiz/imgs/CONACYTpy.png' %}" alt="Logo da FAPESP">
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <a class="thumbnail" href="http://www.fapesp.br">
+                <img class="img-responsive" src="{% static 'quiz/imgs/fpuna.png' %}" alt="Logo da FAPESP">
+            </a>
+        </div>
+        {% if institution_config.url %}
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <a class="thumbnail" href="{{ institution_config.url }}">
+
+                {% if institution_config.logo %}
+                <img class="img-responsive" src="/media/{{ institution_config.logo }}"
+                    alt="Logo do {{ institution_config.name }}">
+                {% else %}
+                <img class="img-responsive" src="{{STATIC_URL}}quiz/imgs/{{ logo_institution }}"
+                    alt="Logo do {{ institution_config.name }}">
+                {% endif %}
+
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

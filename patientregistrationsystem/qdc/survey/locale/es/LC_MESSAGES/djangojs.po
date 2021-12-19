@@ -1,0 +1,65 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-10 10:54-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: survey/templates/survey/survey_register.html:44
+msgid "Please, correct the highlighted fields."
+msgstr "Por favor, corrija los campos resaltados.."
+
+#: survey/views.py:104
+msgid "Questionnaire created successfully."
+msgstr "Cuestionario creado con éxito"
+
+#: survey/views.py:139
+msgid "Questionnaire updated successfully."
+msgstr "Cuestionario actualizado con éxito"
+
+#: survey/views.py:141
+msgid "There are no changes to save."
+msgstr "No hay cambios para guardar"
+
+#: survey/views.py:409
+msgid "Questionnaire deleted successfully."
+msgstr "Cuestionario eliminado correctamente"
+
+#: survey/views.py:412
+msgid ""
+"It was not possible to delete questionnaire, because there are experimental "
+msgstr ""
+"No se puede eliminar el cuestionario porque hay un protocolo "
+"asociado experimental"
+
+#: survey/views.py:526
+msgid "Formula"
+msgstr "Fórmula"
+
+#: survey/views.py:602 survey/views.py:617 survey/views.py:646
+msgid "No answer"
+msgstr "Sin respuesta"
+
+#: survey/views.py:683
+msgid "LimeSurvey did not find fill data for this questionnaire."
+msgstr "LimeSurvey no encontró datos para esta encuesta."
+
+#: survey/views.py:722
+msgid "LimeSurvey unavailable. System running partially."
+msgstr ""
+"LimeSurvey no disponible. El sistema está funcionando parcialmente."
+
+#~ msgid "Por favor, corrija os campos em destaque."
+#~ msgstr "Por favor, corrija os campos em destaque."

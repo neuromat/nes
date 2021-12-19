@@ -22,7 +22,6 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending, \
     FRMI, FRMISetting, MRIScanner
 
-
 class ExperimentForm(ModelForm):
     class Meta:
         model = Experiment
@@ -1454,6 +1453,7 @@ class FRMISettingForm(ModelForm):
         }
 
 
+
 class FRMIForm(ModelForm):
     class Meta:
         model = FRMI
@@ -1469,3 +1469,4 @@ class FRMIForm(ModelForm):
         initial = kwargs.get('initial')
         if initial:
             self.fields['frmi_setting'].queryset = FRMISetting.objects.filter(experiment=initial['experiment'])
+

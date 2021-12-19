@@ -1,0 +1,104 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-10 10:54-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: custom_user/forms.py:19
+msgid "Type first name"
+msgstr "Ingrese su nombre"
+
+#: custom_user/forms.py:20
+msgid "Type last name"
+msgstr "Ingrese su apellido"
+
+#: custom_user/forms.py:22
+msgid "Type user name"
+msgstr "Ingrese su nombre de usuario"
+
+#: custom_user/forms.py:22
+msgid "Type citation name"
+msgstr "Ingrese el nombre para la citación"
+
+#: custom_user/forms.py:24 custom_user/forms.py:47
+msgid "Type password"
+msgstr "Ingrese su contraseña"
+
+#: custom_user/forms.py:27
+msgid "Type e-mail"
+msgstr "Ingrese su correo"
+
+#: custom_user/forms.py:73 custom_user/forms.py:74
+msgid "E-mail is not registered"
+msgstr "El correo electrónico no está registrado"
+
+#: custom_user/templates/custom_user/register_users.html:34
+msgid ""
+"Password must contain at least 8 characters, including at least one "
+"uppercase letter, digit or special character."
+msgstr ""
+"La contraseña debe contener al menos 8 caracteres, incluido al menos una "
+"letra mayúscula, dígito o carácter especial."
+
+#: custom_user/templates/custom_user/register_users.html:42
+msgid "You have to choose at least one user profile!"
+msgstr "Elija al menos un perfil de usuario"
+
+#: custom_user/templates/custom_user/register_users.html:67
+msgid "E-mail have to be filled!"
+msgstr "El correo electrónico debe ser ingresado"
+
+#: custom_user/templates/custom_user/register_users.html:109
+msgid "Please, correct the fields highlighted."
+msgstr "Por favor, corrija los campos resaltados."
+
+#: custom_user/tests.py:84
+#, javascript-format
+msgid "Your account for %s"
+msgstr "Tu cuenta de %s"
+
+#: custom_user/views.py:37
+msgid "User created successfully."
+msgstr "Usuario creado con éxito."
+
+#: custom_user/views.py:40
+msgid "It was not possible to create user."
+msgstr "No fue posible crear usuario."
+
+#: custom_user/views.py:45
+msgid "This user name already exists."
+msgstr "Este nombre de usuario ya existe."
+
+#: custom_user/views.py:47
+msgid "This username already exists in an disabled user."
+msgstr "Este nombre de usuario ya existe en un usuario deshabilitado."
+
+#: custom_user/views.py:91
+msgid "User updated successfully."
+msgstr "Usuario actualizado correctamente."
+
+#: custom_user/views.py:99
+msgid "User deleted successfully."
+msgstr "Usuario eliminado exitosamente."
+
+#~ msgid "É necessário escolher pelo menos um perfil de usuário!"
+#~ msgstr "É necessário escolher pelo menos um perfil de usuário!"
+
+#~ msgid "Email deve ser preenchido!"
+#~ msgstr "E-mail deve ser preenchido!"
+
+#~ msgid "Por favor, corrija os campos em destaque."
+#~ msgstr "Por favor, corrija os campos em destaque."

@@ -1,0 +1,72 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-18 15:57-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: qdc/forms.py:15
+msgid "Current password"
+msgstr "Contraseña actual"
+
+#: qdc/forms.py:23
+msgid "New password"
+msgstr "Nueva contraseña"
+
+#: qdc/forms.py:28
+msgid "Confirm new password"
+msgstr "confirmar nueva contraseña"
+
+#: qdc/views.py:46
+msgid ""
+"There is a new version, please contact your NES administrator to update !"
+msgstr ""
+"Hay una nueva versión, comuníquese con el administrador de NES para "
+"actualizar el sistema."
+
+#: qdc/views.py:68
+msgid "Password changed successfully."
+msgstr "Contraseña alterada con éxito."
+
+#: qdc/views.py:89
+msgid ""
+"You dont have NES Git installation. Automatic upgrade can be done with git "
+"installation. Please contact your system administrator to upgrade NES to a "
+"new version."
+msgstr ""
+"No tienes Git instalado en el servidor. La actualización automática solo se "
+"puede realizar con la instalación de Git. Comuníquese con su administrador "
+"de NES para actualizarlo con la nueva versión."
+
+#: qdc/views.py:164
+msgid "Updated!!! Enjoy the new version of NES  :-)"
+msgstr "¡Actualizado! Disfruta de la nueva versión de NES :-)"
+
+#: qdc/views.py:167
+msgid "An unknown error ocurred ! Please contact your administrator system."
+msgstr ""
+"¡Un error desconocido a ocurrido! Por favor, póngase en contacto con el "
+"administrador del sistema."
+
+#~ msgid "404 Page Not Found"
+#~ msgstr "404 Página não encontrada"
+
+#~ msgid "This page does not exist yet!"
+#~ msgstr "Esta página não existe ainda."
+
+#~ msgid "Type old password"
+#~ msgstr "Entrar com senha antiga"
+
+#~ msgid "Type again new password"
+#~ msgstr "Type again new password"
