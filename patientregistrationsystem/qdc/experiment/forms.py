@@ -1424,15 +1424,6 @@ class MRIScannerForm(ModelForm):
     class Meta:
         model = MRIScanner
 
-        fields = ['reason_for_resending']
-
-        widgets = {
-            'reason_for_resending': Textarea(attrs={'class': 'form-control',
-                                                    'rows': '4', 'required': "",
-                                                    'data-error': _('Reason must be filled.'),
-                                                    'autofocus': ''}),
-        }
-
 
 # FRMI Section Added
 class FRMISettingForm(ModelForm):
