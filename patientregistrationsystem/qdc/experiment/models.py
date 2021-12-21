@@ -1819,8 +1819,7 @@ class PortalSelectedQuestion(models.Model):
         unique_together = ("experiment", "survey", "question_code")
 
 # FRMI Section Setup Added
-class MRIScanner(models.Model):
-    equipment = models.ForeignKey(Equipment)
+class MRIScanner(Equipment):
     manufacturer_model_name = models.CharField(max_length=255, null=True, blank=True)
     software_version = models.CharField(max_length=40, null=True, blank=True)
     magnetic_field_strength = models.CharField(max_length=150, null=True, blank=True)

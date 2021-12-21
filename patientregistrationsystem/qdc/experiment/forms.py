@@ -1436,13 +1436,36 @@ class MRIScannerForm(ModelForm):
     class Meta:
         model = MRIScanner
 
-        fields = ['equipment', 'manufacturer_model_name', 'software_version', 'magnetic_field_strength',
-                  'receive_coil_name', 'receive_coil_active_elements', 'gradient_set_type', 'mr_transmit_coil_sequence',
-                  'matrix_coil_mode', 'coil_combination_method']
+        fields = ['manufacturer', 'identification', 'description', 'serial_number',
+                  'manufacturer_model_name', 'software_version', 'magnetic_field_strength', 'receive_coil_name',
+                  'receive_coil_active_elements', 'gradient_set_type', 'mr_transmit_coil_sequence', 'matrix_coil_mode',
+                  'coil_combination_method']
 
         widgets = {
-            'equipment': Select(
-                attrs={'class': 'form-control', 'required': "", 'data-error': _('Equipment must be filled.')},
+            'manufacturer': Select(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Manufacturer must be filled.')
+                },
+            ),
+            'identification': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    'data-error': _('Identification must be filled.')
+                },
+            ),
+            'description': Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': '4'
+                },
+            ),
+            'serial_number': TextInput(
+                attrs={
+                    'class': 'form-control'
+                },
             ),
             'manufacturer_model_name': TextInput(
                 attrs={
