@@ -163,6 +163,7 @@ class Equipment(models.Model):
         ("eeg_electrode_net", _("EEG Electrode Net")),
         ("ad_converter", _("A/D Converter")),
         ("tms_device", _("TMS device")),
+        ("mri_machine", _("MRI Machine")),
     )
     manufacturer = models.ForeignKey(Manufacturer, related_name="set_of_equipment")
     equipment_type = models.CharField(
@@ -1818,14 +1819,18 @@ class PortalSelectedQuestion(models.Model):
     class Meta:
         unique_together = ("experiment", "survey", "question_code")
 
+
 # FRMI Section Setup Added
 class MRIScanner(models.Model):
+    # class MRIScanner(Equipment):
     equipment = models.ForeignKey(Equipment)
     manufacturer_model_name = models.CharField(max_length=255, null=True, blank=True)
     software_version = models.CharField(max_length=40, null=True, blank=True)
     magnetic_field_strength = models.CharField(max_length=150, null=True, blank=True)
     receive_coil_name = models.CharField(max_length=150, null=True, blank=True)
-    receive_coil_active_elements = models.CharField(max_length=255, null=True, blank=True)
+    receive_coil_active_elements = models.CharField(
+        max_length=255, null=True, blank=True
+    )
     gradient_set_type = models.CharField(max_length=150, null=True, blank=True)
     mr_transmit_coil_sequence = models.CharField(max_length=150, null=True, blank=True)
     matrix_coil_mode = models.CharField(max_length=150, null=True, blank=True)
@@ -1888,7 +1893,7 @@ class FRMISetting(models.Model):
     description = models.TextField()
     archivo = models.FileField(upload_to=get_frmi_settings_dir, null=True, blank=True)
     # consultar a Luis G. sobre la idea de este campo
-    copied_from = models.ForeignKey('self', null=True, related_name='children')
+    copied_from = models.ForeignKey("self", null=True, related_name="children")
 
     def __str__(self):
         return self.name
@@ -1941,6 +1946,7 @@ class SequenceSpecific(models.Model):
 
 
 # Dummy class until final version is defined
+
 
 class FRMI(Component):
     frmi_setting = models.ForeignKey(FRMISetting)

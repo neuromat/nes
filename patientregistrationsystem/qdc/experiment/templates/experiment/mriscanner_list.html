@@ -1,0 +1,103 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n %}
+
+{% block activeSetup %}class="active"{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+{% for message in messages %}
+
+{% if message.tags == "success" %}
+<script>showSuccessMessage('{{ message }}')</script>
+{% endif %}
+
+{% if message.tags == "warning" %}
+<script>showWarningMessage('{{ message }}')</script>
+{% endif %}
+
+{% if message.tags == "error" %}
+<script>showErrorMessage('{{ message }}')</script>
+{% endif %}
+
+{% if message.tags == "info" %}
+<script>showInfoMessage('{{ message }}')</script>
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+<div class="tab-pane fade in active" id="researchProjectBreadCrumb">
+    <div class="col-md-10">
+        <ol class="breadcrumb">
+            <li><a href="/home">{% trans "Home" %}</a></li>
+            <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
+            <li class="active">{% trans "MRI Scanner" %}</li>
+        </ol>
+    </div>
+</div>
+
+<div class="tab-pane fade in active" id="mainMenuUserTab">
+    <div class="col-md-10">
+        <div class="container span6 offset3 well ">
+            <h4>{% trans "MRI Scanner List" %}</h4>
+            <div class="form-group">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Identification" %}</th>
+                            <th>{% trans "Manufacturer" %}</th>
+                            <th>{% trans "Serial number" %}</th>
+                            <!-- <th>{% trans "Gain (times)" %}</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipment in equipments %}
+                        <tr>
+                            <td>{% if perms.experiment.register_equipment %}
+                                <a data-toggle="tooltip" data-placement="left" title="{% trans " Visualize" %}"
+                                    href="/experiment/amplifier/{{ equipment.id }}">
+                                    {{ equipment.identification }}
+                                </a>
+                                {% else %}
+                                {{ equipment.identification }}
+                                {% endif %}
+                            </td>
+                            <td>{{ equipment.manufacturer }}</td>
+                            <td>
+                                {{ equipment.serial_number }}
+                            </td>
+                            <!-- <td>
+                                    {{ equipment.gain|default:"" }}
+                                </td> -->
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if perms.experiment.register_equipment %}
+            <div class="btn-group pull-left">
+                <a href="/experiment/mriscanner/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="btn-toolbar">
+            <div class="btn-group pull-right">
+                <a href="/experiment/setup" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(function () {
+        $("[data-toggle=tooltip]").tooltip();
+    });
+</script>
+{% endblock %}
