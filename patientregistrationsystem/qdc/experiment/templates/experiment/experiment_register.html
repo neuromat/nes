@@ -362,6 +362,43 @@
                     {% endif %}
                 </div>
 
+
+                <div class="container span6 offset3 well ">
+                <h4><span class="glyphicon glyphicon-flash"></span> {% trans "FRMI Settings" %}</h4>
+
+                    {% if frmi_setting_list %}
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{% trans "Name" %}</th>
+                                    <th>{% trans "Description" %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for frmi_setting in frmi_setting_list %}
+                                    <tr>
+                                        <td>
+                                            <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/frmi_setting/{{ frmi_setting.id }}">
+                                            {{ frmi_setting.name }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ frmi_setting.description }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {% if perms.experiment.add_subject and can_change %}
+                        <a href="/experiment/{{ experiment.id }}/frmi_setting/new" class="btn btn-primary">{% trans "Insert new" %}</a>
+                    {% endif %}
+                </div>
+
+
+
                 <div class="container span6 offset3 well ">
                 <h4><span class="glyphicon glyphicon-stats"></span> {% trans "EMG Settings" %}</h4>
                     {% if emg_setting_list %}
