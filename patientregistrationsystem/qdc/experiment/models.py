@@ -1856,26 +1856,6 @@ class ParallelImaging(models.Model):
 
 
 # FRMI Section Added
-class InPlaneSpatialEncoding(models.Model):
-    parallel_acquisition_technique = models.ForeignKey(ParallelImaging)
-    number_shots = models.IntegerField()
-    parallel_reduction_factor_in_plane = models.CharField(max_length=255)
-    partial_fourier = models.IntegerField()
-    partial_fourier_direction = models.CharField(max_length=255)
-    phase_encoding_direction = models.CharField(max_length=255)
-    effective_echo_spacing = models.IntegerField()
-    total_readout_time = models.IntegerField()
-    mixing_time = models.IntegerField()
-
-
-class SpoilingSetting(models.Model):
-    type = models.ForeignKey(SpoilingType)
-    rf_phase_increment = models.IntegerField()
-    gradent_moment = models.IntegerField()
-    gradent_duration = models.IntegerField()
-    state = models.BooleanField()
-
-
 class FMRIMachineSettings(models.Model):
     mri_machine = models.ForeignKey(MRIScanner)
     station_name = models.CharField(max_length=255)
@@ -1908,24 +1888,7 @@ class FRMISetting(models.Model):
             self.experiment.save()
 
 
-class SliceAcceleration(models.Model):
-    multiband_acceleration_factor = models.IntegerField()
-    name = models.CharField(max_length=150)
-
-
-class RFContrast(models.Model):
-    flip_angle = models.CharField(max_length=150)
-    negative_contrast = models.BooleanField()
-
-
-class TimingParameters(models.Model):
-    echo_time = models.IntegerField()
-    inversion_time = models.IntegerField()
-    slice_timing = models.CharField(max_length=255)
-    slice_encoding_direction = models.CharField(max_length=255)
-    dwell_time = models.IntegerField()
-
-
+# 1 to 1 Relations from here
 class SequenceSpecific(models.Model):
     fmri_settings = models.ForeignKey(FRMISetting, null=True, blank=True)
     pulse_sequence_type = models.ForeignKey(PulseSequence, null=True, blank=True)
@@ -1944,9 +1907,45 @@ class SequenceSpecific(models.Model):
     mt_pulse_duration = models.IntegerField()
 
 
+class InPlaneSpatialEncoding(SequenceSpecific):
+    parallel_acquisition_technique = models.ForeignKey(ParallelImaging)
+    number_shots = models.IntegerField()
+    parallel_reduction_factor_in_plane = models.CharField(max_length=255)
+    partial_fourier = models.IntegerField()
+    partial_fourier_direction = models.CharField(max_length=255)
+    phase_encoding_direction = models.CharField(max_length=255)
+    effective_echo_spacing = models.IntegerField()
+    total_readout_time = models.IntegerField()
+    mixing_time = models.IntegerField()
+
+
+class SpoilingSetting(SequenceSpecific):
+    type = models.ForeignKey(SpoilingType)
+    rf_phase_increment = models.IntegerField()
+    gradent_moment = models.IntegerField()
+    gradent_duration = models.IntegerField()
+    state = models.BooleanField()
+
+
+class SliceAcceleration(SequenceSpecific):
+    multiband_acceleration_factor = models.IntegerField()
+    name = models.CharField(max_length=150)
+
+
+class RFContrast(SequenceSpecific):
+    flip_angle = models.CharField(max_length=150)
+    negative_contrast = models.BooleanField()
+
+
+class TimingParameters(SequenceSpecific):
+    echo_time = models.IntegerField()
+    inversion_time = models.IntegerField()
+    slice_timing = models.CharField(max_length=255)
+    slice_encoding_direction = models.CharField(max_length=255)
+    dwell_time = models.IntegerField()
+
+
 # Dummy class until final version is defined
-
-
 class FRMI(Component):
     frmi_setting = models.ForeignKey(FRMISetting)
 
