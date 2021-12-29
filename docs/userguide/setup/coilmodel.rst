@@ -1,25 +1,25 @@
 .. _coil-model:
 
-Coil Model
+Modelo de bobina
 ==========
 
-NES allows to register the coil model of the TMS equipment.
+NES permite registrar el modelo de bobina del equipo TMS.
 
-.. _view-the-list-of-coils:
+.. _view la lista de bobinas:
 
-View the list of coils
+Ver la lista de bobinas
 ----------------------
 
-This page shows the list of coil models registered in NES. By clicking a item of the list you can edit this item.
+Esta página muestra la lista de modelos de bobinas registrados en NES. Al hacer clic en un elemento de la lista, puede editar este elemento.
 
 .. image:: ../../_img/coil_model_list.png
 
 .. _add-a-coil-model:
 
-Add a Coil Model
+Agregar un modelo de bobina
 ----------------
 
-To add a new coil model, you have to insert the name of the coil to be registered and the coil shape; optionally a description, the coil design and the material of the coil. The picture below show a example of this screen:
+Para agregar un nuevo modelo de bobina, debe insertar el nombre de la bobina que se registrará y la forma de la bobina; opcionalmente una descripción, el diseño de la bobina y el material de la bobina. La siguiente imagen muestra un ejemplo de esta pantalla:
 
 .. image:: ../../_img/coil_model_add.png
 

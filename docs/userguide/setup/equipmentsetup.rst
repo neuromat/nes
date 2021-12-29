@@ -1,13 +1,13 @@
 .. _set-up:
 
-Set Up
+Construir
 ======
 
-This module allows to register all the equipments and materials that are involved in the EEG, EMG and TMS  experiments. The informations that can be registered are divided into 2 sections, namely `Basic registers`_ and `Equipment/Device registers`_.
+Este módulo permite registrar todos los equipos y materiales que intervienen en los experimentos EEG, EMG y TMS. Las informaciones que se pueden registrar se dividen en 2 secciones, a saber: `Basic registers`_ y `Equipment/Device registers`_.
 
 .. _basic-registers:
 
-Basic registers
+Registros Basicos
 ---------------
 
 * :ref:`material`
@@ -19,7 +19,7 @@ Basic registers
 
 .. _equipment-device-registers:
 
-Equipment/Device registers
+Registros de equipos/dispositivos
 --------------------------
 
 * :ref:`electrode-model`

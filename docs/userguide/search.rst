@@ -1,83 +1,83 @@
 .. _search:
 
-Search
+Buscar
 ======
 
-Search is a functionality, offered in many situations inside NES, for filtering information.
+La búsqueda es una funcionalidad, ofrecida en muchas situaciones dentro de NES, para filtrar información.
 
-Introduction
+Introducción
 ------------
 
-With Search, it is possible to filter participant information, such as gender, marital status, location, diagnosis and age.
+Con la búsqueda, es posible filtrar la información de los participantes, como el sexo, el estado civil, la ubicación, el diagnóstico y la edad.
 
-In this version of NES, only :ref:`export` uses this functionality, but others may use it in the future.
+En esta versión de NES, sólo :ref:`export` utiliza esta funcionalidad, pero otros pueden usarla en el futuro.
 
-For starting searching, first you have to call the functionality that needs the participants information. For example, you have to click the `Export` menu item in order to select participants that will be used in the export functionality, as explained at the Export page.
+Para comenzar a buscar, primero debe llamar a la funcionalidad que necesita la información de los participantes. Por ejemplo, debe hacer clic en el menu `Export`  para seleccionar los participantes que se utilizarán en la funcionalidad de exportación, como se explica en la página Exportar.
 
-You can either select all participants or select specific filters from participants.
+Puede seleccionar todos los participantes o seleccionar filtros específicos de los participantes.
 
-If you select the `Selected participants` option, at least one of the filters must be selected.  
+Si selecciona el `Selected participants` , se debe seleccionar al menos uno de los filtros.  
 
-Selecting All Participants
+Selección de todos los participantes
 --------------------------
 
-Choose `All participants` if you don't want to filter participants and click the `Next` button to continue with the functionality, as informed at the `Concluding the filtering process`_ section.
+Elegir `All participants` Si no desea filtrar participantes y haga clic en el botón `Next` para continuar con la funcionalidad, como se informa en la sección `Concluding the filtering process`_ .
 
 .. image:: ../_img/all_participants_selection.png
 
-Filtering Gender
+Filtrado de género
 ----------------
 
-In order to filter gender, choose `Selected participants` option and new information about filters will be displayed. Click the `Gender` checkbox and gender information will be enabled to selection. You can select one or more options by using one of the options:
+Para filtrar el género, elija `Selected participants` y se mostrará nueva información sobre los filtros. Haga clic en el checkbox `Gender`  y se habilitará la selección de información sobre cuestiones de género. Puede seleccionar una o más opciones mediante una de las opciones:
 
-* click one field and drag up or down in order to select many continuous fields;
-* choose more than one field by holding the control(Windows/Linux)/command(Mac) key and clicking each field. You can also unselect the field by clicking a selected field once more.
+* haga clic en un campo y arrastre hacia arriba o hacia abajo para seleccionar muchos campos continuos;
+* elija más de un campo manteniendo presionada la tecla control (Windows / Linux) / comando (Mac) y haciendo clic en cada campo. También puede anular la selección del campo haciendo clic en un campo seleccionado una vez más.
 
 .. image:: ../_img/gender_selection.png
 
-You can continue selecting other options or simply go to `Next` button, as explained at `Concluding the filtering process`_ section.
+Puede continuar seleccionando otras opciones o simplemente ir al boton `Next` , como explicado en la sección `Concluding the filtering process`_ .
 
-Filtering Marital Status
+Filtrado del estado civil
 ------------------------
 
-The same procedure as `Filtering Gender`_ is used for filtering marital status.
+El mismo procedimiento que `Filtering Gender`_ se utiliza para filtrar el estado civil.
 
 .. image:: ../_img/marital_status_selection.png
 
-You can continue selecting other options or simply click the `Next` button, as explained at `Concluding the filtering process`_ section.
+Puede continuar seleccionando otras opciones o simplemente hacer clic en el botón `Next` , como explicado en la sección `Concluding the filtering process`_ .
 
-Filtering Locations
+Filtrar ubicaciones
 -------------------
 
-In order to filter locations, click the `Locations` checkbox and a field will be enabled for you to type the name of the city. Suggestions will appear in a drop down list, originated from the participants' addresses filled when they were inserted at the database. You can select one location at a time; Once you select one of them, a box with the name of the location appears right above the search field, with a `X` that you can click if you want to remove the location from your filtering.
+Para filtrar ubicaciones, haga clic en el checkbox  `Locations` y se habilitará un campo para que escriba el nombre de la ciudad. Las sugerencias aparecerán en una lista desplegable, originadas a partir de las direcciones de los participantes rellenadas cuando se insertaron en la base de datos. Puede seleccionar una ubicación a la vez; Una vez que seleccione uno de ellos, aparecerá un cuadro con el nombre de la ubicación justo encima del campo de búsqueda, con un `X` en la que puede hacer clic si desea quitar la ubicación del filtrado.
 
 .. image:: ../_img/locations_selection.png
 
-You can continue selecting other options or simply click the `Next` button, as explained at `Concluding the filtering process`_ section.
+Puede continuar seleccionando otras opciones o simplemente hacer clic en el botón `Next` , como explicado en la sección `Concluding the filtering process`_ .
 
-Filtering Diagnosis
+Diagnóstico de filtrado
 -------------------
 
-The same procedure as `Filtering Locations`_ is used for filtering diagnosis.
+El mismo procedimiento que `Filtering Locations`_ se utiliza para filtrar el diagnóstico.
 
 .. image:: ../_img/diagnosis_selection.png
 
-You can continue selecting other options or simply click the `Next` button, as explained at `Concluding the filtering process`_ section.
+Puede continuar seleccionando otras opciones o simplemente hacer clic en el botón `Next` , como explicado en la sección `Concluding the filtering process`_ .
 
 
-Filtering Age
+Edad de filtrado
 -------------
 
-If you choose to filter participants' age, then first click the `Age` checkbox to enable the filter. In the sequence, go to age intervals fields and fill the "age from" (first field) and  the "age to" field (second field). Both of them must contain data.
+Si elige filtrar la edad de los participantes, primero haga clic en el checkbox `Age`  para habilitar el filtro. En la secuencia, vaya a los campos de intervalos de edad y complete el campo "edad desde" (primer campo) y el campo "edad para" (segundo campo). Ambos deben contener datos.
 
 
 .. image:: ../_img/age_selection.png
 
-Concluding the Filtering Process
+Conclusión del proceso de filtrado
 --------------------------------
 
-If participants data was filtered, a screen with selected participants will be shown (if you chose `All participants` option, this screen won't appear). 
+Si se filtraron los datos de los participantes, se mostrará una pantalla con los participantes seleccionados (si eligió la opción `All participants` , Esta pantalla no aparecerá). 
 
 .. image:: ../_img/selected_participants.png
 
-You can click the `Next` button to go back to the functionality that called Search, or can click the `Previous` button to select data once more. The `Cancel` button will leave the functionality that called Search and you be redirected to `Home`.
+Puede clickar en el boton `Next` para volver a la funcionalidad que llamaba Buscar o puede hacer clic en el botón `Previous`  para seleccionar datos una vez más. El `Cancel` dejará la funcionalidad que llamó Buscar y será redirigido a `Home`.

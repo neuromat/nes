@@ -1,68 +1,68 @@
 .. _loading-icd-data-3.0:
 
-Loading ICD data (3.0)
+Carga de datos ICD (3.0)
 ======================
 
-In order to load ICD (International Code Diseases) data, you will have to pay attention to different languages. In this version, only Portuguese and English versions can be installed. 
-The last version of the ICD file was obtained from the `Centro de Terminologias Clínicas (CTC) <https://interop-pt.atlassian.net/wiki/spaces/CTCPT/pages/58884241/Implementa+o+da+ICD-10-CM+PCS>`_.
+Para cargar datos de ICD (International Code Diseases), tendrá que prestar atención a diferentes idiomas. En esta versión, solo se pueden instalar versiones en portugués e inglés. 
+La última versión del archivo ICD se obtuvo del `Centro de Terminologias Clínicas (CTC) <https://interop-pt.atlassian.net/wiki/spaces/CTCPT/pages/58884241/Implementa+o+da+ICD-10-CM+PCS>`_.
 
 .. _before-loading-icd-data:
 
-Before loading ICD data
+Antes de cargar los datos ICD
 -----------------------
 
-Before loading ICD, you have to guarantee that all migrations have been applied. First of all, 
+Antes de cargar ICD, debe garantizar que se han aplicado todas las migraciones. En primer lugar, 
 
-Activate virtualenv::
+Activar virtualenv::
 
-    cd /usr/local/nes-system/
+    cd /var/www/nes-system/
     
     source bin/activate
 
-Change path to::
+Cambiar el path a::
  
-    cd /usr/local/nes-system/nes/patientregistrationsystem/qdc
+    cd /var/www/nes-system/nes/patientregistrationsystem/qdc
 
-Update migrations::
+Actualizar migraciones::
 
     python manage.py migrate
 
 
-Deactivate virtualenv::
+Desactivar virtualenv::
 
     deactivate
 
 .. _loading-icd-data:
 
-Loading ICD data
+Descargar datos del ICD
 ----------------
 
-Commands to execute steps defined above are::
+Commandos para executar los pasos definidos previamente son::
 
-    cd /usr/local/nes-system/nes/resources/load-idc-table/
+    cd /var/www/nes-system/nes/resources/load-idc-table/
 
 
-Verify that the file exists::
+Verifique que el archivo existe::
 
     icd10cid10v2017.csv
 
 
-Activate virtualenv::
+Activar virtualenv::
 
-    cd /usr/local/nes-system/
+    cd /var/www/nes-system/
     
     source bin/activate
 
-Change path to::
+Cambiar el path a::
  
-    cd /usr/local/nes-system/nes/patientregistrationsystem/qdc
+    cd /var/www/nes-system/nes/patientregistrationsystem/qdc
 
-Update translation data::
+Actualizar datos de traducción::
 
     python manage.py import_icd_cid --file icd10cid10v2017.csv
 
 
-Deactivate virtualenv::
+Desactivar virtualenv::
 
     deactivate
     

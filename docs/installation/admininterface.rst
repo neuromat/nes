@@ -1,80 +1,80 @@
 .. _administration-interface:
 
-Administration Interface
+Interface de Administración
 ========================
 
-Some of the data stored in the database is not frequently changed and is not intended to be accessed by all the users. For theses cases, the administrator should use the administration interface.
+Algunos de los datos almacenados en la base de datos no se cambian con frecuencia y no están destinados a ser accedidos por todos los usuarios. Para estos casos, el administrador debe utilizar la interfaz de administración.
 
 .. _log-in-screen:
 
-Log in screen
+Pantalla de Log in
 -------------
 
-To enter the administration interface, you should type "/admin" after the base URL of NES. A login screen will be shows. Only users that has the flag Staff member" are able to log in (See `Users`_).
+Para ingresar a la interfaz de administración, debe escribir "/admin" después de la URL base de NES. Se mostrará una pantalla de inicio de sesión. Solo los usuarios que tienen la bandera "Miembro del personal" pueden iniciar sesión (consulte `Users`_).
 
 .. image:: ../_img/administration_interface_login.png
 
 .. _home-screen:
 
-Home screen
+Pantalla de inicio
 -----------
 
-After login, the home screen will show a list of selected tables, which includes tables that store :ref:`data that are read-only <read-only-data>` for most of the users, and :ref:`tables whose changes are tracked <historical-records>` and stored in auxiliary tables.
+Después de iniciar sesión, la pantalla de inicio mostrará una lista de tablas seleccionadas, que incluye tablas que almacenan :ref:`data that are read-only <read-only-data>` para la mayoría de los usuarios, y :ref:`tables whose changes are tracked <historical-records>` y almacenado en tablas auxiliares.
 
 .. image:: ../_img/administration_interface_home.png
 
 .. _users:
 
-Users
+Usuarios
 -----
 
-Although it is possible to edit most of the user's data using the regular NES interface, some data can only be changed through the administration interface:
+Aunque es posible editar la mayoría de los datos del usuario utilizando la interfaz NES normal, algunos datos solo se pueden cambiar a través de la interfaz de administración.:
 
-* **Active** flag: Indicates whether the user has access to NES.
-* **Staff member** flag: Indicates whether the user has access to the administration interface.
-* **Superuser** flag: Indicates whether the user has access to all functionalities of the system.
-* **User's permissions**: A list of permissions that the user has no matter the groups s/he is in.
+* **Active** flag: Indica si el usuario tiene acceso a NES.
+* **Miembro del personal** indicador: Indica si el usuario tiene acceso a la interfaz de administración.
+* **Superusuario** flag: Indica si el usuario tiene acceso a todas las funcionalidades del sistema.
+* **Permisos del usuario**: Una lista de permisos que el usuario tiene sin importar los grupos en los que se encuentra.
 
 .. _read-only-data:
 
-Read-Only Data
+Datos de solo lectura
 --------------
-Some tables store data that are read-only for most of the users and therefore can only be edited using the administration interface. These tables are:
+Algunas tablas almacenan datos que son de solo lectura para la mayoría de los usuarios y, por lo tanto, solo se pueden editar mediante la interfaz de administración. Estas tablas son:
 
-* Group of users / Roles
-* Alcohol frequency
-* Alcohol period
-* Amount cigarettes
-* Flesh tone
-* Gender
-* Marital status
-* Payment
-* Religion
-* Schooling
-* Stimulus types
+* Grupo de usuarios / Roles
+* Frecuencia de alcohol
+* Periodo alcohólico
+* Cantidad de cigarrillos
+* Tono carne
+* Género
+* Estado civil
+* Pago
+* Religión
+* Escolarización
+* Tipos de estímulos
 
 .. _historical-records:
 
-Historical Records
+Registros Historicos
 ------------------
-Some tables store data whose changes are tracked. You can only see the changes made in these tables using the administration interface. These tables are:
+Algunas tablas almacenan datos cuyos cambios se rastrean. Solo puede ver los cambios realizados en estas tablas mediante la interfaz de administración. Estas tablas son:
 
-* Experiments
-* Response to experiment questionnaires
-* Participants
-* Social demographic data
-* Social history data
+* Experimentos
+* Respuesta a cuestionarios de experimentos
+* Participantes
+* Datos demográficos sociales
+* Datos de historia social
 
-To see the changes made in one of the records, first click the name of the table. If you click the link to the experiment table, for exemple, you will see the list of all experiments currently registered.
+Para ver los cambios realizados en uno de los registros, primero haga clic en el nombre de la tabla. Si hace clic en el vínculo a la tabla de experimentos, por ejemplo, verá la lista de todos los experimentos registrados actualmente.
 
 .. image:: ../_img/administration_interface_experiments.png
 
-Then, you click the name of the record whose changes you want to see. Suppose you want to see changes in the experiment called "Touch Threshold and Referred Sensation in BPIs".
+A continuación, haga clic en el nombre del registro cuyos cambios desea ver. Supongamos que desea ver cambios en el experimento llamado "Umbral táctil y sensación referida en BPI".
 
 .. image:: ../_img/administration_interface_experiment.png
 
-Then, you click the `History` button, in the upper-right corner of the screen.
+Entonces, haga click en el boton `History`, en la esquina superior derecha de la pantalla.
 
 .. image:: ../_img/administration_interface_experiment_history.png
 
-Each line of this list represents a version of the record. Clicking one of the links of the first column (the name of the experiment, in this case), you see information about this record at a specific point in time.
+Cada línea de esta lista representa una versión del registro. Al hacer clic en uno de los vínculos de la primera columna (el nombre del experimento, en este caso), verá información sobre este registro en un momento específico.

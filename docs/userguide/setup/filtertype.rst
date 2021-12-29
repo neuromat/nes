@@ -1,29 +1,29 @@
 .. _filter-type:
 
-Filter Type
+Tipo de filtro
 ===========
 
-On this page can be registered information about the filter type used in the acquisition of EEG raw data.
+En esta página se puede registrar información sobre el tipo de filtro utilizado en la adquisición de datos sin procesar de EEG.
 
 .. _view-the-list-of-filters-type:
 
-View the list of filters type
+Ver la lista de tipos de filtros
 -----------------------------
 
-The picture below shows a example of the screen that list of filters type available. By clicking a item of the list you can edit this item.
+La siguiente imagen muestra un ejemplo de la pantalla que la lista de filtros tipo disponible. Al hacer clic en un elemento de la lista, puede editar este elemento.
 
 .. image:: ../../_img/filter_type_list.png
 
 .. _add-filter-type:
 
-Add Filter Type
+Agregar tipo de filtro
 ---------------
 
-For adding a new filter type, you must register the following information:
+Para agregar un nuevo tipo de filtro, debe registrar la siguiente información:
 
-* **Name:** name of the filter type. This information is mandatory.
-* **Description:** some information about the filter type registered.
-* **Category:** this information indicates if the filter can be used in EEG and/or EMG experiments.
+* **Nombre:** nombre del tipo de filtro. Esta información es obligatoria.
+* **Descripción:** alguna información sobre el tipo de filtro registrado.
+* **Categoría:** esta información indica si el filtro se puede utilizar en experimentos EEG y/o EMG.
 
 .. image:: ../../_img/filter_type_add.png
 

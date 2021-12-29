@@ -1,133 +1,133 @@
 .. _medical-evaluation:
 
-Medical Evaluation
+Evaluación Médica
 ==================
 
-Medical Evaluation is the tab where you can view or add new participant's diagnosis and exams.
+Evaluación médica es la pestaña donde puede ver o agregar el diagnóstico y los exámenes de los nuevos participantes.
 
 .. _medical-evaluation-tab:
 
-Medical Evaluation Tab
+Evaluación Médica Tabulador
 ----------------------
 
-You can visit the :ref:`participants` page to understand how to navigate between tabs.
+Puede visitar :ref:`participants`  para comprender cómo navegar entre pestañas.
 
 .. _viewing-medical-evaluation:
 
-Viewing Medical Evaluation
+Visualización de la evaluación médica
 ``````````````````````````
 
 .. image:: ../../_img/participant_medical_evaluation_view.png
 
-In this screen you can see a list, sorted by date, where each line represents a medical evaluation registered for the participant. Each line shows the date and responsible of the evaluation. To see details about the medical evaluation, namely diagnosis and exams, click on the magnifying glass button.
+En esta pantalla se puede ver una lista, ordenada por fecha, donde cada línea representa una evaluación médica registrada para el participante. Cada línea muestra la fecha y el responsable de la evaluación. Para ver detalles sobre la evaluación médica, es decir, el diagnóstico y los exámenes, haga clic en el botón de la lupa.
 
 .. image:: ../../_img/participant_medical_evaluation_view_diag_exam.png
 
-You can click each exam link in order to see exam details, that contains the following information:
+Puede hacer clic en cada enlace del examen para ver los detalles del examen, que contiene la siguiente información:
 
-* Date;
-* Performed in (Place where exam was held in);
-* Description;
-* CRM (Doctor ID on a Brazilian Regional Council of Medicine);
-* Doctor's name; and
-* Attachments - files with information about the exam (Results).
+* Fecha;
+* Realizado en (Lugar donde se realizó el examen);
+* Descripción;
+* CRM (Doctor ID en un Consejo Regional Brasileño de Medicina);
+* Nombre del médico; y
+* Archivos adjuntos - archivos con información sobre el examen (Resultados).
 
 .. image:: ../../_img/participant_medical_evaluation_view_exam.png
 
-You can click on the |download icon| icon to download the attached file.
+Puede clickar en |download icon| Para descargar el archivo adjunto.
 
 .. |download icon| image:: ../../_img/download_icon.png
 
 .. _creating-and-editing-medical-evaluation:
 
-Creating and Editing Medical Evaluation
+Creación y edición de evaluaciones médicas
 ```````````````````````````````````````
 
-Clicking `Edit` button enters the :ref:`edition mode <creating-and-editing-a-participant>` and allows the creation of a new medical evaluation. Unless for the bottom buttons, the behavior of this edition is the same as `Viewing Medical Evaluation`_ and it does not allow changing the data. 
+Clickando `Edit`  entra al :ref:`modo de edición <creating-and-editing-a-participant>` y permite la creación de una nueva evaluación médica. A menos que sea por los botones inferiores, el comportamiento de esta edición es el mismo que `Viewing Medical Evaluation`_ y no permite cambiar los datos. 
 
 .. image:: ../../_img/participant_medical_evaluation_edit.png
 
 .. _including-a-new-diagnosis:
 
-Including a New Diagnosis
+Incluyendo un nuevo diagnóstico
 `````````````````````````
 
-You have to have the right :ref:`permissions` to add a new medical evaluation. 
+Tienes que tener el derecho :ref:`permissions` para agregar una nueva evaluación médica. 
 
-When you click `Add new medical evaluation` button, you'll see the following:
+Al hacer clic en `Add new medical evaluation` , verás lo siguiente:
 
 .. image:: ../../_img/participant_medical_evaluation_edit_diag_exam.png
 
-In order to include a diagnosis, you must type at least three characters of the word and will see a list of possible diagnosis, where you can click the correct link. Or you can type the corresponding ICD-10 code and then click on it.
+Para incluir un diagnóstico, debe escribir al menos tres caracteres de la palabra y verá una lista de posibles diagnósticos, donde puede hacer clic en el enlace correcto. O puede escribir el código ICD-10 correspondiente y luego hacer clic en él.
 
 .. image:: ../../_img/participant_medical_evaluation_edit_list_diag.png
 
-The more letters you type, the more specific the suggestion list will be.
+Cuantas más letras escriba, más específica será la lista de sugerencias.
 
-After selecting one of the suggestions, the diagnosis is shown.
+Después de seleccionar una de las sugerencias, se muestra el diagnóstico.
 
 .. image:: ../../_img/participant_medical_evaluation_edit_choose_diag.png
 
-You can include as many diagnoses as necessary.
+Puede incluir tantos diagnósticos como sea necesario.
 
 .. _deleting-the-selected-diagnosis:
 
-Deleting the Selected Diagnosis
+Eliminación del diagnóstico seleccionado
 ```````````````````````````````
 
-If you choose to delete a diagnosis, a pop-up will be shown asking your confirmation.
+Si elige eliminar un diagnóstico, se mostrará una ventana emergente solicitando su confirmación.
 
 .. image:: ../../_img/participant_medical_evaluation_edit_del_diag.png
 
 .. _including-diagnosis-details:
 
-Including Diagnosis Details
+Incluyendo detalles de diagnóstico
 ```````````````````````````
 
-Clicking the Details link, a new pop-up window shows up, allowing you to include information in the optional Observation and Date text fields.
+Al hacer clic en el enlace Detalles, aparece una nueva ventana emergente que le permite incluir información en los campos de texto opcionales Observación y Fecha.
 
 .. image:: ../../_img/participant_medical_evaluation_edit_diag_details.png
 
-After saving, the provided information is shown in the left side of the diagnosis section.
+Después de guardar, la información proporcionada se muestra en el lado izquierdo de la sección de diagnóstico.
 
 .. image:: ../../_img/participant_medical_evaluation_show_diag_details.png
 
 .. including-a-new-exam:
 
-Including a New Exam
+Inclusión de un nuevo examen
 ````````````````````
 
-Click the `Add new Exam` button to include exam information related to the selected diagnosis, and enter the following information: 
+Clickar `Add new Exam` para incluir información del examen relacionada con el diagnóstico seleccionado e introduzca la siguiente información: 
 
-* Date (obligatory);
-* Performed in (place where exam was made);
-* Description (obligatory);
-* CRM (Doctor's ID);
-* Doctor's name; and
-* Attachments - files with information about the exam (results) (obligatory).
+* Fecha (obligatoria);
+* Realizado en (lugar donde se realizó el examen);
+* Descripción (obligatoria);
+* CRM (Identificación del médico);
+* Nombre del médico; y
+* Archivos adjuntos - archivos con información sobre el examen (resultados) (obligatorio).
 
 .. image:: ../../_img/participant_medical_evaluation_new_exam.png
 
-Click on `Choose File` to choose the file with information about the exam. Click on the `Open` button to select the file.
+Clickar `Choose File` para elegir el archivo con información sobre el examen. Haga clic en el botón `Open` para seleccionar el archivo.
 
 .. image:: ../../_img/participant_medical_evaluation_exam_file.png
 
-You will see the name of file close to the button. 
+Verá el nombre del archivo cerca del botón. 
 
 .. image:: ../../_img/participant_medical_evaluation_exam_file_included.png
 
-Click the `Save` button at the bottom right of the page to include the file as an attachment. A message to confirm the file attachment is presented (in green, on the top right of the screen) and the file will be inserted into the attachment area. You can include as many files as necessary.
+Haga Click en `Save` en la parte inferior derecha de la página para incluir el archivo como archivo adjunto. Se presenta un mensaje para confirmar el archivo adjunto (en verde, en la parte superior derecha de la pantalla) y el archivo se insertará en el área de archivos adjuntos. Puede incluir tantos archivos como sea necesario.
 
 .. image:: ../../_img/participant_medical_evaluation_exam_file_attached.png
 
-Now you can either download the file (by clicking the |download icon| icon)  or delete it (by clicking the |delete icon| icon).
+Ahora puede descargar el archivo (haciendo clic en el botón |download icon| icon)  o elimínelo (haciendo clic en el botón |delete icon| ).
 
 .. |delete icon| image:: ../../_img/delete_icon.png
 
-To go back to the page of the diagnosis you may click in the `Back` button. There you will see the attached exam.
+Para volver a la página del diagnóstico, puede hacer clic en el botón `Back` . Allí verás el examen adjunto.
 
 .. image:: ../../_img/participant_medical_evaluation_show_exam.png
 
-You can include more exams if necessary.
+Puede incluir más exámenes si es necesario.
 
-.. note:: It is important to note that, once you click `Finalize evaluation`, you will not to be able to edit information again. So, pay attention to this, and only click that button when you are really sure about the diagnosis and exams you entered.
+.. nota:: Es importante tener en cuenta que, una vez que haga clic en 'Finalizar evaluación', no podrá volver a editar la información. Por lo tanto, preste atención a esto y solo haga clic en ese botón cuando esté realmente seguro sobre el diagnóstico y los exámenes que ingresó.

@@ -1,0 +1,146 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-29 03:10-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: plugin/templates/plugin/send_to_plugin.html:28
+msgid "Home"
+msgstr "Início"
+
+#: plugin/templates/plugin/send_to_plugin.html:29
+#: plugin/templates/plugin/send_to_plugin.html:56
+msgid "Plugin"
+msgstr ""
+
+#: plugin/templates/plugin/send_to_plugin.html:30
+msgid "Participants selection"
+msgstr "Selección de participantes"
+
+#: plugin/templates/plugin/send_to_plugin.html:72
+msgid "Questionnaires data to be sent"
+msgstr "Datos del cuestionario que se enviarán"
+
+#: plugin/templates/plugin/send_to_plugin.html:77
+msgid ""
+"Questionnaire title for Unified Admission Assessment not available in en"
+msgstr ""
+"El título del cuestionario de evaluación de entrada no está disponible en "
+"español"
+
+#: plugin/templates/plugin/send_to_plugin.html:82
+msgid "Questionnaire title for Surgical Assessment not available in en"
+msgstr ""
+"El título del cuestionario de evaluación quirúrgica no está disponible en "
+"español"
+
+#: plugin/templates/plugin/send_to_plugin.html:88
+msgid "Questionnaire title for Follow-Up Assessment not available in en"
+msgstr ""
+"El título del cuestionario de evaluación de seguimiento no está disponible "
+"en español"
+
+#: plugin/templates/plugin/send_to_plugin.html:107
+msgid "Per Experiment"
+msgstr "Por Experimento"
+
+#: plugin/templates/plugin/send_to_plugin.html:111
+#, fuzzy
+#| msgid "Participants selection"
+msgid "Filters selection"
+msgstr "Selección de participantes"
+
+#: plugin/templates/plugin/send_to_plugin.html:115
+msgid "Experiments"
+msgstr "Experimentos"
+
+#: plugin/templates/plugin/send_to_plugin.html:129
+#: plugin/templates/plugin/send_to_plugin.html:214
+msgid "List of participants"
+msgstr "Lista de participantes"
+
+#: plugin/templates/plugin/send_to_plugin.html:138
+#: plugin/templates/plugin/send_to_plugin.html:218
+msgid "Participants available:"
+msgstr "Participantes disponibles:"
+
+#: plugin/templates/plugin/send_to_plugin.html:164
+#: plugin/templates/plugin/send_to_plugin.html:246
+msgid "Participants chosen:"
+msgstr "Participantes escogidos:"
+
+#: plugin/templates/plugin/send_to_plugin.html:191
+#: plugin/templates/plugin/send_to_plugin.html:272
+msgid "Send"
+msgstr "Enviar"
+
+#: plugin/templates/plugin/send_to_plugin.html:209
+msgid "Per Participant"
+msgstr "Por Participante"
+
+#: plugin/templates/plugin/send_to_plugin.html:279
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: plugin/tests/test_views.py:347 plugin/views.py:248 plugin/views.py:289
+msgid "Could not open zip file to send to Forest Plugin"
+msgstr "No se puede abrir el archivo zip para enviarlo al Plugin Floresta"
+
+#: plugin/tests/test_views.py:364 plugin/views.py:408
+msgid "Data from questionnaires was sent to Forest Plugin"
+msgstr "Los datos de los cuestionarios se enviaron al Plugin Floresta"
+
+#: plugin/tests/test_views.py:379 plugin/views.py:260
+msgid "Please select at least Gender participant attribute"
+msgstr "Seleccione al menos el atributo de género del participante"
+
+#: plugin/tests/test_views.py:394 plugin/views.py:254
+#, fuzzy
+#| msgid "Please, select a patient field from the list."
+msgid "Please select at least one patient"
+msgstr "Por favor, seleccione una opción de la lista."
+
+#: plugin/tests/test_views.py:410 plugin/views.py:263
+msgid "The Floresta Plugin needs to send at least Gender attribute"
+msgstr ""
+"El Plugin Floresta debe enviar al menos el atributo de género del "
+"participante"
+
+#: plugin/tests/test_views.py:530 plugin/tests/test_views.py:549
+#: plugin/tests/test_views.py:568 plugin/tests/test_views.py:588
+#: plugin/tests/test_views.py:607 plugin/tests/test_views.py:626
+#: plugin/tests/test_views.py:645 plugin/tests/test_views.py:664
+#: plugin/tests/test_views.py:682 plugin/views.py:226 plugin/views.py:234
+#: plugin/views.py:271 plugin/views.py:279
+msgid ""
+"Error: some thing went wrong consuming LimeSurvey API. Please try again. If "
+"problem persists please contact System Administrator."
+msgstr ""
+"Error: se produjo un error al consumir la API de LimeSurvey. Por favor "
+"nténtalo de nuevo. Si el problema persiste, comuníquese con el administrador "
+"del sistema."
+
+#~ msgid "Additional info"
+#~ msgstr "Informação adicional"
+
+#~ msgid "Please, select a patient field from the list."
+#~ msgstr "Por favor, selecione uma opção da lista."
+
+#~ msgid ""
+#~ "* use ctrl-click to select more than one field. (command-click on Mac)"
+#~ msgstr ""
+#~ "* use o botão Ctrl para selecionar mais de um campo. (command no Mac)"

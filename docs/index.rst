@@ -1,38 +1,43 @@
+.. Documentacion NES documentation master file, created by
+   sphinx-quickstart on Fri Sep 24 11:53:54 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
 .. qdc documentation master file, created by
    sphinx-quickstart on Fri May 18 13:06:54 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-NeuroMat Neuroscience Experiments System (NES)
+Neuroscience Experiments System (NES)
 ==============================================
-`NeuroMat <http://neuromat.numec.prp.usp.br>`_ presents the Neuroscience Experiments System (NES), a software to manage data from neuroscience experiments. NES is a web­based system developed within the NeuroMat project  that provides facilities to record data and metadata from each step of a neuroscience experiment in a secure and user friendly platform. It was developed to assist researchers in their data collecting routine throughout a neuroscience experiment, integrating data records from different types such as clinical, electrophysiological, imaging, and behavioral. Furthermore, it provides a unified repository (database) for the experimental data of an entire research laboratory, group, or project. Its web interface and modular format provide an intuitive use of its data management functionalities. Its use does not depend on any specific knowledge on informatics.
+* Neuroscience Experiments System* (NES), un software diseñado para gestionar datos de experimentos de neurociencia. NES proporciona recursos para registrar datos y metadatos de cada paso de un experimento de neurociencia en una plataforma segura y fácil de usar. Fue desarrollado para ayudar a los investigadores en su rutina de recolección de datos a lo largo de un experimento de neurociencia, integrando registros de datos de diferentes tipos, como clínicos, electrofisiológicos, de imágenes y de comportamiento. Además, proporciona un repositorio unificado (base de datos) para los datos experimentales de todo un laboratorio, grupo o proyecto de investigación. Su interfaz web y su formato modular proponen un uso intuitivo de las funcionalidades de gestión de datos. Su uso no depende de ningún conocimiento específico sobre informática.
 
-Features
+Caracteristicas
 --------
-- NES allows to register the experimental protocol in a textual format.
-- Various type of experiment data and metadata can be stored at each step of the experimental protocol.
-- This NES database is not public use. NES is installed in a laboratory computer machine that is controlled and managed by the laboratory.
-- NES allows to export all data and metadata of the experiments which it stores. 
-- Any experiment registered in NES can be sent to NeuroMat Open Database to be made publicly available.
+- NES permite registrar el protocolo experimental en formato textual.
+- Es posible almacenar varios tipos de datos y metadatos del experimento en cada paso del protocolo experimental.
+- La base de datos de NES no es de uso público. NES se instala en una máquina informática de laboratorio que es controlada y gestionada por el mismo laboratorio.
+- NES permite exportar todos los datos y metadatos de los experimentos que almacena. 
+- Cualquier experimento registrado en NES podría eventualmente ser enviado una base de datos abierta para ser puesto a disposición del público.
 
-Integration with the NeuroMat Open Database
+Integración con base de datos abierta
 -------------------------------------------
-Installations of NES can send experiment data to the NeuroMat Open Database where the experiments will be made publicly available.
-Through NES, a researcher will be able to send the data and metadata	 of his/her experiments to the NeuroMat Open Database.  
-The data is anonymized before being sent from NES to the Open Database; no sensitive data leaves NES or is stored in the Open Database. When a new dataset of an experiment arrives at the Open Database, it will be evaluated by a curatorial committee. The committee will analyze if the dataset is appropriate for publication on the NeuroMat Open Database. The researcher will be notified of the status of his/her data submission. After approval, the dataset will be made publicly available on the NeuroMat Open Database web portal.
-Researchers that don’t have NES installation can send the data and metadata of his/her experiments to the NeuroMat Open Database through REST API. For more information go to `<http://neuromatdb.numec.prp.usp.br/api/docs/>`_.
+Los recursos de NES pueden enviar datos de experimentos a una base de datos abierta, donde los experimentos podrían eventualmente ser puestos a disposición del público.
+A través de NES, un investigador podrá enviar los datos y metadatos de sus experimentos a una Base de Datos Abierta.  
+Los datos se anonimizan antes de ser enviados desde NES a una base de datos; ningún dato confidencial sale de NES ni se almacena en la base de datos . Cuando un nuevo conjunto de datos de un experimento llega a la Base de Datos , será evaluado por un comité curatorial. El comité analizará si el conjunto de datos es apropiado para su publicación en la base de datos. El investigador será notificado del estado de su envío de datos.
+Los investigadores que no tienen instalación de NES pueden enviar los datos y metadatos de sus experimentos a la base de datos.
 
-:ref:`how-to-send-experiment-data-from-nes`
+.. :ref:`how-to-send-experiment-data-from-nes`
 
-Documentation
+Documentación
 -------------
-The Research, Innovation and Dissemination Center for Neuromathematics (CEPID NeuroMat) software development team works continually on the development of Neuroscience Experiments System (NES), an open-source tool to organize, control and manage clinical, neurophysiological and experimental data gathered in hospitals and research institutions.
+El equipo de desarrollo de software trabaja continuamente en el desarrollo del Sistema de Experimentos de Neurociencia (NES), una herramienta de código abierto para organizar, controlar y gestionar datos clínicos, neurofisiológicos y experimentales recopilados en hospitales e instituciones de investigación.
 
-This documentation is divided in 6 parts:
+Este documento está dividido en 3 partes:
 
 .. toctree::
    :maxdepth: 1
-   :caption: Installation
+   :caption: Instalación
    :titlesonly:
 
    installation/installationtutorial
@@ -58,12 +63,12 @@ This documentation is divided in 6 parts:
    :caption: NeuroMat Open Database
    :titlesonly:
 
-   neuromatODb/neuromatodb
+..   neuromatODb/neuromatodb
    neuromatODb/sendexperimentdata
 
 .. toctree::
    :maxdepth: 1
-   :caption: User Guide
+   :caption: Guía de Usuario
    :titlesonly:
 
    userguide/userguide
@@ -78,24 +83,18 @@ This documentation is divided in 6 parts:
    userguide/search
    userguide/permissions
 
-.. toctree::
-   :maxdepth: 1
-   :caption: For Developers
-   :titlesonly:
-   
-   developers/tests
 
 .. toctree::
    :maxdepth: 1
    :caption: Videos
    :titlesonly:
 
-   videos/videos
+..   videos/videos
 
 .. toctree::
    :maxdepth: 1
    :caption: Training
    :titlesonly:
 
-   training/training
+..   training/training
 

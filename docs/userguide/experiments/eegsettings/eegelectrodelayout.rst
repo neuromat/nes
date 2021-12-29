@@ -1,37 +1,37 @@
 .. _eeg-electrode-layout-settings:
 
-EEG Electrode Layout Settings
+Configuración del diseño del electrodo EEG
 =============================
 
-The electrode layout setting involve the information related to the electrode configuration used in the acquisition of EEG raw data.
+La configuración del diseño del electrodo implica la información relacionada con la configuración del electrodo utilizada en la adquisición de datos brutos de EEG.
 
-Electrode net setting
+Ajuste de la red de electrodos
 ---------------------
 
-This tab allows to register information about the electrode system used in the acquisition of EEG raw data. 
-- :ref:`manufacturer`: the manufacturer of the electrode system used in the current experiment.
-- :ref:`Equipment identification <eeg-electrode-net-cap>`: the name of the electrode net used in this experiment.
-- :ref:`eeg-electrode-localization-system`: the system of the physical placement and designations of electrodes on the scalp. This system can be standardized (ex. International Federation in Electroencephalography and Clinical Neurophysiology) such as 10-20 system, 10-10 system, 10-5 system or can be a proprietary design of a specific manufacturer.
+Esta pestaña permite registrar información sobre el sistema de electrodos utilizado en la adquisición de datos brutos de EEG. 
+- :ref:`manufacturer`: el fabricante del sistema de electrodos utilizado en el experimento actual.
+- :ref:`Equipment identification <eeg-electrode-net-cap>`: el nombre de la red de electrodos utilizada en este experimento.
+- :ref:`eeg-electrode-localization-system`: el sistema de colocación física y las designaciones de electrodos en el cuero cabelludo. Este sistema puede ser estandarizado (por ejemplo, Federación Internacional en Electroencefalografía y Neurofisiología Clínica) como el sistema 10-20, el sistema 10-10, el sistema 10-5 o puede ser un diseño patentado de un fabricante específico.
 
-.. note:: If the wanted manufacturer, identification and/or the electrode localization system do not exist, they should be added in the :ref:`equipment-set-up` module.
+.. nota:: Si el fabricante deseado, la identificación y / o el sistema de localización de electrodos no existen, deben agregarse en el modulo :ref:`equipment-set-up` .
 
 .. image:: ../../../_img/eeg_electrode_layout_settings.png
 
-Electrode position setting
+Ajuste de la posición del electrodo
 --------------------------
 
-In this tab is possible to see the image map of the electrode system selected. In the right side of the page is shown the electrode positions used in the experiment. The positions are labeled with the reference name of the system selected.  
-In the editing mode is possible to change the electrode position used by clicking in the check box to enable or disable the position selected. The image map will change showing the choices done. 
+En esta pestaña es posible ver el mapa de imagen del sistema de electrodos seleccionado. En el lado derecho de la página se muestran las posiciones de los electrodos utilizadas en el experimento. Las posiciones se etiquetan con el nombre de referencia del sistema seleccionado.  
+En el modo de edición es posible cambiar la posición del electrodo utilizado haciendo clic en la casilla de verificación para activar o desactivar la posición seleccionada. El mapa de la imagen cambiará mostrando las opciones realizadas. 
 
-.. note:: If the wanted image map to not exist, this should be added in the :ref:`equipment-set-up` module in the item Electrode Localization System. 
+.. nota:: Si el mapa de imagen deseado no existe, debe agregarse en el modulo :ref:`equipment-set-up` en el elemento Sistema de localización de electrodos. 
 
 .. image:: ../../../_img/eeg_electrode_position.png
 
-Electrode model setting
+Ajuste del modelo de electrodo
 -----------------------
 
-This tab shows a list with the electrode positions and the model of electrode used in each position. In the editing mode is possible change the model of a specific electrode.
+Esta pestaña muestra una lista con las posiciones de los electrodos y el modelo de electrodo utilizado en cada posición. En el modo de edición es posible cambiar el modelo de un electrodo específico.
 
-.. note:: If the wanted electrode model does not exist, this should be added in the :ref:`equipment-set-up` module in the item :ref:`electrode-model`.
+.. nota:: Si el modelo de electrodo deseado no existe, este debe agregarse en el modulo :ref:`equipment-set-up`  en el item :ref:`electrode-model`.
 
 .. image:: ../../../_img/eeg_electrode_model_settings.png
