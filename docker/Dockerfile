@@ -17,14 +17,14 @@ RUN apk update && \
 	ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 ARG NES_TAG=unset
-ARG NES_BRANCH=unset
+ARG NES_BRANCH="dev"
 ARG NES_DIR=/nes
 ENV NES_DIR=$NES_DIR
 
 RUN mkdir -p "$NES_DIR"  && \
 		if [ "$NES_TAG" != "unset" ]; then \
 			echo Cloning tag "$NES_TAG" ;\
-			wget https://github.com/neuromat/nes/archive/TAG-"${NES_TAG}".tar.gz -qO - | \
+			wget https://github.com/mcostat/nes/archive/TAG-"${NES_TAG}".tar.gz -qO - | \
 				tar xzv --strip-components=1 -C "$NES_DIR" ;\
 			sed -i 's/\(psycopg2==\)[0-9.]\+/\12.7.5/' /nes/patientregistrationsystem/qdc/requirements.txt ;\
 			sed -i '1isetuptools>=40.6.3' /nes/patientregistrationsystem/qdc/requirements.txt ;\
@@ -33,10 +33,10 @@ RUN mkdir -p "$NES_DIR"  && \
 			echo '-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"' >> /nes/patientregistrationsystem/qdc/requirements.txt ;\
 		elif [ "$NES_BRANCH" != "unset" ]; then \
 			echo Cloning "$NES_BRANCH" branch ;\
-			git clone -j $(nproc) -b "$NES_BRANCH"  https://github.com/neuromat/nes.git "$NES_DIR" ;\
+			git clone -j $(nproc) -b "$NES_BRANCH"  https://github.com/mcostat/nes.git "$NES_DIR" ;\
 		else \
 			echo Cloning master branch ;\
-			git clone -j $(nproc) https://github.com/neuromat/nes.git "$NES_DIR" ;\
+			git clone -j $(nproc) https://github.com/mcostat/nes.git "$NES_DIR" ;\
 		fi
 
 RUN mkdir -p /wheels/requirement && \
