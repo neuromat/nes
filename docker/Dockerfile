@@ -1,4 +1,4 @@
-FROM python:3.8-alpine3.12 as wheeler
+FROM python:3.8-alpine3.18 as wheeler
 ENV PYTHONUNBUFFERED=1
 
 
@@ -8,7 +8,7 @@ RUN apk update && \
 		freetype-dev \
 		build-base \
 		git \
-		# The limesurvey version compatible with NES isn't compatible with Postgresql11+ \\
+		# The limesurvey version compatible with NES isn't compatible with Postgresql11+ \
 		postgresql-bdr-dev \
 		openblas-dev \
 		libjpeg-turbo-dev \
@@ -48,39 +48,40 @@ RUN pip3 install -U pip setuptools wheel && \
 	pip3 install -r requirement/requirements.txt && \
 	pip3 wheel -r requirement/requirements.txt
 
-FROM alpine:3.12
+FROM alpine:3.18
 
 SHELL ["/bin/sh","-exc"]
 
+
 RUN apk update && \
 	apk add --no-cache \
-		# Postgresql 9, due to LS incompatbilities \\
+		# Postgresql 9, due to LS incompatbilities
 		postgresql-bdr \
 		postgresql-bdr-client \
-		# limesurvey - apache2  \\
+		# limesurvey - apache2
 		apache2 \
-		# limesurvey - php  \\
-		php7 \
-		php7-apache2 \
-		php7-ctype \
-		php7-gd \
-		php7-imap \
-		php7-json \
-		php7-ldap \
-		php7-mbstring \
-		php7-pdo_pgsql \
-		php7-session \
-		php7-simplexml \
-		php7-xml \
-		php7-zip \
-		# git to clone and update nes  \\
+		# limesurvey - php
+		php \
+		php-apache2 \
+		php-ctype \
+		php-gd \
+		php-imap \
+		php-json \
+		php-ldap \
+		php-mbstring \
+		php-pdo_pgsql \
+		php-session \
+		php-simplexml \
+		php-xml \
+		php-zip \
+		# git to clone and update nes
 		git \
-		# python to run django \\
+		# python to run django
 		python3 \
 		py3-pip \
-		# supervisord  \\
+		# supervisord
 		supervisor \
-		# nes dependencies \\
+		# nes dependencies
 		graphviz \
 		openblas-dev \
 		hdf5-dev && \
