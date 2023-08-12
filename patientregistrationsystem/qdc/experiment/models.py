@@ -1034,7 +1034,7 @@ class ComponentConfiguration(models.Model):
     order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
 
     # This is null when the parent is a parallel block.
-    random_position = models.NullBooleanField(blank=True)
+    random_position = models.BooleanField(blank=True)
 
     requires_start_and_end_datetime = models.BooleanField(default=False)
 

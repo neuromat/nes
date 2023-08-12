@@ -2220,7 +2220,7 @@ class ExportExecution:
 
                             if emg_setting_description:
                                 filename, extension = EMG_SETTING_FILENAME.split('.')
-                                # Path ex. data/Experiment_data/Group_xxxx/emg_setting_description.txt 
+                                # Path ex. data/Experiment_data/Group_xxxx/emg_setting_description.txt
                                 complete_setting_filename = path.join(path_per_emg_data, EMG_SETTING_FILENAME)
                                 self.files_to_zip_list.append([
                                     complete_setting_filename, export_emg_data_directory,
@@ -2338,13 +2338,13 @@ class ExportExecution:
                                 export_goalkeeper_game_directory = path.join(participant_export_directory,
                                                                              directory_step_name)
 
-                                # To create Game_digital_dataData directory 
+                                # To create Game_digital_dataData directory
                                 directory_data_name = goalkeeper_game_data['digital_game_data_directory']
 
                                 path_per_goalkeeper_game_data = path.join(
                                     path_goalkeeper_game_data, directory_data_name)
                                 if not path.exists(path_per_goalkeeper_game_data):
-                                    # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123 
+                                    # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                                     #  /Step_X_aaa/GoalkeeperDATA_
                                     error_msg, path_per_goalkeeper_game_data = create_directory(
                                         path_goalkeeper_game_data, directory_data_name)

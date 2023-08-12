@@ -9,7 +9,7 @@ class Survey(models.Model):
     is_initial_evaluation = models.BooleanField(default=True)
     pt_title = models.CharField(null=True, max_length=255, default=None)
     en_title = models.CharField(null=True, max_length=255, default=None)
-    is_active = models.NullBooleanField(default=None)
+    is_active = models.BooleanField(null=True)
 
     def __str__(self):
         if self.en_title:
@@ -19,8 +19,8 @@ class Survey(models.Model):
         else:
             return self.code
 
-    class Meta:
-        permissions = (("view_survey", "Can view survey"),)
+    #class Meta:
+    #    permissions = (("view_survey", "Can view survey"),)
 
     def save(self, *args, **kwargs):
         if not self.pk:
