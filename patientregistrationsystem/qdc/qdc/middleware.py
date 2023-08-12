@@ -1,11 +1,11 @@
 from django.urls import reverse
-
+from django.utils.deprecation import MiddlewareMixin
 from custom_user.models import UserProfile
 import re
 from django.shortcuts import redirect
 
 
-class PasswordChangeMiddleware:
+class PasswordChangeMiddleware(MiddlewareMixin):
 
     @staticmethod
     def process_request(request):

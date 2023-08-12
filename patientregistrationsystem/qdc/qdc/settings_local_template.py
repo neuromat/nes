@@ -23,6 +23,7 @@ DATABASES = {
         'USER': 'user',
         'PASSWORD': 'password',
         'HOST': 'localhost',
+        'PORT': '5432', # default port
     }
 }
 

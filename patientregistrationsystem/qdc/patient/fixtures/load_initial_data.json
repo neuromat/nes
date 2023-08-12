@@ -271,9 +271,9 @@
   },
   {
     "fields": {
-      "name_pt_br": "Igreja de Jesus Cristo dos Santos dos \u00daltimos Dias",
-      "name_en": "The Church of Jesus Christ of Latter-day Saints",
-      "name": "Igreja de Jesus Cristo dos Santos dos \u00daltimos Dias"
+      "name_pt_br": "Igreja de JC dos Santos dos \u00daltimos Dias",
+      "name_en": "The Church of JC of Latter-day Saints",
+      "name": "Igreja de JC dos Santos dos \u00daltimos Dias"
     },
     "model": "patient.religion",
     "pk": 6
