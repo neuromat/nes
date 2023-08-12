@@ -8,13 +8,13 @@ from operator import itemgetter
 from django.contrib import messages
 from django.contrib.auth import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.core.cache import cache
 
 from experiment.models import Subject, SubjectOfGroup, \
@@ -667,7 +667,7 @@ def search_patients_ajax(request):
                 patient_list = \
                     Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
-    return render_to_response('patient/ajax_search.html', {'patients': patient_list})
+    return render(None, 'patient/ajax_search.html', {'patients': patient_list})
 
 
 @login_required
@@ -684,7 +684,7 @@ def patients_verify_homonym(request):
         else:
             patient_homonym = ''
 
-    return render_to_response('patient/ajax_homonym.html', {'patient_homonym': patient_homonym})
+    return render(None, 'patient/ajax_homonym.html', {'patient_homonym': patient_homonym})
 
 
 @login_required
@@ -701,7 +701,7 @@ def patients_verify_homonym_excluded(request):
         else:
             patient_homonym_excluded = ''
 
-    return render_to_response('patient/ajax_homonym.html', {'patient_homonym_excluded': patient_homonym_excluded})
+    return render(None, 'patient/ajax_homonym.html', {'patient_homonym_excluded': patient_homonym_excluded})
 
 
 @login_required
@@ -720,7 +720,7 @@ def search_cid10_ajax(request):
                 Q(description__icontains=search_text) |
                 Q(code__icontains=search_text)).order_by("code")
 
-        return render_to_response(
+        return render(None,
             'patient/ajax_cid10.html', {
                 'cid_10_list': cid_10_list,
                 'medical_record': medical_record,

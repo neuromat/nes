@@ -2,10 +2,10 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from custom_user.forms import InstitutionForm, UserForm, UserFormUpdate, UserProfileForm, ResearcherForm
 from custom_user.models import Institution, UserProfile

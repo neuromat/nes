@@ -4,8 +4,8 @@ from unittest.mock import patch
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse
+from django.utils.translation import gettext as _
+from django.urls import reverse
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from os import mkdir, remove, path

@@ -5,10 +5,10 @@ import platform
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.translation import activate, LANGUAGE_SESSION_KEY, ugettext as _
+from django.utils.translation import activate, gettext as _
 from django.utils.safestring import mark_safe
 from git import Repo
 import pip
@@ -57,7 +57,7 @@ def contact(request):
 def language_change(request, language_code):
 
     activate(language_code)
-    request.session[LANGUAGE_SESSION_KEY] = language_code
+    request.session['_language'] = language_code
 
     return HttpResponseRedirect(request.GET['next'])
 

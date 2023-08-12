@@ -16,7 +16,7 @@ from django.core.files import File
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count, Q
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from base64 import b64encode, b64decode
 
 from experiment.models import Group, ResearchProject, Experiment, \

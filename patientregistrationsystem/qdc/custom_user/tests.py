@@ -5,13 +5,13 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages import get_messages
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.urlresolvers import reverse, resolve
+from django.urls import reverse, resolve
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils.http import int_to_base36
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from custom_user.models import User, UserProfile, Institution
 from custom_user.tests_helper import create_user

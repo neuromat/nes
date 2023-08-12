@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.messages import get_messages
-from django.core.urlresolvers import reverse, resolve
+from django.urls import reverse, resolve
 from django.utils.translation import gettext_lazy as _
 from django.test import override_settings
 

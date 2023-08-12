@@ -6,10 +6,10 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core import serializers
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.translation import ugettext as ug_, ugettext_lazy as _
+from django.utils.translation import gettext as ug_, ugettext_lazy as _
 from django.db.models import Q
 
 from datetime import datetime
