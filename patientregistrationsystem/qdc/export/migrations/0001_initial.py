@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('date', models.DateTimeField(auto_now_add=True)),
                 ('input_file', models.FileField(max_length=1000, upload_to=export.models.get_export_dir)),
                 ('output_export', models.FileField(max_length=1000, upload_to=export.models.get_export_dir)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

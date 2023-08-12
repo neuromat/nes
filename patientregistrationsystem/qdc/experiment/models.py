@@ -63,12 +63,12 @@ class ResearchProject(models.Model):
     def __str__(self):
         return self.title
 
-    class Meta:
+    '''class Meta:
         permissions = (
             ("view_researchproject", "Can view research project"),
             ("change_researchproject_from_others", "Can change research project created by others"),
             ("change_researchproject_owner", "Can change research project owner"),
-        )
+        )'''
 
 
 def get_experiment_dir(instance, filename):
@@ -1216,9 +1216,9 @@ class QuestionnaireResponse(DataCollection):
     history = HistoricalRecords()
     is_completed = models.CharField(max_length=50, default='')
 
-    class Meta:
+    '''class Meta:
         permissions = (
-            ('view_questionnaireresponse', 'Can view questionnaire response'),)
+            ('view_questionnaireresponse', 'Can view questionnaire response'),)'''
 
     @property
     def _history_user(self):

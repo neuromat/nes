@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='component',
             name='experiment',
-            field=models.ForeignKey(related_name='components', to='experiment.Experiment'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='components', to='experiment.Experiment'),
         ),
         migrations.AlterField(
             model_name='group',
             name='experiment',
-            field=models.ForeignKey(related_name='groups', to='experiment.Experiment'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='groups', to='experiment.Experiment'),
         ),
     ]

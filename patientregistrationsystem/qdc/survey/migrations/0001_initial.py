@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sensitivequestion',
             name='survey',
-            field=models.ForeignKey(related_name='sensitive_questions', to='survey.Survey'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='sensitive_questions', to='survey.Survey'),
         ),
         migrations.AlterUniqueTogether(
             name='sensitivequestion',
