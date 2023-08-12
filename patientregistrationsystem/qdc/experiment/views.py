@@ -38,7 +38,7 @@ from django.db.models import Q, Min
 from django.apps import apps
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render, render_to_response
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext as _
 from django.core.cache import cache
@@ -402,7 +402,7 @@ def keyword_search_ajax(request):
             keywords_included = research_project.keywords.values_list('name', flat=True)
             keywords_list_filtered = keywords_list.exclude(name__in=keywords_included).order_by('name')
 
-    return render_to_response('experiment/keyword_ajax_search.html',
+    return render(None, 'experiment/keyword_ajax_search.html',
                               {'keywords': keywords_list_filtered,
                                'offer_creation': search_text not in keywords_name_list,
                                'research_project_id': request.POST['research_project_id'],
@@ -4616,10 +4616,10 @@ def search_cid10_ajax(request):
                 | Q(code__icontains=search_text))
 
         if group_id:
-            return render_to_response(
+            return render(None,
                 'experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
         else:
-            return render_to_response(
+            return render(None,
                 'export/diagnoses.html', {'classification_of_diseases_list': cid_10_list})
 
 
@@ -9210,7 +9210,7 @@ def search_patients_ajax(request):
                     if subject.subject.patient in patient_list:
                         patient_list = patient_list.exclude(id=subject.subject.patient.id)
 
-            return render_to_response('experiment/ajax_search_patients.html',
+            return render(None, 'experiment/ajax_search_patients.html',
                                       {'patients': patient_list, 'group_id': group_id})
         else:
             if search_text:
@@ -9222,7 +9222,7 @@ def search_patients_ajax(request):
                     if subject.subject.patient in patient_list:
                         patient_list = patient_list.exclude(id=subject.subject.patient.id)
 
-            return render_to_response('experiment/ajax_search_patients_not_sensitive.html',
+            return render(None, 'experiment/ajax_search_patients_not_sensitive.html',
                                       {'patients': patient_list, 'group_id': group_id})
 
 

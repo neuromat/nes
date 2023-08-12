@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect, \
     ValidationError, Form, IntegerField, NumberInput, TimeInput, URLInput, ModelChoiceField
 from django.shortcuts import get_object_or_404
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django.utils.translation import gettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, Component, Stimulus, Block, \
@@ -279,7 +279,7 @@ class BlockForm(ModelForm):
 
 class UserFullnameChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
-        return smart_text(obj.get_full_name())
+        return smart_str(obj.get_full_name())
 
 
 class ResearchProjectOwnerForm(ModelForm):
