@@ -5,7 +5,7 @@ import random
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
@@ -349,9 +349,9 @@ class Patient(models.Model):
     medical_record = models.CharField(max_length=25, null=True, blank=True)
     date_birth = models.DateField(
         null=False, blank=False, validators=[validate_date_birth])
-    gender = models.ForeignKey(Gender, null=False, blank=False)
+    gender = models.ForeignKey(Gender, on_delete=models.CASCADE, null=False, blank=False)
     rg = models.CharField(max_length=15, null=True, blank=True)
-    marital_status = models.ForeignKey(MaritalStatus, null=True, blank=True)
+    marital_status = models.ForeignKey(MaritalStatus, on_delete=models.CASCADE, null=True, blank=True)
     country = models.CharField(
         max_length=30, choices=COUNTRIES, null=True, blank=True)
     zipcode = models.CharField(max_length=12, null=True, blank=True)
@@ -364,7 +364,7 @@ class Patient(models.Model):
     email = models.EmailField(null=True, blank=True)
     removed = models.BooleanField(null=False, default=False)
     history = HistoricalRecords()
-    changed_by = models.ForeignKey('auth.User')
+    changed_by = models.ForeignKey('auth.User', on_delete=models.CASCADE)
 
     @property
     def _history_user(self):
@@ -401,7 +401,7 @@ class Patient(models.Model):
 
 
 class Telephone(models.Model):
-    patient = models.ForeignKey(Patient)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     number = models.CharField(max_length=15)
 
     MOBILE = 'MO'
@@ -426,7 +426,7 @@ class Telephone(models.Model):
 
     # Audit trail
     history = HistoricalRecords()
-    changed_by = models.ForeignKey('auth.User')
+    changed_by = models.ForeignKey('auth.User', on_delete=models.CASCADE)
 
     @property
     def _history_user(self):
@@ -441,18 +441,18 @@ class Telephone(models.Model):
 
 
 class SocialDemographicData(models.Model):
-    patient = models.ForeignKey(Patient)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     natural_of = models.CharField(max_length=50, null=True, blank=True)
     citizenship = models.CharField(max_length=50, choices=COUNTRIES, null=True, blank=True)
-    religion = models.ForeignKey(Religion, null=True, blank=True)
+    religion = models.ForeignKey(Religion, on_delete=models.CASCADE, null=True, blank=True)
     profession = models.CharField(null=True, blank=True, max_length=50)
     occupation = models.CharField(null=True, blank=True, max_length=50)
     benefit_government = models.NullBooleanField(blank=True)
-    payment = models.ForeignKey(Payment, null=True, blank=True)
-    flesh_tone = models.ForeignKey(FleshTone, null=True, blank=True)
-    patient_schooling = models.ForeignKey(Schooling, verbose_name=_('Schooling of the patient'),
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True, blank=True)
+    flesh_tone = models.ForeignKey(FleshTone, on_delete=models.CASCADE, null=True, blank=True)
+    patient_schooling = models.ForeignKey(Schooling, on_delete=models.CASCADE, verbose_name=_('Schooling of the patient'),
                                           null=True, blank=True, related_name='patient_schooling_set')
-    schooling = models.ForeignKey(Schooling, verbose_name=_('Schooling of the householder'),
+    schooling = models.ForeignKey(Schooling, on_delete=models.CASCADE, verbose_name=_('Schooling of the householder'),
                                   null=True, blank=True)
     tv = models.IntegerField(null=True, blank=True)
     dvd = models.IntegerField(null=True, blank=True)
@@ -467,7 +467,7 @@ class SocialDemographicData(models.Model):
 
     # Changes to audit trail
     history = HistoricalRecords()
-    changed_by = models.ForeignKey('auth.User')
+    changed_by = models.ForeignKey('auth.User', on_delete=models.CASCADE)
 
     def __str__(self):
         return \
@@ -525,18 +525,18 @@ class SocialDemographicData(models.Model):
 
 
 class SocialHistoryData(models.Model):
-    patient = models.ForeignKey(Patient)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     smoker = models.NullBooleanField(blank=True)
-    amount_cigarettes = models.ForeignKey(AmountCigarettes, null=True, blank=True)
+    amount_cigarettes = models.ForeignKey(AmountCigarettes, on_delete=models.CASCADE, null=True, blank=True)
     ex_smoker = models.NullBooleanField(blank=True)
     alcoholic = models.NullBooleanField(blank=True)
-    alcohol_frequency = models.ForeignKey(AlcoholFrequency, null=True, blank=True)
-    alcohol_period = models.ForeignKey(AlcoholPeriod, null=True, blank=True)
+    alcohol_frequency = models.ForeignKey(AlcoholFrequency, on_delete=models.CASCADE, null=True, blank=True)
+    alcohol_period = models.ForeignKey(AlcoholPeriod, on_delete=models.CASCADE, null=True, blank=True)
     drugs = models.CharField(max_length=25, null=True, blank=True)
 
     # Audit trail
     history = HistoricalRecords()
-    changed_by = models.ForeignKey('auth.User')
+    changed_by = models.ForeignKey('auth.User', on_delete=models.CASCADE)
 
     @property
     def _history_user(self):
@@ -559,9 +559,9 @@ class SocialHistoryData(models.Model):
 
 
 class MedicalRecordData(models.Model):
-    patient = models.ForeignKey(Patient, null=False)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=False)
     record_date = models.DateTimeField(null=False, auto_now_add=True)
-    record_responsible = models.ForeignKey(User, null=False)
+    record_responsible = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
 
     class Meta:
         permissions = (
@@ -583,7 +583,7 @@ class ClassificationOfDiseases(models.Model):
     code = models.CharField(max_length=10, null=False)
     description = models.CharField(max_length=300, null=False)
     abbreviated_description = models.CharField(max_length=190, null=False)
-    parent = models.ForeignKey('self', null=True, related_name='children')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='children')
 
     objects = ClassificationOfDiseasesManager()
 
@@ -595,8 +595,8 @@ class ClassificationOfDiseases(models.Model):
 
 
 class Diagnosis(models.Model):
-    medical_record_data = models.ForeignKey(MedicalRecordData, null=False)
-    classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
+    medical_record_data = models.ForeignKey(MedicalRecordData, on_delete=models.CASCADE, null=False)
+    classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, on_delete=models.CASCADE, null=False)
     date = models.DateField(null=True)
     description = models.CharField(max_length=300, null=True)
 
@@ -608,7 +608,7 @@ class Diagnosis(models.Model):
 
 
 class ComplementaryExam(models.Model):
-    diagnosis = models.ForeignKey(Diagnosis, null=False, blank=False)
+    diagnosis = models.ForeignKey(Diagnosis, on_delete=models.CASCADE, null=False, blank=False)
     date = models.DateField(null=False, blank=False)
     description = models.CharField(max_length=500, null=False, blank=False)
     doctor = models.CharField(max_length=50, null=True, blank=True)
@@ -626,7 +626,7 @@ def get_user_dir(instance, filename):
 
 
 class ExamFile(models.Model):
-    exam = models.ForeignKey(ComplementaryExam, null=False)
+    exam = models.ForeignKey(ComplementaryExam, on_delete=models.CASCADE, null=False)
     content = models.FileField(upload_to=get_user_dir, null=False)
 
     def delete(self, *args, **kwargs):
@@ -635,14 +635,14 @@ class ExamFile(models.Model):
 
 
 class QuestionnaireResponse(models.Model):
-    patient = models.ForeignKey(Patient, null=False)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=False)
     survey = models.ForeignKey(Survey, null=False, on_delete=models.PROTECT)
     token_id = models.IntegerField(null=False)
     date = models.DateField(
         default=datetime.date.today, null=False,
         validators=[validate_date_questionnaire_response])
     questionnaire_responsible = models.ForeignKey(
-        User, null=False, related_name='+')
+        User, on_delete=models.CASCADE, null=False, related_name='+')
     is_completed = models.CharField(null=False, max_length=50, default='')
 
     class Meta:

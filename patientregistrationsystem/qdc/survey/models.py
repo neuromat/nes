@@ -36,7 +36,7 @@ class Survey(models.Model):
 
 
 class SensitiveQuestion(models.Model):
-    survey = models.ForeignKey(Survey, related_name='sensitive_questions')
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name='sensitive_questions')
     code = models.CharField(max_length=150)
     question = models.TextField()
 

@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 from django.core.files import File
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.test import override_settings
 from goodtables import validate

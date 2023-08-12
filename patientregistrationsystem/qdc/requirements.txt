@@ -1,12 +1,13 @@
 pip>=18.1
 setuptools>=40.6.3
+future>= 1.9.0
 
-Django==1.11.23
+django==4.1.10
 django-jenkins==0.19.0
 django-modeltranslation==0.12.2
-django-simple-history==1.9.0
+django-simple-history==3.1.1
 jsonrpc-requests==0.2
-psycopg2>=2.8,<2.9
+psycopg2>=2.9, <3.0
 pyflakes==0.9.2
 pylint==1.5.4
 pep8==1.7.0
@@ -28,11 +29,10 @@ pydot==1.2.3
 django-solo==1.1.2
 coreapi==2.3.1
 GitPython==3.0.8
-reportlab==3.4.0
+reportlab==3.6.13
 xhtml2pdf==0.2.2
 networkx==2.2
-
--e "git+https://github.com/davedash/django-fixture-magic.git#egg=django-fixture-magic"
+django-fixture-magic
 
 mne==0.17.2
 -e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
