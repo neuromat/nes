@@ -29,7 +29,7 @@ IMPEDANCE_UNIT = (
     ("ohm", _("Ohm(s)")),
     ("kilohm", _("Kilohm(s)")),
     ("megaohm", _("Megaohm(s)")),
-    ("gigaohm", _("Gigaohm(s)"))
+    ("gigaohm", _("Gigaohm(s)")),
 )
 
 
@@ -65,8 +65,11 @@ class ResearchProject(models.Model):
 
     class Meta:
         permissions = (
-            #("view_researchproject", "Can view research project"),
-            ("change_researchproject_from_others", "Can change research project created by others"),
+            # ("view_researchproject", "Can view research project"),
+            (
+                "change_researchproject_from_others",
+                "Can change research project created by others",
+            ),
             ("change_researchproject_owner", "Can change research project owner"),
         )
 
@@ -86,10 +89,14 @@ class Experiment(models.Model):
 
     source_code_url = models.URLField(null=True, blank=True)
     ethics_committee_project_url = models.URLField(
-            _('URL of the project approved by the ethics committee'), null=True, blank=True)
+        _("URL of the project approved by the ethics committee"), null=True, blank=True
+    )
     ethics_committee_project_file = models.FileField(
-        _('Project file approved by the ethics committee'),
-        upload_to=get_experiment_dir, null=True, blank=True)
+        _("Project file approved by the ethics committee"),
+        upload_to=get_experiment_dir,
+        null=True,
+        blank=True,
+    )
     last_update = models.DateTimeField(auto_now=True)
     last_sending = models.DateTimeField(null=True)
 
@@ -111,13 +118,21 @@ class Experiment(models.Model):
 
 
 class ExperimentResearcher(models.Model):
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name='researchers')
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.CASCADE, related_name="researchers"
+    )
     researcher = models.ForeignKey(User, on_delete=models.CASCADE)
     channel_index = models.IntegerField(null=True)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
         if not self.pk and not self.channel_index:
-            top = ExperimentResearcher.objects.filter(experiment=self.experiment).order_by('-channel_index').first()
+            top = (
+                ExperimentResearcher.objects.filter(experiment=self.experiment)
+                .order_by("-channel_index")
+                .first()
+            )
             self.channel_index = top.channel_index + 1 if top else 1
         super(ExperimentResearcher, self).save()
 
@@ -151,10 +166,14 @@ class Equipment(models.Model):
         ("filter", _("Filter")),
         ("eeg_electrode_net", _("EEG Electrode Net")),
         ("ad_converter", _("A/D Converter")),
-        ("tms_device", _("TMS device"))
+        ("tms_device", _("TMS device")),
     )
-    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE, related_name="set_of_equipment")
-    equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)
+    manufacturer = models.ForeignKey(
+        Manufacturer, on_delete=models.CASCADE, related_name="set_of_equipment"
+    )
+    equipment_type = models.CharField(
+        null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES
+    )
     identification = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
     serial_number = models.CharField(max_length=50, null=True, blank=True)
@@ -164,12 +183,10 @@ class Equipment(models.Model):
         return self.identification
 
     class Meta:
-        verbose_name = _('Equipment')
-        verbose_name_plural = _('Equipment')
+        verbose_name = _("Equipment")
+        verbose_name_plural = _("Equipment")
 
-        permissions = (
-            ("register_equipment", "Can register equipment"),
-        )
+        permissions = (("register_equipment", "Can register equipment"),)
 
 
 class AmplifierDetectionType(models.Model):
@@ -188,18 +205,35 @@ class TetheringSystem(models.Model):
 
 class Amplifier(Equipment):
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    number_of_channels = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    common_mode_rejection_ratio = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    input_impedance = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    input_impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
-    amplifier_detection_type = models.ForeignKey(AmplifierDetectionType, on_delete=models.CASCADE, null=True, blank=True)
-    tethering_system = models.ForeignKey(TetheringSystem, on_delete=models.CASCADE, null=True, blank=True)
+    number_of_channels = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    common_mode_rejection_ratio = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    input_impedance = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    input_impedance_unit = models.CharField(
+        null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT
+    )
+    amplifier_detection_type = models.ForeignKey(
+        AmplifierDetectionType, on_delete=models.CASCADE, null=True, blank=True
+    )
+    tethering_system = models.ForeignKey(
+        TetheringSystem, on_delete=models.CASCADE, null=True, blank=True
+    )
 
 
 class EEGSolution(models.Model):
     name = models.CharField(max_length=150)
     components = models.TextField(null=True, blank=True)
-    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE, null=False, related_name="set_of_solution")
+    manufacturer = models.ForeignKey(
+        Manufacturer,
+        on_delete=models.CASCADE,
+        null=False,
+        related_name="set_of_solution",
+    )
 
 
 class FilterType(models.Model):
@@ -242,15 +276,28 @@ class ElectrodeModel(models.Model):
     )
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
-    material = models.ForeignKey(Material, on_delete=models.CASCADE, null=True, blank=True)
-    usability = models.CharField(null=True, blank=True, max_length=50, choices=USABILITY_TYPES)
-    impedance = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
+    material = models.ForeignKey(
+        Material, on_delete=models.CASCADE, null=True, blank=True
+    )
+    usability = models.CharField(
+        null=True, blank=True, max_length=50, choices=USABILITY_TYPES
+    )
+    impedance = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    impedance_unit = models.CharField(
+        null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT
+    )
     tags = models.ManyToManyField(Tag)
-    inter_electrode_distance = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    inter_electrode_distance_unit = models.CharField(null=True, blank=True, max_length=10,
-                                                     choices=ELECTRODE_DISTANCE_UNIT)
-    electrode_configuration = models.ForeignKey(ElectrodeConfiguration, on_delete=models.CASCADE, null=True, blank=True)
+    inter_electrode_distance = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    inter_electrode_distance_unit = models.CharField(
+        null=True, blank=True, max_length=10, choices=ELECTRODE_DISTANCE_UNIT
+    )
+    electrode_configuration = models.ForeignKey(
+        ElectrodeConfiguration, on_delete=models.CASCADE, null=True, blank=True
+    )
     electrode_type = models.CharField(max_length=50, choices=ELECTRODE_TYPES)
 
     def __str__(self):
@@ -309,8 +356,12 @@ class IntramuscularElectrode(ElectrodeModel):
         ("multi", _("Multi")),
     )
     strand = models.CharField(max_length=20, choices=STRAND_TYPES)
-    insulation_material = models.ForeignKey(Material, on_delete=models.CASCADE, null=True, blank=True)
-    length_of_exposed_tip = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    insulation_material = models.ForeignKey(
+        Material, on_delete=models.CASCADE, null=True, blank=True
+    )
+    length_of_exposed_tip = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
 
     def save(self, *args, **kwargs):
         super(ElectrodeModel, self).save(*args, **kwargs)
@@ -322,45 +373,56 @@ class NeedleElectrode(ElectrodeModel):
         ("cm", _("centimeter(s)")),
     )
     size = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    size_unit = models.CharField(max_length=10, choices=SIZE_UNIT, null=True, blank=True)
-    number_of_conductive_contact_points_at_the_tip = models.IntegerField(null=True, blank=True,
-                                                                         validators=[MinValueValidator(0)])
-    size_of_conductive_contact_points_at_the_tip = models.FloatField(null=True, blank=True,
-                                                                     validators=[MinValueValidator(0)])
+    size_unit = models.CharField(
+        max_length=10, choices=SIZE_UNIT, null=True, blank=True
+    )
+    number_of_conductive_contact_points_at_the_tip = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    size_of_conductive_contact_points_at_the_tip = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
 
     def save(self, *args, **kwargs):
         super(ElectrodeModel, self).save(*args, **kwargs)
 
 
 class EEGElectrodeNet(Equipment):
-    electrode_model_default = models.ForeignKey(ElectrodeModel, on_delete=models.CASCADE)
+    electrode_model_default = models.ForeignKey(
+        ElectrodeModel, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return self.identification
 
 
 class EEGElectrodeCap(EEGElectrodeNet):
-    material = models.ForeignKey(Material, on_delete=models.CASCADE, null=True, blank=True)
+    material = models.ForeignKey(
+        Material, on_delete=models.CASCADE, null=True, blank=True
+    )
 
 
 class EEGCapSize(models.Model):
     eeg_electrode_cap = models.ForeignKey(EEGElectrodeCap, on_delete=models.CASCADE)
     size = models.CharField(max_length=30)
-    electrode_adjacent_distance = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    electrode_adjacent_distance = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
 
     def __str__(self):
         return self.size
 
 
 def get_eeg_electrode_system_dir(instance, filename):
-    return "eeg_electrode_system_files/%s/%s" % \
-           (instance.id, filename)
+    return "eeg_electrode_system_files/%s/%s" % (instance.id, filename)
 
 
 class EEGElectrodeLocalizationSystem(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
-    map_image_file = models.FileField(upload_to=get_eeg_electrode_system_dir, null=True, blank=True)
+    map_image_file = models.FileField(
+        upload_to=get_eeg_electrode_system_dir, null=True, blank=True
+    )
 
     def __str__(self):
         return self.name
@@ -381,33 +443,57 @@ class EEGElectrodeLocalizationSystem(models.Model):
 
 class EEGElectrodePosition(models.Model):
     eeg_electrode_localization_system = models.ForeignKey(
-        EEGElectrodeLocalizationSystem, on_delete=models.CASCADE, related_name="electrode_positions")
+        EEGElectrodeLocalizationSystem,
+        on_delete=models.CASCADE,
+        related_name="electrode_positions",
+    )
     name = models.CharField(max_length=150)
-    coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    position_reference = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    coordinate_x = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    coordinate_y = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    position_reference = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
+    )
     channel_default_index = models.IntegerField()
 
     class Meta:
-        unique_together = ('eeg_electrode_localization_system', 'channel_default_index')
+        unique_together = (
+            "eeg_electrode_localization_system",
+            "channel_default_index",
+        )
 
     def __str__(self):
-        return self.eeg_electrode_localization_system.name + ' - ' + self.name
+        return self.eeg_electrode_localization_system.name + " - " + self.name
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
         if not self.pk and not self.channel_default_index:
-            top = \
+            top = (
                 EEGElectrodePosition.objects.filter(
-                    eeg_electrode_localization_system=self.eeg_electrode_localization_system).order_by(
-                    '-channel_default_index').first()
+                    eeg_electrode_localization_system=self.eeg_electrode_localization_system
+                )
+                .order_by("-channel_default_index")
+                .first()
+            )
             self.channel_default_index = top.channel_default_index + 1 if top else 1
         super(EEGElectrodePosition, self).save()
 
 
 class EEGElectrodeNetSystem(models.Model):
-    eeg_electrode_net = models.ForeignKey(EEGElectrodeNet, on_delete=models.CASCADE, related_name="set_of_electrode_net_system")
+    eeg_electrode_net = models.ForeignKey(
+        EEGElectrodeNet,
+        on_delete=models.CASCADE,
+        related_name="set_of_electrode_net_system",
+    )
     eeg_electrode_localization_system = models.ForeignKey(
-        EEGElectrodeLocalizationSystem, on_delete=models.CASCADE, related_name='set_of_electrode_net_system')
+        EEGElectrodeLocalizationSystem,
+        on_delete=models.CASCADE,
+        related_name="set_of_electrode_net_system",
+    )
 
 
 class CoilShape(models.Model):
@@ -425,8 +511,12 @@ class CoilModel(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
     coil_shape = models.ForeignKey(CoilShape, on_delete=models.CASCADE)
-    material = models.ForeignKey(Material, on_delete=models.CASCADE, null=True, blank=True)
-    coil_design = models.CharField(null=True, blank=True, max_length=50, choices=COIL_DESIGN_OPTIONS)
+    material = models.ForeignKey(
+        Material, on_delete=models.CASCADE, null=True, blank=True
+    )
+    coil_design = models.CharField(
+        null=True, blank=True, max_length=50, choices=COIL_DESIGN_OPTIONS
+    )
 
     def __str__(self):
         return self.name
@@ -438,7 +528,9 @@ class TMSDevice(Equipment):
         ("biphase", _("Biphase")),
     )
 
-    pulse_type = models.CharField(null=True, blank=True, max_length=50, choices=PULSE_TYPES)
+    pulse_type = models.CharField(
+        null=True, blank=True, max_length=50, choices=PULSE_TYPES
+    )
 
     def __str__(self):
         return self.identification
@@ -448,7 +540,9 @@ class EEGSetting(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     description = models.TextField()
-    copied_from = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='children')
+    copied_from = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, related_name="children"
+    )
 
     def __str__(self):
         return self.name
@@ -459,11 +553,20 @@ class EEGSetting(models.Model):
 
 
 class EEGAmplifierSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, on_delete=models.CASCADE, primary_key=True, related_name='eeg_amplifier_setting')
+    eeg_setting = models.OneToOneField(
+        EEGSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="eeg_amplifier_setting",
+    )
     eeg_amplifier = models.ForeignKey(Amplifier, on_delete=models.CASCADE)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    number_of_channels_used = models.IntegerField(null=True, validators=[MinValueValidator(0)])
+    sampling_rate = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    number_of_channels_used = models.IntegerField(
+        null=True, validators=[MinValueValidator(0)]
+    )
 
     def save(self, *args, **kwargs):
         super(EEGAmplifierSetting, self).save(*args, **kwargs)
@@ -471,7 +574,12 @@ class EEGAmplifierSetting(models.Model):
 
 
 class EEGSolutionSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, on_delete=models.CASCADE, primary_key=True, related_name='eeg_solution_setting')
+    eeg_setting = models.OneToOneField(
+        EEGSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="eeg_solution_setting",
+    )
     eeg_solution = models.ForeignKey(EEGSolution, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -480,15 +588,34 @@ class EEGSolutionSetting(models.Model):
 
 
 class EEGFilterSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, on_delete=models.CASCADE, primary_key=True, related_name='eeg_filter_setting')
+    eeg_setting = models.OneToOneField(
+        EEGSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="eeg_filter_setting",
+    )
     eeg_filter_type = models.ForeignKey(FilterType, on_delete=models.CASCADE)
-    high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    low_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_band_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    low_band_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_notch = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    low_notch = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    order = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
 
     def save(self, *args, **kwargs):
         super(EEGFilterSetting, self).save(*args, **kwargs)
@@ -496,8 +623,15 @@ class EEGFilterSetting(models.Model):
 
 
 class EEGElectrodeLayoutSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, on_delete=models.CASCADE, primary_key=True, related_name='eeg_electrode_layout_setting')
-    eeg_electrode_net_system = models.ForeignKey(EEGElectrodeNetSystem, on_delete=models.CASCADE)
+    eeg_setting = models.OneToOneField(
+        EEGSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="eeg_electrode_layout_setting",
+    )
+    eeg_electrode_net_system = models.ForeignKey(
+        EEGElectrodeNetSystem, on_delete=models.CASCADE
+    )
 
     def save(self, *args, **kwargs):
         super(EEGElectrodeLayoutSetting, self).save(*args, **kwargs)
@@ -505,14 +639,23 @@ class EEGElectrodeLayoutSetting(models.Model):
 
 
 class EEGElectrodePositionSetting(models.Model):
-    eeg_electrode_layout_setting = models.ForeignKey(EEGElectrodeLayoutSetting, on_delete=models.CASCADE, related_name='positions_setting')
-    eeg_electrode_position = models.ForeignKey(EEGElectrodePosition, on_delete=models.CASCADE)
+    eeg_electrode_layout_setting = models.ForeignKey(
+        EEGElectrodeLayoutSetting,
+        on_delete=models.CASCADE,
+        related_name="positions_setting",
+    )
+    eeg_electrode_position = models.ForeignKey(
+        EEGElectrodePosition, on_delete=models.CASCADE
+    )
     used = models.BooleanField()
     electrode_model = models.ForeignKey(ElectrodeModel, on_delete=models.CASCADE)
     channel_index = models.IntegerField()
 
     class Meta:
-        unique_together = ('eeg_electrode_layout_setting', 'channel_index')
+        unique_together = (
+            "eeg_electrode_layout_setting",
+            "channel_index",
+        )
 
     def save(self, *args, **kwargs):
         super(EEGElectrodePositionSetting, self).save(*args, **kwargs)
@@ -529,17 +672,25 @@ class Software(models.Model):
 
 
 class SoftwareVersion(models.Model):
-    software = models.ForeignKey(Software, on_delete=models.CASCADE, related_name='versions')
+    software = models.ForeignKey(
+        Software, on_delete=models.CASCADE, related_name="versions"
+    )
     name = models.CharField(max_length=150)
 
     def __str__(self):
-        return self.software.name + ' - ' + self.name
+        return self.software.name + " - " + self.name
 
 
 class ADConverter(Equipment):
-    signal_to_noise_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    resolution = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    signal_to_noise_rate = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    sampling_rate = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    resolution = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
 
 
 class StandardizationSystem(models.Model):
@@ -565,7 +716,7 @@ class MuscleSubdivision(models.Model):
     anatomy_function = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.muscle.name + ' - ' + self.name
+        return self.muscle.name + " - " + self.name
 
 
 class MuscleSide(models.Model):
@@ -577,8 +728,7 @@ class MuscleSide(models.Model):
 
 
 def get_emg_placement_dir(instance, filename):
-    return "emg_placement_files/%s/%s" % \
-           (instance.standardization_system.id, filename)
+    return "emg_placement_files/%s/%s" % (instance.standardization_system.id, filename)
 
 
 class EMGElectrodePlacement(models.Model):
@@ -587,16 +737,27 @@ class EMGElectrodePlacement(models.Model):
         ("intramuscular", _("Intramuscular")),
         ("needle", _("Needle")),
     )
-    standardization_system = models.ForeignKey(StandardizationSystem, on_delete=models.CASCADE, related_name='electrode_placements')
+    standardization_system = models.ForeignKey(
+        StandardizationSystem,
+        on_delete=models.CASCADE,
+        related_name="electrode_placements",
+    )
     muscle_subdivision = models.ForeignKey(MuscleSubdivision, on_delete=models.CASCADE)
-    placement_reference = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    placement_reference = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
+    )
     photo = models.FileField(upload_to=get_emg_placement_dir, null=True, blank=True)
     location = models.TextField(null=True, blank=True)
     placement_type = models.CharField(max_length=50, choices=PLACEMENT_TYPES)
 
     def __str__(self):
-        return self.standardization_system.name + ' - ' + \
-               self.muscle_subdivision.muscle.name + ' - ' + self.muscle_subdivision.name
+        return (
+            self.standardization_system.name
+            + " - "
+            + self.muscle_subdivision.muscle.name
+            + " - "
+            + self.muscle_subdivision.name
+        )
 
     def delete(self, *args, **kwargs):
         self.photo.delete()
@@ -624,8 +785,12 @@ class EMGSetting(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     description = models.TextField()
-    copied_from = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='children')
-    acquisition_software_version = models.ForeignKey(SoftwareVersion, on_delete=models.CASCADE)
+    copied_from = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, related_name="children"
+    )
+    acquisition_software_version = models.ForeignKey(
+        SoftwareVersion, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return self.name
@@ -636,15 +801,34 @@ class EMGSetting(models.Model):
 
 
 class EMGDigitalFilterSetting(models.Model):
-    emg_setting = models.OneToOneField(EMGSetting, on_delete=models.CASCADE, primary_key=True, related_name='emg_digital_filter_setting')
+    emg_setting = models.OneToOneField(
+        EMGSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="emg_digital_filter_setting",
+    )
     filter_type = models.ForeignKey(FilterType, on_delete=models.CASCADE)
-    low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    low_band_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_band_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    low_notch = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_notch = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    order = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
 
     def save(self, *args, **kwargs):
         super(EMGDigitalFilterSetting, self).save(*args, **kwargs)
@@ -652,9 +836,16 @@ class EMGDigitalFilterSetting(models.Model):
 
 
 class EMGADConverterSetting(models.Model):
-    emg_setting = models.OneToOneField(EMGSetting, on_delete=models.CASCADE, primary_key=True, related_name='emg_ad_converter_setting')
+    emg_setting = models.OneToOneField(
+        EMGSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="emg_ad_converter_setting",
+    )
     ad_converter = models.ForeignKey(ADConverter, on_delete=models.CASCADE)
-    sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    sampling_rate = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
 
     def save(self, *args, **kwargs):
         super(EMGADConverterSetting, self).save(*args, **kwargs)
@@ -662,7 +853,9 @@ class EMGADConverterSetting(models.Model):
 
 
 class EMGElectrodeSetting(models.Model):
-    emg_setting = models.ForeignKey(EMGSetting, on_delete=models.CASCADE, related_name='emg_electrode_settings')
+    emg_setting = models.ForeignKey(
+        EMGSetting, on_delete=models.CASCADE, related_name="emg_electrode_settings"
+    )
     electrode = models.ForeignKey(ElectrodeModel, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -671,8 +864,12 @@ class EMGElectrodeSetting(models.Model):
 
 
 class EMGPreamplifierSetting(models.Model):
-    emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting, on_delete=models.CASCADE,
-                                                 primary_key=True, related_name='emg_preamplifier_setting')
+    emg_electrode_setting = models.OneToOneField(
+        EMGElectrodeSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="emg_preamplifier_setting",
+    )
     amplifier = models.ForeignKey(Amplifier, on_delete=models.CASCADE)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
@@ -682,16 +879,33 @@ class EMGPreamplifierSetting(models.Model):
 
 
 class EMGPreamplifierFilterSetting(models.Model):
-    emg_preamplifier_filter_setting = models.OneToOneField(EMGPreamplifierSetting, on_delete=models.CASCADE,
-                                                           primary_key=True,
-                                                           related_name='emg_preamplifier_filter_setting')
-    low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    emg_preamplifier_filter_setting = models.OneToOneField(
+        EMGPreamplifierSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="emg_preamplifier_filter_setting",
+    )
+    low_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    low_band_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    low_notch = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_band_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_notch = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    order = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
 
     def save(self, *args, **kwargs):
         super(EMGPreamplifierFilterSetting, self).save(*args, **kwargs)
@@ -699,8 +913,12 @@ class EMGPreamplifierFilterSetting(models.Model):
 
 
 class EMGAmplifierSetting(models.Model):
-    emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting, on_delete=models.CASCADE,
-                                                 primary_key=True, related_name='emg_amplifier_setting')
+    emg_electrode_setting = models.OneToOneField(
+        EMGElectrodeSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="emg_amplifier_setting",
+    )
     amplifier = models.ForeignKey(Amplifier, on_delete=models.CASCADE)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
@@ -710,15 +928,33 @@ class EMGAmplifierSetting(models.Model):
 
 
 class EMGAnalogFilterSetting(models.Model):
-    emg_electrode_setting = models.OneToOneField(EMGAmplifierSetting, on_delete=models.CASCADE,
-                                                 primary_key=True, related_name='emg_analog_filter_setting')
-    low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    emg_electrode_setting = models.OneToOneField(
+        EMGAmplifierSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="emg_analog_filter_setting",
+    )
+    low_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    low_band_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    low_notch = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_band_pass = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    high_notch = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    order = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
 
     def save(self, *args, **kwargs):
         super(EMGAnalogFilterSetting, self).save(*args, **kwargs)
@@ -727,11 +963,18 @@ class EMGAnalogFilterSetting(models.Model):
 
 class EMGElectrodePlacementSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(
-        EMGElectrodeSetting, on_delete=models.CASCADE, primary_key=True, related_name='emg_electrode_placement_setting'
+        EMGElectrodeSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="emg_electrode_placement_setting",
     )
-    emg_electrode_placement = models.ForeignKey(EMGElectrodePlacement, on_delete=models.CASCADE)
+    emg_electrode_placement = models.ForeignKey(
+        EMGElectrodePlacement, on_delete=models.CASCADE
+    )
     remarks = models.TextField(null=True, blank=True)
-    muscle_side = models.ForeignKey(MuscleSide, on_delete=models.CASCADE, null=True, blank=True)
+    muscle_side = models.ForeignKey(
+        MuscleSide, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     def save(self, *args, **kwargs):
         super(EMGElectrodePlacementSetting, self).save(*args, **kwargs)
@@ -742,7 +985,9 @@ class TMSSetting(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     description = models.TextField()
-    copied_from = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='children')
+    copied_from = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, related_name="children"
+    )
 
     def __str__(self):
         return self.name
@@ -756,11 +1001,18 @@ class TMSDeviceSetting(models.Model):
     PULSE_STIMULUS_TYPES = (
         ("single_pulse", _("Single pulse")),
         ("paired_pulse", _("Paired pulse")),
-        ("repetitive_pulse", _("Repetitive pulse"))
+        ("repetitive_pulse", _("Repetitive pulse")),
     )
-    tms_setting = models.OneToOneField(TMSSetting, on_delete=models.CASCADE, primary_key=True, related_name='tms_device_setting')
+    tms_setting = models.OneToOneField(
+        TMSSetting,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="tms_device_setting",
+    )
     tms_device = models.ForeignKey(TMSDevice, on_delete=models.CASCADE)
-    pulse_stimulus_type = models.CharField(null=True, blank=True, max_length=50, choices=PULSE_STIMULUS_TYPES)
+    pulse_stimulus_type = models.CharField(
+        null=True, blank=True, max_length=50, choices=PULSE_STIMULUS_TYPES
+    )
     coil_model = models.ForeignKey(CoilModel, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -769,8 +1021,7 @@ class TMSDeviceSetting(models.Model):
 
 
 def get_tms_brain_area_dir(instance, filename):
-    return "tms_brain_area_files/%s/%s" % \
-           (instance.id, filename)
+    return "tms_brain_area_files/%s/%s" % (instance.id, filename)
 
 
 class BrainAreaSystem(models.Model):
@@ -782,13 +1033,14 @@ class BrainAreaSystem(models.Model):
 
 
 class BrainAreaSystemPerspective(models.Model):
-    brain_area_image = models.FileField(upload_to=get_tms_brain_area_dir, null=True, blank=True)
+    brain_area_image = models.FileField(
+        upload_to=get_tms_brain_area_dir, null=True, blank=True
+    )
     brain_area_system = models.ForeignKey(BrainAreaSystem, on_delete=models.CASCADE)
 
 
 def get_tms_localization_system_dir(instance, filename):
-    return "tms_localization_system_files/%s/%s" % \
-           (instance.id, filename)
+    return "tms_localization_system_files/%s/%s" % (instance.id, filename)
 
 
 class BrainArea(models.Model):
@@ -803,7 +1055,9 @@ class BrainArea(models.Model):
 class TMSLocalizationSystem(models.Model):
     name = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=True, blank=True)
-    tms_localization_system_image = models.FileField(upload_to=get_tms_localization_system_dir, null=True, blank=True)
+    tms_localization_system_image = models.FileField(
+        upload_to=get_tms_localization_system_dir, null=True, blank=True
+    )
     brain_area = models.ForeignKey(BrainArea, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -838,38 +1092,44 @@ class DirectionOfTheInducedCurrent(models.Model):
 
 
 class Component(models.Model):
-    BLOCK = 'block'
-    INSTRUCTION = 'instruction'
-    PAUSE = 'pause'
-    QUESTIONNAIRE = 'questionnaire'
-    STIMULUS = 'stimulus'
-    TASK = 'task'
-    TASK_EXPERIMENT = 'task_experiment'
-    EEG = 'eeg'
-    EMG = 'emg'
-    TMS = 'tms'
-    DIGITAL_GAME_PHASE = 'digital_game_phase'
-    GENERIC_DATA_COLLECTION = 'generic_data_collection'
+    BLOCK = "block"
+    INSTRUCTION = "instruction"
+    PAUSE = "pause"
+    QUESTIONNAIRE = "questionnaire"
+    STIMULUS = "stimulus"
+    TASK = "task"
+    TASK_EXPERIMENT = "task_experiment"
+    EEG = "eeg"
+    EMG = "emg"
+    TMS = "tms"
+    DIGITAL_GAME_PHASE = "digital_game_phase"
+    GENERIC_DATA_COLLECTION = "generic_data_collection"
     COMPONENT_TYPES = (
-        (BLOCK, _('Set of steps')),
-        (INSTRUCTION, _('Instruction')),
-        (PAUSE, _('Pause')),
-        (QUESTIONNAIRE, _('Questionnaire')),
-        (STIMULUS, _('Stimulus')),
-        (TASK, _('Task for participant')),
-        (TASK_EXPERIMENT, _('Task for experimenter')),
-        (EEG, _('EEG')),
-        (EMG, _('EMG')),
-        (TMS, _('TMS')),
-        (DIGITAL_GAME_PHASE, _('Goalkeeper game phase')),
-        (GENERIC_DATA_COLLECTION, _('Generic data collection')),
+        (BLOCK, _("Set of steps")),
+        (INSTRUCTION, _("Instruction")),
+        (PAUSE, _("Pause")),
+        (QUESTIONNAIRE, _("Questionnaire")),
+        (STIMULUS, _("Stimulus")),
+        (TASK, _("Task for participant")),
+        (TASK_EXPERIMENT, _("Task for experimenter")),
+        (EEG, _("EEG")),
+        (EMG, _("EMG")),
+        (TMS, _("TMS")),
+        (DIGITAL_GAME_PHASE, _("Goalkeeper game phase")),
+        (GENERIC_DATA_COLLECTION, _("Generic data collection")),
     )
 
     identification = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
-    duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name='components')
+    duration_value = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(1)]
+    )
+    duration_unit = models.CharField(
+        null=True, blank=True, max_length=15, choices=TIME_UNITS
+    )
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.CASCADE, related_name="components"
+    )
     component_type = models.CharField(max_length=30, choices=COMPONENT_TYPES)
 
     def save(self, *args, **kwargs):
@@ -882,7 +1142,9 @@ def get_step_file_dir(instance, filename):
 
 
 class ComponentAdditionalFile(models.Model):
-    component = models.ForeignKey(Component, on_delete=models.CASCADE, related_name="component_additional_files")
+    component = models.ForeignKey(
+        Component, on_delete=models.CASCADE, related_name="component_additional_files"
+    )
     file = models.FileField(upload_to=get_step_file_dir)
 
 
@@ -909,32 +1171,38 @@ class Pause(Component):
 
 
 def get_stimulus_media_file_dir(instance, filename):
-    return "stimulus_step/%s/%s" % \
-           (instance.id, filename)
+    return "stimulus_step/%s/%s" % (instance.id, filename)
 
 
 class Stimulus(Component):
-    stimulus_type = models.ForeignKey(StimulusType, on_delete=models.CASCADE, null=False, blank=False)
-    media_file = models.FileField(upload_to=get_stimulus_media_file_dir, null=True, blank=True)
+    stimulus_type = models.ForeignKey(
+        StimulusType, on_delete=models.CASCADE, null=False, blank=False
+    )
+    media_file = models.FileField(
+        upload_to=get_stimulus_media_file_dir, null=True, blank=True
+    )
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
 
 class Questionnaire(Component):
-    survey = models.ForeignKey(Survey, null=False, blank=False, on_delete=models.PROTECT)
+    survey = models.ForeignKey(
+        Survey, null=False, blank=False, on_delete=models.PROTECT
+    )
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
 
 class Block(Component):
-    SEQUENCE = 'sequence'
-    PARALLEL_BLOCK = 'parallel_block'
+    SEQUENCE = "sequence"
+    PARALLEL_BLOCK = "parallel_block"
     BLOCK_TYPES = ((SEQUENCE, _("Sequence")), (PARALLEL_BLOCK, _("Parallel")))
-    number_of_mandatory_components = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    type = models.CharField(null=False, max_length=20,
-                            choices=BLOCK_TYPES)
+    number_of_mandatory_components = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    type = models.CharField(null=False, max_length=20, choices=BLOCK_TYPES)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -970,7 +1238,9 @@ class InformationType(models.Model):
 
 
 class GenericDataCollection(Component):
-    information_type = models.ForeignKey(InformationType, on_delete=models.CASCADE, null=False, blank=False)
+    information_type = models.ForeignKey(
+        InformationType, on_delete=models.CASCADE, null=False, blank=False
+    )
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -985,7 +1255,9 @@ class ContextTree(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     setting_text = models.TextField(null=True, blank=True)
-    setting_file = models.FileField(upload_to=get_context_tree_dir, null=True, blank=True)
+    setting_file = models.FileField(
+        upload_to=get_context_tree_dir, null=True, blank=True
+    )
 
     def __str__(self):
         return self.name
@@ -1016,22 +1288,34 @@ class DigitalGamePhase(Component):
 
 class ComponentConfiguration(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
-    number_of_repetitions = models.IntegerField(null=True, blank=True, default=1, validators=[MinValueValidator(1)])
+    number_of_repetitions = models.IntegerField(
+        null=True, blank=True, default=1, validators=[MinValueValidator(1)]
+    )
 
     # These 2 interval fields are useful only when number_of_repetition is
     # different from 1.
-    interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    interval_between_repetitions_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
+    interval_between_repetitions_value = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(1)]
+    )
+    interval_between_repetitions_unit = models.CharField(
+        null=True, blank=True, max_length=15, choices=TIME_UNITS
+    )
 
-    component = models.ForeignKey(Component, on_delete=models.CASCADE, null=False, related_name="configuration")
+    component = models.ForeignKey(
+        Component, on_delete=models.CASCADE, null=False, related_name="configuration"
+    )
     # TODO Change to not null.
-    parent = models.ForeignKey(Block, on_delete=models.CASCADE, null=True, related_name='children')
+    parent = models.ForeignKey(
+        Block, on_delete=models.CASCADE, null=True, related_name="children"
+    )
 
     # This field is only useful for component configurations marked as fixed
     # and inside a sequence. However, we leave it as not null because we
     # want the unique restriction of the pair (parent, order) to be applied
     # in a database level.
-    order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
+    order = models.IntegerField(
+        null=False, blank=False, validators=[MinValueValidator(1)]
+    )
 
     # This is null when the parent is a parallel block.
     random_position = models.BooleanField(blank=True)
@@ -1039,11 +1323,20 @@ class ComponentConfiguration(models.Model):
     requires_start_and_end_datetime = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('parent', 'order',)
+        unique_together = (
+            "parent",
+            "order",
+        )
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
         if not self.pk and not self.order:
-            top = ComponentConfiguration.objects.filter(parent=self.parent).order_by('-order').first()
+            top = (
+                ComponentConfiguration.objects.filter(parent=self.parent)
+                .order_by("-order")
+                .first()
+            )
             self.order = top.order + 1 if top else 1
         super(ComponentConfiguration, self).save()
         self.component.experiment.save()
@@ -1051,15 +1344,24 @@ class ComponentConfiguration(models.Model):
 
 class Group(models.Model):
     experiment = models.ForeignKey(
-        Experiment, on_delete=models.CASCADE, null=False, blank=False, related_name='groups')
+        Experiment,
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+        related_name="groups",
+    )
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
-    code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)
+    code = models.CharField(
+        _("Code"), null=True, blank=True, max_length=150, unique=True
+    )
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases)
-    experimental_protocol = models.ForeignKey(Component, null=True, on_delete=models.SET_NULL)
+    experimental_protocol = models.ForeignKey(
+        Component, null=True, on_delete=models.SET_NULL
+    )
 
     class Meta:
-        verbose_name = _('Group')
+        verbose_name = _("Group")
 
     def save(self, *args, **kwargs):
         super(Group, self).save(*args, **kwargs)
@@ -1067,67 +1369,97 @@ class Group(models.Model):
 
 
 def get_dir(instance, filename):
-    return "consent_forms/%s/%s/%s/%s" % \
-           (instance.group.experiment.id, instance.group.id, instance.subject.id, filename)
+    return "consent_forms/%s/%s/%s/%s" % (
+        instance.group.experiment.id,
+        instance.group.id,
+        instance.subject.id,
+        filename,
+    )
 
 
 def get_eeg_dir(instance, filename):
-    return "eeg_data_files/%s/%s/%s/%s" % \
-           (instance.group.experiment.id, instance.group.id, instance.subject.id, filename)
+    return "eeg_data_files/%s/%s/%s/%s" % (
+        instance.group.experiment.id,
+        instance.group.id,
+        instance.subject.id,
+        filename,
+    )
 
 
 def get_data_file_dir(instance, filename):
-    directory = 'data_files'
+    directory = "data_files"
 
     if isinstance(instance, EEGFile):
         directory = path.join(
-            'data_collection_files',
+            "data_collection_files",
             str(instance.eeg_data.subject_of_group.group.experiment.id),
             str(instance.eeg_data.subject_of_group.group.id),
             str(instance.eeg_data.subject_of_group.subject.id),
-            str(instance.eeg_data.data_configuration_tree.id
-                if instance.eeg_data.data_configuration_tree else 0),
-            'eeg')
+            str(
+                instance.eeg_data.data_configuration_tree.id
+                if instance.eeg_data.data_configuration_tree
+                else 0
+            ),
+            "eeg",
+        )
 
     elif isinstance(instance, EMGFile):
         directory = path.join(
-            'data_collection_files',
+            "data_collection_files",
             str(instance.emg_data.subject_of_group.group.experiment.id),
             str(instance.emg_data.subject_of_group.group.id),
             str(instance.emg_data.subject_of_group.subject.id),
-            str(instance.emg_data.data_configuration_tree.id
-                if instance.emg_data.data_configuration_tree else 0),
-            'emg')
+            str(
+                instance.emg_data.data_configuration_tree.id
+                if instance.emg_data.data_configuration_tree
+                else 0
+            ),
+            "emg",
+        )
 
     elif isinstance(instance, AdditionalDataFile):
         directory = path.join(
-            'data_collection_files',
+            "data_collection_files",
             str(instance.additional_data.subject_of_group.group.experiment.id),
             str(instance.additional_data.subject_of_group.group.id),
             str(instance.additional_data.subject_of_group.subject.id),
-            str(instance.additional_data.data_configuration_tree.id
-                if instance.additional_data.data_configuration_tree else 0),
-            'additional')
+            str(
+                instance.additional_data.data_configuration_tree.id
+                if instance.additional_data.data_configuration_tree
+                else 0
+            ),
+            "additional",
+        )
 
     elif isinstance(instance, GenericDataCollectionFile):
         directory = path.join(
-            'data_collection_files',
-            str(instance.generic_data_collection_data.subject_of_group.group.experiment.id),
+            "data_collection_files",
+            str(
+                instance.generic_data_collection_data.subject_of_group.group.experiment.id
+            ),
             str(instance.generic_data_collection_data.subject_of_group.group.id),
             str(instance.generic_data_collection_data.subject_of_group.subject.id),
-            str(instance.generic_data_collection_data.data_configuration_tree.id
-                if instance.generic_data_collection_data.data_configuration_tree else 0),
-            'generic_data_collection')
+            str(
+                instance.generic_data_collection_data.data_configuration_tree.id
+                if instance.generic_data_collection_data.data_configuration_tree
+                else 0
+            ),
+            "generic_data_collection",
+        )
 
     elif isinstance(instance, DigitalGamePhaseFile):
         directory = path.join(
-            'data_collection_files',
+            "data_collection_files",
             str(instance.digital_game_phase_data.subject_of_group.group.experiment.id),
             str(instance.digital_game_phase_data.subject_of_group.group.id),
             str(instance.digital_game_phase_data.subject_of_group.subject.id),
-            str(instance.digital_game_phase_data.data_configuration_tree.id
-                if instance.digital_game_phase_data.data_configuration_tree else 0),
-            'digital_game_phase')
+            str(
+                instance.digital_game_phase_data.data_configuration_tree.id
+                if instance.digital_game_phase_data.data_configuration_tree
+                else 0
+            ),
+            "digital_game_phase",
+        )
 
     # TODO (NES-987): see backlog
     # elif isinstance(instance, HotSpot):
@@ -1148,12 +1480,17 @@ class Subject(models.Model):
 
 
 class SubjectOfGroup(models.Model):
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=False, blank=False)
+    subject = models.ForeignKey(
+        Subject, on_delete=models.CASCADE, null=False, blank=False
+    )
     group = models.ForeignKey(Group, on_delete=models.CASCADE, null=False, blank=False)
     consent_form = models.FileField(upload_to=get_dir, null=True)
 
     class Meta:
-        unique_together = ('subject', 'group',)
+        unique_together = (
+            "subject",
+            "group",
+        )
 
     def save(self, *args, **kwargs):
         super(SubjectOfGroup, self).save(*args, **kwargs)
@@ -1162,8 +1499,11 @@ class SubjectOfGroup(models.Model):
 
 class DataConfigurationTree(models.Model):
     component_configuration = models.ForeignKey(
-        ComponentConfiguration, on_delete=models.PROTECT)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='children')
+        ComponentConfiguration, on_delete=models.PROTECT
+    )
+    parent = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, related_name="children"
+    )
     code = models.IntegerField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -1174,16 +1514,26 @@ class DataConfigurationTree(models.Model):
 class SubjectStepData(models.Model):
     # data_configuration_tree null means that the DataCollection is
     # associated to the whole experimental protocol
-    data_configuration_tree = models.ForeignKey(DataConfigurationTree, on_delete=models.CASCADE, null=True, blank=True)
+    data_configuration_tree = models.ForeignKey(
+        DataConfigurationTree, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     subject_of_group = models.ForeignKey(SubjectOfGroup, on_delete=models.CASCADE)
 
-    start_date = models.DateField(default=datetime.date.today, null=True, blank=True,
-                                  validators=[validate_date_questionnaire_response])
+    start_date = models.DateField(
+        default=datetime.date.today,
+        null=True,
+        blank=True,
+        validators=[validate_date_questionnaire_response],
+    )
     start_time = models.TimeField(null=True, blank=True)
 
-    end_date = models.DateField(default=datetime.date.today, null=True, blank=True,
-                                validators=[validate_date_questionnaire_response])
+    end_date = models.DateField(
+        default=datetime.date.today,
+        null=True,
+        blank=True,
+        validators=[validate_date_questionnaire_response],
+    )
     end_time = models.TimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -1194,11 +1544,16 @@ class SubjectStepData(models.Model):
 class DataCollection(models.Model):
     # data_configuration_tree null means that the DataCollection is associated
     # to the whole experimental protocol
-    data_configuration_tree = models.ForeignKey(DataConfigurationTree, on_delete=models.CASCADE, null=True, blank=True)
+    data_configuration_tree = models.ForeignKey(
+        DataConfigurationTree, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     subject_of_group = models.ForeignKey(SubjectOfGroup, on_delete=models.CASCADE)
-    date = models.DateField(default=datetime.date.today, null=False,
-                            validators=[validate_date_questionnaire_response])
+    date = models.DateField(
+        default=datetime.date.today,
+        null=False,
+        validators=[validate_date_questionnaire_response],
+    )
     time = models.TimeField(null=True, blank=True)
 
     class Meta:
@@ -1212,13 +1567,14 @@ class DataCollection(models.Model):
 class QuestionnaireResponse(DataCollection):
     token_id = models.IntegerField(null=False)
     questionnaire_responsible = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=False, related_name='+')
+        User, on_delete=models.CASCADE, null=False, related_name="+"
+    )
     history = HistoricalRecords()
-    is_completed = models.CharField(max_length=50, default='')
+    is_completed = models.CharField(max_length=50, default="")
 
     class Meta:
         permissions = (
-            #('view_questionnaireresponse', 'Can view questionnaire response'),
+            # ('view_questionnaireresponse', 'Can view questionnaire response'),
         )
 
     @property
@@ -1249,8 +1605,10 @@ class FileFormat(models.Model):
 
 class DataFile(models.Model):
     description = models.TextField(null=False, blank=False)
-    file_format = models.ForeignKey(FileFormat, on_delete=models.CASCADE, null=False, blank=False)
-    file_format_description = models.TextField(null=True, blank=True, default='')
+    file_format = models.ForeignKey(
+        FileFormat, on_delete=models.CASCADE, null=False, blank=False
+    )
+    file_format_description = models.TextField(null=True, blank=True, default="")
 
     class Meta:
         abstract = True
@@ -1258,8 +1616,10 @@ class DataFile(models.Model):
 
 class EEGData(DataFile, DataCollection):
     eeg_setting = models.ForeignKey(EEGSetting, on_delete=models.CASCADE)
-    eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
-    eeg_cap_size = models.ForeignKey(EEGCapSize, on_delete=models.CASCADE, null=True, blank=True)
+    eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default="")
+    eeg_cap_size = models.ForeignKey(
+        EEGCapSize, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     history = HistoricalRecords()
 
@@ -1277,17 +1637,39 @@ class EEGData(DataFile, DataCollection):
 
 class TMSData(DataCollection):
     tms_setting = models.ForeignKey(TMSSetting, on_delete=models.CASCADE)
-    resting_motor_threshold = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    test_pulse_intensity_of_simulation = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    second_test_pulse_intensity = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    interval_between_pulses = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    interval_between_pulses_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-    time_between_mep_trials = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-    repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    coil_orientation = models.ForeignKey(CoilOrientation, on_delete=models.CASCADE, null=True, blank=True)
-    coil_orientation_angle = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    direction_of_induced_current = models.ForeignKey(DirectionOfTheInducedCurrent, on_delete=models.CASCADE, null=True, blank=True)
+    resting_motor_threshold = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    test_pulse_intensity_of_simulation = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    second_test_pulse_intensity = models.FloatField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    interval_between_pulses = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    interval_between_pulses_unit = models.CharField(
+        null=True, blank=True, max_length=15, choices=TIME_UNITS
+    )
+    time_between_mep_trials = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    time_between_mep_trials_unit = models.CharField(
+        null=True, blank=True, max_length=15, choices=TIME_UNITS
+    )
+    repetitive_pulse_frequency = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    coil_orientation = models.ForeignKey(
+        CoilOrientation, on_delete=models.CASCADE, null=True, blank=True
+    )
+    coil_orientation_angle = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    direction_of_induced_current = models.ForeignKey(
+        DirectionOfTheInducedCurrent, on_delete=models.CASCADE, null=True, blank=True
+    )
     description = models.TextField(null=False, blank=False)
 
     # Audit trail - Simple History
@@ -1307,11 +1689,17 @@ class TMSData(DataCollection):
 
 class HotSpot(models.Model):
     name = models.CharField(max_length=50)
-    coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    coordinate_x = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
+    coordinate_y = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
     hot_spot_map = models.FileField(upload_to=get_data_file_dir, null=True, blank=True)
     tms_data = models.OneToOneField(TMSData, on_delete=models.CASCADE, primary_key=True)
-    tms_localization_system = models.ForeignKey(TMSLocalizationSystem, on_delete=models.CASCADE, related_name='hotspots')
+    tms_localization_system = models.ForeignKey(
+        TMSLocalizationSystem, on_delete=models.CASCADE, related_name="hotspots"
+    )
 
     def __str__(self):
         return self.name
@@ -1335,7 +1723,7 @@ class AdditionalData(DataFile, DataCollection):
 
 class EMGData(DataFile, DataCollection):
     emg_setting = models.ForeignKey(EMGSetting, on_delete=models.CASCADE)
-    emg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
+    emg_setting_reason_for_change = models.TextField(null=True, blank=True, default="")
 
     # Audit trail - Simple History
     history = HistoricalRecords()
@@ -1386,46 +1774,63 @@ class GenericDataCollectionData(DataFile, DataCollection):
 
 
 class EEGFile(models.Model):
-    eeg_data = models.ForeignKey(EEGData, on_delete=models.CASCADE, related_name='eeg_files')
+    eeg_data = models.ForeignKey(
+        EEGData, on_delete=models.CASCADE, related_name="eeg_files"
+    )
     file = models.FileField(upload_to=get_data_file_dir)
 
 
 class EMGFile(models.Model):
-    emg_data = models.ForeignKey(EMGData, on_delete=models.CASCADE, related_name='emg_files')
+    emg_data = models.ForeignKey(
+        EMGData, on_delete=models.CASCADE, related_name="emg_files"
+    )
     file = models.FileField(upload_to=get_data_file_dir)
 
 
 class AdditionalDataFile(models.Model):
-    additional_data = models.ForeignKey(AdditionalData, on_delete=models.CASCADE, related_name='additional_data_files')
+    additional_data = models.ForeignKey(
+        AdditionalData, on_delete=models.CASCADE, related_name="additional_data_files"
+    )
     file = models.FileField(upload_to=get_data_file_dir)
 
 
 class DigitalGamePhaseFile(models.Model):
-    digital_game_phase_data = models.ForeignKey(DigitalGamePhaseData, on_delete=models.CASCADE, related_name='digital_game_phase_files')
+    digital_game_phase_data = models.ForeignKey(
+        DigitalGamePhaseData,
+        on_delete=models.CASCADE,
+        related_name="digital_game_phase_files",
+    )
     file = models.FileField(upload_to=get_data_file_dir)
 
 
 class GenericDataCollectionFile(models.Model):
     generic_data_collection_data = models.ForeignKey(
-        GenericDataCollectionData, on_delete=models.CASCADE, related_name='generic_data_collection_files')
+        GenericDataCollectionData,
+        on_delete=models.CASCADE,
+        related_name="generic_data_collection_files",
+    )
     file = models.FileField(upload_to=get_data_file_dir)
 
 
 class EEGElectrodePositionCollectionStatus(models.Model):
-    eeg_data = models.ForeignKey(EEGData, on_delete=models.CASCADE, related_name='electrode_positions')
-    eeg_electrode_position_setting = models.ForeignKey(EEGElectrodePositionSetting, on_delete=models.CASCADE)
+    eeg_data = models.ForeignKey(
+        EEGData, on_delete=models.CASCADE, related_name="electrode_positions"
+    )
+    eeg_electrode_position_setting = models.ForeignKey(
+        EEGElectrodePositionSetting, on_delete=models.CASCADE
+    )
     worked = models.BooleanField()
     channel_index = models.IntegerField()
 
     class Meta:
-        unique_together = ('eeg_data', 'channel_index')
+        unique_together = ("eeg_data", "channel_index")
 
     def __str__(self):
         return self.eeg_electrode_position_setting.eeg_electrode_position.name
 
 
 class GoalkeeperGame(models.Model):
-    code = models.CharField(_('Code'), max_length=2, unique=True)
+    code = models.CharField(_("Code"), max_length=2, unique=True)
     name = models.CharField(max_length=50)
 
     def __str__(self):
@@ -1437,24 +1842,25 @@ class GoalkeeperPhase(models.Model):
     phase = models.IntegerField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('game', 'phase')
+        unique_together = ("game", "phase")
 
     def clean(self):
-        if self.phase is None and GoalkeeperPhase.objects.filter(phase=self.phase, game=self.game):
-            raise ValidationError(_('Phase already registered'))
+        if self.phase is None and GoalkeeperPhase.objects.filter(
+            phase=self.phase, game=self.game
+        ):
+            raise ValidationError(_("Phase already registered"))
 
     def __str__(self):
         if self.phase:
-            return _('{game} - phase {phase}').format(
-                game=self.game.name,
-                phase=self.phase
+            return _("{game} - phase {phase}").format(
+                game=self.game.name, phase=self.phase
             )
         else:
             return self.game.name
 
 
 class GoalkeeperGameLog(models.Model):
-    file_content = models.TextField(primary_key=True, name='filecontent')
+    file_content = models.TextField(primary_key=True, name="filecontent")
 
     class Meta:
         managed = False
@@ -1497,14 +1903,14 @@ class GoalkeeperGameConfig(models.Model):
 class GoalkeeperGameResults(models.Model):
     id = models.IntegerField(name="idgameresult", primary_key=True, default="")
     id_config = models.IntegerField(name="idconfig", default="")
-    move = models.SmallIntegerField(name='move', default="")
-    timeuntilanykey = models.FloatField(name='timeuntilanykey', default="")
-    timeuntilshowagain = models.FloatField(name='timeuntilshowagain', default="")
-    waitedresult = models.SmallIntegerField(name='waitedresult', default="")
-    ehrandom = models.CharField(name='ehrandom', max_length=3, default="")
-    optionchoosen = models.SmallIntegerField(name='optionchoosen', default="")
-    movementtime = models.FloatField(name='movementtime', default="")
-    decisiontime = models.FloatField(name='decisiontime', default="")
+    move = models.SmallIntegerField(name="move", default="")
+    timeuntilanykey = models.FloatField(name="timeuntilanykey", default="")
+    timeuntilshowagain = models.FloatField(name="timeuntilshowagain", default="")
+    waitedresult = models.SmallIntegerField(name="waitedresult", default="")
+    ehrandom = models.CharField(name="ehrandom", max_length=3, default="")
+    optionchoosen = models.SmallIntegerField(name="optionchoosen", default="")
+    movementtime = models.FloatField(name="movementtime", default="")
+    decisiontime = models.FloatField(name="decisiontime", default="")
 
     class Meta:
         managed = settings.IS_TESTING
@@ -1520,7 +1926,8 @@ class ScheduleOfSending(models.Model):
         ("error_sending", _("error sending")),
     )
     experiment = models.ForeignKey(
-        Experiment, on_delete=models.CASCADE, related_name='schedule_of_sending')
+        Experiment, on_delete=models.CASCADE, related_name="schedule_of_sending"
+    )
     schedule_datetime = models.DateTimeField(auto_now_add=True)
     responsible = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=SCHEDULE_STATUS_OPTIONS)
@@ -1530,9 +1937,11 @@ class ScheduleOfSending(models.Model):
 
 
 class PortalSelectedQuestion(models.Model):
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name='portal_selected_questions')
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.CASCADE, related_name="portal_selected_questions"
+    )
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     question_code = models.CharField(max_length=150)
 
     class Meta:
-        unique_together = ('experiment', 'survey', 'question_code')
+        unique_together = ("experiment", "survey", "question_code")

@@ -7,8 +7,8 @@ from patient.models import COUNTRIES
 
 
 LOGIN = (
-    (False, _('No')),
-    (True, _('Yes, a username and password must be configured')),
+    (False, _("No")),
+    (True, _("Yes, a username and password must be configured")),
 )
 
 
@@ -16,18 +16,24 @@ class Institution(models.Model):
     name = models.CharField(max_length=150)
     acronym = models.CharField(max_length=30, unique=True)
     country = models.CharField(max_length=30, choices=COUNTRIES)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    parent = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
+    )
 
     def __str__(self):
-        return '%s' % self.name
+        return "%s" % self.name
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
-    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="user_profile"
+    )
+    institution = models.ForeignKey(
+        Institution, on_delete=models.CASCADE, null=True, blank=True
+    )
     login_enabled = models.BooleanField(default=False, choices=LOGIN)
     force_password_change = models.BooleanField(default=True)
     citation_name = models.CharField(max_length=150, blank=True, default="")
@@ -40,7 +46,6 @@ def create_user_profile_signal(sender, instance, created, **kwargs):
 
 def password_change_signal(sender, instance, **kwargs):
     try:
-
         if User.objects.all().count() == 0:
             return
 
@@ -57,6 +62,10 @@ def password_change_signal(sender, instance, **kwargs):
         pass
 
 
-signals.pre_save.connect(password_change_signal, sender=User, dispatch_uid='accounts.models')
+signals.pre_save.connect(
+    password_change_signal, sender=User, dispatch_uid="accounts.models"
+)
 
-signals.post_save.connect(create_user_profile_signal, sender=User, dispatch_uid='accounts.models')
+signals.post_save.connect(
+    create_user_profile_signal, sender=User, dispatch_uid="accounts.models"
+)

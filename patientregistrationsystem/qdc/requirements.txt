@@ -1,15 +1,15 @@
-pip>=18.1
-setuptools>=40.6.3
-future>= 0.17.1
+pip>=23.2.1
+setuptools>=68.0.0
+future>= 0.18.3
 
-django==4.1.10
+django>=4.2.4
 django-jenkins==0.110.0
 django-modeltranslation>=0.18.1
 django-simple-history==3.1.1
 django-maintenance-mode>=0.16.3
 jsonrpc-requests==0.4.0
 
-psycopg2>=2.9, <3.0
+psycopg2>=2.9.7, <3.0
 #psycopg==3.1.10
 pyflakes==3.1.0
 pylint>=2.17.5, <3
@@ -20,8 +20,8 @@ python-dateutil==2.8.2
 # Obs.: error -> ERROR: botocore 1.14.7 has requirement docutils<0.16,>=0.10, but you'll have docutils 0.16 which is incompatible.
 # But installed
 # Refers to installation of goodtables==2.2.1 below
-numpy>=1.11.0
-scipy>=0.17.1
+numpy>=1.25.2
+scipy>=1.11.1
 h5py>=2.6.0
 
 # Keeps mpl to a version before the dependency bump:
@@ -31,16 +31,18 @@ matplotlib>=1.5.3,<3.4
 pydot==1.2.4
 django-solo==2.1.0
 coreapi==2.3.3
-GitPython==3.0.9
+GitPython==3.1.32
 reportlab==3.6.13
 xhtml2pdf==0.2.11
-networkx==2.8.8
+networkx==3.1
 django-fixture-magic>=0.1.5
 
 mne==1.3.1
 
--e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
+#-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
 
 # For testing
-goodtables==2.2.1
-Faker==0.8.17
+goodtables==2.5.4
+Faker==19.3.0
+#goodtables==2.2.1
+#Faker==0.8.17

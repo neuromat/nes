@@ -2,18 +2,21 @@
 
 from django.conf import settings
 from git import Repo
+import os
 
 
 def check_upgrade():
-    repo = Repo("/Users/mruizo/PycharmProjects/nes/.git")
+    # FIXME arrumar isso
+    print(os.path.dirname(os.path.abspath(__file__)))
+    repo = Repo("/com.docker.devenvironments.code/.git")
     for remote in repo.remotes:
         remote.fetch()
 
     tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
 
-    remote_version = str(tags[-1]).split('-')[-1]
-    remote_version = remote_version.split('.')
-    current_version = settings.VERSION.split('.')
+    remote_version = str(tags[-1]).rsplit("-", 1)[-1]
+    remote_version = remote_version.split(".")
+    current_version = settings.VERSION.split(".")
     print(remote_version)
     print(current_version)
     if int(remote_version[0]) == int(current_version[0]):

@@ -22,7 +22,6 @@ permission_required = partial(permission_required, raise_exception=True)
 
 
 def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
-
     context = {}
 
     return render(request, template_name, context, status=403)
@@ -34,38 +33,42 @@ def contact(request):
     if_upgrade = False
     if check_upgrade(request):
         if_upgrade = True
-        if request.user.has_perm('configuration.upgrade_rights'):
+        if request.user.has_perm("configuration.upgrade_rights"):
             messages.info(
-                request, mark_safe(
+                request,
+                mark_safe(
                     '<a href="/home/upgrade_nes/">There is a new version of NES. Click '
-                    'for upgrade</a>'
-                )
+                    "for upgrade</a>"
+                ),
             )
 
         else:
-            messages.success(request, _("There is a new version, please contact your NES administrator to update !"))
+            messages.success(
+                request,
+                _(
+                    "There is a new version, please contact your NES administrator to update !"
+                ),
+            )
 
     context = {
-        'logo_institution': settings.LOGO_INSTITUTION,
-        'if_upgrade': if_upgrade,
+        "logo_institution": settings.LOGO_INSTITUTION,
+        "if_upgrade": if_upgrade,
     }
 
-    return render(request, 'quiz/contato.html', context)
+    return render(request, "quiz/contato.html", context)
 
 
 @login_required
 def language_change(request, language_code):
-
     activate(language_code)
-    request.session['_language'] = language_code
+    request.session["_language"] = language_code
 
-    return HttpResponseRedirect(request.GET['next'])
+    return HttpResponseRedirect(request.GET["next"])
 
 
 @login_required
 def password_changed(request):
-
-    messages.success(request, _('Password changed successfully.'))
+    messages.success(request, _("Password changed successfully."))
 
     return contact(request)
 
@@ -75,40 +78,49 @@ def check_upgrade(request):
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
     new_version = False
-    if '.git' in list_dir:
+    if ".git" in list_dir:
         repo = Repo(path_git_repo_local)
         git = repo.git
         current_tag = git.describe()
         if current_tag in repo.tags:
             repo.remotes.origin.fetch()
-            new_version_tag = \
-                sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
-            new_version = StrictVersion(current_tag.split('-')[-1]) < StrictVersion(new_version_tag.split('-')[-1])
+            new_version_tag = sorted(
+                git.tag().split("\n"),
+                key=lambda s: list(map(int, s.replace("-", ".").split(".")[1:])),
+            )[-1]
+            new_version = StrictVersion(current_tag.split("-")[-1]) < StrictVersion(
+                new_version_tag.split("-")[-1]
+            )
 
     else:
-        messages.success(request, _("You dont have NES Git installation. Automatic upgrade can be done with git "
-                                    "installation. "
-                                    "Please contact your system administrator to upgrade NES to a new version."))
+        messages.success(
+            request,
+            _(
+                "You dont have NES Git installation. Automatic upgrade can be done with git "
+                "installation. "
+                "Please contact your system administrator to upgrade NES to a new version."
+            ),
+        )
 
     return new_version
 
 
 def get_nes_directory_path():
-    path_repo = '/'
-    if 'Windows' in platform.system():
-        path_repo = ''
-    base_dir = settings.BASE_DIR.split('/')
-    if 'nes' in base_dir:
+    path_repo = "/"
+    if "Windows" in platform.system():
+        path_repo = ""
+    base_dir = settings.BASE_DIR.split("/")
+    if "nes" in base_dir:
         path_git_repo = []
         for item in base_dir:
-            if item != 'nes' and item != '':
+            if item != "nes" and item != "":
                 path_git_repo.append(item)
-            if item == 'nes':
+            if item == "nes":
                 path_git_repo.append(item)
                 break
 
         for item in path_git_repo:
-            path_repo = path_repo + item + '/'
+            path_repo = path_repo + item + "/"
 
     return path_repo
 
@@ -122,49 +134,56 @@ def get_pending_migrations():
 
 
 @login_required
-@permission_required('configuration.upgrade_rights')
+@permission_required("configuration.upgrade_rights")
 def upgrade_nes(request):
-
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
 
     # criate a log file in path_git_repo_local + 'patientregistrationsystem'
-    log_file = settings.BASE_DIR + '/upgrade.log'
+    log_file = settings.BASE_DIR + "/upgrade.log"
     log = open(log_file, "w")
     sys.stdout = log
 
-    if '.git' in list_dir:
-
+    if ".git" in list_dir:
         repo = Repo(path_git_repo_local)
         git = repo.git
 
-        new_version_tag = \
-            sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
+        new_version_tag = sorted(
+            git.tag().split("\n"),
+            key=lambda s: list(map(int, s.replace("-", ".").split(".")[1:])),
+        )[-1]
 
         repo.remotes.origin.fetch()
 
         git.checkout(new_version_tag)
 
         try:
-            pip.main(['install', '-r', 'requirements.txt'])
+            pip.main(["install", "-r", "requirements.txt"])
         except SystemExit as e:
             pass
 
-        call_command('collectstatic', interactive=False, verbosity=0)
+        call_command("collectstatic", interactive=False, verbosity=0)
 
         if get_pending_migrations():
-            call_command('migrate')
+            call_command("migrate")
         else:
             print("There are not migrations")
 
-        os.system('touch %spatientregistrationsystem/qdc/qdc/wsgi.py' % path_git_repo_local)
+        os.system(
+            "touch %spatientregistrationsystem/qdc/qdc/wsgi.py" % path_git_repo_local
+        )
 
         # check if the current TAG is the latest tag
         if git.describe() == new_version_tag:
             messages.success(request, _("Updated!!! Enjoy the new version of NES  :-)"))
             print("NES updated to " + new_version_tag)
         else:
-            messages.info(request, _("An unknown error ocurred ! Please contact your administrator system."))
+            messages.info(
+                request,
+                _(
+                    "An unknown error ocurred ! Please contact your administrator system."
+                ),
+            )
             print("NES was not updated " + new_version_tag)
 
     redirect_url = reverse("contact", args=())

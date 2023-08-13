@@ -1,8 +1,10 @@
 from django.contrib.auth.models import User, Group
-from faker import Factory
+from faker.factory import Factory
 
 
-def create_user(groups=Group.objects.none(), username=None, force_password_change=False):
+def create_user(
+    groups=Group.objects.none(), username=None, force_password_change=False
+):
     """
     Create user to login in NES
     :param groups: QuerySet with groups of permissions to add to the user
@@ -10,17 +12,23 @@ def create_user(groups=Group.objects.none(), username=None, force_password_chang
     :param force_password_change: False avoids to enter in password change page
     :return:
     """
-    faker = Factory.create()
+    Faker = Factory.create()
+    fake = Faker
+    fake.seed(0)
 
-    password = 'passwd'
+    password = "passwd"
     if username is None:
         while True:
-            username = faker.profile()['username']
+            username = fake.profile()["username"]
             if not User.objects.filter(username=username):
                 break
     user = User.objects.create_user(
-        username=username, password=password, email=faker.profile()['mail'],
-        first_name=faker.first_name(), last_name=faker.last_name())
+        username=username,
+        password=password,
+        email=fake.profile()["mail"],
+        first_name=fake.first_name(),
+        last_name=fake.last_name(),
+    )
     user.user_profile.login_enabled = True
     # Disable force_password_change to avoid this step by now
     user.user_profile.force_password_change = force_password_change
