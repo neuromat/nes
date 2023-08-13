@@ -14,6 +14,9 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='randomforests',
-            options={'permissions': (('can_send_data_to_plugin', 'Can send data to plugin'),)},
+            options={'permissions': (
+                ('can_send_data_to_plugin', 'Can send data to plugin'),
+            )
+            },
         ),
     ]

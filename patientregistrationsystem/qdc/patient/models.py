@@ -374,12 +374,12 @@ class Patient(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-    '''class Meta:
+    class Meta:
         permissions = (
-            ("view_patient", "Can view patient"),
+            #("view_patient", "Can view patient"),
             ("export_patient", "Can export patient"),
             ("sensitive_data_patient", "Can view sensitive patient data"),
-        )'''
+        )
 
     def get_absolute_url(self):
         return "/patient/%i/" % self.pk
@@ -563,11 +563,11 @@ class MedicalRecordData(models.Model):
     record_date = models.DateTimeField(null=False, auto_now_add=True)
     record_responsible = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
 
-    '''class Meta:
+    class Meta:
         permissions = (
-            ("view_medicalrecorddata", "Can view medical record"),
+            #("view_medicalrecorddata", "Can view medical record"),
             ("export_medicalrecorddata", "Can export medical record"),
-        )'''
+        )
 
     def __str__(self):
         return \
@@ -646,9 +646,10 @@ class QuestionnaireResponse(models.Model):
     is_completed = models.CharField(null=False, max_length=50, default='')
 
     class Meta:
-        '''permissions = (
-            ('view_questionnaireresponse', 'Can view questionnaire response'),
-            ('export_questionnaireresponse', 'Can export questionnaire response'))'''
+        permissions = (
+            #('view_questionnaireresponse', 'Can view questionnaire response'),
+            ('export_questionnaireresponse', 'Can export questionnaire response'),
+        )
 
     def __str__(self):
         return _('token id: ') + str(self.token_id)

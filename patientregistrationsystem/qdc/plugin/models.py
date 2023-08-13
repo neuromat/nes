@@ -15,4 +15,5 @@ class RandomForests(SingletonModel):
 
     class Meta:
         permissions = (
-            ("can_send_data_to_plugin", "Can send data to plugin"),)
+            ("can_send_data_to_plugin", "Can send data to plugin"),
+        )

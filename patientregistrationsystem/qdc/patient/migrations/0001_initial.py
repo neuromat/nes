@@ -257,8 +257,10 @@ class Migration(migrations.Migration):
                 ('record_date', models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'permissions': (('view_medicalrecorddata', 'Can view medical record'),
-                                ('export_medicalrecorddata', 'Can export medical record')),
+                'permissions': (
+                    ('view_medicalrecorddata', 'Can view medical record'),
+                    ('export_medicalrecorddata', 'Can export medical record'),
+                ),
             },
         ),
         migrations.CreateModel(
@@ -288,8 +290,11 @@ class Migration(migrations.Migration):
                 ('marital_status', models.ForeignKey(on_delete=models.CASCADE, to='patient.MaritalStatus', blank=True, null=True)),
             ],
             options={
-                'permissions': (('view_patient', 'Can view patient'), ('export_patient', 'Can export patient'),
-                                ('sensitive_data_patient', 'Can view sensitive patient data')),
+                'permissions': (
+                    ('view_patient', 'Can view patient'), 
+                    ('export_patient', 'Can export patient'),
+                    ('sensitive_data_patient', 'Can view sensitive patient data'),
+                ),
             },
         ),
         migrations.CreateModel(
@@ -313,8 +318,10 @@ class Migration(migrations.Migration):
                 ('survey', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='survey.Survey')),
             ],
             options={
-                'permissions': (('view_questionnaireresponse', 'Can view questionnaire response'),
-                                ('export_questionnaireresponse', 'Can export questionnaire response')),
+                'permissions': (
+                    ('view_questionnaireresponse', 'Can view questionnaire response'),
+                    ('export_questionnaireresponse', 'Can export questionnaire response'),
+                ),
             },
         ),
         migrations.CreateModel(

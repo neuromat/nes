@@ -27,7 +27,9 @@ class Migration(migrations.Migration):
                 ('is_initial_evaluation', models.BooleanField(default=True)),
             ],
             options={
-                'permissions': (('view_survey', 'Can view survey'),),
+                'permissions': (
+                    ('view_survey', 'Can view survey'),
+                ),
             },
         ),
         migrations.AddField(

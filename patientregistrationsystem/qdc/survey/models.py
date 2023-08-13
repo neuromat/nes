@@ -19,8 +19,10 @@ class Survey(models.Model):
         else:
             return self.code
 
-    #class Meta:
-    #    permissions = (("view_survey", "Can view survey"),)
+    class Meta:
+        permissions = (
+            #("view_survey", "Can view survey"),
+        )
 
     def save(self, *args, **kwargs):
         if not self.pk:

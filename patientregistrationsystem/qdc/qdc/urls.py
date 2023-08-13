@@ -57,7 +57,7 @@ js_info_dict = {
 
 urlpatterns += [
     #Aqui pode dar erro javascriptcatalog
-    re_path(r'^jsi18n/$', JavaScriptCatalog.as_view(), js_info_dict, name='javascript-catalog'),
+    re_path(r'^jsi18n/$', JavaScriptCatalog.as_view(domain="django"), js_info_dict, name='javascript-catalog'),
 ]
 
 if settings.DEBUG404:

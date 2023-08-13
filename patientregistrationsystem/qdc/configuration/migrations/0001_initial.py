@@ -19,7 +19,9 @@ class Migration(migrations.Migration):
             ],
             options={
                 'managed': False,
-                'permissions': (('upgrade_rights', 'Can upgrade NES version'),),
+                'permissions': (
+                    ('upgrade_rights', 'Can upgrade NES version'),
+                ),
             },
         ),
         migrations.CreateModel(

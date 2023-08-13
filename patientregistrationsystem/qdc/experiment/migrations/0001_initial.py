@@ -488,7 +488,9 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Equipment',
                 'verbose_name_plural': 'Equipment',
-                'permissions': (('register_equipment', 'Can register equipment'),),
+                'permissions': (
+                    ('register_equipment', 'Can register equipment'),
+                ),
             },
         ),
         migrations.CreateModel(
@@ -956,7 +958,9 @@ class Migration(migrations.Migration):
                 ('questionnaire_responsible', models.ForeignKey(on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL, related_name='+')),
             ],
             options={
-                'permissions': (('view_questionnaireresponse', 'Can view questionnaire response'),),
+                'permissions': (
+                    ('view_questionnaireresponse', 'Can view questionnaire response'),
+                ),
             },
         ),
         migrations.CreateModel(
@@ -971,9 +975,11 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(on_delete=models.CASCADE, blank=True, null=True, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'permissions': (('view_researchproject', 'Can view research project'),
-                                ('change_researchproject_from_others', 'Can change research project created by others'),
-                                ('change_researchproject_owner', 'Can change research project owner')),
+                'permissions': (
+                    ('view_researchproject', 'Can view research project'),
+                    ('change_researchproject_from_others', 'Can change research project created by others'),
+                    ('change_researchproject_owner', 'Can change research project owner'),
+                    ),
             },
         ),
         migrations.CreateModel(
