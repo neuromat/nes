@@ -18,21 +18,21 @@ services:
 
     environment:
       NES_DB_TYPE: pgsql
-      NES_DB_HOST: localhost
+      NES_DB_HOST: db
       NES_DB: nes_db
       NES_DB_USER: nes_user
       NES_DB_PASSWORD: nes_password
       NES_DB_PORT: 5432
-      LIMESURVEY_HOST: limesurvey
-      LIMESURVEY_PORT: 80
-      LIMESURVEY_ADMIN_USER: limesurvey_admin
-      LIMESURVEY_ADMIN_PASSWORD: limesurvey_admin_password
       NES_SECRET_KEY: _my_very_secret_key_
       NES_IP: 0.0.0.0
       NES_PORT: 8000
       NES_ADMIN_USER: nes_admin
       NES_ADMIN_EMAIL: nes_admin@nesmail.com
       NES_ADMIN_PASSWORD: nes_admin_password
+      LIMESURVEY_HOST: localhost
+      LIMESURVEY_PORT: 80
+      LIMESURVEY_ADMIN_USER: limesurvey_admin
+      LIMESURVEY_ADMIN_PASSWORD: limesurvey_admin_password
       
     depends_on:
       - db
