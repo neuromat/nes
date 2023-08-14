@@ -38,7 +38,7 @@
 		//"TEST": "abc"
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
-	//"postCreateCommand": "bash $NES_DIR/scripts/install-dev-tools.sh",
+	"postCreateCommand": "bash $NES_DIR/.devcontainer/entrypoint.sh",
 	"postStartCommand": "a2ensite limesurvey && service apache2 start",
 	"overrideCommand": false,
 	"mounts": [
