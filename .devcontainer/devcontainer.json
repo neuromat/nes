@@ -63,27 +63,13 @@
 				"ms-python.pylint",
 				"ms-python.flake8",
 				"donjayamanne.python-extension-pack",
-				"foxundermoon.shell-format",
 				"mrmlnc.vscode-apache",
 				"mtxr.sqltools",
 				"mtxr.sqltools-driver-pg"
-			],
-			"settings": {
-				"sqltools.connections": [
-					{
-						"name": "Container database",
-						"driver": "PostgreSQL",
-						"previewLimit": 50,
-						"server": "localhost",
-						"port": 5432,
-						"database": "nes_db",
-						"username": "nes_user",
-						"password": "nes_password"
-					}
-				]
-			}
-		},
-		// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-		"remoteUser": "root"
-	}
+			]
+		}
+	},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "root"
 }
