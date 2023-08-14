@@ -59,7 +59,7 @@ RUN mkdir -p "$LIMESURVEY_DIR" && \
     wget "$LIMESURVEY_URL_DOWNLOAD" -qO - | \
     tar xz --strip-components=1 -C "$LIMESURVEY_DIR" && \
     useradd apache && \
-    chown -R apache:apache "$LIMESURVEY_DIR" && \1
+    chown -R apache:apache "$LIMESURVEY_DIR" && \
     chmod -R o-rwx "$LIMESURVEY_DIR" && \
     chmod -R 770 "${LIMESURVEY_DIR}"/application/config/ && \
     chmod -R 770 "${LIMESURVEY_DIR}"/upload/ && \
