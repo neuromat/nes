@@ -7,17 +7,17 @@
     "sqltools.connections": [
         {
             "previewLimit": 50,
-            "server": "localhost",
+            "server": "172.19.0.2",
             "port": 5432,
             "driver": "PostgreSQL",
             "database": "nes_db",
-            "password": "nes_db_user_password",
-            "username": "nes_db_user",
-            "name": "postgres"
+            "password": "nes_password",
+            "username": "nes_user",
+            "name": "postgres_nes"
         },
         {
             "previewLimit": 50,
-            "server": "localhost",
+            "server": "172.19.0.2",
             "port": 5432,
             "driver": "PostgreSQL",
             "name": "postgres",

@@ -10,7 +10,7 @@ LIMESURVEY_PORT=${LIMESURVEY_PORT:-"80"}
 LIMESURVEY_DIR=$LIMESURVEY_DIR
 APACHE2_CONF_DIR="${LIMESURVEY_DIR}/application/config"
 ## CONFIG.PHP OPTIONS
-LIMESURVEY_DB_TYPE=${LIMESURVEY_DB_TYPE:-'pgsql'}
+LIMESURVEY_DB_TYPE=${LIMESURVEY_DB_TYPE:-"pgsql"}
 LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-"db"}
 LIMESURVEY_DB_PORT=${LIMESURVEY_DB_PORT:-"5432"}
 LIMESURVEY_DB=${LIMESURVEY_DB:-"limesurvey_db"}
@@ -38,12 +38,12 @@ NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-"nes_admin@nesmail.false"}
 NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-"nes_admin_password"}
 ### DB
 #### External database settings
-NES_DB_TYPE=${NES_DB_TYPE:-'pgsql'}
-NES_DB_HOST=${NES_DB_HOST:-'db'}
-NES_DB_PORT=${NES_DB_PORT:-'5432'}
-NES_DB=${NES_DB:-'nes_db'}
-NES_DB_USER=${NES_DB_USER:-'nes_user'}
-NES_DB_PASSWORD=${NES_DB_PASSWORD:-'nes_password'}
+NES_DB_TYPE=${NES_DB_TYPE:-"pgsql"}
+NES_DB_HOST=${NES_DB_HOST:-"db"}
+NES_DB_PORT=${NES_DB_PORT:-"5432"}
+NES_DB=${NES_DB:-"nes_db"}
+NES_DB_USER=${NES_DB_USER:-"nes_user"}
+NES_DB_PASSWORD=${NES_DB_PASSWORD:-"nes_password"}
 
 # SUPERVISOR
 #SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
@@ -52,7 +52,7 @@ NES_DB_PASSWORD=${NES_DB_PASSWORD:-'nes_password'}
 NES_PROJECT_PATH="${NES_DIR}/patientregistrationsystem/qdc"
 NES_SETUP_PATH="${NES_PROJECT_PATH}/qdc"
 
-if [ "$NES_DB_TYPE" != 'pgsql' ]; then
+if [ "$NES_DB_TYPE" != "pgsql" ]; then
 	echo "Unfortunately, for the time being, NES only works with PostgreSQL."
 	exit 1
 fi
@@ -112,43 +112,43 @@ else
 	cd "$LIMESURVEY_DIR"
 	echo "INFO: Creating LimeSurvey configuration"
 
-	if [ $LIMESURVEY_DB_TYPE = 'mysql' ]; then
-		echo 'INFO: Using MySQL configuration'
-		LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-'utf8mb4'}
+	if [ $LIMESURVEY_DB_TYPE = "mysql" ]; then
+		echo "INFO: Using MySQL configuration"
+		LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-"utf8mb4"}
 		cp application/config/config-sample-mysql.php application/config/config.php
-	elif [ $LIMESURVEY_DB_TYPE = 'pgsql' ]; then
-		echo 'INFO: Using PostgreSQL configuration'
-		LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-'utf8'}
+	elif [ $LIMESURVEY_DB_TYPE = "pgsql" ]; then
+		echo "INFO: Using PostgreSQL configuration"
+		LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-"utf8"}
 		cp application/config/config-sample-pgsql.php application/config/config.php
 	else
-		echo 'Error: unrecognized LIMESURVEY_DB_TYPE: "$LIMESURVEY_DB_TYPE"'
+		echo "Error: unrecognized LIMESURVEY_DB_TYPE: "$LIMESURVEY_DB_TYPE""
 		exit 1
 	fi
 
-	echo 'INFO: Using TCP connection'
-	sed -i "s#\('connectionString' => \).*,\$#\\1'pgsql:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB};',#g" application/config/config.php
-	sed -i "s#\('username' => \).*,\$#\\1'${LIMESURVEY_DB_USER}',#g" application/config/config.php
-	sed -i "s#\('password' => \).*,\$#\\1'${LIMESURVEY_DB_PASSWORD}',#g" application/config/config.php
-	sed -i "s#\('charset' => \).*,\$#\\1'${LIMESURVEY_DB_CHARSET}',#g" application/config/config.php
-	sed -i "s#\('tablePrefix' => \).*,\$#\\1'${LIMESURVEY_DB_TABLE_PREFIX}',#g" application/config/config.php
-	sed -i "s#\('urlFormat' => \).*,\$#\\1'${LIMESURVEY_URL_FORMAT}',#g" application/config/config.php
+	echo "INFO: Using TCP connection"
+	sed -i "s#\("connectionString" => \).*,\$#\\1"pgsql:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB};",#g" application/config/config.php
+	sed -i "s#\("username" => \).*,\$#\\1"${LIMESURVEY_DB_USER}",#g" application/config/config.php
+	sed -i "s#\("password" => \).*,\$#\\1"${LIMESURVEY_DB_PASSWORD}",#g" application/config/config.php
+	sed -i "s#\("charset" => \).*,\$#\\1"${LIMESURVEY_DB_CHARSET}",#g" application/config/config.php
+	sed -i "s#\("tablePrefix" => \).*,\$#\\1"${LIMESURVEY_DB_TABLE_PREFIX}",#g" application/config/config.php
+	sed -i "s#\("urlFormat" => \).*,\$#\\1"${LIMESURVEY_URL_FORMAT}",#g" application/config/config.php
 
 	# Makes sure that JSON-RPC interface will be available
-	sed -i "s#\(\$config\['RPCInterface'\]\ =\ \).*;\$#\\1'json';#g" application/config/config-defaults.php
+	sed -i "s#\(\$config\["RPCInterface"\]\ =\ \).*;\$#\\1"json";#g" application/config/config-defaults.php
 
 	# Check if LIMESURVEY_DB_PASSWORD is set
 	if [ -z "$LIMESURVEY_DB_PASSWORD" ]; then
-		echo >&2 'Error: Missing LIMESURVEY_DB_PASSWORD'
+		echo >&2 "Error: Missing LIMESURVEY_DB_PASSWORD"
 		exit 1
 	fi
 
 	# Check if LIMESURVEY_DB_PASSWORD is set
 	if [ -z "$LIMESURVEY_ADMIN_PASSWORD" ]; then
-		echo >&2 'Error: Missing LIMESURVEY_ADMIN_PASSWORD'
+		echo >&2 "Error: Missing LIMESURVEY_ADMIN_PASSWORD"
 		exit 1
 	fi
 
-	echo 'INFO: Running console.php install'
+	echo "INFO: Running console.php install"
 	echo su apache -c php "${LIMESURVEY_DIR}"/application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
 
 	#su apache -c php "${LIMESURVEY_DIR}"/application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
@@ -220,11 +220,11 @@ done
 # 	cd /
 # 	su postgres -c "psql start -w -D $PGDATA"
 # 	cat <<-EOF | su postgres -c "psql"
-# 		CREATE USER $NES_DB_USER WITH PASSWORD '$NES_DB_PASSWORD' ;
+# 		CREATE USER $NES_DB_USER WITH PASSWORD "$NES_DB_PASSWORD" ;
 # 		CREATE DATABASE $NES_DB OWNER $NES_DB_USER ;
 # 		GRANT ALL PRIVILEGES ON DATABASE $NES_DB TO $NES_DB_USER ;
 # 		ALTER ROLE $NES_DB_USER WITH CREATEDB;
-# 		CREATE USER $LIMESURVEY_DB_USER WITH PASSWORD '$LIMESURVEY_DB_PASSWORD' ;
+# 		CREATE USER $LIMESURVEY_DB_USER WITH PASSWORD "$LIMESURVEY_DB_PASSWORD" ;
 # 		CREATE DATABASE $LIMESURVEY_DB OWNER $LIMESURVEY_DB_USER ;
 # 		GRANT ALL PRIVILEGES ON DATABASE $LIMESURVEY_DB TO $LIMESURVEY_DB_USER ;
 # 	EOF
@@ -277,7 +277,7 @@ else
 
 	rm /tmp/create_superuser.py
 
-	# If NES was installed from a release it won't have a .git directory
+	# If NES was installed from a release it won"t have a .git directory
 	chown -R nobody "${NES_DIR}"/.git || true
 	chown -R nobody "${NES_DIR}"/patientregistrationsystem
 
