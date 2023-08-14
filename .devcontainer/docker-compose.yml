@@ -46,12 +46,12 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
     environment:
-      - POSTGRES_DB="${POSTGRES_DB:-nes_db}"
-      - POSTGRES_USER="${POSTGRES_USER:-nes_user}"
-      - POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-nes_password}"
-      - PGDATA="${PGDATA:-/var/lib/postgresql/data}"
-      - POSTGRES_HOST_AUTH_METHOD="md5"
-      - POSTGRES_INITDB_ARGS=--auth-host="md5"
+      POSTGRES_DB: nes_db
+      POSTGRES_USER: nes_user
+      POSTGRES_PASSWORD: nes_password
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_HOST_AUTH_METHOD: md5
+      POSTGRES_INITDB_ARGS: --auth-host=md5
     # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
     ports:

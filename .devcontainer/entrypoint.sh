@@ -121,17 +121,17 @@ else
 		LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-"utf8"}
 		cp application/config/config-sample-pgsql.php application/config/config.php
 	else
-		echo "Error: unrecognized LIMESURVEY_DB_TYPE: "$LIMESURVEY_DB_TYPE""
+		echo "Error: unrecognized LIMESURVEY_DB_TYPE: '$LIMESURVEY_DB_TYPE'"
 		exit 1
 	fi
 
 	echo "INFO: Using TCP connection"
-	sed -i "s#\("connectionString" => \).*,\$#\\1"pgsql:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB};",#g" application/config/config.php
-	sed -i "s#\("username" => \).*,\$#\\1"${LIMESURVEY_DB_USER}",#g" application/config/config.php
-	sed -i "s#\("password" => \).*,\$#\\1"${LIMESURVEY_DB_PASSWORD}",#g" application/config/config.php
-	sed -i "s#\("charset" => \).*,\$#\\1"${LIMESURVEY_DB_CHARSET}",#g" application/config/config.php
-	sed -i "s#\("tablePrefix" => \).*,\$#\\1"${LIMESURVEY_DB_TABLE_PREFIX}",#g" application/config/config.php
-	sed -i "s#\("urlFormat" => \).*,\$#\\1"${LIMESURVEY_URL_FORMAT}",#g" application/config/config.php
+	sed -i "s#\("connectionString" => \).*,\$#\\1'pgsql:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB};',#g" application/config/config.php
+	sed -i "s#\("username" => \).*,\$#\\1'${LIMESURVEY_DB_USER}',#g" application/config/config.php
+	sed -i "s#\("password" => \).*,\$#\\1'${LIMESURVEY_DB_PASSWORD}',#g" application/config/config.php
+	sed -i "s#\("charset" => \).*,\$#\\1'${LIMESURVEY_DB_CHARSET}',#g" application/config/config.php
+	sed -i "s#\("tablePrefix" => \).*,\$#\\1'${LIMESURVEY_DB_TABLE_PREFIX}',#g" application/config/config.php
+	sed -i "s#\("urlFormat" => \).*,\$#\\1'${LIMESURVEY_URL_FORMAT}',#g" application/config/config.php
 
 	# Makes sure that JSON-RPC interface will be available
 	sed -i "s#\(\$config\["RPCInterface"\]\ =\ \).*;\$#\\1"json";#g" application/config/config-defaults.php
@@ -285,6 +285,6 @@ else
 fi
 
 # Enables django runserver to write its logs to stdout
-chmod a+w /dev/pts/0
+#chmod a+w /dev/pts/0
 
 exec "$@"
