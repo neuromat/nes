@@ -1,13 +1,14 @@
 version: '3.8'
 
 services:
+  #TODO: Separete nes and limesurvey
   app:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
 
-    #volumes:
-    #1  - ../..:/nes:cached
+    volumes:
+      - ../..:/workspaces:cached
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
@@ -16,37 +17,36 @@ services:
     network_mode: service:db
 
     environment:
-      - NES_DB_TYPE=pgsql
-      - NES_DB_HOST=db_nes
-      - NES_DB=nes_db
-      - NES_DB_USER=nes_user
-      - NES_DB_PASSWORD=nes_password
-      - NES_DB_PORT=5432
-      - LIMESURVEY_HOST=limesurvey
-      - LIMESURVEY_PORT=80
-      - LIMESURVEY_ADMIN_USER=limesurvey_admin
-      - LIMESURVEY_ADMIN_PASSWORD=limesurvey_admin_password
-      - NES_SECRET_KEY=_my_very_secret_key_
-      - NES_IP=0.0.0.0
-      - NES_PORT=8000
-      - NES_ADMIN_USER=nes_admin
-      - NES_ADMIN_EMAIL=nes_admin@nesmail.com
-      - NES_ADMIN_PASSWORD=nes_admin_password
-
-    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+      NES_DB_TYPE: pgsql
+      NES_DB_HOST: localhost
+      NES_DB: nes_db
+      NES_DB_USER: nes_user
+      NES_DB_PASSWORD: nes_password
+      NES_DB_PORT: 5432
+      LIMESURVEY_HOST: limesurvey
+      LIMESURVEY_PORT: 80
+      LIMESURVEY_ADMIN_USER: limesurvey_admin
+      LIMESURVEY_ADMIN_PASSWORD: limesurvey_admin_password
+      NES_SECRET_KEY: _my_very_secret_key_
+      NES_IP: 0.0.0.0
+      NES_PORT: 8000
+      NES_ADMIN_USER: nes_admin
+      NES_ADMIN_EMAIL: nes_admin@nesmail.com
+      NES_ADMIN_PASSWORD: nes_admin_password
 
   db:
     image: postgres:latest
+
     restart: unless-stopped
+
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres_pass
-      PGDATA : /var/lib/postgresql/data
-
+      PGDATA: /var/lib/postgresql/data
     # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 

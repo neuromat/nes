@@ -4,8 +4,8 @@
 	"name": "Python 3 & PostgreSQL",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"workspaceMount": "source=${localWorkspaceFolder}/nes, target=/nes, type=bind",
-	"workspaceFolder": "/nes",
+	//"workspaceMount": "source=${localWorkspaceFolder}/nes, target=/nes, type=bind",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -20,15 +20,22 @@
 			"label": "Limesurvey port",
 			"onAutoForward": "notify"
 		},
+		"5432": {
+			"label": "Postgres default port",
+			"onAutoForward": "silent"
+		},
 		"8000": {
 			"label": "NES default port",
-			"onAutoForward": "notify"
+			"onAutoForward": "openBrowserOnce"
 		}
 	},
 	"containerEnv": {
-		//	"NES_DIR": "${localEnv:NES_DIR}",
-		//	"PG_DATA": "/var/lib/postgresql/data",
-		//	"LIMESURVEY_DIR": "/var/www/limesurvey"
+		"NES_DIR": "/workspaces/${localWorkspaceFolderBasename}",
+		"PG_DATA": "/var/lib/postgresql/data",
+		"LIMESURVEY_DIR": "/var/www/limesurvey"
+	},
+	"remoteEnv": {
+		//"TEST": "abc"
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "bash scripts/install-dev-tools.sh",

@@ -1,10 +1,11 @@
 FROM mcr.microsoft.com/devcontainers/python:1-3.10-bullseye
 
 ENV PYTHONUNBUFFERED 1
+ENV DEBIAN_FRONTEND=dialog
 
 # [Optional] Uncomment this section to install additional OS packages.
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends \
+RUN apt-get -y update --no-install-recommends && \ 
+    apt-get -y install --no-install-recommends \
     python3-dev \
     python-dev-is-python3 \
     python-is-python3 \
@@ -25,13 +26,11 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
 
-ARG NES_DIR=/workspaces/nes
-ENV NES_DIR=$NES_DIR
 
 # [Optional] If your requirements rarely change, uncomment this section to add them to the image.
-#COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
-#RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
-#    && rm -rf /tmp/pip-tmp
+COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
+RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
+    && rm -rf /tmp/pip-tmp
 
 
 ARG LIMESURVEY_VERSION=5.6.32+230731
@@ -56,8 +55,10 @@ RUN apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 
+ENV DEBIAN_FRONTEND=dialog
 
-#COPY entrypoint.sh /entrypoint.sh
+COPY .devcontainer/entrypoint.sh /entrypoint.sh
 
 #ENTRYPOINT [ "/entrypoint.sh" ]
 
+#CMD [ "/bin/sh", "-c", "python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]
