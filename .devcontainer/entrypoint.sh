@@ -52,138 +52,78 @@ NES_DB_PASSWORD=${NES_DB_PASSWORD:-'nes_db_password'}
 NES_PROJECT_PATH="${NES_DIR}/patientregistrationsystem/qdc"
 NES_SETUP_PATH="${NES_PROJECT_PATH}/qdc"
 
-
-
-if [ "$NES_DB_TYPE" != 'pgsql' ]
-then
+if [ "$NES_DB_TYPE" != 'pgsql' ]; then
 	echo "Unfortunately, for the time being, NES only works with PostgreSQL."
 	exit 1
 fi
 
-
 # LIMESURVEY SETUP ####################################################
-if [ -f "${APACHE2_CONF_DIR}"/httpd.conf ]
-then
+if [ -f /etc/apache2/sites-available/limesurvey.conf ]; then
 	echo "INFO: LimeSurvey-Apache configuration already provisioned"
 else
 	echo "INFO: Creating Apache2 configuration"
 	mkdir -p "$APACHE2_CONF_DIR"
 
-	cat <<-EOF > "${APACHE2_CONF_DIR}"/httpd.conf
-		ServerTokens Prod
-		PidFile /tmp/httpd.pid
-		ServerRoot /var/www
-		Listen $LIMESURVEY_PORT
+	cat <<-EOF >"/etc/apache2/sites-available/limesurvey.conf"
+		<VirtualHost localhost:80>
+			ServerName limesurvey.example.com
 
-		ServerSignature Off
+			DocumentRoot /var/www/limesurvey
 
-		LoadModule authn_file_module modules/mod_authn_file.so
-		LoadModule authn_core_module modules/mod_authn_core.so
-		LoadModule authz_host_module modules/mod_authz_host.so
-		LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-		LoadModule authz_user_module modules/mod_authz_user.so
-		LoadModule authz_core_module modules/mod_authz_core.so
-		LoadModule access_compat_module modules/mod_access_compat.so
-		LoadModule auth_basic_module modules/mod_auth_basic.so
-		LoadModule reqtimeout_module modules/mod_reqtimeout.so
-		LoadModule filter_module modules/mod_filter.so
-		LoadModule mime_module modules/mod_mime.so
-		LoadModule log_config_module modules/mod_log_config.so
-		LoadModule env_module modules/mod_env.so
-		LoadModule headers_module modules/mod_headers.so
-		LoadModule setenvif_module modules/mod_setenvif.so
-		LoadModule version_module modules/mod_version.so
-		LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
-		LoadModule unixd_module modules/mod_unixd.so
-		LoadModule status_module modules/mod_status.so
-		LoadModule autoindex_module modules/mod_autoindex.so
-		LoadModule dir_module modules/mod_dir.so
-		LoadModule alias_module modules/mod_alias.so
-		LoadModule rewrite_module modules/mod_rewrite.so
-		LoadModule negotiation_module modules/mod_negotiation.so
-		LoadModule expires_module modules/mod_expires.so
+			<Directory />
+					Options FollowSymLinks
+					AllowOverride None
+			</Directory>
 
-		LoadModule php_module modules/mod_php.so
+			<Directory /var/www/limesurvey>
+					Options Indexes FollowSymLinks MultiViews
+					AllowOverride None
+					Order allow,deny
+					Allow from all
+					AcceptPathInfo On
+			</Directory>
 
-		<IfModule unixd_module>
-		  		User apache
-		  		Group apache
-		</IfModule>
+			ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
 
-		<IfModule dir_module>
-		    DirectoryIndex /index.php index.php index.html
-		</IfModule>
+			<Directory "/usr/lib/cgi-bin">
+					AllowOverride None
+					Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+					Order allow,deny
+					Allow from all
+			</Directory>
 
-		# ServerName limesurvey.example.com
-
-		DocumentRoot $LIMESURVEY_DIR
-		<Directory />
-		    AllowOverride None
-		    Require all denied
-		</Directory>
-
-		<Directory $LIMESURVEY_DIR>
-		    Options Indexes FollowSymLinks MultiViews
-		    AllowOverride None
-		    Require all granted
-		    AcceptPathInfo On
-		</Directory>
-
-		<Files ".ht*">
-		    Require all denied
-		</Files>
-
-		ErrorLog /dev/stdout
-		ErrorLogFormat "[%t] [%l] [pid %P] %F: %E: [client %a] %M"
-
-		LogLevel info
-		<IfDefine LOGDEBUG>
-		    LogLevel debug
-		</IfDefine>
-
-		<IfModule log_config_module>
-		    LogFormat "[%{%a %b %d %H:%M:%S %Y}t] [access] [pid %P] %h %l %u %r %>s %b (%Ts)" access_log
-		    CustomLog "/dev/stdout" access_log
-		</IfModule>
-
-		TypesConfig /etc/apache2/mime.types
-		
-		AddType application/x-compress .Z
-		AddType application/x-gzip .gz .tgz
-		AddType application/x-httpd-php php
-		AddType application/x-httpd-php-source phps
-
-		<IfModule mime_magic_module>
-			MIMEMagicFile /etc/apache2/magic
-		</IfModule>
+			ErrorLog ${APACHE_LOG_DIR}/limesurvey_error.log
+			LogLevel warn
+			CustomLog ${APACHE_LOG_DIR}/limesurvey_access.log combined
+		</VirtualHost>
 	EOF
-	chown -R apache:apache "$APACHE2_CONF_DIR"
+
+	echo "ServerName 127.0.0.1" >> /etc/apache2/apache2.conf
+
 fi
 
-while ! nc -z "$LIMESURVEY_DB_HOST" "$LIMESURVEY_DB_PORT"
-do
+while ! nc -z "$LIMESURVEY_DB_HOST" "$LIMESURVEY_DB_PORT"; do
 	sleep 0.2
 done
 
-if [ -f "${LIMESURVEY_DIR}"/application/config/config.php ]
-then
+if [ -f "${LIMESURVEY_DIR}"/application/config/config.php ]; then
 	echo "INFO: LimeSurvey config.php already provisioned"
 else
 	cd "$LIMESURVEY_DIR"
 	echo "INFO: Creating LimeSurvey configuration"
 
 	if [ $LIMESURVEY_DB_TYPE = 'mysql' ]; then
-        echo 'INFO: Using MySQL configuration'
-        LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-'utf8mb4'}
-        cp application/config/config-sample-mysql.php application/config/config.php
-    elif [ $LIMESURVEY_DB_TYPE = 'pgsql' ]; then
-        echo 'INFO: Using PostgreSQL configuration'
-        LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-'utf8'}
-        cp application/config/config-sample-pgsql.php application/config/config.php
-    else
-    	echo 'Error: unrecognized LIMESURVEY_DB_TYPE: "$LIMESURVEY_DB_TYPE"' 
-    	exit 1
-    fi
+		echo 'INFO: Using MySQL configuration'
+		LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-'utf8mb4'}
+		cp application/config/config-sample-mysql.php application/config/config.php
+	elif [ $LIMESURVEY_DB_TYPE = 'pgsql' ]; then
+		echo 'INFO: Using PostgreSQL configuration'
+		LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-'utf8'}
+		cp application/config/config-sample-pgsql.php application/config/config.php
+	else
+		echo 'Error: unrecognized LIMESURVEY_DB_TYPE: "$LIMESURVEY_DB_TYPE"'
+		exit 1
+	fi
 
 	echo 'INFO: Using TCP connection'
 	sed -i "s#\('connectionString' => \).*,\$#\\1'pgsql:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB};',#g" application/config/config.php
@@ -196,30 +136,30 @@ else
 	# Makes sure that JSON-RPC interface will be available
 	sed -i "s#\(\$config\['RPCInterface'\]\ =\ \).*;\$#\\1'json';#g" application/config/config-defaults.php
 
+	# Check if LIMESURVEY_DB_PASSWORD is set
+	if [ -z "$LIMESURVEY_DB_PASSWORD" ]; then
+		echo >&2 'Error: Missing LIMESURVEY_DB_PASSWORD'
+		exit 1
+	fi
 
 	# Check if LIMESURVEY_DB_PASSWORD is set
-    if [ -z "$LIMESURVEY_DB_PASSWORD" ]; then
-        echo >&2 'Error: Missing LIMESURVEY_DB_PASSWORD'
-        exit 1
-    fi
+	if [ -z "$LIMESURVEY_ADMIN_PASSWORD" ]; then
+		echo >&2 'Error: Missing LIMESURVEY_ADMIN_PASSWORD'
+		exit 1
+	fi
 
-    # Check if LIMESURVEY_DB_PASSWORD is set
-    if [ -z "$LIMESURVEY_ADMIN_PASSWORD" ]; then
-        echo >&2 'Error: Missing LIMESURVEY_ADMIN_PASSWORD'
-        exit 1
-    fi
+	echo 'INFO: Running console.php install'
+	echo su apache -c php "${LIMESURVEY_DIR}"/application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
 
-    echo 'INFO: Running console.php install'
-    su apache -c php application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
+	#su apache -c php "${LIMESURVEY_DIR}"/application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
 fi
 
 # NES SETUP ####################################################
-if [ -f "${NES_SETUP_PATH}"/wsgi.py ]
-then
+if [ -f "${NES_SETUP_PATH}"/wsgi.py ]; then
 	echo "INFO: NES wsgi.py file already provisioned"
 else
 	echo "INFO: Creating NES wsgi.py file"
-	cat <<-EOF > "${NES_SETUP_PATH}"/wsgi.py
+	cat <<-EOF >"${NES_SETUP_PATH}"/wsgi.py
 		import os
 		import sys
 		import site
@@ -234,12 +174,11 @@ else
 	chown -R nobody "${NES_SETUP_PATH}"/wsgi.py
 fi
 
-if [ -f "${NES_SETUP_PATH}"/settings_local.py ]
-then
+if [ -f "${NES_SETUP_PATH}"/settings_local.py ]; then
 	echo "INFO: NES settings_local.py file already provisioned"
 else
 	echo "INFO: Creating NES settings_local.py file"
-	cat <<-EOF > "${NES_SETUP_PATH}"/settings_local.py
+	cat <<-EOF >"${NES_SETUP_PATH}"/settings_local.py
 		SECRET_KEY = "$NES_SECRET_KEY"
 		DEBUG = True
 		DEBUG404 = True
@@ -267,82 +206,83 @@ else
 	chown -R nobody "${NES_SETUP_PATH}"/settings_local.py
 fi
 
-while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"
-do
+while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"; do
 	sleep 0.2
 done
 
 # INITIALIZE DATA ####################################################
 
 ## PG DB
-if [ -f "${PGDATA}"/.db_users.placeholder ]
-then
-	echo "INFO: DB users already provisioned"
-else
-	echo "INFO: Creating users in postgres"
-	cd /
-	su postgres -c "psql start -w -D $PGDATA"
-	cat <<-EOF | su postgres -c "psql"
-		CREATE USER $NES_DB_USER WITH PASSWORD '$NES_DB_PASSWORD' ;
-		CREATE DATABASE $NES_DB OWNER $NES_DB_USER ;
-		GRANT ALL PRIVILEGES ON DATABASE $NES_DB TO $NES_DB_USER ;
-		ALTER ROLE $NES_DB_USER WITH CREATEDB;
-		CREATE USER $LIMESURVEY_DB_USER WITH PASSWORD '$LIMESURVEY_DB_PASSWORD' ;
-		CREATE DATABASE $LIMESURVEY_DB OWNER $LIMESURVEY_DB_USER ;
-		GRANT ALL PRIVILEGES ON DATABASE $LIMESURVEY_DB TO $LIMESURVEY_DB_USER ;
-	EOF
-	su postgres -c "psql stop -w -D $PGDATA"
-	touch "${PGDATA}"/.db_users.placeholder
-fi
+# if [ -f "${PGDATA}"/.db_users.placeholder ]; then
+# 	echo "INFO: DB users already provisioned"
+# else
+# 	echo "INFO: Creating users in postgres"
+# 	cd /
+# 	su postgres -c "psql start -w -D $PGDATA"
+# 	cat <<-EOF | su postgres -c "psql"
+# 		CREATE USER $NES_DB_USER WITH PASSWORD '$NES_DB_PASSWORD' ;
+# 		CREATE DATABASE $NES_DB OWNER $NES_DB_USER ;
+# 		GRANT ALL PRIVILEGES ON DATABASE $NES_DB TO $NES_DB_USER ;
+# 		ALTER ROLE $NES_DB_USER WITH CREATEDB;
+# 		CREATE USER $LIMESURVEY_DB_USER WITH PASSWORD '$LIMESURVEY_DB_PASSWORD' ;
+# 		CREATE DATABASE $LIMESURVEY_DB OWNER $LIMESURVEY_DB_USER ;
+# 		GRANT ALL PRIVILEGES ON DATABASE $LIMESURVEY_DB TO $LIMESURVEY_DB_USER ;
+# 	EOF
+# 	su postgres -c "psql stop -w -D $PGDATA"
+# 	touch "${PGDATA}"/.db_users.placeholder
+# fi
 
-## Limesurvey 
-if [ -f "${LIMESURVEY_DIR}"/.limesurvey_superuser.placeholder ]
-then
-	echo "INFO: LimeSurvey superuser already provisioned"
-else
-	echo "INFO: Creating superuser in LimeSurvey"
-	su postgres -c "psql start -w -D $PGDATA"
-	cd "$LIMESURVEY_DIR"
-	php7 application/commands/console.php install \
-		"$LIMESURVEY_ADMIN_USER" \
-		"$LIMESURVEY_ADMIN_PASSWORD" \
-		"$LIMESURVEY_ADMIN_NAME" \
-		"$LIMESURVEY_ADMIN_EMAIL"
-	cd / && su postgres -c "psql stop -w -D $PGDATA"
-	touch "${LIMESURVEY_DIR}"/.limesurvey_superuser.placeholder
-fi
+# ## Limesurvey
+# if [ -f "${LIMESURVEY_DIR}"/.limesurvey_superuser.placeholder ]; then
+# 	echo "INFO: LimeSurvey superuser already provisioned"
+# else
+# 	echo "INFO: Creating superuser in LimeSurvey"
+# 	su postgres -c "psql start -w -D $PGDATA"
+# 	cd "$LIMESURVEY_DIR"
+# 	php7 application/commands/console.php install \
+# 		"$LIMESURVEY_ADMIN_USER" \
+# 		"$LIMESURVEY_ADMIN_PASSWORD" \
+# 		"$LIMESURVEY_ADMIN_NAME" \
+# 		"$LIMESURVEY_ADMIN_EMAIL"
+# 	cd / && su postgres -c "psql stop -w -D $PGDATA"
+# 	touch "${LIMESURVEY_DIR}"/.limesurvey_superuser.placeholder
+#fi
 
 ## NES
-if [ -f "${NES_DIR}"/.nes_initialization.placeholder ]
-then
+if [ -f "${NES_DIR}"/.nes_initialization.placeholder ]; then
 	echo "INFO: NES data has already been initialized"
 else
 	echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
 	cd "$NES_PROJECT_PATH"
 
-	cat <<-EOF > /tmp/create_superuser.py
+	cat <<-EOF >/tmp/create_superuser.py
 		from django.contrib.auth import get_user_model
 		User = get_user_model()
 		User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
 	EOF
 
+	echo "	INFO:Migrate"
 	python3 -u manage.py migrate
 	# Different versions may have different commands
-	python3 -u manage.py shell < add_initial_data.py  || true
+	echo "	INFO:add_initial_data.py"
+	python3 -u manage.py shell <add_initial_data.py || true
+	echo "	INFO:load_initial_data.py"
 	python3 -u manage.py loaddata load_initial_data.json || true
-	python3 -u manage.py shell < /tmp/create_superuser.py || true
+	echo "	INFO:create_super_ser.py"
+	python3 -u manage.py shell </tmp/create_superuser.py || true
+	echo "	INFO:import cid10"
 	python3 -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
+	echo "	INFO:createcachetable"
 	python3 -u manage.py createcachetable || true
 
 	rm /tmp/create_superuser.py
 
 	# If NES was installed from a release it won't have a .git directory
-	chown -R nobody "${NES_DIR}"/.git  || true
+	chown -R nobody "${NES_DIR}"/.git || true
 	chown -R nobody "${NES_DIR}"/patientregistrationsystem
 
 	touch "${NES_DIR}"/.nes_initialization.placeholder
 fi
-
 
 # Enables django runserver to write its logs to stdout
 chmod a+w /dev/pts/0

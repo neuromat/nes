@@ -5,15 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Module",
+            "name": "Python: Django",
             "type": "python",
             "request": "launch",
-            "program": "/com.docker.devenvironments.code/patientregistrationsystem/qdc/manage.py",
+            "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
             "args": [
                 "runserver",
                 "localhost:8000"
             ],
-            "justMyCode": false
+            "django": true,
+            "justMyCode": true
         }
     ]
 }

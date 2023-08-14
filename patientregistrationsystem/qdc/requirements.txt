@@ -39,7 +39,7 @@ django-fixture-magic>=0.1.5
 
 mne==1.3.1
 
-#-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
+-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
 
 # For testing
 goodtables==2.5.4

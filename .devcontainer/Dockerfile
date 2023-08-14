@@ -42,19 +42,15 @@ ENV LIMESURVEY_DIR=$LIMESURVEY_DIR
 
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
+    wget \
     php \
+    php-pgsql \
     php-gd \
-    php-fpm \
     php-imap \
     php-mbstring \
     php-ldap \
     php-zip \
-    php-xml \
-    php-simplexml \
-    php-ctype \
-    wget \
-    php-pgsql \
-    php-json && \
+    php-xml && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists*
@@ -62,8 +58,8 @@ RUN apt-get -y update --no-install-recommends && \
 RUN mkdir -p "$LIMESURVEY_DIR" && \
     wget "$LIMESURVEY_URL_DOWNLOAD" -qO - | \
     tar xz --strip-components=1 -C "$LIMESURVEY_DIR" && \
-    useradd apache && \
-    chown -R apache:apache "$LIMESURVEY_DIR" && \
+    #useradd apache && \
+    chown -R www-data.www-data "$LIMESURVEY_DIR" && \
     chmod -R o-rwx "$LIMESURVEY_DIR" && \
     chmod -R 770 "${LIMESURVEY_DIR}"/application/config/ && \
     chmod -R 770 "${LIMESURVEY_DIR}"/upload/ && \
@@ -75,8 +71,11 @@ VOLUME $LIMESURVEY_DIR
 # END
 ENV DEBIAN_FRONTEND=dialog
 
+
+
 COPY .devcontainer/entrypoint.sh /
 
+#SHELL ["/bin/sh","-exc"]
 #ENTRYPOINT [ "entrypoint.sh" ]
 
 #CMD [ "/bin/sh", "-c", "python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]

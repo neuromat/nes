@@ -38,8 +38,8 @@
 		//"TEST": "abc"
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
-	//"postCreateCommand": "sudo sh $NES_DIR/.devcontainer/entrypoint.sh",
-	"postStartCommand": "a2ensite limesurvey && service apache2 start",
+	"postCreateCommand": "sh $NES_DIR/.devcontainer/entrypoint.sh",
+	"postStartCommand": "service apache2 start && a2dissite 000-default.conf && a2ensite limesurvey && service apache2 reload",
 	"overrideCommand": false,
 	"mounts": [
 		//"source=${localWorkspaceFolder}/app-data,target=/data,type=bind,consistency=cached"
@@ -62,7 +62,9 @@
 				"ms-python.vscode-pylance",
 				"ms-python.pylint",
 				"ms-python.flake8",
-				"donjayamanne.python-extension-pack"
+				"donjayamanne.python-extension-pack",
+				"foxundermoon.shell-format",
+				"mrmlnc.vscode-apache"
 			]
 		}
 	},
