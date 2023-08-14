@@ -1,10 +1,10 @@
-FROM mcr.microsoft.com/devcontainers/python:1-3.10-bullseye
+FROM mcr.microsoft.com/devcontainers/python:1-3.10-bookworm
 
 ENV PYTHONUNBUFFERED 1
 ENV DEBIAN_FRONTEND=dialog
 
 # [Optional] Uncomment this section to install additional OS packages.
-RUN apt-get -y update --no-install-recommends && \ 
+RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
     python3-dev \
     python-dev-is-python3 \
@@ -21,8 +21,10 @@ RUN apt-get -y update --no-install-recommends && \
     #hdf5-dev && \
     apache2 \
     libapache2-mod-wsgi-py3 \
-    #postgresql \
+    netcat-traditional \
     graphviz && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
 
@@ -32,11 +34,30 @@ COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
 RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
-
+# Limesurvey
 ARG LIMESURVEY_VERSION=5.6.32+230731
 ARG LIMESURVEY_URL_DOWNLOAD=https://github.com/LimeSurvey/LimeSurvey/archive/$LIMESURVEY_VERSION.tar.gz
 ARG LIMESURVEY_DIR=/var/www/limesurvey
 ENV LIMESURVEY_DIR=$LIMESURVEY_DIR
+
+RUN apt-get -y update --no-install-recommends && \
+    apt-get -y install --no-install-recommends \
+    php \
+    php-gd \
+    php-fpm \
+    php-imap \
+    php-mbstring \
+    php-ldap \
+    php-zip \
+    php-xml \
+    php-simplexml \
+    php-ctype \
+    wget \
+    php-pgsql \
+    php-json && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists*
 
 RUN mkdir -p "$LIMESURVEY_DIR" && \
     wget "$LIMESURVEY_URL_DOWNLOAD" -qO - | \
@@ -51,14 +72,11 @@ RUN mkdir -p "$LIMESURVEY_DIR" && \
 
 VOLUME $LIMESURVEY_DIR
 
-RUN apt-get autoremove -y && \
-    apt-get clean -y && \
-    rm -rf /var/lib/apt/lists/*
-
+# END
 ENV DEBIAN_FRONTEND=dialog
 
-COPY .devcontainer/entrypoint.sh /entrypoint.sh
+COPY .devcontainer/entrypoint.sh /
 
-#ENTRYPOINT [ "/entrypoint.sh" ]
+#ENTRYPOINT [ "entrypoint.sh" ]
 
 #CMD [ "/bin/sh", "-c", "python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]

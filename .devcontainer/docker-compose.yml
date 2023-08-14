@@ -33,6 +33,9 @@ services:
       NES_ADMIN_USER: nes_admin
       NES_ADMIN_EMAIL: nes_admin@nesmail.com
       NES_ADMIN_PASSWORD: nes_admin_password
+      
+    depends_on:
+      - db
 
   db:
     image: postgres:latest
@@ -49,6 +52,8 @@ services:
       PGDATA: /var/lib/postgresql/data
     # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
+    ports:
+      - "5432:5432"
 
 volumes:
   postgres-data:
