@@ -3,7 +3,7 @@
     "fields": {
       "name_en": "Auditory",
       "name": "Auditivo",
-      "name_pt_BR": "Auditivo"
+      "name_pt_br": "Auditivo"
     },
     "model": "experiment.stimulustype",
     "pk": 1
@@ -12,7 +12,7 @@
     "fields": {
       "name_en": "Olfactory",
       "name": "Olfativo",
-      "name_pt_BR": "Olfativo"
+      "name_pt_br": "Olfativo"
     },
     "model": "experiment.stimulustype",
     "pk": 2
@@ -21,7 +21,7 @@
     "fields": {
       "name_en": "Visual",
       "name": "Visual",
-      "name_pt_BR": "Visual"
+      "name_pt_br": "Visual"
     },
     "model": "experiment.stimulustype",
     "pk": 3
@@ -30,7 +30,7 @@
     "fields": {
       "name_en": "Somatosensory",
       "name": "Somatosensorial",
-      "name_pt_BR": "Somatosensorial"
+      "name_pt_br": "Somatosensorial"
     },
     "model": "experiment.stimulustype",
     "pk": 4
@@ -39,7 +39,7 @@
     "fields": {
       "name_en": "Interoceptive",
       "name": "Interoceptivo",
-      "name_pt_BR": "Interoceptivo"
+      "name_pt_br": "Interoceptivo"
     },
     "model": "experiment.stimulustype",
     "pk": 6
@@ -49,7 +49,7 @@
     "fields": {
       "name_en": "Gustatory",
       "name": "Gustativo",
-      "name_pt_BR": "Gustativo"
+      "name_pt_br": "Gustativo"
     },
     "pk": 7
   },
@@ -76,7 +76,7 @@
       "name": "EEG raw data - EGI simple binary (MNE)",
       "description_en": null,
       "description": null,
-      "name_pt_BR": "Dados brutos de EEG - arquivo binário EGI (MNE)",
+      "name_pt_br": "Dados brutos de EEG - arquivo binário EGI (MNE)",
       "extension": ".raw .egi",
       "nes_code": "MNE-RawFromEGI",
       "description_pt_BR": null
@@ -94,7 +94,7 @@
       "name": "Outro",
       "description_en": null,
       "description": null,
-      "name_pt_BR": "Outro",
+      "name_pt_br": "Outro",
       "extension": ".*",
       "nes_code": "other",
       "description_pt_BR": null
@@ -112,7 +112,7 @@
       "name": "Text file",
       "description_en": null,
       "description": null,
-      "name_pt_BR": "Arquivo texto",
+      "name_pt_br": "Arquivo texto",
       "extension": ".txt",
       "nes_code": "txt",
       "description_pt_BR": null
@@ -130,7 +130,7 @@
       "name": "EEG raw data - Brain Vision binary (MNE)",
       "description_en": "File format to stores the three different filetypes (.vhdr, .eeg, .vmrk) from Brain Vision Recorder Software",
       "description": null,
-      "name_pt_BR": "Dados brutos de EEG - Brain Vision (MNE)",
+      "name_pt_br": "Dados brutos de EEG - Brain Vision (MNE)",
       "extension": ".eeg .vhdr .vmrk",
       "nes_code": "MNE-RawFromBrainVision",
       "description_pt_BR": "Formato de arquivo para armazenar três tipos de arquivos diferentes (.vhdr, .eeg, .vmrk) do software Brain Vision Recorder"
@@ -143,7 +143,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Wired",
-      "name_pt_BR": "Com fio",
+      "name_pt_br": "Com fio",
       "name": "Com fio"
     }
   },
@@ -152,7 +152,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Wireless",
-      "name_pt_BR": "Sem fio",
+      "name_pt_br": "Sem fio",
       "name": "Sem fio"
     }
   },
@@ -161,7 +161,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Telemetric",
-      "name_pt_BR": "Telem\u00e9trico",
+      "name_pt_br": "Telem\u00e9trico",
       "name": "Telem\u00e9trico"
     }
   },
@@ -170,7 +170,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Monopolar",
-      "name_pt_BR": "Monopolar",
+      "name_pt_br": "Monopolar",
       "name": "Monopolar"
     }
   },
@@ -179,7 +179,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Differential",
-      "name_pt_BR": "Diferencial",
+      "name_pt_br": "Diferencial",
       "name": "Diferencial"
     }
   },
@@ -188,7 +188,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Double differential",
-      "name_pt_BR": "Diferencial duplo",
+      "name_pt_br": "Diferencial duplo",
       "name": "Diferencial duplo"
     }
   },
@@ -197,7 +197,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Monopolar",
-      "name_pt_BR": "Monopolar",
+      "name_pt_br": "Monopolar",
       "name": "Monopolar"
     }
   },
@@ -206,7 +206,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Bipolar",
-      "name_pt_BR": "Bipolar",
+      "name_pt_br": "Bipolar",
       "name": "Bipolar"
     }
   },
@@ -215,7 +215,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Tripolar",
-      "name_pt_BR": "Tripolar",
+      "name_pt_br": "Tripolar",
       "name": "Tripolar"
     }
   },
@@ -224,7 +224,7 @@
     "pk": 4,
     "fields": {
       "name_en": "Multipolar",
-      "name_pt_BR": "Multipolar",
+      "name_pt_br": "Multipolar",
       "name": "Multipolar"
     }
   },
@@ -233,7 +233,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Area",
-      "name_pt_BR": "\u00c1rea",
+      "name_pt_br": "\u00c1rea",
       "name": "\u00c1rea"
     }
   },
@@ -242,7 +242,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Diameter",
-      "name_pt_BR": "Di\u00e2metro",
+      "name_pt_br": "Di\u00e2metro",
       "name": "Di\u00e2metro"
     }
   },
@@ -251,7 +251,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Size",
-      "name_pt_BR": "Tamanho",
+      "name_pt_br": "Tamanho",
       "name": "Tamanho"
     }
   },
@@ -260,7 +260,7 @@
     "pk": 4,
     "fields": {
       "name_en": "Width",
-      "name_pt_BR": "Largura",
+      "name_pt_br": "Largura",
       "name": "Largura"
     }
   },
@@ -269,7 +269,7 @@
     "pk": 5,
     "fields": {
       "name_en": "Height",
-      "name_pt_BR": "Altura",
+      "name_pt_br": "Altura",
       "name": "Altura"
     }
   },
@@ -358,7 +358,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Disc",
-      "name_pt_BR": "Disco",
+      "name_pt_br": "Disco",
       "name": "Disco",
       "measure_systems": [
         1,
@@ -371,7 +371,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Bar",
-      "name_pt_BR": "Barra",
+      "name_pt_br": "Barra",
       "name": "Barra",
       "measure_systems": [
         3
@@ -383,7 +383,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Rectangle",
-      "name_pt_BR": "Ret\u00e2ngulo",
+      "name_pt_br": "Ret\u00e2ngulo",
       "name": "Ret\u00e2ngulo",
       "measure_systems": [
         1,
@@ -396,7 +396,7 @@
     "model": "experiment.coilshape",
     "pk": 1,
     "fields": {
-      "name_pt_BR": "Bobina circular",
+      "name_pt_br": "Bobina circular",
       "name": "Bobina circular",
       "name_en": "Round coil"
     }
@@ -405,7 +405,7 @@
     "model": "experiment.coilshape",
     "pk": 2,
     "fields": {
-      "name_pt_BR": "Bobina em forma de oito (borboleta)",
+      "name_pt_br": "Bobina em forma de oito (borboleta)",
       "name": "Bobina em forma de oito (borboleta)",
       "name_en": "Figure-eight coil (butterfly)"
     }
@@ -414,7 +414,7 @@
     "model": "experiment.coilshape",
     "pk": 3,
     "fields": {
-      "name_pt_BR": "Double-cone coil",
+      "name_pt_br": "Double-cone coil",
       "name": "Double-cone coil",
       "name_en": "Double-cone coil"
     }
@@ -423,7 +423,7 @@
     "model": "experiment.coilshape",
     "pk": 4,
     "fields": {
-      "name_pt_BR": "Bobina de quatro folhas (four-leaf)",
+      "name_pt_br": "Bobina de quatro folhas (four-leaf)",
       "name": "Bobina de quatro folhas (four-leaf)",
       "name_en": "Four-leaf coil"
     }
@@ -432,7 +432,7 @@
     "model": "experiment.coilshape",
     "pk": 5,
     "fields": {
-      "name_pt_BR": "Bobina em forma de H (H-coil)",
+      "name_pt_br": "Bobina em forma de H (H-coil)",
       "name": "Bobina em forma de H (H-coil)",
       "name_en": "H-coil"
     }
@@ -1745,7 +1745,7 @@
       "description_en": "Kinematic measures",
       "description_pt_BR": "Medidas cinem\u00e1ticas",
       "description": "Medidas cinem\u00e1ticas",
-      "name_pt_BR": "Medidas cinem\u00e1ticas",
+      "name_pt_br": "Medidas cinem\u00e1ticas",
       "name_en": "Kinematic measures"
     },
     "pk": 1
@@ -1757,7 +1757,7 @@
       "description_en": "Stabilometry",
       "description_pt_BR": "Estabilometria",
       "description": "Estabilometria",
-      "name_pt_BR": "Estabilometria",
+      "name_pt_br": "Estabilometria",
       "name_en": "Stabilometry"
     },
     "pk": 2
@@ -1769,7 +1769,7 @@
       "description_en": "Response time",
       "description_pt_BR": "Tempo de resposta",
       "description": "Tempo de resposta",
-      "name_pt_BR": "Tempo de resposta",
+      "name_pt_br": "Tempo de resposta",
       "name_en": "Response time"
     },
     "pk": 3
@@ -1781,7 +1781,7 @@
       "description_en": "Psychophysical measures",
       "description_pt_BR": "Medidas psicof\u00edsicas",
       "description": "Medidas psicof\u00edsicas",
-      "name_pt_BR": "Medidas psicof\u00edsicas",
+      "name_pt_br": "Medidas psicof\u00edsicas",
       "name_en": "Psychophysical measures"
     },
     "pk": 4
@@ -1793,7 +1793,7 @@
       "description_en": "Verbal response",
       "description_pt_BR": "Resposta verbal",
       "description": "Resposta verbal",
-      "name_pt_BR": "Resposta verbal",
+      "name_pt_br": "Resposta verbal",
       "name_en": "Verbal response"
     },
     "pk": 5
@@ -1805,7 +1805,7 @@
       "description_en": "Psychometric scales",
       "description_pt_BR": "Escalas psicom\u00e9tricas",
       "description": "Escalas psicom\u00e9tricas",
-      "name_pt_BR": "Escalas psicom\u00e9tricas",
+      "name_pt_br": "Escalas psicom\u00e9tricas",
       "name_en": "Psychometric scales"
     },
     "pk": 6
@@ -1817,7 +1817,7 @@
       "description_en": "Unit recording",
       "description_pt_BR": "Registro unit\u00e1rio",
       "description": "Registro unit\u00e1rio",
-      "name_pt_BR": "Registro unit\u00e1rio",
+      "name_pt_br": "Registro unit\u00e1rio",
       "name_en": "Unit recording"
     },
     "pk": 7
@@ -1829,7 +1829,7 @@
       "description_en": "Multiunit recording",
       "description_pt_BR": "Registro multiunit\u00e1rio",
       "description": "Registro multiunit\u00e1rio",
-      "name_pt_BR": "Registro multiunit\u00e1rio",
+      "name_pt_br": "Registro multiunit\u00e1rio",
       "name_en": "Multiunit recording"
     },
     "pk": 8

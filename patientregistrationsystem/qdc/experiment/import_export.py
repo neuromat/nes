@@ -284,7 +284,7 @@ class ExportExperiment:
                 relative_filepath = data[index]["fields"][
                     MODELS_WITH_FILE_FIELD[data[index]["model"]]
                 ]
-                if relative_filepath is not "":
+                if relative_filepath != "":
                     absolute_filepath = path.join(
                         settings.MEDIA_ROOT, relative_filepath
                     )

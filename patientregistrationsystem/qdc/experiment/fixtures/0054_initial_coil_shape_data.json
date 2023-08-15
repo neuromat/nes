@@ -3,7 +3,7 @@
     "model": "experiment.coilshape",
     "pk": 1,
     "fields": {
-      "name_pt_BR": "Bobina circular",
+      "name_pt_br": "Bobina circular",
       "name": "Bobina circular",
       "name_en": "Round coil"
     }
@@ -12,7 +12,7 @@
     "model": "experiment.coilshape",
     "pk": 2,
     "fields": {
-      "name_pt_BR": "Bobina em forma de oito (borboleta)",
+      "name_pt_br": "Bobina em forma de oito (borboleta)",
       "name": "Bobina em forma de oito (borboleta)",
       "name_en": "Figure-eight coil (butterfly)"
     }
@@ -21,7 +21,7 @@
     "model": "experiment.coilshape",
     "pk": 3,
     "fields": {
-      "name_pt_BR": "Double-cone coil",
+      "name_pt_br": "Double-cone coil",
       "name": "Double-cone coil",
       "name_en": "Double-cone coil"
     }
@@ -30,7 +30,7 @@
     "model": "experiment.coilshape",
     "pk": 4,
     "fields": {
-      "name_pt_BR": "Bobina de quatro folhas (four-leaf)",
+      "name_pt_br": "Bobina de quatro folhas (four-leaf)",
       "name": "Bobina de quatro folhas (four-leaf)",
       "name_en": "Four-leaf coil"
     }
@@ -39,7 +39,7 @@
     "model": "experiment.coilshape",
     "pk": 5,
     "fields": {
-      "name_pt_BR": "Bobina em forma de H (H-coil)",
+      "name_pt_br": "Bobina em forma de H (H-coil)",
       "name": "Bobina em forma de H (H-coil)",
       "name_en": "H-coil"
     }

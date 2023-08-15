@@ -11,17 +11,17 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RenameField(
             model_name="alcoholfrequency",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="alcoholperiod",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="amountcigarettes",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
@@ -36,32 +36,32 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name="fleshtone",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="gender",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="maritalstatus",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="payment",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="religion",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="schooling",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
     ]

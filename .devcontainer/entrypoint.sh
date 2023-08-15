@@ -28,7 +28,7 @@ NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes"}
 #SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
 
 # Entrypoint only variable
-NES_PROJECT_PATH="${NES_DIR}/patientregistrationsystem/qdc"
+NES_PROJECT_PATH="$NES_DIR/patientregistrationsystem/qdc"
 
 if [ "$NES_DB_TYPE" != "pgsql" ]; then
     echo "Unfortunately, for the time being, NES only works with PostgreSQL."
@@ -55,7 +55,7 @@ else
 		application = get_wsgi_application()
 	EOF
     sudo chown -R nobody "$NES_PROJECT_PATH"/qdc/wsgi.py
-	touch "$NES_SETUP_PATH"/nes_wsgi.placeholder
+    touch "$NES_SETUP_PATH"/nes_wsgi.placeholder
 fi
 
 if [ -f "$NES_SETUP_PATH"/nes_settings.placeholder ]; then
@@ -88,7 +88,7 @@ else
 		LOGO_INSTITUTION = "logo-institution.png"
 	EOF
     sudo chown -R nobody "$NES_PROJECT_PATH"/qdc/settings_local.py
-	touch "$NES_SETUP_PATH"/nes_settings.placeholder
+    touch "$NES_SETUP_PATH"/nes_settings.placeholder
 fi
 
 while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"; do

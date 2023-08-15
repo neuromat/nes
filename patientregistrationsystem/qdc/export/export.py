@@ -4339,7 +4339,7 @@ class ExportExecution:
         :param field: str, LimeSurvey question
         :return: str, substring of field
         """
-        return re.search("([a-zA-Z0-9_]+)(\[?)", field).group(1)
+        return re.search(r"([a-zA-Z0-9_]+)(\[?)", field).group(1)
 
     @staticmethod
     def _randomword(length):

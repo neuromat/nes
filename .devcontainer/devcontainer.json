@@ -37,7 +37,7 @@
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
 	//"postCreateCommand": "sudo /entrypoint.sh",
-	//"postStartCommand": "sudo ${localWorkspaceFolder}/scripts/init_data.sh",
+	"postStartCommand": "#!/bin/sh -c  ${localWorkspaceFolder}/scripts/init_data.sh",
 	"overrideCommand": false,
 	"mounts": [
 		//"source=${localWorkspaceFolder}/app-data,target=/data,type=bind,consistency=cached"
@@ -59,12 +59,12 @@
 				"ms-python.isort",
 				"ms-python.vscode-pylance",
 				"ms-python.pylint",
-				//"ms-python.flake8",
 				"ms-python.mypy-type-checker",
 				"donjayamanne.python-extension-pack",
 				"mrmlnc.vscode-apache",
 				"mtxr.sqltools",
-				"mtxr.sqltools-driver-pg"
+				"mtxr.sqltools-driver-pg",
+				"shakram02.bash-beautify"
 			]
 		}
 	},

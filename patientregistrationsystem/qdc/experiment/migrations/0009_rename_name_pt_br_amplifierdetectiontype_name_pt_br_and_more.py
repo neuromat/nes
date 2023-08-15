@@ -11,22 +11,22 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RenameField(
             model_name="amplifierdetectiontype",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="coilshape",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="electrodeconfiguration",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="electrodeshape",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name="fileformat",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
@@ -46,22 +46,22 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name="informationtype",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="measuresystem",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="stimulustype",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
         migrations.RenameField(
             model_name="tetheringsystem",
-            old_name="name_pt_BR",
+            old_name="name_pt_br",
             new_name="name_pt_br",
         ),
     ]

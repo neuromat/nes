@@ -70,6 +70,6 @@ def update_translated_data(data):
                     setattr(record, attrib_english, value_english)
                     # print(attrib_english, value_english)
 
-            # print(record.name_pt_BR, record.name_en)
+            # print(record.name_pt_br, record.name_en)
             # print("---------------------------------")
             record.save()

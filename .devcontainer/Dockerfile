@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:3.10-bookworm
+FROM mcr.microsoft.com/devcontainers/python:3.11-bookworm
 
 ENV PYTHONUNBUFFERED 1
 ENV DEBIAN_FRONTEND=dialog
@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=dialog
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
     python-is-python3 \
-    python3-pip \
+    pip \
     libpng-dev \
     libpq-dev \
     #freetype-dev \
@@ -37,9 +37,9 @@ ENV DEBIAN_FRONTEND=dialog
 
 COPY .devcontainer/entrypoint.sh /
 
-RUN sudo chmod 777 /entrypoint.sh
+#RUN sudo chmod 777 /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
 SHELL ["/bin/sh", "-c"]
-CMD [ "$NES_DIR/scripts/init_data.sh" ]
+CMD [ "/bin/sh", "-c", "$NES_DIR/scripts/init_data.sh" ]

@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
             "args": [
                 "runserver",
-                "localhost:80}"
+                "localhost:80"
             ],
             "django": true,
             "justMyCode": false,
