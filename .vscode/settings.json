@@ -4,17 +4,10 @@
         "editor.formatOnSave": true
     },
     "python.analysis.typeCheckingMode": "basic",
+    "python.autoComplete.extraPaths": [
+        "${localWorkspaceFolder}"
+    ],
     "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "server": "172.19.0.2",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "database": "nes_db",
-            "password": "nes_password",
-            "username": "nes_user",
-            "name": "postgres_nes"
-        },
         {
             "previewLimit": 50,
             "server": "172.19.0.2",
@@ -24,6 +17,16 @@
             "database": "postgres",
             "username": "postgres",
             "password": "postgres_pass"
+        },
+        {
+            "previewLimit": 50,
+            "server": "172.19.0.2",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "database": "nes_db",
+            "password": "new_password",
+            "username": "nes_user",
+            "name": "postgres_nes"
         }
     ]
 }

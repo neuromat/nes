@@ -1,22 +1,23 @@
 import os
-import sys
 import platform
+import sys
+from distutils.version import StrictVersion
+from functools import partial
 
+import pip
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.urls import reverse
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.utils.translation import activate, gettext as _
-from django.utils.safestring import mark_safe
-from git import Repo
-import pip
 from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS, connections
 from django.db.migrations.executor import MigrationExecutor
-from functools import partial
-from distutils.version import StrictVersion
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+from django.utils.translation import activate
+from django.utils.translation import gettext as _
+from git.repo import Repo
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -81,7 +82,7 @@ def check_upgrade(request):
     if ".git" in list_dir:
         repo = Repo(path_git_repo_local)
         git = repo.git
-        current_tag = git.describe()
+        current_tag = git.description
         if current_tag in repo.tags:
             repo.remotes.origin.fetch()
             new_version_tag = sorted(
@@ -159,7 +160,7 @@ def upgrade_nes(request):
 
         try:
             pip.main(["install", "-r", "requirements.txt"])
-        except SystemExit as e:
+        except SystemExit:
             pass
 
         call_command("collectstatic", interactive=False, verbosity=0)
