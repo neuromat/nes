@@ -1,7 +1,6 @@
 import os
 import platform
 import sys
-from distutils.version import StrictVersion
 from functools import partial
 
 import pip
@@ -18,6 +17,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import activate
 from django.utils.translation import gettext as _
 from git.repo import Repo
+from packaging.version import Version
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -74,6 +74,7 @@ def password_changed(request):
     return contact(request)
 
 
+# FIXME: a annotation estava errada??
 # @login_required
 def check_upgrade(request):
     path_git_repo_local = get_nes_directory_path()
@@ -89,7 +90,7 @@ def check_upgrade(request):
                 git.tag().split("\n"),
                 key=lambda s: list(map(int, s.replace("-", ".").split(".")[1:])),
             )[-1]
-            new_version = StrictVersion(current_tag.split("-")[-1]) < StrictVersion(
+            new_version = Version(current_tag.split("-")[-1]) < Version(
                 new_version_tag.split("-")[-1]
             )
 

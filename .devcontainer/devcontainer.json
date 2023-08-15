@@ -18,7 +18,7 @@
 	"portsAttributes": {
 		"80": {
 			"label": "Limesurvey port",
-			"onAutoForward": "notify"
+			"onAutoForward": "openBrowserOnce"
 		},
 		"5432": {
 			"label": "Postgres default port",
@@ -26,7 +26,7 @@
 		},
 		"8000": {
 			"label": "NES default port",
-			"onAutoForward": "openBrowserOnce"
+			"onAutoForward": "openBrowser"
 		}
 	},
 	"containerEnv": {
