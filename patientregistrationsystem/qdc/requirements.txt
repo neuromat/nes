@@ -11,6 +11,7 @@ django-fixture-magic>=0.1.5
 django-solo==2.1.0
 jsonrpc-requests==0.4.0
 
+types-python-dateutil
 python-dateutil==2.8.2
 psycopg2>=2.9.7, <3.0
 
@@ -38,7 +39,7 @@ networkx==3.1
 
 mne==1.3.1
 
--e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
+#-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
 
 # For testing
 goodtables==2.5.4

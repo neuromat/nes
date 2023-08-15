@@ -21,11 +21,11 @@ from dateutil.relativedelta import relativedelta
 from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail

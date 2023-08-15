@@ -3,7 +3,6 @@ from django.urls import re_path
 from .views import (
     experiment_selection,
     export_create,
-    export_main,
     export_menu,
     export_view,
     filter_participants,

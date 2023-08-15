@@ -5,7 +5,7 @@
     },
     "python.analysis.typeCheckingMode": "basic",
     "python.autoComplete.extraPaths": [
-        "${localWorkspaceFolder}"
+        "${localWorkspaceFolder}, /usr/local/bin"
     ],
     "python.defaultInterpreterPath": "python",
     "sqltools.connections": [
