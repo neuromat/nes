@@ -27,7 +27,7 @@ LIMESURVEY_PORT=${LIMESURVEY_PORT:-'8080'}
 LIMESURVEY_DB_TYPE=${LIMESURVEY_DB_TYPE:-'psql'}
 LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-'db'}
 LIMESURVEY_DB_PORT=${LIMESURVEY_DB_PORT:-'5432'}
-LIMESURVEY_DB=${LIMESURVEY_DB:-'limesurvey_db'}
+LIMESURVEY_DB_NAME=${LIMESURVEY_DB_NAME:-'limesurvey_db'}
 LIMESURVEY_DB_TABLE_PREFIX=${LIMESURVEY_DB_TABLE_PREFIX:-'lime_'}
 LIMESURVEY_DB_USER=${LIMESURVEY_DB_USER:-'limesurvey_user'}
 LIMESURVEY_DB_PASSWORD=${LIMESURVEY_DB_PASSWORD:-'limesurvey_password'}
@@ -167,7 +167,7 @@ else
     fi
 
     echo 'Info: Using TCP connection'
-    sed -i "s#\('connectionString' => \).*,\$#\\1'${LIMESURVEY_DB_TYPE}:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB};',#g" application/config/config.php
+    sed -i "s#\('connectionString' => \).*,\$#\\1'${LIMESURVEY_DB_TYPE}:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB_NAME};',#g" application/config/config.php
 
     sed -i "s#\('username' => \).*,\$#\\1'${LIMESURVEY_DB_USER}',#g" application/config/config.php
     sed -i "s#\('password' => \).*,\$#\\1'${LIMESURVEY_DB_PASSWORD}',#g" application/config/config.php

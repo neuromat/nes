@@ -3,8 +3,7 @@
 {
 	"name": "Python 3 & PostgreSQL",
 	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
-	//"workspaceMount": "source=${localWorkspaceFolder}/nes, target=/nes, type=bind",
+	"service": "nes",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -13,33 +12,32 @@
 	"forwardPorts": [
 		80,
 		5432,
-		8000
+		8080
 	],
 	"portsAttributes": {
 		"80": {
-			"label": "Limesurvey port",
-			"onAutoForward": "openBrowserOnce"
+			"label": "NES port",
+			"onAutoForward": "openBrowser"
 		},
 		"5432": {
 			"label": "Postgres default port",
 			"onAutoForward": "silent"
 		},
-		"8000": {
-			"label": "NES default port",
-			"onAutoForward": "openBrowser"
+		"8080": {
+			"label": "Limesurvey port",
+			"onAutoForward": "openBrowserOnce"
 		}
 	},
 	"containerEnv": {
-		"NES_DIR": "/workspaces/${localWorkspaceFolderBasename}",
-		"PG_DATA": "/var/lib/postgresql/data",
-		"LIMESURVEY_DIR": "/var/www/limesurvey"
+		"NES_DIR": "/workspaces/${localWorkspaceFolderBasename}"
 	},
 	"remoteEnv": {
-		//"TEST": "abc"
+		"NES_DIR": "/workspaces/${localWorkspaceFolderBasename}",
+		"PGDATA": "/var/lib/postgresql/data"
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "sudo /entrypoint.sh",
-	"postStartCommand": "service apache2 start && a2dissite 000-default.conf && a2ensite limesurvey && service apache2 reload",
+	//"postCreateCommand": "sudo /entrypoint.sh",
+	//"postStartCommand": "sudo /entrypoint.sh",
 	"overrideCommand": false,
 	"mounts": [
 		//"source=${localWorkspaceFolder}/app-data,target=/data,type=bind,consistency=cached"

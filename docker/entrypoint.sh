@@ -13,7 +13,7 @@ APACHE2_CONF_DIR="${LIMESURVEY_DIR}/application/config"
 ## CONFIG.PHP OPTIONS
 LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-"localhost"}
 LIMESURVEY_DB_PORT=${LIMESURVEY_DB_PORT:-"5432"}
-LIMESURVEY_DB=${LIMESURVEY_DB:-"limesurvey_db"}
+LIMESURVEY_DB_NAME=${LIMESURVEY_DB_NAME:-"limesurvey_db"}
 LIMESURVEY_DB_TABLE_PREFIX=${LIMESURVEY_DB_TABLE_PREFIX:-"lime_"}
 LIMESURVEY_DB_USER=${LIMESURVEY_DB_USER:-"limesurvey_user"}
 LIMESURVEY_DB_PASSWORD=${LIMESURVEY_DB_PASSWORD:-"limesurvey_password"}
@@ -69,7 +69,7 @@ else
 	cd "$LIMESURVEY_DIR"
 	echo "INFO: Creating LimeSurvey configuration"
 	cp application/config/config-sample-pgsql.php application/config/config.php
-	sed -i "s#\('connectionString' => \).*,\$#\\1'pgsql:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB};',#g" application/config/config.php
+	sed -i "s#\('connectionString' => \).*,\$#\\1'pgsql:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB_NAME};',#g" application/config/config.php
 	sed -i "s#\('username' => \).*,\$#\\1'${LIMESURVEY_DB_USER}',#g" application/config/config.php
 	sed -i "s#\('password' => \).*,\$#\\1'${LIMESURVEY_DB_PASSWORD}',#g" application/config/config.php
 	sed -i "s#\('charset' => \).*,\$#\\1'${LIMESURVEY_DB_CHARSET}',#g" application/config/config.php
@@ -245,8 +245,8 @@ else
 		GRANT ALL PRIVILEGES ON DATABASE $NES_DB TO $NES_DB_USER ;
 		ALTER ROLE $NES_DB_USER WITH CREATEDB;
 		CREATE USER $LIMESURVEY_DB_USER WITH PASSWORD '$LIMESURVEY_DB_PASSWORD' ;
-		CREATE DATABASE $LIMESURVEY_DB OWNER $LIMESURVEY_DB_USER ;
-		GRANT ALL PRIVILEGES ON DATABASE $LIMESURVEY_DB TO $LIMESURVEY_DB_USER ;
+		CREATE DATABASE $LIMESURVEY_DB_NAME OWNER $LIMESURVEY_DB_USER ;
+		GRANT ALL PRIVILEGES ON DATABASE $LIMESURVEY_DB_NAME TO $LIMESURVEY_DB_USER ;
 	EOF
 	su postgres -c "pg_ctl stop -w -D $PGDATA"
 	touch "${PGDATA}"/.db_users.placeholder

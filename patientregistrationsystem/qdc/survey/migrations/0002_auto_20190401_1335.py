@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="survey",
             name="is_active",
-            field=models.NullBooleanField(default=None),
+            field=models.BooleanField(null=True, default=None),
         ),
     ]

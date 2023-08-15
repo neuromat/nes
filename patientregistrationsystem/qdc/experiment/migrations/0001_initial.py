@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
-import django.db.models.deletion
-import django.core.validators
 import datetime
+
+import django.core.validators
+import django.db.models.deletion
 import experiment.models
 from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -413,7 +414,7 @@ class Migration(migrations.Migration):
                         validators=[django.core.validators.MinValueValidator(1)]
                     ),
                 ),
-                ("random_position", models.NullBooleanField()),
+                ("random_position", models.BooleanField(null=True)),
                 ("requires_start_and_end_datetime", models.BooleanField(default=False)),
             ],
         ),

@@ -158,7 +158,7 @@ In order to run the composed version of NES you need to build a docker-compose.y
          - LIMESURVEY_DB_TYPE=pgsql
          - LIMESURVEY_DB_HOST=db_limesurvey
          - LIMESURVEY_DB_PORT=5432
-         - LIMESURVEY_DB=limesurvey_db
+         - LIMESURVEY_DB_NAME=limesurvey_db
          - LIMESURVEY_DB_TABLE_PREFIX=lime_
          - LIMESURVEY_DB_USER=limesurvey_user
          - LIMESURVEY_DB_PASSWORD=limesurvey_password

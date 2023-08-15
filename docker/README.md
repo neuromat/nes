@@ -54,7 +54,7 @@ The environment variables can be organized in the following groups:
 | -------------------------- | ------------------------------------------------ |
 | LIMESURVEY_DB_HOST         | Database server hostname. (default is localhost) |
 | LIMESURVEY_DB_PORT         | Database server port.                            |
-| LIMESURVEY_DB              | Database name.                                   |
+| LIMESURVEY_DB_NAME              | Database name.                                   |
 | LIMESURVEY_DB_TABLE_PREFIX | Database table prefix.                           |
 | LIMESURVEY_DB_USER         | Database user.                                   |
 | LIMESURVEY_DB_PASSWORD     | Database password.                               |

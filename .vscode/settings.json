@@ -21,11 +21,11 @@
         },
         {
             "previewLimit": 50,
-            "server": "172.19.0.2",
+            "server": "172.18.0.3",
             "port": 5432,
             "driver": "PostgreSQL",
             "database": "nes_db",
-            "password": "new_password",
+            "password": "nes_password",
             "username": "nes_user",
             "name": "postgres_nes"
         }

@@ -1,25 +1,61 @@
 version: '3.8'
 
 services:
-  #TODO: Separete nes and limesurvey
-  app:
+
+  limesurvey_db:
+    image: postgres:11-alpine
+    volumes:
+      - limesurvey_pgdata:/var/lib/postgresql/data:delegated
+    restart: unless-stopped
+    #ports:
+      #- 5433:5432
+    environment:
+      POSTGRES_DB: limesurvey_db
+      POSTGRES_USER: lime_db_user
+      POSTGRES_PASSWORD: lime_db_password
+
+
+  limesurvey:
+    image: neuromat/nes-compose:limesurvey
+    restart: unless-stopped
+    network_mode: service:limesurvey_db
+    #ports:
+      #- 8080:8080
+    environment:
+      LIMESURVEY_PORT: 8080
+      LIMESURVEY_DB_TYPE: pgsql
+      LIMESURVEY_DB_HOST: imesurvey_db
+      LIMESURVEY_DB_PORT: 5433
+      LIMESURVEY_DB_NAME: limesurvey_db
+      LIMESURVEY_DB_TABLE_PREFIX: lime_
+      LIMESURVEY_DB_USERNAME: lime_db_user
+      LIMESURVEY_DB_PASSWORD: lime_db_password
+      LIMESURVEY_ADMIN_USER: lime_admin
+      LIMESURVEY_ADMIN_PASSWORD: lime_admin_password
+      LIMESURVEY_ADMIN_NAME: Lime Administrator
+      LIMESURVEY_ADMIN_EMAIL: limesurvey@limemail.fake
+      LIMESURVEY_URL_FORMAT: path
+      #LIMESURVEY_URL_DOWNLOAD: https://github.com/LimeSurvey/LimeSurvey/archive/5.6.32+230731.tar.gz
+    depends_on:
+      - limesurvey_db
+
+  nes:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
-
     volumes:
       - ../..:/workspaces:cached
-      - limesurvey-data:/var/www/limesurvey:ro
-
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
-
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-    network_mode: service:db
-
+    network_mode: service:nes_db
+    tty: true
+    stdin_open: true
+    #ports:
+      #- 80:8000
     environment:
       NES_DB_TYPE: pgsql
-      NES_DB_HOST: db
+      NES_DB_HOST: nes_db
       NES_DB: nes_db
       NES_DB_USER: nes_user
       NES_DB_PASSWORD: nes_password
@@ -30,34 +66,27 @@ services:
       NES_ADMIN_USER: nes_admin
       NES_ADMIN_EMAIL: nes_admin@nesmail.com
       NES_ADMIN_PASSWORD: nes_admin_password
-      LIMESURVEY_HOST: localhost
-      LIMESURVEY_PORT: 80
-      LIMESURVEY_ADMIN_USER: limesurvey_admin
-      LIMESURVEY_ADMIN_PASSWORD: limesurvey_admin_password
-
     depends_on:
-      - db
+      - nes_db
+      - limesurvey
 
-  db:
-    image: postgres:latest
-
+  nes_db:
+    image: postgres:15-bullseye
     restart: unless-stopped
-
     volumes:
-      - postgres-data:/var/lib/postgresql/data:delegated
-
+      - nes_pgdata:/var/lib/postgresql/data:delegated
     environment:
-      - POSTGRES_DB:nes_db
-      - POSTGRES_USER:nes_user
-      - POSTGRES_PASSWORD:nes_password
-      - PGDATA:/var/lib/postgresql/data
-      - POSTGRES_HOST_AUTH_METHOD:md5
-      - POSTGRES_INITDB_ARGS:--auth-host=md5
+      POSTGRES_DB: nes_db
+      POSTGRES_USER: nes_user
+      POSTGRES_PASSWORD: nes_password
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_HOST_AUTH_METHOD: md5
+      POSTGRES_INITDB_ARGS: --auth-host=md5
       # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
       # (Adding the "ports" property to this file will not forward from a Codespace.)
-    ports:
-      - "5432:5432"
+    #ports:
+      #- 5432:5432
 
 volumes:
-  postgres-data:
-  limesurvey-data:
+  nes_pgdata:
+  limesurvey_pgdata:
