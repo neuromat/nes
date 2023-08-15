@@ -1,52 +1,50 @@
+import json
 import os
 import shutil
 import sys
 import tempfile
-import json
 import zipfile
+from base64 import b64decode, b64encode
+from functools import reduce
 from json import JSONDecodeError
+from operator import or_
 from os import path
 
-from functools import reduce
-from operator import or_
-
 import networkx as nx
+from django.apps import apps
 from django.conf import settings
 from django.core.files import File
 from django.core.management import call_command
-from django.apps import apps
 from django.db.models import Count, Q
 from django.utils.translation import gettext as _
-from base64 import b64encode, b64decode
-
-from experiment.models import (
-    Group,
-    ResearchProject,
-    Experiment,
-    Keyword,
-    Component,
-    Questionnaire,
-    QuestionnaireResponse,
-    EEGElectrodeLocalizationSystem,
-    FileFormat,
-    Subject,
-)
 from experiment.import_export_model_relations import (
-    ONE_TO_ONE_RELATION,
-    FOREIGN_RELATIONS,
-    MODEL_ROOT_NODES,
     EXPERIMENT_JSON_FILES,
-    PATIENT_JSON_FILES,
+    FOREIGN_RELATIONS,
     JSON_FILES_DETACHED_MODELS,
+    MODEL_ROOT_NODES,
+    MODELS_WITH_FILE_FIELD,
+    MODELS_WITH_RELATION_TO_AUTH_USER,
+    ONE_TO_ONE_RELATION,
+    PATIENT_JSON_FILES,
     PRE_LOADED_MODELS_FOREIGN_KEYS,
     PRE_LOADED_MODELS_INHERITANCE,
     PRE_LOADED_MODELS_NOT_EDITABLE,
-    PRE_LOADED_PATIENT_MODEL,
     PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE,
-    MODELS_WITH_FILE_FIELD,
-    MODELS_WITH_RELATION_TO_AUTH_USER,
+    PRE_LOADED_PATIENT_MODEL,
 )
-from patient.models import Patient, ClassificationOfDiseases
+from experiment.models import (
+    Component,
+    EEGElectrodeLocalizationSystem,
+    Experiment,
+    FileFormat,
+    Group,
+    Keyword,
+    Questionnaire,
+    QuestionnaireResponse,
+    ResearchProject,
+    Subject,
+)
+from patient.models import ClassificationOfDiseases, Patient
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 from survey.survey_utils import QuestionnaireUtils
