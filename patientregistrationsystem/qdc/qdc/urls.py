@@ -1,17 +1,18 @@
-from django.conf import settings
-from django.conf.urls import include
-from django.urls import re_path
-from qdc import views as qdcviews
-from django.contrib.auth import views as authviews
-from django.views.i18n import JavaScriptCatalog
-from django.conf.urls.i18n import i18n_patterns
-from django.conf.urls.static import static
-from .forms import PasswordChangeFormCustomized
-from django.contrib import admin
 import os
-from django.views.static import serve as staticserve
 
 from custom_user.forms import CustomPasswordResetForm
+from django.conf import settings
+from django.conf.urls import include
+from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.contrib.auth import views as authviews
+from django.urls import re_path
+from django.views.i18n import JavaScriptCatalog
+from django.views.static import serve as staticserve
+from qdc import views as qdcviews
+
+from .forms import PasswordChangeFormCustomized
 
 admin.autodiscover()
 

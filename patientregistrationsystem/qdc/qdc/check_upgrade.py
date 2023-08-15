@@ -1,14 +1,15 @@
 # check if exist a NES new version
 
-from django.conf import settings
-from git import Repo
 import os
+
+from django.conf import settings
+from git.repo import Repo
 
 
 def check_upgrade():
     # FIXME arrumar isso
     print(os.path.dirname(os.path.abspath(__file__)))
-    repo = Repo("/com.docker.devenvironments.code/.git")
+    repo = Repo("https://github.com/mcostat/nes.git")
     for remote in repo.remotes:
         remote.fetch()
 
