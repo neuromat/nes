@@ -1,124 +1,145 @@
 # coding=utf-8
-import csv
-import re
-import json
-import random
-import tempfile
-
-import numpy as np
-
-import nwb
-
-import pydot
-from django.core.mail import send_mail
-
-from nwb.nwbco import *
-
-import mne
 import base64
+import csv
+import json
 import os
-
-from datetime import date, timedelta, datetime
-from dateutil.relativedelta import relativedelta
+import random
+import re
+import tempfile
+from datetime import date, datetime, timedelta
 from functools import partial
 from io import StringIO
 from operator import itemgetter
 from os import path
 
+import mne
+import numpy as np
+import nwb
+import pydot
+from configuration.models import LocalInstitution
+from dateutil.relativedelta import relativedelta
+from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.core import serializers
+from django.core.cache import cache
 from django.core.files import File
 from django.core.files.base import ContentFile
-from django.urls import reverse
-from django.db.models import Q, Min
-from django.apps import apps
+from django.core.mail import send_mail
+from django.db.models import Min, Q
 from django.db.models.deletion import ProtectedError
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext as _
-from django.core.cache import cache
-
 from experiment.import_export import ExportExperiment, ImportExperiment
-from patient.views import update_completed_status, update_acquisition_date
-from qdc.settings import MEDIA_ROOT
-from survey.survey_utils import QuestionnaireUtils, find_questionnaire_name
-from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
-    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
-    EEGSetting, Equipment, Manufacturer, Amplifier, EEGElectrodeNet, DataConfigurationTree, \
-    EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
-    FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
-    ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, Tag, CoilModel, \
-    EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
-    ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
-    EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
-    EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting, TMSData, TMSLocalizationSystem, \
-    DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
-    GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending, \
-    GoalkeeperGameConfig, GoalkeeperGameResults, EEGFile, EMGFile, AdditionalDataFile, GenericDataCollectionFile, \
-    DigitalGamePhaseFile, PortalSelectedQuestion, ComponentAdditionalFile, GoalkeeperPhase
-
-from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
-    ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
-    EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
-    EEGAmplifierSettingForm, EEGSolutionForm, EEGFilterForm, EEGFilterSettingForm, \
-    EEGElectrodeLocalizationSystemRegisterForm, \
-    ManufacturerRegisterForm, AmplifierRegisterForm, EEGSolutionRegisterForm, \
-    FilterTypeRegisterForm, ElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
-    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, \
-    EMGDataForm, EMGSettingForm, EMGDigitalFilterSettingForm, EMGADConverterSettingForm, \
-    EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm, \
-    EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm, ElectrodeModelForm, \
-    ADConverterRegisterForm, StandardizationSystemRegisterForm, \
-    MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
-    TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
-    SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
-    EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
-    HotSpotForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
-    GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm, ResearchProjectOwnerForm
-
-from .portal import get_experiment_status_portal, \
-    send_experiment_to_portal, get_portal_status, \
-    send_group_to_portal, send_research_project_to_portal, \
-    send_experiment_end_message_to_portal, \
-    send_experimental_protocol_to_portal, send_participant_to_portal, \
-    send_researcher_to_portal, send_eeg_setting_to_portal, \
-    send_emg_setting_to_portal, \
-    send_tms_setting_to_portal, send_context_tree_to_portal, \
-    send_steps_to_portal, \
-    send_file_to_portal, send_eeg_data_to_portal, \
-    send_digital_game_phase_data_to_portal, \
-    send_questionnaire_response_to_portal, send_emg_data_to_portal, \
-    send_tms_data_to_portal, \
-    send_generic_data_collection_data_to_portal, \
-    send_additional_data_to_portal, send_publication_to_portal, \
-    send_experiment_researcher_to_portal
-
-from .pdf import render as render_to_pdf
-
-from configuration.models import LocalInstitution
-
 from export.directory_utils import create_directory
-from export.forms import ParticipantsSelectionForm, AgeIntervalForm
-
-from patient.models import Patient, \
-    QuestionnaireResponse as PatientQuestionnaireResponse, \
-    SocialDemographicData
-
+from export.forms import AgeIntervalForm, ParticipantsSelectionForm
+from nwb.nwbco import *
+from patient.models import Patient
+from patient.models import \
+    QuestionnaireResponse as PatientQuestionnaireResponse
+from patient.models import SocialDemographicData
+from patient.views import update_acquisition_date, update_completed_status
+from qdc.settings import MEDIA_ROOT
 from survey.abc_search_engine import Questionnaires
-from survey.models import Survey, SensitiveQuestion
-from survey.views import get_questionnaire_responses, check_limesurvey_access, create_list_of_trees, \
-    get_questionnaire_language, get_survey_header, questionnaire_evaluation_fields_excluded
+from survey.models import SensitiveQuestion, Survey
+from survey.survey_utils import QuestionnaireUtils, find_questionnaire_name
+from survey.views import (check_limesurvey_access, create_list_of_trees,
+                          get_questionnaire_language,
+                          get_questionnaire_responses, get_survey_header,
+                          questionnaire_evaluation_fields_excluded)
 
+from .forms import (ADConverterRegisterForm, AdditionalDataForm,
+                    AmplifierRegisterForm, BlockForm, CoilModelForm,
+                    CoilModelRegisterForm, ComponentConfigurationForm,
+                    ComponentForm, ContextTreeForm, DigitalGamePhaseDataForm,
+                    DigitalGamePhaseForm, EEGAmplifierForm,
+                    EEGAmplifierSettingForm, EEGCapSizeRegisterForm,
+                    EEGDataForm, EEGElectrodeCapRegisterForm,
+                    EEGElectrodeLocalizationSystemRegisterForm,
+                    EEGElectrodeNETRegisterForm, EEGElectrodePositionForm,
+                    EEGFilterForm, EEGFilterSettingForm, EEGForm,
+                    EEGSettingForm, EEGSolutionForm, EEGSolutionRegisterForm,
+                    ElectrodeModelForm, ElectrodeModelRegisterForm,
+                    EMGADConverterSettingForm, EMGAmplifierSettingForm,
+                    EMGAnalogFilterSettingForm, EMGDataForm,
+                    EMGDigitalFilterSettingForm,
+                    EMGElectrodePlacementSettingForm, EMGElectrodeSettingForm,
+                    EMGForm, EMGIntramuscularPlacementForm,
+                    EMGIntramuscularPlacementRegisterForm,
+                    EMGNeedlePlacementRegisterForm,
+                    EMGPreamplifierFilterSettingForm,
+                    EMGPreamplifierSettingForm, EMGSettingForm,
+                    EMGSurfacePlacementForm, EMGSurfacePlacementRegisterForm,
+                    EquipmentForm, ExperimentForm, FileForm,
+                    FilterTypeRegisterForm, GenericDataCollectionDataForm,
+                    GenericDataCollectionForm, GroupForm, HotSpotForm,
+                    InstructionForm, ManufacturerRegisterForm,
+                    MaterialRegisterForm, MuscleRegisterForm,
+                    MuscleSideRegisterForm, MuscleSubdivisionRegisterForm,
+                    NumberOfUsesToInsertForm, PublicationForm,
+                    QuestionnaireResponseForm, ResearchProjectForm,
+                    ResearchProjectOwnerForm, ResendExperimentForm,
+                    SoftwareRegisterForm, SoftwareVersionRegisterForm,
+                    StandardizationSystemRegisterForm, StimulusForm,
+                    SubjectStepDataForm, TMSDataForm, TMSDeviceRegisterForm,
+                    TMSDeviceSettingForm, TMSForm, TMSLocalizationSystemForm,
+                    TMSSettingForm)
+from .models import (EEG, EMG, TMS, ADConverter, AdditionalData,
+                     AdditionalDataFile, Amplifier, Block,
+                     ClassificationOfDiseases, CoilModel, Component,
+                     ComponentAdditionalFile, ComponentConfiguration,
+                     ContextTree, DataConfigurationTree, DigitalGamePhase,
+                     DigitalGamePhaseData, DigitalGamePhaseFile,
+                     EEGAmplifierSetting, EEGCapSize, EEGData, EEGElectrodeCap,
+                     EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem,
+                     EEGElectrodeNet, EEGElectrodeNetSystem,
+                     EEGElectrodePosition,
+                     EEGElectrodePositionCollectionStatus,
+                     EEGElectrodePositionSetting, EEGFile, EEGFilterSetting,
+                     EEGSetting, EEGSolution, EEGSolutionSetting,
+                     ElectrodeModel, EMGADConverterSetting,
+                     EMGAmplifierSetting, EMGAnalogFilterSetting, EMGData,
+                     EMGDigitalFilterSetting, EMGElectrodePlacement,
+                     EMGElectrodePlacementSetting, EMGElectrodeSetting,
+                     EMGFile, EMGIntramuscularPlacement, EMGNeedlePlacement,
+                     EMGPreamplifierFilterSetting, EMGPreamplifierSetting,
+                     EMGSetting, EMGSurfacePlacement, Equipment, Experiment,
+                     ExperimentResearcher, FileFormat, FilterType,
+                     GenericDataCollection, GenericDataCollectionData,
+                     GenericDataCollectionFile, GoalkeeperGameConfig,
+                     GoalkeeperGameLog, GoalkeeperGameResults, GoalkeeperPhase,
+                     Group, Instruction, Keyword, Manufacturer, Material,
+                     Muscle, MuscleSide, MuscleSubdivision, Pause,
+                     PortalSelectedQuestion, Publication, Questionnaire,
+                     QuestionnaireResponse, ResearchProject, ScheduleOfSending,
+                     Software, SoftwareVersion, StandardizationSystem,
+                     Stimulus, Subject, SubjectOfGroup, SubjectStepData, Tag,
+                     Task, TaskForTheExperimenter, TMSData, TMSDevice,
+                     TMSDeviceSetting, TMSLocalizationSystem, TMSSetting)
+from .pdf import render as render_to_pdf
+from .portal import (get_experiment_status_portal, get_portal_status,
+                     send_additional_data_to_portal,
+                     send_context_tree_to_portal,
+                     send_digital_game_phase_data_to_portal,
+                     send_eeg_data_to_portal, send_eeg_setting_to_portal,
+                     send_emg_data_to_portal, send_emg_setting_to_portal,
+                     send_experiment_end_message_to_portal,
+                     send_experiment_researcher_to_portal,
+                     send_experiment_to_portal,
+                     send_experimental_protocol_to_portal, send_file_to_portal,
+                     send_generic_data_collection_data_to_portal,
+                     send_group_to_portal, send_participant_to_portal,
+                     send_publication_to_portal,
+                     send_questionnaire_response_to_portal,
+                     send_research_project_to_portal,
+                     send_researcher_to_portal, send_steps_to_portal,
+                     send_tms_data_to_portal, send_tms_setting_to_portal)
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -1297,7 +1318,8 @@ def send_all_experiments_to_portal():
                                     # TODO: see answer in:
                                     # https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
                                     # TODO: for other solutions
-                                    from export.export import replace_multiple_choice_question_answers
+                                    from export.export import \
+                                        replace_multiple_choice_question_answers
                                     replace_multiple_choice_question_answers(responses_list, question_list)
 
                                 if len(responses_list) > 1:
