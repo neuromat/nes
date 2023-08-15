@@ -59,23 +59,26 @@ RUN mkdir -p "$LIMESURVEY_DIR" && \
     wget "$LIMESURVEY_URL_DOWNLOAD" -qO - | \
     tar xz --strip-components=1 -C "$LIMESURVEY_DIR" && \
     useradd apache && \
-    chown -R apache:apache "$LIMESURVEY_DIR" && \
-    chmod -R o-rwx "$LIMESURVEY_DIR" && \
-    chmod -R 770 "${LIMESURVEY_DIR}"/application/config/ && \
-    chmod -R 770 "${LIMESURVEY_DIR}"/upload/ && \
-    chmod -R 770 "${LIMESURVEY_DIR}"/tmp/ && \
+    chown -R www-data:www-data "$LIMESURVEY_DIR"/ && \
+    chmod -R o-rwx "$LIMESURVEY_DIR"/ && \
+    chmod -R 777 "$LIMESURVEY_DIR"/application/config/ && \
+    chmod -R 777 "$LIMESURVEY_DIR"/upload/ && \
+    chmod -R 777 "$LIMESURVEY_DIR"/tmp/ && \
     mkdir -p /run/apache2
 
 # VOLUME $LIMESURVEY_DIR
+
 
 # END
 ENV DEBIAN_FRONTEND=dialog
 
 
-
 COPY .devcontainer/entrypoint.sh /
 
+RUN sudo chmod 775 /entrypoint.sh
+#RUN cd / && ls
 #SHELL ["/bin/sh","-exc"]
-#ENTRYPOINT [ "entrypoint.sh" ]
-
+#ENTRYPOINT ["/entrypoint.sh"]
+#CMD [ "/bin/sh", "-c", "/entrypoint.sh"]
 #CMD [ "/bin/sh", "-c", "python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]
+

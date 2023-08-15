@@ -16,11 +16,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 #: plugin/templates/plugin/send_to_plugin.html:28
 msgid "Home"
-msgstr "Início"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:29
 #: plugin/templates/plugin/send_to_plugin.html:56
@@ -29,90 +28,84 @@ msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:30
 msgid "Participants selection"
-msgstr "Seleção de participantes"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:72
 msgid "Questionnaires data to be sent"
-msgstr "Dados de questionários a serem enviados"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:77
 msgid ""
 "Questionnaire title for Unified Admission Assessment not available in en"
-msgstr "Título do Questionário Avaliação de Entrada não disponível em pt-BR"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:82
 msgid "Questionnaire title for Surgical Assessment not available in en"
-msgstr "Título do Questionário Avaliação Cirúrgica não disponível em pt-BR"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:88
 msgid "Questionnaire title for Follow-Up Assessment not available in en"
-msgstr "Título do Questionário Avaliação de Seguimento não disponível em pt-BR"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:107
 msgid "Per Experiment"
-msgstr "Por Experimento"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:111
-#, fuzzy
-#| msgid "Participants selection"
 msgid "Filters selection"
-msgstr "Seleção de participantes"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:115
 msgid "Experiments"
-msgstr "Experimentos"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:129
 #: plugin/templates/plugin/send_to_plugin.html:214
 msgid "List of participants"
-msgstr "Lista de participantes"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:138
 #: plugin/templates/plugin/send_to_plugin.html:218
 msgid "Participants available:"
-msgstr "Participantes disponíveis:"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:164
 #: plugin/templates/plugin/send_to_plugin.html:246
 msgid "Participants chosen:"
-msgstr "Participantes escolhidos:"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:191
 #: plugin/templates/plugin/send_to_plugin.html:272
 msgid "Send"
-msgstr "Enviar"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:209
 msgid "Per Participant"
-msgstr "Por Participante"
+msgstr ""
 
 #: plugin/templates/plugin/send_to_plugin.html:279
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr ""
 
 #: plugin/tests/test_views.py:347 plugin/views.py:303 plugin/views.py:364
 msgid "Could not open zip file to send to Forest Plugin"
 msgstr ""
-"Não foi possível abrir o arquivo zip para enviar para o plugin Floresta"
 
 #: plugin/tests/test_views.py:364 plugin/views.py:517
 msgid "Data from questionnaires was sent to Forest Plugin"
-msgstr "Os dados dos questionários foram enviados para o plugin Floresta"
+msgstr ""
 
 #: plugin/tests/test_views.py:379 plugin/views.py:317
 msgid "Please select at least Gender participant attribute"
-msgstr "Selecione ao menos o atributo Gênero do participante"
+msgstr ""
 
 #: plugin/tests/test_views.py:394 plugin/views.py:310
-#, fuzzy
-#| msgid "Please, select a patient field from the list."
 msgid "Please select at least one patient"
-msgstr "Por favor, selecione uma opção da lista."
+msgstr ""
 
 #: plugin/tests/test_views.py:410 plugin/views.py:323
 msgid "The Floresta Plugin needs to send at least Gender attribute"
 msgstr ""
-"O plugin floresta precisa enviar ao menos o atributo gênero do participante"
 
 #: plugin/tests/test_views.py:530 plugin/tests/test_views.py:549
 #: plugin/tests/test_views.py:568 plugin/tests/test_views.py:588
@@ -124,17 +117,3 @@ msgid ""
 "Error: some thing went wrong consuming LimeSurvey API. Please try again. If "
 "problem persists please contact System Administrator."
 msgstr ""
-"Erro: alguma coisa errada aconteceu ao consumir a API do LimeSurvey. Por "
-"favor tente novamente. Se o problema persistir por favor entre em contato "
-"com o administrador do sistema."
-
-#~ msgid "Additional info"
-#~ msgstr "Informação adicional"
-
-#~ msgid "Please, select a patient field from the list."
-#~ msgstr "Por favor, selecione uma opção da lista."
-
-#~ msgid ""
-#~ "* use ctrl-click to select more than one field. (command-click on Mac)"
-#~ msgstr ""
-#~ "* use o botão Ctrl para selecionar mais de um campo. (command no Mac)"

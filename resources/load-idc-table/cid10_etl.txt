@@ -66,9 +66,9 @@
     -- copying to columns related to translation
     update patient_classificationofdiseases
         set
-        description_pt_br = description,
+        description_pt_BR = description,
         description_en = description,
-        abbreviated_description_pt_br = abbreviated_description,
+        abbreviated_description_pt_BR = abbreviated_description,
         abbreviated_description_en = abbreviated_description;
 
 -- Removing temporary tables

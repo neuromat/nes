@@ -1,8 +1,9 @@
-# coding=utf-8
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -15,88 +16,87 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 #: patient/forms.py:23 patient/templates/patient/register_personal_data.html:44
 msgid "Anonymous participant?"
-msgstr "Participante anônimo?"
+msgstr ""
 
 #: patient/forms.py:35 patient/forms.py:68 patient/tests/tests_orig.py:715
 msgid "Name must be included"
-msgstr "Nome deve ser preenchido"
+msgstr ""
 
 #: patient/forms.py:40 patient/forms.py:152 patient/forms.py:176
 #: patient/views.py:837
 msgid "%m/%d/%Y"
-msgstr "%d/%m/%Y"
+msgstr ""
 
 #: patient/forms.py:41 patient/forms.py:153 patient/forms.py:178
 msgid "mm/dd/yyyy"
-msgstr "dd/mm/aaaa"
+msgstr ""
 
 #: patient/forms.py:42
 msgid "Date of birth must be completed"
-msgstr "Data de nascimento deve ser preenchida"
+msgstr ""
 
 #: patient/forms.py:44
 msgid "Gender must be filled"
-msgstr "Sexo deve ser preenchido"
+msgstr ""
 
 #: patient/forms.py:57 patient/tests/tests_orig.py:700
 msgid "Incorrect e-mail"
-msgstr "E-mail incorreto"
+msgstr ""
 
 #: patient/forms.py:88 patient/forms.py:123 patient/forms.py:127
 #: patient/forms.py:131
 msgid "Yes"
-msgstr "Sim"
+msgstr ""
 
 #: patient/forms.py:88 patient/forms.py:123 patient/forms.py:127
 #: patient/forms.py:131
 msgid "No"
-msgstr "Não"
+msgstr ""
 
 #: patient/forms.py:104
 msgid "Type in profession"
-msgstr "Entrar profissão"
+msgstr ""
 
 #: patient/forms.py:105
 msgid "Inform occupation"
-msgstr "Entrar ocupação"
+msgstr ""
 
 #: patient/forms.py:107 patient/forms.py:108 patient/forms.py:109
 #: patient/forms.py:110 patient/forms.py:111 patient/forms.py:112
 #: patient/forms.py:113 patient/forms.py:114 patient/forms.py:115
 msgid "4 or +"
-msgstr "4 ou +"
+msgstr ""
 
 #: patient/forms.py:142
 msgid "Have already used"
-msgstr "Já fez"
+msgstr ""
 
 #: patient/forms.py:142
 msgid "It is using"
-msgstr "Faz"
+msgstr ""
 
 #: patient/forms.py:143
 msgid "Have never used"
-msgstr "Nunca fez"
+msgstr ""
 
 #: patient/forms.py:154
 msgid "Date must be completed"
-msgstr "Data deve ser preenchida"
+msgstr ""
 
 #: patient/forms.py:155
 msgid "Description"
-msgstr "Descrição"
+msgstr ""
 
 #: patient/forms.py:156
 msgid "Description must be filled in"
-msgstr "Descrição deve ser preenchida"
+msgstr ""
 
 #: patient/forms.py:157
 msgid "Doctor"
-msgstr "Médico"
+msgstr ""
 
 #: patient/forms.py:158 patient/templates/patient/exams.html:113
 msgid "CRM"
@@ -104,139 +104,139 @@ msgstr ""
 
 #: patient/forms.py:159
 msgid "Place of execution"
-msgstr "Local de realização"
+msgstr ""
 
 #: patient/forms.py:179
 msgid "Fill date must be filled."
-msgstr "Data de preenchimento deve ser preenchida."
+msgstr ""
 
 #: patient/models.py:17
 msgid "Afghanistan"
-msgstr "Afeganistão"
+msgstr ""
 
 #: patient/models.py:18
 msgid "Albania"
-msgstr "Albânia"
+msgstr ""
 
 #: patient/models.py:19
 msgid "Algeria"
-msgstr "Argélia"
+msgstr ""
 
 #: patient/models.py:20
 msgid "American Samoa"
-msgstr "Samoa Americana"
+msgstr ""
 
 #: patient/models.py:21
 msgid "Andorra"
-msgstr "Andorra"
+msgstr ""
 
 #: patient/models.py:22
 msgid "Angola"
-msgstr "Angola"
+msgstr ""
 
 #: patient/models.py:23
 msgid "Anguilla"
-msgstr "Anguilla"
+msgstr ""
 
 #: patient/models.py:24
 msgid "Antarctica"
-msgstr "Antártida"
+msgstr ""
 
 #: patient/models.py:25
 msgid "Antigua & Barbuda"
-msgstr "Antígua e Barbuda"
+msgstr ""
 
 #: patient/models.py:26
 msgid "Argentina"
-msgstr "Argentina"
+msgstr ""
 
 #: patient/models.py:27
 msgid "Armenia"
-msgstr "Armenia"
+msgstr ""
 
 #: patient/models.py:28
 msgid "Aruba"
-msgstr "Aruba"
+msgstr ""
 
 #: patient/models.py:29
 msgid "Australia"
-msgstr "Austrália"
+msgstr ""
 
 #: patient/models.py:30
 msgid "Austria"
-msgstr " Áustria"
+msgstr ""
 
 #: patient/models.py:31
 msgid "Azerbaijan"
-msgstr "Azerbaijão"
+msgstr ""
 
 #: patient/models.py:32
 msgid "Bahama"
-msgstr "Bahamas"
+msgstr ""
 
 #: patient/models.py:33
 msgid "Bahrain"
-msgstr "Bahrein"
+msgstr ""
 
 #: patient/models.py:34
 msgid "Bangladesh"
-msgstr "Bangladesh"
+msgstr ""
 
 #: patient/models.py:35
 msgid "Barbados"
-msgstr "Barbados"
+msgstr ""
 
 #: patient/models.py:36
 msgid "Belarus"
-msgstr "Bielorrússia"
+msgstr ""
 
 #: patient/models.py:37
 msgid "Belgium"
-msgstr "Bélgica"
+msgstr ""
 
 #: patient/models.py:38
 msgid "Belize"
-msgstr "Belize"
+msgstr ""
 
 #: patient/models.py:39
 msgid "Benin"
-msgstr "Benim"
+msgstr ""
 
 #: patient/models.py:40
 msgid "Bermuda"
-msgstr "Bermudas"
+msgstr ""
 
 #: patient/models.py:41
 msgid "Bhutan"
-msgstr "Butão"
+msgstr ""
 
 #: patient/models.py:42
 msgid "Bolivia"
-msgstr "Bolívia"
+msgstr ""
 
 #: patient/models.py:43
 msgid "Bosnia and Herzegovina"
-msgstr "Bósnia e Herzegovina"
+msgstr ""
 
 #: patient/models.py:44
 msgid "Botswana"
-msgstr "Botswana"
+msgstr ""
 
 #: patient/models.py:45
 msgid "Bouvet Island"
-msgstr "Ilha Bouvet"
+msgstr ""
 
 #: patient/models.py:46
 msgid "Brazil"
-msgstr "Brasil"
+msgstr ""
 
 #: patient/models.py:47
 msgid "British Indian Ocean Territory"
-msgstr "Território Britânico do Oceano Índico"
+msgstr ""
 
 #: patient/models.py:48
 msgid "British Virgin Islands"
-msgstr "Ilhas Virgens Britânicas"
+msgstr ""
 
 #: patient/models.py:49
 msgid "Brunei Darussalam"
@@ -244,868 +244,864 @@ msgstr ""
 
 #: patient/models.py:50
 msgid "Bulgaria"
-msgstr "Bulgária"
+msgstr ""
 
 #: patient/models.py:51
 msgid "Burkina Faso"
-msgstr "Burkina Faso"
+msgstr ""
 
 #: patient/models.py:52
 msgid "Burundi"
-msgstr "Burundi"
+msgstr ""
 
 #: patient/models.py:53
 msgid "Cambodia"
-msgstr "Camboja"
+msgstr ""
 
 #: patient/models.py:54
 msgid "Cameroon"
-msgstr "Camarões"
+msgstr ""
 
 #: patient/models.py:55
 msgid "Canada"
-msgstr "Canadá"
+msgstr ""
 
 #: patient/models.py:56
 msgid "Cape Verde"
-msgstr "Cabo Verde"
+msgstr ""
 
 #: patient/models.py:57
 msgid "Cayman Islands"
-msgstr "Ilhas Cayman"
+msgstr ""
 
 #: patient/models.py:58
 msgid "Central African Republic"
-msgstr "República Centro-Africana"
+msgstr ""
 
 #: patient/models.py:59
 msgid "Chad"
-msgstr "Chade"
+msgstr ""
 
 #: patient/models.py:60
 msgid "Chile"
-msgstr "Chile"
+msgstr ""
 
 #: patient/models.py:61
 msgid "China"
-msgstr "China"
+msgstr ""
 
 #: patient/models.py:62
 msgid "Christmas Island"
-msgstr "Ilha Christmas"
+msgstr ""
 
 #: patient/models.py:63
 msgid "Cocos (Keeling) Islands"
-msgstr "Ilhas Cocos (Keeling)"
+msgstr ""
 
 #: patient/models.py:64
 msgid "Colombia"
-msgstr "Colômbia"
+msgstr ""
 
 #: patient/models.py:65
 msgid "Comoros"
-msgstr "Comores"
+msgstr ""
 
 #: patient/models.py:66
 msgid "Congo"
-msgstr "Congo"
+msgstr ""
 
 #: patient/models.py:67
 msgid "Cook Islands"
-msgstr "Ilhas Cook"
+msgstr ""
 
 #: patient/models.py:68
 msgid "Costa Rica"
-msgstr "Costa Rica"
+msgstr ""
 
 #: patient/models.py:69
 msgid "Croatia"
-msgstr "Croácia"
+msgstr ""
 
 #: patient/models.py:70
 msgid "Cuba"
-msgstr "Cuba"
+msgstr ""
 
 #: patient/models.py:71
 msgid "Cyprus"
-msgstr "Chipre"
+msgstr ""
 
 #: patient/models.py:72
 msgid "Czech Republic"
-msgstr "República Checa"
+msgstr ""
 
 #: patient/models.py:73
 msgid "Denmark"
-msgstr "Dinamarca"
+msgstr ""
 
 #: patient/models.py:74
 msgid "Djibouti"
-msgstr "Djibouti"
+msgstr ""
 
 #: patient/models.py:75
 msgid "Dominica"
-msgstr "Dominica"
+msgstr ""
 
 #: patient/models.py:76
 msgid "Dominican Republic"
-msgstr "República Dominicana"
+msgstr ""
 
 #: patient/models.py:77
 msgid "East Timor"
-msgstr "Timor Leste"
+msgstr ""
 
 #: patient/models.py:78
 msgid "Ecuador"
-msgstr "Equador"
+msgstr ""
 
 #: patient/models.py:79
 msgid "Egypt"
-msgstr "Egito"
+msgstr ""
 
 #: patient/models.py:80
 msgid "El Salvador"
-msgstr "El Salvador"
+msgstr ""
 
 #: patient/models.py:81
 msgid "Equatorial Guinea"
-msgstr "Guiné Equatorial"
+msgstr ""
 
 #: patient/models.py:82
 msgid "Eritrea"
-msgstr "Eritreia"
+msgstr ""
 
 #: patient/models.py:83
 msgid "Estonia"
-msgstr "Estónia"
+msgstr ""
 
 #: patient/models.py:84
 msgid "Ethiopia"
-msgstr "Etiópia"
+msgstr ""
 
 #: patient/models.py:85
 msgid "Falkland Islands (Malvinas)"
-msgstr "Ilhas Falkland (Malvinas)"
+msgstr ""
 
 #: patient/models.py:86
 msgid "Faroe Islands"
-msgstr "Ilhas Faroé"
+msgstr ""
 
 #: patient/models.py:87
 msgid "Fiji"
-msgstr "Fiji"
+msgstr ""
 
 #: patient/models.py:88
 msgid "Finland"
-msgstr "Finlândia"
+msgstr ""
 
 #: patient/models.py:89
-#, fuzzy
-#| msgid "Cancel"
 msgid "France"
-msgstr "França"
+msgstr ""
 
 #: patient/models.py:90
 msgid "France Metropolitan"
-msgstr "França Metropolitana"
+msgstr ""
 
 #: patient/models.py:91
 msgid "French Guiana"
-msgstr "Guiana Francesa"
+msgstr ""
 
 #: patient/models.py:92
 msgid "French Polynesia"
-msgstr "Polinésia Francesa"
+msgstr ""
 
 #: patient/models.py:93
 msgid "French Southern Territories"
-msgstr "Territórios Franceses do Sul"
+msgstr ""
 
 #: patient/models.py:94
 msgid "Gabon"
-msgstr "Gabão"
+msgstr ""
 
 #: patient/models.py:95
 msgid "Gambia"
-msgstr "Gâmbia"
+msgstr ""
 
 #: patient/models.py:96
 msgid "Georgia"
-msgstr "Geórgia"
+msgstr ""
 
 #: patient/models.py:97
 msgid "Germany"
-msgstr "Alemanha"
+msgstr ""
 
 #: patient/models.py:98
 msgid "Ghana"
-msgstr "Gana"
+msgstr ""
 
 #: patient/models.py:99
 msgid "Gibraltar"
-msgstr "Gibraltar"
+msgstr ""
 
 #: patient/models.py:100
 msgid "Greece"
-msgstr "Grécia"
+msgstr ""
 
 #: patient/models.py:101
 msgid "Greenland"
-msgstr "Gronelândia"
+msgstr ""
 
 #: patient/models.py:102
 msgid "Grenada"
-msgstr "Granada"
+msgstr ""
 
 #: patient/models.py:103
 msgid "Guadeloupe"
-msgstr "Guadalupe"
+msgstr ""
 
 #: patient/models.py:104
 msgid "Guam"
-msgstr "Guam"
+msgstr ""
 
 #: patient/models.py:105
 msgid "Guatemala"
-msgstr "Guatemala"
+msgstr ""
 
 #: patient/models.py:106
 msgid "Guinea"
-msgstr "Guiné"
+msgstr ""
 
 #: patient/models.py:107
 msgid "Guinea-Bissau"
-msgstr "Guiné-Bissau"
+msgstr ""
 
 #: patient/models.py:108
 msgid "Guyana"
-msgstr "Guiana"
+msgstr ""
 
 #: patient/models.py:109
 msgid "Haiti"
-msgstr "Haiti"
+msgstr ""
 
 #: patient/models.py:110
 msgid "Heard & McDonald Islands"
-msgstr "Ilha Heard e as Ilhas McDonald"
+msgstr ""
 
 #: patient/models.py:111
 msgid "Honduras"
-msgstr "Honduras"
+msgstr ""
 
 #: patient/models.py:112
 msgid "Hong Kong"
-msgstr "Hong Kong"
+msgstr ""
 
 #: patient/models.py:113
 msgid "Hungary"
-msgstr "Hungria"
+msgstr ""
 
 #: patient/models.py:114
 msgid "Iceland"
-msgstr "Islândia"
+msgstr ""
 
 #: patient/models.py:115
 msgid "India"
-msgstr "Índia"
+msgstr ""
 
 #: patient/models.py:116
 msgid "Indonesia"
-msgstr "Indonésia"
+msgstr ""
 
 #: patient/models.py:117
 msgid "Iraq"
-msgstr "Iraque"
+msgstr ""
 
 #: patient/models.py:118
 msgid "Ireland"
-msgstr "Irlanda"
+msgstr ""
 
 #: patient/models.py:119
 msgid "Islamic Republic of Iran"
-msgstr "República Islâmica do Irão"
+msgstr ""
 
 #: patient/models.py:120
 msgid "Israel"
-msgstr "Israel"
+msgstr ""
 
 #: patient/models.py:121
 msgid "Italy"
-msgstr "Itália"
+msgstr ""
 
 #: patient/models.py:122
 msgid "Ivory Coast"
-msgstr "Costa do Marfim"
+msgstr ""
 
 #: patient/models.py:123
 msgid "Jamaica"
-msgstr "Jamaica"
+msgstr ""
 
 #: patient/models.py:124
 msgid "Japan"
-msgstr "Japão"
+msgstr ""
 
 #: patient/models.py:125
 msgid "Jordan"
-msgstr "Jordânia"
+msgstr ""
 
 #: patient/models.py:126
 msgid "Kazakhstan"
-msgstr "Cazaquistão"
+msgstr ""
 
 #: patient/models.py:127
 msgid "Kenya"
-msgstr "Quénia"
+msgstr ""
 
 #: patient/models.py:128
 msgid "Kiribati"
-msgstr "Kiribati"
+msgstr ""
 
 #: patient/models.py:129
 msgid "Korea, Democratic People's Republic of"
-msgstr "Coreia, República Popular Democrática da"
+msgstr ""
 
 #: patient/models.py:130
 msgid "Korea, Republic of"
-msgstr "Coreia, República da"
+msgstr ""
 
 #: patient/models.py:131
 msgid "Kuwait"
-msgstr "Kuwait"
+msgstr ""
 
 #: patient/models.py:132
 msgid "Kyrgyzstan"
-msgstr "Quirguistão"
+msgstr ""
 
 #: patient/models.py:133
 msgid "Lao People's Democratic Republic"
-msgstr "Laos, República Democrática Popular do"
+msgstr ""
 
 #: patient/models.py:134
 msgid "Latvia"
-msgstr "Letónia"
+msgstr ""
 
 #: patient/models.py:135
 msgid "Lebanon"
-msgstr "Líbano"
+msgstr ""
 
 #: patient/models.py:136
 msgid "Lesotho"
-msgstr "Lesoto"
+msgstr ""
 
 #: patient/models.py:137
 msgid "Liberia"
-msgstr "Libéria"
+msgstr ""
 
 #: patient/models.py:138
 msgid "Libyan Arab Jamahiriya"
-msgstr "Jamahiriya Árabe Líbia"
+msgstr ""
 
 #: patient/models.py:139
 msgid "Liechtenstein"
-msgstr "Liechtenstein"
+msgstr ""
 
 #: patient/models.py:140
 msgid "Lithuania"
-msgstr "Lituânia"
+msgstr ""
 
 #: patient/models.py:141
 msgid "Luxembourg"
-msgstr "Luxemburgo"
+msgstr ""
 
 #: patient/models.py:142
 msgid "Macau"
-msgstr "Macau"
+msgstr ""
 
 #: patient/models.py:143
 msgid "Madagascar"
-msgstr "Madagascar"
+msgstr ""
 
 #: patient/models.py:144
 msgid "Malawi"
-msgstr "Malawi"
+msgstr ""
 
 #: patient/models.py:145
 msgid "Malaysia"
-msgstr "Malásia"
+msgstr ""
 
 #: patient/models.py:146
 msgid "Maldives"
-msgstr "Maldivas"
+msgstr ""
 
 #: patient/models.py:147
 msgid "Mali"
-msgstr "Mali"
+msgstr ""
 
 #: patient/models.py:148
 msgid "Malta"
-msgstr "Malta"
+msgstr ""
 
 #: patient/models.py:149
 msgid "Marshall Islands"
-msgstr "Ilhas Marshall"
+msgstr ""
 
 #: patient/models.py:150
 msgid "Martinique"
-msgstr "Martinica"
+msgstr ""
 
 #: patient/models.py:151
 msgid "Mauritania"
-msgstr "Mauritânia"
+msgstr ""
 
 #: patient/models.py:152
 msgid "Mauritius"
-msgstr "Maurícia"
+msgstr ""
 
 #: patient/models.py:153
 msgid "Mayotte"
-msgstr "Mayotte"
+msgstr ""
 
 #: patient/models.py:154
 msgid "Mexico"
-msgstr "México"
+msgstr ""
 
 #: patient/models.py:155
 msgid "Micronesia"
-msgstr "Micronésia"
+msgstr ""
 
 #: patient/models.py:156
 msgid "Moldova, Republic of"
-msgstr "Moldávia, República de"
+msgstr ""
 
 #: patient/models.py:157
 msgid "Monaco"
-msgstr "Monaco"
+msgstr ""
 
 #: patient/models.py:158
 msgid "Mongolia"
-msgstr "Mongólia"
+msgstr ""
 
 #: patient/models.py:159
-#, fuzzy
-#| msgid "Montserrat"
 msgid "Monserrat"
-msgstr "Montserrat"
+msgstr ""
 
 #: patient/models.py:160
 msgid "Morocco"
-msgstr "Marrocos"
+msgstr ""
 
 #: patient/models.py:161
 msgid "Mozambique"
-msgstr "Moçambique"
+msgstr ""
 
 #: patient/models.py:162
 msgid "Myanmar"
-msgstr "Myanmar"
+msgstr ""
 
 #: patient/models.py:163
 msgid "Namibia"
-msgstr "Namíbia"
+msgstr ""
 
 #: patient/models.py:164
 msgid "Nauru"
-msgstr "Nauru"
+msgstr ""
 
 #: patient/models.py:165
 msgid "Nepal"
-msgstr "Nepal"
+msgstr ""
 
 #: patient/models.py:166
 msgid "Netherlands"
-msgstr "Países Baixos"
+msgstr ""
 
 #: patient/models.py:167
 msgid "Netherlands Antilles"
-msgstr "Antilhas Holandesas"
+msgstr ""
 
 #: patient/models.py:168
 msgid "New Caledonia"
-msgstr "Nova Caledónia"
+msgstr ""
 
 #: patient/models.py:169
 msgid "New Zealand"
-msgstr "Nova Zelândia"
+msgstr ""
 
 #: patient/models.py:170
 msgid "Nicaragua"
-msgstr "Nicarágua"
+msgstr ""
 
 #: patient/models.py:171
 msgid "Niger"
-msgstr "Níger"
+msgstr ""
 
 #: patient/models.py:172
 msgid "Nigeria"
-msgstr "Nigéria"
+msgstr ""
 
 #: patient/models.py:173
 msgid "Niue"
-msgstr "Niue"
+msgstr ""
 
 #: patient/models.py:174
 msgid "Norfolk Island"
-msgstr "Ilha Norfolk"
+msgstr ""
 
 #: patient/models.py:175
 msgid "Northern Mariana Islands"
-msgstr "Ilhas Marianas do Norte"
+msgstr ""
 
 #: patient/models.py:176
 msgid "Norway"
-msgstr "Noruega"
+msgstr ""
 
 #: patient/models.py:177
 msgid "Oman"
-msgstr "Omã"
+msgstr ""
 
 #: patient/models.py:178
 msgid "Pakistan"
-msgstr "Paquistão"
+msgstr ""
 
 #: patient/models.py:179
 msgid "Palau"
-msgstr "Palau"
+msgstr ""
 
 #: patient/models.py:180
 msgid "Panama"
-msgstr "Panamá"
+msgstr ""
 
 #: patient/models.py:181
 msgid "Papua New Guinea"
-msgstr "Papua Nova Guiné"
+msgstr ""
 
 #: patient/models.py:182
 msgid "Paraguay"
-msgstr "Paraguai"
+msgstr ""
 
 #: patient/models.py:183
 msgid "Peru"
-msgstr "Peru"
+msgstr ""
 
 #: patient/models.py:184
 msgid "Philippines"
-msgstr "Filipinas"
+msgstr ""
 
 #: patient/models.py:185
 msgid "Pitcairn"
-msgstr "Pitcairn"
+msgstr ""
 
 #: patient/models.py:186
 msgid "Poland"
-msgstr "Polônia"
+msgstr ""
 
 #: patient/models.py:187
 msgid "Portugal"
-msgstr "Portugal"
+msgstr ""
 
 #: patient/models.py:188
 msgid "Puerto Rico"
-msgstr "Porto Rico"
+msgstr ""
 
 #: patient/models.py:189
 msgid "Qatar"
-msgstr "Qatar"
+msgstr ""
 
 #: patient/models.py:190
 msgid "Reunion"
-msgstr "Reunião"
+msgstr ""
 
 #: patient/models.py:191
 msgid "Romania"
-msgstr "Romênia"
+msgstr ""
 
 #: patient/models.py:192
 msgid "Russian Federation"
-msgstr "Federação Russa"
+msgstr ""
 
 #: patient/models.py:193
 msgid "Rwanda"
-msgstr "Rwanda"
+msgstr ""
 
 #: patient/models.py:194
 msgid "Saint Kitts and Nevis"
-msgstr "Saint Kitts e Nevis"
+msgstr ""
 
 #: patient/models.py:195
 msgid "Saint Lucia"
-msgstr "Santa Lúcia"
+msgstr ""
 
 #: patient/models.py:196
 msgid "Samoa"
-msgstr "Samoa"
+msgstr ""
 
 #: patient/models.py:197
 msgid "San Marino"
-msgstr "San Marino"
+msgstr ""
 
 #: patient/models.py:198
 msgid "Sao Tome & Principe"
-msgstr "São Tomé e Príncipe"
+msgstr ""
 
 #: patient/models.py:199
 msgid "Saudi Arabia"
-msgstr "Arábia Saudita"
+msgstr ""
 
 #: patient/models.py:200
 msgid "Senegal"
-msgstr "Senegal"
+msgstr ""
 
 #: patient/models.py:201
 msgid "Seychelles"
-msgstr "Seychelles"
+msgstr ""
 
 #: patient/models.py:202
 msgid "Sierra Leone"
-msgstr "Serra Leoa"
+msgstr ""
 
 #: patient/models.py:203
 msgid "Singapore"
-msgstr "Singapura"
+msgstr ""
 
 #: patient/models.py:204
 msgid "Slovakia"
-msgstr "Eslováquia"
+msgstr ""
 
 #: patient/models.py:205
 msgid "Slovenia"
-msgstr "Eslovénia"
+msgstr ""
 
 #: patient/models.py:206
 msgid "Solomon Islands"
-msgstr "Ilhas Salomão"
+msgstr ""
 
 #: patient/models.py:207
 msgid "Somalia"
-msgstr "Somália"
+msgstr ""
 
 #: patient/models.py:208
 msgid "South Africa"
-msgstr "África do Sul"
+msgstr ""
 
 #: patient/models.py:209
 msgid "South Georgia and the South Sandwich Islands"
-msgstr "Ilhas Geórgia do Sul e Sandwich do Sul"
+msgstr ""
 
 #: patient/models.py:210
 msgid "Spain"
-msgstr "Espanha"
+msgstr ""
 
 #: patient/models.py:211
 msgid "Sri Lanka"
-msgstr "Sri Lanka"
+msgstr ""
 
 #: patient/models.py:212
 msgid "St. Helena"
-msgstr "Santa Helena (território)"
+msgstr ""
 
 #: patient/models.py:213
 msgid "St. Pierre & Miquelon"
-msgstr "Saint Pierre e Miquelon"
+msgstr ""
 
 #: patient/models.py:214
 msgid "St. Vincent & the Grenadines"
-msgstr "São Vicente e Granadinas"
+msgstr ""
 
 #: patient/models.py:215
 msgid "Sudan"
-msgstr "Sudão"
+msgstr ""
 
 #: patient/models.py:216
 msgid "Suriname"
-msgstr "Suriname"
+msgstr ""
 
 #: patient/models.py:217
 msgid "Svalbard & Jan Mayen Islands"
-msgstr "Ilhas Svalbard e Jan Mayen"
+msgstr ""
 
 #: patient/models.py:218
 msgid "Swaziland"
-msgstr "Suazilândia"
+msgstr ""
 
 #: patient/models.py:219
 msgid "Sweden"
-msgstr "Suécia"
+msgstr ""
 
 #: patient/models.py:220
 msgid "Switzerland"
-msgstr "Suíça"
+msgstr ""
 
 #: patient/models.py:221
 msgid "Syrian Arab Republic"
-msgstr "República Árabe Síria"
+msgstr ""
 
 #: patient/models.py:222
 msgid "Taiwan, Province of China"
-msgstr "Taiwan, Província da China"
+msgstr ""
 
 #: patient/models.py:223
 msgid "Tajikistan"
-msgstr "Tadjiquistão"
+msgstr ""
 
 #: patient/models.py:224
 msgid "Tanzania, United Republic of"
-msgstr "Tanzânia, República Unida da"
+msgstr ""
 
 #: patient/models.py:225
 msgid "Thailand"
-msgstr "Tailândia"
+msgstr ""
 
 #: patient/models.py:226
 msgid "Togo"
-msgstr "Togo"
+msgstr ""
 
 #: patient/models.py:227
 msgid "Tokelau"
-msgstr "Tokelau"
+msgstr ""
 
 #: patient/models.py:228
 msgid "Tonga"
-msgstr "Tonga"
+msgstr ""
 
 #: patient/models.py:229
 msgid "Trinidad & Tobago"
-msgstr "Trinidad e Tobago"
+msgstr ""
 
 #: patient/models.py:230
 msgid "Tunisia"
-msgstr "Tunísia"
+msgstr ""
 
 #: patient/models.py:231
 msgid "Turkey"
-msgstr "Turquia"
+msgstr ""
 
 #: patient/models.py:232
 msgid "Turkmenistan"
-msgstr "Turquemenistão"
+msgstr ""
 
 #: patient/models.py:233
 msgid "Turks & Caicos Islands"
-msgstr "Ilhas Turks e Caicos"
+msgstr ""
 
 #: patient/models.py:234
 msgid "Tuvalu"
-msgstr "Tuvalu"
+msgstr ""
 
 #: patient/models.py:235
 msgid "Uganda"
-msgstr "Uganda"
+msgstr ""
 
 #: patient/models.py:236
 msgid "Ukraine"
-msgstr "Ucrânia"
+msgstr ""
 
 #: patient/models.py:237
 msgid "United Arab Emirates"
-msgstr "Emirados Árabes Unidos"
+msgstr ""
 
 #: patient/models.py:238
 msgid "United Kingdom (Great Britain)"
-msgstr "Reino Unido (Grã-Bretanha)"
+msgstr ""
 
 #: patient/models.py:239
 msgid "United States Minor Outlying Islands"
-msgstr "Ilhas Menores Distantes dos Estados Unidos"
+msgstr ""
 
 #: patient/models.py:240
 msgid "United States of America"
-msgstr "Estados Unidos da América"
+msgstr ""
 
 #: patient/models.py:241
 msgid "United States Virgin Islands"
-msgstr "Ilhas Virgens Americanas"
+msgstr ""
 
 #: patient/models.py:242
 msgid "Uruguay"
-msgstr "Uruguai"
+msgstr ""
 
 #: patient/models.py:243
 msgid "Uzbekistan"
-msgstr "Uzbequistão"
+msgstr ""
 
 #: patient/models.py:244
 msgid "Vanuatu"
-msgstr "Vanuatu"
+msgstr ""
 
 #: patient/models.py:245
 msgid "Vatican City State (Holy See)"
-msgstr "Estado da Cidade do Vaticano (Santa Sé)"
+msgstr ""
 
 #: patient/models.py:246
 msgid "Venezuela"
-msgstr "Venezuela"
+msgstr ""
 
 #: patient/models.py:247
 msgid "Viet Nam"
-msgstr "Vietname"
+msgstr ""
 
 #: patient/models.py:248
 msgid "Wallis & Futuna Islands"
-msgstr "Ilhas Wallis e Futuna"
+msgstr ""
 
 #: patient/models.py:249
 msgid "Western Sahara"
-msgstr "Saara Ocidental"
+msgstr ""
 
 #: patient/models.py:250
 msgid "Yemen"
-msgstr "Iémen"
+msgstr ""
 
 #: patient/models.py:251
 msgid "Yugoslavia"
-msgstr "Iugoslávia"
+msgstr ""
 
 #: patient/models.py:252
 msgid "Zaire"
-msgstr "Zaire"
+msgstr ""
 
 #: patient/models.py:253
 msgid "Zambia"
-msgstr "Zâmbia"
+msgstr ""
 
 #: patient/models.py:254
 msgid "Zimbabwe"
-msgstr "Zimbabwe"
+msgstr ""
 
 #: patient/models.py:255
 msgid "Unknown or unspecified country"
-msgstr "País desconhecido ou não especificado"
+msgstr ""
 
 #: patient/models.py:261
 msgid "Fill date can not be bigger than today's date."
-msgstr "Data de preenchimento não pode ser maior que a data de hoje."
+msgstr ""
 
 #: patient/models.py:269
 #, python-format
 msgid "CPF %(CPF)s invalid"
-msgstr "CPF %(CPF)s não é válido"
+msgstr ""
 
 #: patient/models.py:276
 msgid "Date of birth can't be greater than today date."
-msgstr "Data de nascimento não pode ser maior que a data de hoje."
+msgstr ""
 
 #: patient/models.py:415
 msgid "Cell phone"
-msgstr "Celular"
+msgstr ""
 
 #: patient/models.py:416
 msgid "Home phone"
-msgstr "Residencial"
+msgstr ""
 
 #: patient/models.py:417
 msgid "Business"
-msgstr "Comercial"
+msgstr ""
 
 #: patient/models.py:418
 msgid "Main"
-msgstr "Principal"
+msgstr ""
 
 #: patient/models.py:419
 msgid "Business fax"
-msgstr "Fax comercial"
+msgstr ""
 
 #: patient/models.py:420
 msgid "Home fax"
-msgstr "Fax residencial"
+msgstr ""
 
 #: patient/models.py:421
 msgid "Pager"
@@ -1113,20 +1109,20 @@ msgstr ""
 
 #: patient/models.py:422
 msgid "Other"
-msgstr "Outros"
+msgstr ""
 
 #: patient/models.py:453
 msgid "Schooling of the patient"
-msgstr "Escolaridade do participante"
+msgstr ""
 
 #: patient/models.py:455
 msgid "Schooling of the householder"
-msgstr "Escolaridade do chefe de família"
+msgstr ""
 
 #: patient/models.py:554 patient/models.py:556 patient/models.py:558
 #: patient/views.py:342 patient/views.py:345
 msgid "The combination is not allowed."
-msgstr "Esta combinação é inválida."
+msgstr ""
 
 #: patient/models.py:655
 msgid "token id: "
@@ -1134,20 +1130,20 @@ msgstr ""
 
 #: patient/templates/patient/ajax_cid10.html:17
 msgid "No diseases found!"
-msgstr "Nenhuma doença encontrada!"
+msgstr ""
 
 #: patient/templates/patient/ajax_search.html:11
 msgid "No participants found!"
-msgstr "Nenhum participante encontrado!"
+msgstr ""
 
 #: patient/templates/patient/busca.html:34
 msgid "Search participant"
-msgstr "Buscar participante"
+msgstr ""
 
 #: patient/templates/patient/busca.html:36
 #, python-format
 msgid " %(number_of_patients)s registered participants"
-msgstr " %(number_of_patients)s participantes cadastrados"
+msgstr ""
 
 #: patient/templates/patient/busca.html:40
 msgid "Type participant name, CPF or code"
@@ -1163,63 +1159,63 @@ msgstr ""
 
 #: patient/templates/patient/busca.html:51
 msgid "Insert new"
-msgstr "Inserir novo"
+msgstr ""
 
 #: patient/templates/patient/exams.html:19
 #: patient/templates/patient/medical_record.html:26
 msgid "Home"
-msgstr "Home"
+msgstr ""
 
 #: patient/templates/patient/exams.html:20
 #: patient/templates/patient/medical_record.html:27
 msgid "Participants"
-msgstr "Participantes"
+msgstr ""
 
 #: patient/templates/patient/exams.html:28
 #: patient/templates/patient/medical_record.html:33
 msgid "Medical assessment"
-msgstr "Avaliação médica"
+msgstr ""
 
 #: patient/templates/patient/exams.html:31
 #: patient/templates/patient/exams.html:34
 #: patient/templates/patient/exams.html:36
 msgid "Diagnosis and Exams"
-msgstr "Diagnóstico e Exames"
+msgstr ""
 
 #: patient/templates/patient/exams.html:41
 msgid "Exam"
-msgstr "Exame"
+msgstr ""
 
 #: patient/templates/patient/exams.html:43
 msgid "New Exam"
-msgstr "Novo Exame"
+msgstr ""
 
 #: patient/templates/patient/exams.html:83
 #: patient/templates/patient/medical_record.html:164
 #: patient/templates/patient/medical_record.html:166
 #: patient/templates/patient/register_medical_record.html:23
 msgid "Date"
-msgstr "Data"
+msgstr ""
 
 #: patient/templates/patient/exams.html:96
 msgid "Performed in"
-msgstr "Realizado em"
+msgstr ""
 
 #: patient/templates/patient/exams.html:104
 msgid "Description "
-msgstr "Descrição "
+msgstr ""
 
 #: patient/templates/patient/exams.html:119
 msgid "Doctor name"
-msgstr "Nome do médico"
+msgstr ""
 
 #: patient/templates/patient/exams.html:130
 msgid "Attachments"
-msgstr "Anexos"
+msgstr ""
 
 #: patient/templates/patient/exams.html:136
 msgid "(no attachments)"
-msgstr "(sem anexos)"
+msgstr ""
 
 #: patient/templates/patient/exams.html:161
 msgid "Files to upload"
@@ -1233,7 +1229,7 @@ msgstr ""
 #: patient/templates/patient/register.html:180
 #: patient/templates/patient/register_personal_data.html:270
 msgid "Delete"
-msgstr "Excluir"
+msgstr ""
 
 #: patient/templates/patient/exams.html:179
 #: patient/templates/patient/exams.html:182
@@ -1241,7 +1237,7 @@ msgstr "Excluir"
 #: patient/templates/patient/medical_record.html:226
 #: patient/templates/patient/medical_record.html:228
 msgid "Back"
-msgstr "Voltar"
+msgstr ""
 
 #: patient/templates/patient/exams.html:188
 #: patient/templates/patient/medical_record.html:173
@@ -1250,11 +1246,11 @@ msgstr "Voltar"
 #: patient/templates/patient/register.html:151
 #: patient/templates/patient/register_personal_data.html:335
 msgid "Save"
-msgstr "Salvar"
+msgstr ""
 
 #: patient/templates/patient/exams.html:201
 msgid "Are you sure you want to delete exam?"
-msgstr "Tem certeza que deseja excluir o exame?"
+msgstr ""
 
 #: patient/templates/patient/exams.html:204
 #: patient/templates/patient/exams.html:219
@@ -1268,135 +1264,133 @@ msgstr "Tem certeza que deseja excluir o exame?"
 #: patient/templates/patient/register_personal_data.html:369
 #: patient/templates/patient/register_questionnaires.html:203
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr ""
 
 #: patient/templates/patient/exams.html:216
 msgid ""
 "As there are no attachments, the exam will be totally excluded. Do you "
 "confirm deletion?"
 msgstr ""
-"Como não existem anexos, o exame será excluído totalmente. Confirma exclusão?"
 
 #: patient/templates/patient/medical_record.html:43
 msgid "Date:"
-msgstr "Data:"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:52
 msgid "Responsible:"
-msgstr "Responsável"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:99
 msgid "Specify diagnosis or disease code (ICD-10)"
-msgstr "Especificar o diagnóstico da doença ou o código da doença (CID-10)"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:116
 #: patient/templates/patient/register_medical_record.html:24
 msgid "Diagnosis"
-msgstr "Diagnóstico"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:117
 msgid "Exams"
-msgstr "Exames"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:123
 msgid "(no diagnosis)"
-msgstr "(sem diagnósticos)"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:138
 msgid "On "
-msgstr "Em "
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:143
 msgid "Edit details"
-msgstr "Editar detalhes"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:144
 msgid "Details"
-msgstr "Detalhes"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:158
 #: patient/templates/patient/medical_record.html:159
 #: patient/templates/patient/register_personal_data.html:265
 msgid "Observation"
-msgstr "Observação"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:198
 #: patient/templates/patient/medical_record.html:202
 msgid "Insert exam"
-msgstr "Inserir exame"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:234
 #: patient/templates/patient/medical_record.html:236
 msgid "Finalize evaluation"
-msgstr "Finalizar avaliação"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:251
 msgid "Are you sure you want to delete diagnosis?"
-msgstr "Tem certeza que deseja excluir o diagnóstico?"
+msgstr ""
 
 #: patient/templates/patient/register.html:44
 #: patient/templates/patient/register.html:61
 msgid "Personal data"
-msgstr "Dados pessoais"
+msgstr ""
 
 #: patient/templates/patient/register.html:47
 #: patient/templates/patient/register.html:63
 msgid "Social demographic data"
-msgstr "Dados sociodemográficos"
+msgstr ""
 
 #: patient/templates/patient/register.html:50
 #: patient/templates/patient/register.html:65
 msgid "Social history"
-msgstr "História social"
+msgstr ""
 
 #: patient/templates/patient/register.html:53
 #: patient/templates/patient/register.html:67
 msgid "Medical evaluation"
-msgstr "Avaliações médicas"
+msgstr ""
 
 #: patient/templates/patient/register.html:57
 #: patient/templates/patient/register.html:70
 msgid "Questionnaires"
-msgstr "Questionários"
+msgstr ""
 
 #: patient/templates/patient/register.html:113
 msgid "Delete participant"
-msgstr "Excluir participante"
+msgstr ""
 
 #: patient/templates/patient/register.html:120
 msgid "Save and show before"
-msgstr "Salvar e mostrar anterior"
+msgstr ""
 
 #: patient/templates/patient/register.html:121
 msgid "Save and show next"
-msgstr "Salvar e mostrar próxima"
+msgstr ""
 
 #: patient/templates/patient/register.html:128
 msgid "Show before"
-msgstr "Mostrar anterior"
+msgstr ""
 
 #: patient/templates/patient/register.html:129
 msgid "Show next"
-msgstr "Mostrar próxima"
+msgstr ""
 
 #: patient/templates/patient/register.html:131
 #: patient/templates/patient/register_medical_record.html:26
 msgid "Edit"
-msgstr "Editar"
+msgstr ""
 
 #: patient/templates/patient/register.html:146
 msgid "Would you like to save?"
-msgstr "Deseja salvar?"
+msgstr ""
 
 #: patient/templates/patient/register.html:150
 msgid "Do not save"
-msgstr "Não salvar"
+msgstr ""
 
 #: patient/templates/patient/register.html:162
 msgid ""
 "It is necessary to save personnal data before you can access other tabs."
 msgstr ""
-"É necessário salvar os dados pessoais antes de poder acessar as demais abas."
 
 #: patient/templates/patient/register.html:165
 msgid "OK"
@@ -1404,7 +1398,7 @@ msgstr ""
 
 #: patient/templates/patient/register.html:175
 msgid "Are you sure you want to delete participant?"
-msgstr "Tem certeza que deseja excluir o participante?"
+msgstr ""
 
 #: patient/templates/patient/register_medical_record.html:15
 #: patient/templates/patient/register_personal_data.html:22
@@ -1412,48 +1406,48 @@ msgstr "Tem certeza que deseja excluir o participante?"
 #: patient/templates/patient/register_social_history.html:14
 #: patient/templates/patient/register_socialdemographic_data.html:17
 msgid "Code"
-msgstr "Código"
+msgstr ""
 
 #: patient/templates/patient/register_medical_record.html:25
 msgid "Responsible"
-msgstr "Responsável"
+msgstr ""
 
 #: patient/templates/patient/register_medical_record.html:26
 msgid "View"
-msgstr "Lista"
+msgstr ""
 
 #: patient/templates/patient/register_medical_record.html:60
 msgid "Insert medical record"
-msgstr "Inserir avaliação médica"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:18
 #: patient/templates/patient/register_socialdemographic_data.html:13
 msgid "Basic Information"
-msgstr "Informações básicas"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:51
 msgid "Full name"
-msgstr "Nome completo"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:61
 msgid "Security id"
-msgstr "CPF"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:79
 msgid "Origin"
-msgstr "Origem"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:88
 msgid "Medical record"
-msgstr "Número do prontuário"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:99
 msgid "Date of birth"
-msgstr "Data de nascimento"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:115
 msgid "Gender"
-msgstr "Sexo"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:127
 msgid "RG"
@@ -1461,41 +1455,41 @@ msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:136
 msgid "Marital status"
-msgstr "Estado civil"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:147
 #: patient/templates/patient/register_personal_data.html:172
 msgid "Address"
-msgstr "Endereço"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:151
 msgid "Country"
-msgstr "País"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:160
 msgid "Zip code"
-msgstr "CEP"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:182
 #: patient/templates/patient/register_personal_data.html:255
 msgid "Number"
-msgstr "Número"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:191
 msgid "Complement"
-msgstr "Complemento"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:203
 msgid "District"
-msgstr "Bairro"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:212
 msgid "City"
-msgstr "Cidade"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:223
 msgid "State"
-msgstr "Estado"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:232
 msgid "E-mail"
@@ -1503,28 +1497,25 @@ msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:247
 msgid "Telephones"
-msgstr "Telefones"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:260
 msgid "Type"
-msgstr "Tipo"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:319
 msgid "Save and include more phones"
-msgstr "Salvar e incluir mais telefones"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:331
 msgid "CPF is not filled in. Would you like saving?"
-msgstr "CPF não foi preenchido. Deseja salvar?"
+msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:346
 msgid ""
 "Participant is already registered\n"
 "                        Click to view record ou Cancel to go back to form."
 msgstr ""
-"Participante já cadastrado.\n"
-"                            Clique para visualizar registro ou Cancelar para "
-"voltar ao formulário."
 
 #: patient/templates/patient/register_personal_data.html:363
 msgid ""
@@ -1532,189 +1523,185 @@ msgid ""
 "                        Click to restore registration or Cancel to register "
 "with same name."
 msgstr ""
-"Participante já foi excluído anteriormente.\n"
-"                        Clique para restaurar cadastro ou Cancelar para "
-"cadastrar com mesmo nome."
 
 #: patient/templates/patient/register_questionnaires.html:15
 msgid "Questionnaire fills"
-msgstr "Preenchimento de questionários"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:29
 #: patient/templates/patient/register_questionnaires.html:146
 msgid "Questionnaire"
-msgstr "Questionário"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:30
 msgid "Fills"
-msgstr "Preenchimentos"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:41
 msgid "It must be filled"
-msgstr "Falta preencher"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:78
 #: patient/templates/patient/register_questionnaires.html:171
 msgid "Complete"
-msgstr "Completo"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:80
 #: patient/templates/patient/register_questionnaires.html:173
 msgid "Incomplete"
-msgstr "Incompleto"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:83
 #: patient/templates/patient/register_questionnaires.html:176
 msgid "No status"
-msgstr "Sem status"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:91
 msgid "Updated"
-msgstr "Atualizado"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:102
 #: patient/templates/patient/register_questionnaires.html:205
 msgid "New fill"
-msgstr "Novo preenchimento"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:119
 msgid "Choose another questionnaire to fill"
-msgstr "Escolha outro questionário para preencher"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:135
 msgid "Experiment questionnaires"
-msgstr "Questionários de experimentos"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:143
 msgid "Research project"
-msgstr "Estudo"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:144
 msgid "Experiment"
-msgstr "Experimento"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:145
 msgid "Group"
-msgstr "Grupo"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:147
 msgid "Fill"
-msgstr "Preenchimento"
+msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:194
 msgid "Choose a questionnaire to fill"
-msgstr "Escolha um questionário para preencher"
+msgstr ""
 
 #: patient/templates/patient/register_social_history.html:22
 msgid "Smoker"
-msgstr "Tabagismo"
+msgstr ""
 
 #: patient/templates/patient/register_social_history.html:35
 msgid "Cigarretes/Day"
-msgstr "Cigarros/Dia"
+msgstr ""
 
 #: patient/templates/patient/register_social_history.html:44
 msgid "Former smoker"
-msgstr "Ex-tabagista"
+msgstr ""
 
 #: patient/templates/patient/register_social_history.html:59
 msgid "Alcoholic"
-msgstr "Etilismo"
+msgstr ""
 
 #: patient/templates/patient/register_social_history.html:72
 msgid "Frequency"
-msgstr "Frequência"
+msgstr ""
 
 #: patient/templates/patient/register_social_history.html:81
 msgid "Period"
-msgstr "Tempo"
+msgstr ""
 
 #: patient/templates/patient/register_social_history.html:92
 msgid "Drugs"
-msgstr "Uso de drogas ilícitas"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:25
 msgid "Natural of"
-msgstr "Natural de"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:35
 msgid "Citizenship"
-msgstr "País de nascimento"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:47
 msgid "Profession"
-msgstr "Profissão"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:57
 msgid "Occupation"
-msgstr "Ocupação"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:69
 msgid ""
 "Do you receive some benefit from the municipal level, state or federal "
 "government?"
 msgstr ""
-"Recebe algum benefício de escala municipal, estadual ou federal de governo?"
 
 #: patient/templates/patient/register_socialdemographic_data.html:84
 msgid "What form of payment of the treatment performed?"
-msgstr "Qual a forma de pagamento do tratamento realizado?"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:95
 msgid "Religion"
-msgstr "Religião (IBGE)"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:104
 msgid "Flesh tone"
-msgstr "Cor da pele (IBGE)"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:116
 msgid "Level of education (schooling)"
-msgstr "Grau de instrução (escolaridade)"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:126
 msgid "Social class"
-msgstr "Classe social"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:132
 msgid "Level of education of the householder - Criterion Brazil 2013"
-msgstr "Grau de instrução do chefe de família - Critério Brasil 2013"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:143
 msgid "Amount of familiar comfort items - Brazil 2013 criteria"
-msgstr "Quantidade de itens de conforto familiar - Critério Brasil 2013"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:146
 msgid "TV"
-msgstr "Televisores em cores"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:157
 msgid "DVD"
-msgstr "Videocassete/DVD"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:168
 msgid "Radio"
-msgstr "Rádios"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:179
 msgid "Bath"
-msgstr "Banheiros"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:190
 msgid "Automobile"
-msgstr "Automóveis"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:201
 msgid "Employed salaried"
-msgstr "Empregadas mensalistas"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:212
 msgid "Wash machine"
-msgstr "Máquinas de lavar"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:223
 msgid "Refrigerator"
-msgstr "Geladeiras"
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:234
 msgid "Freezer*"
@@ -1722,316 +1709,123 @@ msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:249
 msgid "*Independent unit or part of the fridge-freezer"
-msgstr "*Aparelho independente ou parte da geladeira duplex."
+msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:256
 msgid "Calculated social class"
-msgstr "Classe social calculada"
+msgstr ""
 
 #: patient/tests/tests_orig.py:373
 msgid " is not valid"
-msgstr " não é válido"
+msgstr ""
 
 #: patient/tests/tests_orig.py:513 patient/tests/tests_orig.py:528
 #: patient/tests/tests_orig.py:535
 msgid "Social class was not calculated"
-msgstr "Classe Social não calculada"
+msgstr ""
 
 #: patient/tests/tests_orig.py:526 patient/views.py:310
 msgid "Social demographic data successfully written."
-msgstr "Dados sociodemográficos gravados com sucesso."
+msgstr ""
 
 #: patient/tests/tests_orig.py:538 patient/tests/tests_orig.py:590
 msgid "Less than 1 pack"
-msgstr "Menos de 1 maço"
+msgstr ""
 
 #: patient/tests/tests_orig.py:541 patient/tests/tests_orig.py:617
 msgid "Sporadically"
-msgstr "Esporadicamente"
+msgstr ""
 
 #: patient/tests/tests_orig.py:544 patient/tests/tests_orig.py:644
 msgid "Less than 1 year"
-msgstr "Menos de 1 ano"
+msgstr ""
 
 #: patient/tests/tests_orig.py:576 patient/tests/tests_orig.py:603
 #: patient/tests/tests_orig.py:630 patient/tests/tests_orig.py:657
 #: patient/tests/tests_orig.py:685 patient/views.py:340
 msgid "Social history successfully recorded."
-msgstr "História social gravada com sucesso."
+msgstr ""
 
 #: patient/views.py:128 patient/views.py:233
 msgid "Personal data successfully written."
-msgstr "Dados pessoais gravados com sucesso."
+msgstr ""
 
 #: patient/views.py:137
 msgid "Participant with this CPF has already removed."
-msgstr "Já existe participante removido com este CPF."
+msgstr ""
 
 #: patient/views.py:139
 msgid "There is already registered participant with this CPF."
-msgstr "Já existe participante cadastrado com este CPF."
+msgstr ""
 
 #: patient/views.py:304
 msgid ""
 "Social class was not calculated, because all the necessary fields were not "
 "filled."
 msgstr ""
-"Classe Social não calculada, pois nem todos oscampos necessários para o "
-"cálculo foram preenchidos."
 
 #: patient/views.py:843
 msgid "Diagnosis details successfully changed."
-msgstr "Detalhes do diagnóstico alterados com sucesso."
+msgstr ""
 
 #: patient/views.py:851
 msgid "Incorrect date. Use format: mm/dd/yyyy"
-msgstr "Data incorreta. Utilize o formato dd/mm/yyyy."
+msgstr ""
 
 #: patient/views.py:871
 msgid "Medical evaluation successfully deleted."
-msgstr "Avaliação médica removida com sucesso."
+msgstr ""
 
 #: patient/views.py:887
 msgid "Diagnosis has already exist in this medical assessment."
-msgstr "Diagnóstico já existente nesta avaliação médica."
+msgstr ""
 
 #: patient/views.py:927
 msgid "Diagnosis can not be deleted. You must delete exams before."
-msgstr "Diagnóstico não pode ser removido. Remova os exames antes."
+msgstr ""
 
 #: patient/views.py:932
 msgid "Diagnosis successfully deleted."
-msgstr "Diagnóstico removido com sucesso."
+msgstr ""
 
 #: patient/views.py:982 patient/views.py:1046
 msgid "Exam successfully saved."
-msgstr "Exame salvo com sucesso."
+msgstr ""
 
 #: patient/views.py:992 patient/views.py:1051
 msgid "It is not possible to save exam without files."
-msgstr "Não é possível salvar exame sem arquivos."
+msgstr ""
 
 #: patient/views.py:1121
 msgid "Exam successfully deleted."
-msgstr "Exame removido com sucesso."
+msgstr ""
 
 #: patient/views.py:1145
 msgid "Attachment successfully deleted."
-msgstr "Anexo removido com sucesso."
+msgstr ""
 
 #: patient/views.py:1216 patient/views.py:1404
 msgid "Fill deleted successfully"
-msgstr "Preenchimento removido com sucesso"
+msgstr ""
 
 #: patient/views.py:1218 patient/views.py:1406
 msgid "Error trying to delete"
-msgstr "Erro ao deletar o preenchimento"
+msgstr ""
 
 #: patient/views.py:1457
 msgid "Not available filling - tokens table not started"
-msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
+msgstr ""
 
 #: patient/views.py:1462
 msgid "Not available filling - questionnaire not active"
-msgstr "Preenchimento não disponível - Questionário não está ativo"
+msgstr ""
 
 #: patient/views.py:1467
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
-"Preenchimento não disponível - Questionário não contém campos padronizados"
 
 #: patient/views.py:1476
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"
 msgstr ""
-"Falha ao gerar token para responder questionário. Verifique se o "
-"questionário está ativo"
-
-#~ msgid "Type the name, the CPF or the code to seek a participant"
-#~ msgstr "Digite o nome, o CPF ou o código para buscar um participante"
-
-#~ msgid "%d/%m/%Y"
-#~ msgstr "%d/%m/%Y"
-
-#~ msgid "Upload"
-#~ msgstr "Carregar"
-
-#~ msgid "Entrance evaluation"
-#~ msgstr "Avaliação de entrada"
-
-#~ msgid "It is not entrance evaluation anymore"
-#~ msgstr "Não é mais avaliação de entrada"
-
-#~ msgid "Schooling"
-#~ msgstr "Grau de instrução do chefe de família - Critério Brasil 2013"
-
-#~ msgid "exams/%(patient)s/%(exam)s/%(filename)s"
-#~ msgstr "exames/%(patient)s/%(exam)s/%(filename)s"
-
-#~ msgid "Inform a valid e-mail"
-#~ msgstr "Informar um e-mail válido"
-
-#~ msgid "Social class not calculated"
-#~ msgstr "Classe social não calculada"
-
-#~ msgid "Avaliação médica"
-#~ msgstr "Avaliação médica"
-
-#~ msgid "Descrição "
-#~ msgstr "Descrição"
-
-#~ msgid "Responsável:"
-#~ msgstr "Responsável"
-
-#~ msgid "Observações"
-#~ msgstr "Observações"
-
-#~ msgid "Observação"
-#~ msgstr "Observações"
-
-#~ msgid "História social"
-#~ msgstr "História social"
-
-#~ msgid "Avaliações médicas"
-#~ msgstr "Avaliações médicas"
-
-#~ msgid "Questionários"
-#~ msgstr "Questionário"
-
-#~ msgid "Responsável"
-#~ msgstr "Responsável"
-
-#~ msgid "Informações básicas"
-#~ msgstr "Informações básicas"
-
-#~ msgid "Número do prontuário"
-#~ msgstr "Número do prontuário"
-
-#~ msgid "Endereço"
-#~ msgstr "Endereço"
-
-#~ msgid "Número"
-#~ msgstr "Número"
-
-#~ msgid "Avaliações de entrada"
-#~ msgstr "Avaliações de entrada"
-
-#~ msgid "Questionário"
-#~ msgstr "Questionário"
-
-#~ msgid "Não é mais avaliação de entrada"
-#~ msgstr "Não é mais avaliação de entrada"
-
-#~ msgid "Questionários de experimentos"
-#~ msgstr "Questionários de experimentos"
-
-#~ msgid "País de nascimento"
-#~ msgstr "País de nascimento"
-
-#~ msgid "Ocupação"
-#~ msgstr "Ocupação"
-
-#~ msgid "Religião (IBGE)"
-#~ msgstr "Religião (IBGE)"
-
-#~ msgid "Rádios"
-#~ msgstr "Rádios"
-
-#~ msgid "Automóveis"
-#~ msgstr "Automóveis"
-
-#~ msgid "Máquinas de lavar"
-#~ msgstr "Máquinas de lavar"
-
-#~ msgid "Dados sociodemográficos gravados com sucesso."
-#~ msgstr "História social gravada com sucesso."
-
-#~ msgid "História social gravada com sucesso."
-#~ msgstr "História social gravada com sucesso."
-
-#~ msgid "Diagnóstico já existente nesta avaliação médica."
-#~ msgstr "Diagnóstico já existente nesta avaliação médica."
-
-#~ msgid "Diagnóstico não pode ser removido. Remova os exames antes."
-#~ msgstr "Diagnóstico não pode ser removido. Remova os exames antes."
-
-#~ msgid "Diagnóstico removido com sucesso."
-#~ msgstr "Diagnóstico removido com sucesso."
-
-#~ msgid "Não é possível salvar exame sem arquivos."
-#~ msgstr "Não é possível salvar exame sem arquivos."
-
-#~ msgid "Can view patient"
-#~ msgstr "Pode ver paciente"
-
-#~ msgid "Can view questionnaire response"
-#~ msgstr "Pode ver respostas do questionário"
-
-#~ msgid "Você será redirecionado para o questionário. Aguarde."
-#~ msgstr "Você será redirecionado para o questionário. Aguarde."
-
-#~ msgid "Nao é possível salvar exame sem arquivos."
-#~ msgstr "Não é possível salvar exame sem arquivos."
-
-#~ msgid "Avaliacao médica"
-#~ msgstr "Avaliações médicas"
-
-#~ msgid "Observacoes"
-#~ msgstr "Observações"
-
-#~ msgid "Endereco"
-#~ msgstr "Endereço"
-
-#~ msgid "Pais"
-#~ msgstr "País"
-
-#~ msgid "Informacoes basica"
-#~ msgstr "Informações básicas"
-
-# Permissões de usuário - Mensagens do BD
-# --keep-obsolete
-#~ msgid "Can add user"
-#~ msgstr "Pode adicionar usuário"
-
-#~ msgid "Can change user"
-#~ msgstr "Pode alterar usuário"
-
-#~ msgid "Can delete user"
-#~ msgstr "Pode remover usuário"
-
-#~ msgid "Can add patient"
-#~ msgstr "Pode adicionar paciente"
-
-#~ msgid "Can add medical record data"
-#~ msgstr "Pode adicionar dados de prontuário"
-
-#~ msgid "Can delete medical record data"
-#~ msgstr "Pode remover dados de prontuário"
-
-#~ msgid "Can change experiment"
-#~ msgstr "Pode alterar experimento"
-
-#~ msgid "Can delete experiment"
-#~ msgstr "Pode remover experimento"
-
-#~ msgid "Can delete questionnaire configuration"
-#~ msgstr "Pode remover configurações de questionário"
-
-#~ msgid "Can add questionnaire response"
-#~ msgstr "Pode adicionar respostas ao questionário"
-
-#~ msgid "Can change questionnaire response"
-#~ msgstr "Pode alterar respostas do questionário"
-
-#~ msgid "Can delete questionnaire response"
-#~ msgstr "Pode remover respostas do questionário"
-
-#~ msgid "Can add subject"
-#~ msgstr "Pode adicionar participante"
-
-#~ msgid "Can change subject"
-#~ msgstr "Pode alterar participante"
-
-#~ msgid "Can delete subject"
-#~ msgstr "Pode remover participante"

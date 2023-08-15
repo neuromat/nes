@@ -60,3 +60,4 @@ services:
 
 volumes:
   postgres-data:
+  limesurvey-data:

@@ -2,6 +2,8 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -14,240 +16,235 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 #: survey/survey_utils.py:541 survey/survey_utils.py:558
 msgid "Could not get list of groups from LimeSurvey"
-msgstr "Não foi possível obter a lista dos grupos no LimeSurvey"
+msgstr ""
 
 #: survey/survey_utils.py:553
 msgid "There's no group with name Identification."
-msgstr "Não há um grupo com o nome Identificação."
+msgstr ""
 
 #: survey/survey_utils.py:570
 #, python-format
 msgid "There's no question with name %s"
-msgstr "Não há um questionráio com o nome %s"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:15
 msgid "List of questionnaires"
-msgstr "Lista de questionários"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:20
 #: survey/templates/survey/survey_register.html:43
 msgid "Questionnaire"
-msgstr "Questionário"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:21
 #: survey/templates/survey/survey_register.html:60
 msgid "Required fill"
-msgstr "Preenchimento obrigatório"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:22
 msgid "Is active?"
-msgstr "Está ativo?"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:28
 msgid "View"
-msgstr "Visualizar"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:37
 #: survey/templates/survey/survey_register.html:63
 msgid "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey."
 msgstr ""
-"O NES não importa arquivos carregados pelo Limesurvey através de questões do "
-"tipo 'Envio de arquivo'"
 
 #: survey/templates/survey/survey_list.html:38
 #: survey/templates/survey/survey_register.html:64
 msgid "See more details in"
-msgstr "Veja mais detalhes em"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:42
 msgid "Insert new questionnaire"
-msgstr "Inserir novo questionário"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:49
 msgid ""
 "Click to update questionnaire title if not displaying the title in selected "
 "NES language"
 msgstr ""
-"Clique para atualizar o título do questionário se o título não aparece no "
-"idioma selecionado no NES"
 
 #: survey/templates/survey/survey_list.html:54
 msgid "Update informations about the questionnaires"
-msgstr "Atualizar informações sobre os questionários"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:54
 msgid "Update"
-msgstr "Atualizar"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:19
 #: survey/templates/survey/survey_sensitive_fields.html:18
 msgid "Home"
-msgstr "Home"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:20
 #: survey/templates/survey/survey_sensitive_fields.html:19
 msgid "Questionnaires"
-msgstr "Questionários"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:23
 msgid "New"
-msgstr "Novo"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:27
 msgid "Editing"
-msgstr "Edição"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:39
 msgid "Questionnaire information"
-msgstr "Informações do questionário"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:44
 msgid "Please, select a questionnaire from the list."
-msgstr "Por favor, selecione um questionário da lista."
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:72
 #: survey/templates/survey/survey_register.html:109
 msgid "Edit"
-msgstr "Editar"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:84
 msgid "Sensitive questions"
-msgstr "Questões sensíveis"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:91
 msgid "Question code"
-msgstr "Código da questão"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:92
 msgid "Question"
-msgstr "Questão"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:118
 msgid "Answered by participants"
-msgstr "Respondido pelos participantes"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:125
 #: survey/templates/survey/survey_register.html:214
 msgid "Participant"
-msgstr "Participante"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:126
 #: survey/templates/survey/survey_register.html:215
 msgid "Fills"
-msgstr "Preenchimentos"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:130
 #: survey/templates/survey/survey_register.html:219
 msgid "Update LimeSurvey Fill date"
-msgstr "Atualizar data de preenchimento do LimeSurvey"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:142
 msgid "It has to be filled"
-msgstr "Falta preencher"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:157
 #: survey/templates/survey/survey_register.html:243
 msgid "Complete"
-msgstr "Completo"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:159
 #: survey/templates/survey/survey_register.html:245
 msgid "Incomplete"
-msgstr "Incompleto"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:162
 #: survey/templates/survey/survey_register.html:248
 msgid "No status"
-msgstr "Sem status"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:180
 msgid "Used in experiments"
-msgstr "Usado em experimentos"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:187
 msgid "Experiment:"
-msgstr "Experimento:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:191
 msgid "Group:"
-msgstr "Grupo:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:197
 msgid "Set of parent steps:"
-msgstr "Conjunto de passos pai:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:201
 msgid "Step:"
-msgstr "Passo:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:205
 msgid "Name of the use:"
-msgstr "Nome do uso:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:270
 #: survey/templates/survey/survey_register.html:301
 msgid "Delete"
-msgstr "Excluir"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:276
 #: survey/templates/survey/survey_sensitive_fields.html:65
 msgid "Save"
-msgstr "Salvar"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:280
 #: survey/templates/survey/survey_register.html:300
 #: survey/templates/survey/survey_sensitive_fields.html:68
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:284
 msgid "Back"
-msgstr "Voltar"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:297
 msgid "Are you sure you want to delete questionnaire?"
-msgstr "Tem certeza que deseja excluir o questionário?"
+msgstr ""
 
 #: survey/templates/survey/survey_sensitive_fields.html:22
 #: survey/templates/survey/survey_sensitive_fields.html:30
 msgid "Sensitive fields"
-msgstr "Campos sensíveis"
+msgstr ""
 
 #: survey/templates/survey/survey_sensitive_fields.html:35
 msgid "Code"
-msgstr "Código"
+msgstr ""
 
 #: survey/templates/survey/survey_sensitive_fields.html:36
 msgid "Description"
-msgstr "Descrição"
+msgstr ""
 
 #: survey/views.py:171
 msgid "Questionnaire created successfully."
-msgstr "Questionário criado com sucesso."
+msgstr ""
 
 #: survey/views.py:188
 msgid "No questionnaire found."
-msgstr "Questionário não encontrado"
+msgstr ""
 
 #: survey/views.py:228
 msgid "Questionnaire updated successfully."
-msgstr "Questionário atualizado com sucesso."
+msgstr ""
 
 #: survey/views.py:230 survey/views.py:323
 msgid "There are no changes to save."
-msgstr "Não há alterações para salvar."
+msgstr ""
 
 #: survey/views.py:321
 msgid "Questionnaire was updated successfully."
-msgstr "Questionário atualizado com sucesso."
+msgstr ""
 
 #: survey/views.py:758
 msgid "responses were updated!"
-msgstr "respostas foram atualizadas!"
+msgstr ""
 
 #: survey/views.py:765
 msgid ""
@@ -255,46 +252,33 @@ msgid ""
 "since the last update, the purchase date is not filled in LimeSurvey, or was "
 "filled in a non-format recognized by the NES."
 msgstr ""
-"Nenhuma data de aquisição de respostas concluídas foi alterada no LimeSurvey "
-"desde a última atualização, a data de aquisição não está preenchida no "
-"LimeSurvey, ou foi preenchida em um formato não reconhecido pelo NES."
 
 #: survey/views.py:804
 msgid "Questionnaire deleted successfully."
-msgstr "Questionário removido com sucesso."
+msgstr ""
 
 #: survey/views.py:810
 msgid ""
 "It was not possible to delete questionnaire, becausethere are experimental "
 "answers or steps associated."
 msgstr ""
-"Não foi possível excluir o questionário, pois há respostas ou passos de "
-"experimento associados."
 
 #: survey/views.py:937
 msgid "Other"
-msgstr "Outros"
+msgstr ""
 
 #: survey/views.py:972
 msgid "Formula"
-msgstr "Fórmula"
+msgstr ""
 
 #: survey/views.py:1065 survey/views.py:1087 survey/views.py:1127
 msgid "No answer"
-msgstr "Sem resposta"
+msgstr ""
 
 #: survey/views.py:1198
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
-"O LimeSurvey não encontrou dados de preenchimento para este questionário."
 
 #: survey/views.py:1249
 msgid "LimeSurvey unavailable. System running partially."
-msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
-
-#~ msgid ""
-#~ "No aquistion dates from completed answers were changed in LimeSurvey "
-#~ "since last update"
-#~ msgstr ""
-#~ "Nenhuma data de aquisição de respostas concluídas foi alterada no "
-#~ "LimeSurvey desde a última atualização"
+msgstr ""

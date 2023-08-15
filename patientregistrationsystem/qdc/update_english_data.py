@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core import management
 
 SUFFIX_EN = "_en"
-SUFFIX_PT_BR = "_pt_br"
+SUFFIX_pt_BR = "_pt_BR"
 
 
 def translate_fixtures_into_english(filename):
@@ -34,7 +34,7 @@ def translate_fixtures_into_english(filename):
 
                     if element["fields"][field_name]:
                         field_data_portuguese = element["fields"][
-                            field_name + SUFFIX_PT_BR
+                            field_name + SUFFIX_pt_BR
                         ]
                         if field_name not in result[element["model"]]:
                             result[element["model"]][field_name] = {}
@@ -47,7 +47,7 @@ def translate_fixtures_into_english(filename):
 
 
 def update_translated_data(data):
-    # update data in _pt_br
+    # update data in _pt_BR
     # management.call_command('update_translation_fields', verbosity=0, interactive=False)
 
     for data_model, data_values in data.items():
@@ -70,6 +70,6 @@ def update_translated_data(data):
                     setattr(record, attrib_english, value_english)
                     # print(attrib_english, value_english)
 
-            # print(record.name_pt_br, record.name_en)
+            # print(record.name_pt_BR, record.name_en)
             # print("---------------------------------")
             record.save()

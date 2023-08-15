@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Wired",
-      "name_pt_br": "Com fio",
+      "name_pt_BR": "Com fio",
       "name": "Com fio"
     }
   },
@@ -13,7 +13,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Wireless",
-      "name_pt_br": "Sem fio",
+      "name_pt_BR": "Sem fio",
       "name": "Sem fio"
     }
   },
@@ -22,7 +22,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Telemetric",
-      "name_pt_br": "Telem\u00e9trico",
+      "name_pt_BR": "Telem\u00e9trico",
       "name": "Telem\u00e9trico"
     }
   },
@@ -31,7 +31,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Monopolar",
-      "name_pt_br": "Monopolar",
+      "name_pt_BR": "Monopolar",
       "name": "Monopolar"
     }
   },
@@ -40,7 +40,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Differential",
-      "name_pt_br": "Diferencial",
+      "name_pt_BR": "Diferencial",
       "name": "Diferencial"
     }
   },
@@ -49,7 +49,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Double differential",
-      "name_pt_br": "Diferencial duplo",
+      "name_pt_BR": "Diferencial duplo",
       "name": "Diferencial duplo"
     }
   },
@@ -58,7 +58,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Monopolar",
-      "name_pt_br": "Monopolar",
+      "name_pt_BR": "Monopolar",
       "name": "Monopolar"
     }
   },
@@ -67,7 +67,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Bipolar",
-      "name_pt_br": "Bipolar",
+      "name_pt_BR": "Bipolar",
       "name": "Bipolar"
     }
   },
@@ -76,7 +76,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Tripolar",
-      "name_pt_br": "Tripolar",
+      "name_pt_BR": "Tripolar",
       "name": "Tripolar"
     }
   },
@@ -85,7 +85,7 @@
     "pk": 4,
     "fields": {
       "name_en": "Multipolar",
-      "name_pt_br": "Multipolar",
+      "name_pt_BR": "Multipolar",
       "name": "Multipolar"
     }
   },
@@ -94,7 +94,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Area",
-      "name_pt_br": "\u00c1rea",
+      "name_pt_BR": "\u00c1rea",
       "name": "\u00c1rea"
     }
   },
@@ -103,7 +103,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Diameter",
-      "name_pt_br": "Di\u00e2metro",
+      "name_pt_BR": "Di\u00e2metro",
       "name": "Di\u00e2metro"
     }
   },
@@ -112,7 +112,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Size",
-      "name_pt_br": "Tamanho",
+      "name_pt_BR": "Tamanho",
       "name": "Tamanho"
     }
   },
@@ -121,7 +121,7 @@
     "pk": 4,
     "fields": {
       "name_en": "Width",
-      "name_pt_br": "Largura",
+      "name_pt_BR": "Largura",
       "name": "Largura"
     }
   },
@@ -130,7 +130,7 @@
     "pk": 5,
     "fields": {
       "name_en": "Height",
-      "name_pt_br": "Altura",
+      "name_pt_BR": "Altura",
       "name": "Altura"
     }
   },
@@ -219,7 +219,7 @@
     "pk": 1,
     "fields": {
       "name_en": "Disc",
-      "name_pt_br": "Disco",
+      "name_pt_BR": "Disco",
       "name": "Disco",
       "measure_systems": [
         1,
@@ -232,7 +232,7 @@
     "pk": 2,
     "fields": {
       "name_en": "Bar",
-      "name_pt_br": "Barra",
+      "name_pt_BR": "Barra",
       "name": "Barra",
       "measure_systems": [
         3
@@ -244,7 +244,7 @@
     "pk": 3,
     "fields": {
       "name_en": "Rectangle",
-      "name_pt_br": "Ret\u00e2ngulo",
+      "name_pt_BR": "Ret\u00e2ngulo",
       "name": "Ret\u00e2ngulo",
       "measure_systems": [
         1,

@@ -119,7 +119,7 @@ else
 	elif [ $LIMESURVEY_DB_TYPE = "pgsql" ]; then
 		echo "INFO: Using PostgreSQL configuration"
 		LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-"utf8"}
-		cp application/config/config-sample-pgsql.php application/config/config.php
+		sudo cp application/config/config-sample-pgsql.php application/config/config.php
 	else
 		echo "Error: unrecognized LIMESURVEY_DB_TYPE: '$LIMESURVEY_DB_TYPE'"
 		exit 1

@@ -2,9 +2,9 @@
   {
     "pk": 1,
     "fields": {
-      "name_pt_br": "Dados brutos de EEG",
+      "name_pt_BR": "Dados brutos de EEG",
       "name": "Dados brutos de EEG",
-      "description_pt_br": null,
+      "description_pt_BR": null,
       "name_en": "EEG raw data",
       "description_en": null,
       "description": null,
@@ -16,9 +16,9 @@
   {
     "pk": 2,
     "fields": {
-      "name_pt_br": "Outro",
+      "name_pt_BR": "Outro",
       "name": "Outro",
-      "description_pt_br": null,
+      "description_pt_BR": null,
       "name_en": "Other",
       "description_en": null,
       "description": null,

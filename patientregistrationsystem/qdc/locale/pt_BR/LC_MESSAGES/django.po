@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-22 13:27-0300\n"
+"POT-Creation-Date: 2023-08-15 00:40-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,663 +16,663 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: add_initial_data.py:13
+#: add_initial_data.py:14
 msgid "Can add alcohol frequency"
 msgstr "Pode adicionar frequência de etilismo"
 
-#: add_initial_data.py:14
+#: add_initial_data.py:15
 msgid "Can add alcohol period"
 msgstr "Pode adicionar period de etilismo"
 
-#: add_initial_data.py:15
+#: add_initial_data.py:16
 msgid "Can add amount cigarettes"
 msgstr "Pode adicionar quantidade de cigarros"
 
-#: add_initial_data.py:16
+#: add_initial_data.py:17
 msgid "Can add block"
 msgstr "Pode adicionar conjunnto de passos"
 
-#: add_initial_data.py:17
+#: add_initial_data.py:18
 msgid "Can add classification of diseases"
 msgstr "Pode adicionar classificação de doenças"
 
-#: add_initial_data.py:18
+#: add_initial_data.py:19
 msgid "Can add complementary exam"
 msgstr "Pode adicionar exame complementar"
 
-#: add_initial_data.py:19
+#: add_initial_data.py:20
 msgid "Can add component"
 msgstr "Pode adicionar componente"
 
-#: add_initial_data.py:20
+#: add_initial_data.py:21
 msgid "Can add component configuration"
 msgstr "Pode adicionar component configuration"
 
-#: add_initial_data.py:21
+#: add_initial_data.py:22
 msgid "Can add content type"
 msgstr "Pode adicionar tipo"
 
-#: add_initial_data.py:22
+#: add_initial_data.py:23
 msgid "Can add diagnosis"
 msgstr "Pode adicionar diagnóstico"
 
-#: add_initial_data.py:23
+#: add_initial_data.py:24
 msgid "Can add exam file"
 msgstr "Pode adicionar arquivo de exame"
 
-#: add_initial_data.py:24
+#: add_initial_data.py:25
 msgid "Can add experiment"
 msgstr "Pode adicionar experimento"
 
-#: add_initial_data.py:25
+#: add_initial_data.py:26
 msgid "Can add flesh tone"
 msgstr "Pode adicionar cor da pele"
 
-#: add_initial_data.py:26
+#: add_initial_data.py:27
 msgid "Can add gender"
 msgstr "Pode adicionar sexo"
 
-#: add_initial_data.py:27 add_initial_data.py:28
+#: add_initial_data.py:28 add_initial_data.py:29
 msgid "Can add group"
 msgstr "Pode adicionar grupo"
 
-#: add_initial_data.py:29
+#: add_initial_data.py:30
 msgid "Can add historical experiment"
 msgstr "Pode adicionar histórico de experimento"
 
-#: add_initial_data.py:30
+#: add_initial_data.py:31
 msgid "Can add historical patient"
 msgstr "Pode adicionar histórico de participante"
 
-#: add_initial_data.py:31
+#: add_initial_data.py:32
 msgid "Can add historical questionnaire response"
 msgstr "Pode adicionar resposta de questionário"
 
-#: add_initial_data.py:32
+#: add_initial_data.py:33
 msgid "Can add historical social demographic data"
 msgstr "Pode adicionar dados sociodemográficos"
 
-#: add_initial_data.py:33
+#: add_initial_data.py:34
 msgid "Can add historical social history data"
 msgstr "Pode adicionar histórico de história social"
 
-#: add_initial_data.py:34
+#: add_initial_data.py:35
 msgid "Can add historical telephone"
 msgstr "Pode adicionar histórico de telefone"
 
-#: add_initial_data.py:35
+#: add_initial_data.py:36
 msgid "Can add instruction"
 msgstr "Pode adicionar instrução"
 
-#: add_initial_data.py:36
+#: add_initial_data.py:37
 msgid "Can add keyword"
 msgstr "Pode adicionar palavra-chave"
 
-#: add_initial_data.py:37
+#: add_initial_data.py:38
 msgid "Can add log entry"
 msgstr "Pode adicionar log de entrada"
 
-#: add_initial_data.py:38
+#: add_initial_data.py:39
 msgid "Can add marital status"
 msgstr "Pode adicionar estado civil"
 
-#: add_initial_data.py:39
+#: add_initial_data.py:40
 msgid "Can add medical record data"
 msgstr "Pode adicionar dados de registro médico"
 
-#: add_initial_data.py:40
+#: add_initial_data.py:41
 msgid "Can add migration history"
 msgstr "Pode adicionar histórico de migração"
 
-#: add_initial_data.py:41
+#: add_initial_data.py:42
 msgid "Can add patient"
 msgstr "Pode adicionar participante"
 
-#: add_initial_data.py:42
+#: add_initial_data.py:43
 msgid "Can add pause"
 msgstr "Pode adicionar pausa"
 
-#: add_initial_data.py:43
+#: add_initial_data.py:44
 msgid "Can add payment"
 msgstr "Pode adicionar pagamento"
 
-#: add_initial_data.py:44
+#: add_initial_data.py:45
 msgid "Can add permission"
 msgstr "Pode adicionar permissão"
 
-#: add_initial_data.py:45
+#: add_initial_data.py:46
 msgid "Can add questionnaire"
 msgstr "Pode adicionar questinário"
 
-#: add_initial_data.py:46 add_initial_data.py:47
+#: add_initial_data.py:47 add_initial_data.py:48
 msgid "Can add questionnaire response"
 msgstr "Pode adicionar resposta de questionário"
 
-#: add_initial_data.py:48
+#: add_initial_data.py:49
 msgid "Can add religion"
 msgstr "Pode adicionar religião"
 
-#: add_initial_data.py:49
+#: add_initial_data.py:50
 msgid "Can add research project"
 msgstr "Pode adicionar projeto de pesquisa"
 
-#: add_initial_data.py:50
+#: add_initial_data.py:51
 msgid "Can add schooling"
 msgstr "Pode adicionar grau de instrução"
 
-#: add_initial_data.py:51
+#: add_initial_data.py:52
 msgid "Can add session"
 msgstr "Pode adicionar sessão"
 
-#: add_initial_data.py:52
+#: add_initial_data.py:53
 msgid "Can add social demographic data"
 msgstr "Pode adicionar dados sociodemográficos"
 
-#: add_initial_data.py:53
+#: add_initial_data.py:54
 msgid "Can add social history data"
 msgstr "Pode adicionar dados de história social"
 
-#: add_initial_data.py:54
+#: add_initial_data.py:55
 msgid "Can add stimulus"
 msgstr "Pode adicionar estímulo"
 
-#: add_initial_data.py:55
+#: add_initial_data.py:56
 msgid "Can add stimulus type"
 msgstr "Pode adicionar tipo de estímulo"
 
-#: add_initial_data.py:56
+#: add_initial_data.py:57
 msgid "Can add subject"
 msgstr "Pode adicionar participante"
 
-#: add_initial_data.py:57
+#: add_initial_data.py:58
 msgid "Can add subject of group"
 msgstr "Pode adicionar grupo de participante"
 
-#: add_initial_data.py:58
+#: add_initial_data.py:59
 msgid "Can add survey"
 msgstr "Pode adicionar pesquisa"
 
-#: add_initial_data.py:59
+#: add_initial_data.py:60
 msgid "Can add task"
 msgstr "Pode adicionar tarefa"
 
-#: add_initial_data.py:60
+#: add_initial_data.py:61
 msgid "Can add task for the experimenter"
 msgstr "Pode adicionar tarefa para o experimentador"
 
-#: add_initial_data.py:61
+#: add_initial_data.py:62
 msgid "Can add telephone"
 msgstr "Pode adicionar telefone"
 
-#: add_initial_data.py:62
+#: add_initial_data.py:63
 msgid "Can add user"
 msgstr "Pode adicionar usuário"
 
-#: add_initial_data.py:63
+#: add_initial_data.py:64
 msgid "Can add user profile"
 msgstr "Pode adicionar perfil do usuário"
 
-#: add_initial_data.py:64
+#: add_initial_data.py:65
 msgid "Can change alcohol frequency"
 msgstr "Pode alterar frequência de etilismo"
 
-#: add_initial_data.py:65
+#: add_initial_data.py:66
 msgid "Can change alcohol period"
 msgstr "Pode alterar periodo de etilismo"
 
-#: add_initial_data.py:66
+#: add_initial_data.py:67
 msgid "Can change amount cigarettes"
 msgstr "Pode alterar quantidade de cigarros"
 
-#: add_initial_data.py:67
+#: add_initial_data.py:68
 msgid "Can change block"
 msgstr "Pode alterar participante"
 
-#: add_initial_data.py:68
+#: add_initial_data.py:69
 msgid "Can change classification of diseases"
 msgstr "Pode alterar classificação de doenças"
 
-#: add_initial_data.py:69
+#: add_initial_data.py:70
 msgid "Can change complementary exam"
 msgstr "Pode alterar exame complementar"
 
-#: add_initial_data.py:70
+#: add_initial_data.py:71
 msgid "Can change component"
 msgstr "Pode alterar componente"
 
-#: add_initial_data.py:71
+#: add_initial_data.py:72
 msgid "Can change component configuration"
 msgstr "Pode alterar component configuration"
 
-#: add_initial_data.py:72
+#: add_initial_data.py:73
 msgid "Can change content type"
 msgstr "Pode alterar tipo de conteúdo"
 
-#: add_initial_data.py:73
+#: add_initial_data.py:74
 msgid "Can change diagnosis"
 msgstr "Pode alterar diagnóstico"
 
-#: add_initial_data.py:74
+#: add_initial_data.py:75
 msgid "Can change exam file"
 msgstr "Pode alterar arquivo de exame"
 
-#: add_initial_data.py:75
+#: add_initial_data.py:76
 msgid "Can change experiment"
 msgstr "Pode alterar experimento"
 
-#: add_initial_data.py:76
+#: add_initial_data.py:77
 msgid "Can change flesh tone"
 msgstr "Pode alterar cor da pele"
 
-#: add_initial_data.py:77
+#: add_initial_data.py:78
 msgid "Can change gender"
 msgstr "Pode alterar sexo"
 
-#: add_initial_data.py:78 add_initial_data.py:79
+#: add_initial_data.py:79 add_initial_data.py:80
 msgid "Can change group"
 msgstr "Pode alterar grupo"
 
-#: add_initial_data.py:80
+#: add_initial_data.py:81
 msgid "Can change historical experiment"
 msgstr "Pode alterar histórico de experimento"
 
-#: add_initial_data.py:81
+#: add_initial_data.py:82
 msgid "Can change historical patient"
 msgstr "Pode alterar histórico de participante"
 
-#: add_initial_data.py:82
+#: add_initial_data.py:83
 msgid "Can change historical questionnaire response"
 msgstr "Pode alterar histórico de resposta de questionário"
 
-#: add_initial_data.py:83
+#: add_initial_data.py:84
 msgid "Can change historical social demographic data"
 msgstr "Pode alterar dados sociodemográficos"
 
-#: add_initial_data.py:84
+#: add_initial_data.py:85
 msgid "Can change historical social history data"
 msgstr "Pode alterar histórico de história social"
 
-#: add_initial_data.py:85
+#: add_initial_data.py:86
 msgid "Can change historical telephone"
 msgstr "Pode alterar histórico de telefone"
 
-#: add_initial_data.py:86
+#: add_initial_data.py:87
 msgid "Can change instruction"
 msgstr "Pode alterar instrução"
 
-#: add_initial_data.py:87
+#: add_initial_data.py:88
 msgid "Can change keyword"
 msgstr "Pode alterar palavra-chave"
 
-#: add_initial_data.py:88
+#: add_initial_data.py:89
 msgid "Can change log entry"
 msgstr "Pode alterar log de entrada"
 
-#: add_initial_data.py:89
+#: add_initial_data.py:90
 msgid "Can change marital status"
 msgstr "Pode alterar estado civil"
 
-#: add_initial_data.py:90
+#: add_initial_data.py:91
 msgid "Can change medical record data"
 msgstr "Pode alterar dados de registro médico"
 
-#: add_initial_data.py:91
+#: add_initial_data.py:92
 msgid "Can change migration history"
 msgstr "Pode alterar histórico de migração"
 
-#: add_initial_data.py:92
+#: add_initial_data.py:93
 msgid "Can change patient"
 msgstr "Pode alterar participante"
 
-#: add_initial_data.py:93
+#: add_initial_data.py:94
 msgid "Can change pause"
 msgstr "Pode alterar pausa"
 
-#: add_initial_data.py:94
+#: add_initial_data.py:95
 msgid "Can change payment"
 msgstr "Pode alterar pagamento"
 
-#: add_initial_data.py:95
+#: add_initial_data.py:96
 msgid "Can change permission"
 msgstr "Pode alterar permissão"
 
-#: add_initial_data.py:96
+#: add_initial_data.py:97
 msgid "Can change questionnaire"
 msgstr "Pode alterar questinário"
 
-#: add_initial_data.py:97 add_initial_data.py:98
+#: add_initial_data.py:98 add_initial_data.py:99
 msgid "Can change questionnaire response"
 msgstr "Pode alterar respostas do questionário"
 
-#: add_initial_data.py:99
+#: add_initial_data.py:100
 msgid "Can change religion"
 msgstr "Pode alterar religião"
 
-#: add_initial_data.py:100
+#: add_initial_data.py:101
 msgid "Can change research project"
 msgstr "Pode alterar projeto de pesquisa"
 
-#: add_initial_data.py:101
+#: add_initial_data.py:102
 msgid "Can change research project created by others"
 msgstr "Pode alterar projeto de pesquisa criado por outros"
 
-#: add_initial_data.py:102
+#: add_initial_data.py:103
 msgid "Can change schooling"
 msgstr "Pode alterar grau de instrução"
 
-#: add_initial_data.py:103
+#: add_initial_data.py:104
 msgid "Can change session"
 msgstr "Pode alterar sessão"
 
-#: add_initial_data.py:104
+#: add_initial_data.py:105
 msgid "Can change social demographic data"
 msgstr "Pode alterar dados sociodemográficos"
 
-#: add_initial_data.py:105
+#: add_initial_data.py:106
 msgid "Can change social history data"
 msgstr "Pode alterar dados de história social"
 
-#: add_initial_data.py:106
+#: add_initial_data.py:107
 msgid "Can change stimulus"
 msgstr "Pode alterar estímulo"
 
-#: add_initial_data.py:107
+#: add_initial_data.py:108
 msgid "Can change stimulus type"
 msgstr "Pode alterar tipo de estímulo"
 
-#: add_initial_data.py:108
+#: add_initial_data.py:109
 msgid "Can change subject"
 msgstr "Pode alterar participante"
 
-#: add_initial_data.py:109
+#: add_initial_data.py:110
 msgid "Can change subject of group"
 msgstr "Pode alterar grupo de participante"
 
-#: add_initial_data.py:110
+#: add_initial_data.py:111
 msgid "Can change survey"
 msgstr "Pode alterar pesquisa"
 
-#: add_initial_data.py:111
+#: add_initial_data.py:112
 msgid "Can change task"
 msgstr "Pode alterar tarefa"
 
-#: add_initial_data.py:112
+#: add_initial_data.py:113
 msgid "Can change task for the experimenter"
 msgstr "Pode alterar tarefa para o experimentador"
 
-#: add_initial_data.py:113
+#: add_initial_data.py:114
 msgid "Can change telephone"
 msgstr "Pode alterar telefone"
 
-#: add_initial_data.py:114
+#: add_initial_data.py:115
 msgid "Can change user"
 msgstr "Pode alterar usuário"
 
-#: add_initial_data.py:115
+#: add_initial_data.py:116
 msgid "Can change user profile"
 msgstr "Pode alterar perfil do usuário"
 
-#: add_initial_data.py:116
+#: add_initial_data.py:117
 msgid "Can delete alcohol frequency"
 msgstr "Pode remover frequência de etilismo"
 
-#: add_initial_data.py:117
+#: add_initial_data.py:118
 msgid "Can delete alcohol period"
 msgstr "Pode remover período de etilismo"
 
-#: add_initial_data.py:118
+#: add_initial_data.py:119
 msgid "Can delete amount cigarettes"
 msgstr "Pode remover quantidade de cigarros"
 
-#: add_initial_data.py:119
+#: add_initial_data.py:120
 msgid "Can delete block"
 msgstr "Pode remover participante"
 
-#: add_initial_data.py:120
+#: add_initial_data.py:121
 msgid "Can delete classification of diseases"
 msgstr "Pode remover classificação de doenças"
 
-#: add_initial_data.py:121
+#: add_initial_data.py:122
 msgid "Can delete complementary exam"
 msgstr "Pode remover exame complementar"
 
-#: add_initial_data.py:122
+#: add_initial_data.py:123
 msgid "Can delete component"
 msgstr "Pode remover componente"
 
-#: add_initial_data.py:123
+#: add_initial_data.py:124
 msgid "Can delete component configuration"
 msgstr "Pode remover component configuration"
 
-#: add_initial_data.py:124
+#: add_initial_data.py:125
 msgid "Can delete content type"
 msgstr "Pode remover tipo"
 
-#: add_initial_data.py:125
+#: add_initial_data.py:126
 msgid "Can delete diagnosis"
 msgstr "Pode remover diagnóstico"
 
-#: add_initial_data.py:126
+#: add_initial_data.py:127
 msgid "Can delete exam file"
 msgstr "Pode remover arquivo de exame"
 
-#: add_initial_data.py:127
+#: add_initial_data.py:128
 msgid "Can delete experiment"
 msgstr "Pode remover experimento"
 
-#: add_initial_data.py:128
+#: add_initial_data.py:129
 msgid "Can delete flesh tone"
 msgstr "Pode remover cor da pele"
 
-#: add_initial_data.py:129
+#: add_initial_data.py:130
 msgid "Can delete gender"
 msgstr "Pode remover sexo"
 
-#: add_initial_data.py:130 add_initial_data.py:131
+#: add_initial_data.py:131 add_initial_data.py:132
 msgid "Can delete group"
 msgstr "Pode remover grupo"
 
-#: add_initial_data.py:132
+#: add_initial_data.py:133
 msgid "Can delete historical experiment"
 msgstr "Pode remover histórico de experimento"
 
-#: add_initial_data.py:133
+#: add_initial_data.py:134
 msgid "Can delete historical patient"
 msgstr "Pode remover histórico de participante"
 
-#: add_initial_data.py:134
+#: add_initial_data.py:135
 msgid "Can delete historical questionnaire response"
 msgstr "Pode remover histórico de resposta de questionário"
 
-#: add_initial_data.py:135
+#: add_initial_data.py:136
 msgid "Can delete historical social demographic data"
 msgstr "Pode remover dados sociodemográficos"
 
-#: add_initial_data.py:136
+#: add_initial_data.py:137
 msgid "Can delete historical social history data"
 msgstr "Pode remover histórico de história social"
 
-#: add_initial_data.py:137
+#: add_initial_data.py:138
 msgid "Can delete historical telephone"
 msgstr "Pode remover histórico de telefone"
 
-#: add_initial_data.py:138
+#: add_initial_data.py:139
 msgid "Can delete instruction"
 msgstr "Pode remover instrução"
 
-#: add_initial_data.py:139
+#: add_initial_data.py:140
 msgid "Can delete keyword"
 msgstr "Pode remover palavra-chave"
 
-#: add_initial_data.py:140
+#: add_initial_data.py:141
 msgid "Can delete log entry"
 msgstr "Pode remover log de entrada"
 
-#: add_initial_data.py:141
+#: add_initial_data.py:142
 msgid "Can delete marital status"
 msgstr "Pode remover estado civil"
 
-#: add_initial_data.py:142
+#: add_initial_data.py:143
 msgid "Can delete medical record data"
 msgstr "Pode remover dados de prontuário"
 
-#: add_initial_data.py:143
+#: add_initial_data.py:144
 msgid "Can delete migration history"
 msgstr "Pode remover histórico de migração"
 
-#: add_initial_data.py:144
+#: add_initial_data.py:145
 msgid "Can delete patient"
 msgstr "Pode remover participante"
 
-#: add_initial_data.py:145
+#: add_initial_data.py:146
 msgid "Can delete pause"
 msgstr "Pode remover usuário"
 
-#: add_initial_data.py:146
+#: add_initial_data.py:147
 msgid "Can delete payment"
 msgstr "Pode remover pagamento"
 
-#: add_initial_data.py:147
+#: add_initial_data.py:148
 msgid "Can delete permission"
 msgstr "Pode remover permissão"
 
-#: add_initial_data.py:148
+#: add_initial_data.py:149
 msgid "Can delete questionnaire"
 msgstr "Pode remover questinário"
 
-#: add_initial_data.py:149 add_initial_data.py:150
+#: add_initial_data.py:150 add_initial_data.py:151
 msgid "Can delete questionnaire response"
 msgstr "Pode remover respostas do questionário"
 
-#: add_initial_data.py:151
+#: add_initial_data.py:152
 msgid "Can delete religion"
 msgstr "Pode remover religião"
 
-#: add_initial_data.py:152
+#: add_initial_data.py:153
 msgid "Can delete research project"
 msgstr "Pode remover projeto de pesquisa"
 
-#: add_initial_data.py:153
+#: add_initial_data.py:154
 msgid "Can delete schooling"
 msgstr "Pode remover grau de instrução"
 
-#: add_initial_data.py:154
+#: add_initial_data.py:155
 msgid "Can delete session"
 msgstr "Pode remover sessão"
 
-#: add_initial_data.py:155
+#: add_initial_data.py:156
 msgid "Can delete social demographic data"
 msgstr "Pode remover dados sociodemográficos"
 
-#: add_initial_data.py:156
+#: add_initial_data.py:157
 msgid "Can delete social history data"
 msgstr "Pode remover dados de história social"
 
-#: add_initial_data.py:157
+#: add_initial_data.py:158
 msgid "Can delete stimulus"
 msgstr "Pode remover estímulo"
 
-#: add_initial_data.py:158
+#: add_initial_data.py:159
 msgid "Can delete stimulus type"
 msgstr "Pode remover tipo de estímulo"
 
-#: add_initial_data.py:159
+#: add_initial_data.py:160
 msgid "Can delete subject"
 msgstr "Pode remover participante"
 
-#: add_initial_data.py:160
+#: add_initial_data.py:161
 msgid "Can delete subject of group"
 msgstr "Pode remover grupo de participante"
 
-#: add_initial_data.py:161
+#: add_initial_data.py:162
 msgid "Can delete survey"
 msgstr "Pode remover pesquisa"
 
-#: add_initial_data.py:162
+#: add_initial_data.py:163
 msgid "Can delete task"
 msgstr "Pode remover tarefa"
 
-#: add_initial_data.py:163
+#: add_initial_data.py:164
 msgid "Can delete task for the experimenter"
 msgstr "Pode remover tarefa para o experimentador"
 
-#: add_initial_data.py:164
+#: add_initial_data.py:165
 msgid "Can delete telephone"
 msgstr "Pode remover telefone"
 
-#: add_initial_data.py:165
+#: add_initial_data.py:166
 msgid "Can delete user"
 msgstr "Pode remover usuário"
 
-#: add_initial_data.py:166
+#: add_initial_data.py:167
 msgid "Can delete user profile"
 msgstr "Pode remover perfil do usuário"
 
-#: add_initial_data.py:167
+#: add_initial_data.py:168
 msgid "Can view medical record"
 msgstr "Pode ver dados de registro médico"
 
-#: add_initial_data.py:168
+#: add_initial_data.py:169
 msgid "Can view patient"
 msgstr "Pode ver participante"
 
-#: add_initial_data.py:169 add_initial_data.py:170
+#: add_initial_data.py:170 add_initial_data.py:171
 msgid "Can view questionnaire response"
 msgstr "Pode ver resposta de questionário"
 
-#: add_initial_data.py:171
+#: add_initial_data.py:172
 msgid "Can view research project"
 msgstr "Pode ver projeto de pesquisa"
 
-#: add_initial_data.py:172
+#: add_initial_data.py:173
 msgid "Can view survey"
 msgstr "Pode ver questionário"
 
-#: add_initial_data.py:173
+#: add_initial_data.py:174
 msgid "Can export medical record"
 msgstr "Pode exportar dados de registro médico"
 
-#: add_initial_data.py:174
+#: add_initial_data.py:175
 msgid "Can export patient"
 msgstr "Pode exportar participante"
 
-#: add_initial_data.py:175
+#: add_initial_data.py:176
 msgid "Can export questionnaire response"
 msgstr "Pode exportar respostas do questionário"
 
-#: add_initial_data.py:176
+#: add_initial_data.py:177
 msgid "Can register equipment"
 msgstr "Pode registrar experimento"
 
-#: add_initial_data.py:177
+#: add_initial_data.py:178
 msgid "Can view sensitive patient data"
 msgstr "Pode ver dados sensíveis de participante"
 
-#: add_initial_data.py:178
+#: add_initial_data.py:179
 msgid "Can send data to plugin"
 msgstr ""
 
-#: add_initial_data.py:182
+#: add_initial_data.py:183
 msgid "Attendant"
 msgstr "Atendente"
 
-#: add_initial_data.py:183
+#: add_initial_data.py:184
 msgid "Physiotherapist"
 msgstr "Fisioterapeuta"
 
-#: add_initial_data.py:184
+#: add_initial_data.py:185
 msgid "Doctor"
 msgstr "Médico"
 
-#: add_initial_data.py:185
+#: add_initial_data.py:186
 msgid "Junior researcher"
 msgstr "Pesquisador júnior"
 
-#: add_initial_data.py:186
+#: add_initial_data.py:187
 msgid "Senior researcher"
 msgstr "Pesquisador sênior"
 
-#: add_initial_data.py:187
+#: add_initial_data.py:188
 msgid "Administrator"
 msgstr "Administrador"
 

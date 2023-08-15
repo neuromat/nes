@@ -14,7 +14,7 @@ from os import path
 
 import mne
 import numpy as np
-import nwb
+import pynwb as nwb
 import pydot
 from configuration.models import LocalInstitution
 from dateutil.relativedelta import relativedelta
@@ -39,7 +39,8 @@ from django.utils.translation import gettext as _
 from experiment.import_export import ExportExperiment, ImportExperiment
 from export.directory_utils import create_directory
 from export.forms import AgeIntervalForm, ParticipantsSelectionForm
-from nwb.nwbco import *
+
+# from pynwb.nwbco import *
 from patient.models import Patient
 from patient.models import QuestionnaireResponse as PatientQuestionnaireResponse
 from patient.models import SocialDemographicData
@@ -8290,7 +8291,7 @@ def create_nwb_file(eeg_data, eeg_reading, process_requisition, request, filenam
     )
     # create the NWB object. this manages the file
     # print("Creating " + nwb_file_settings["filename"])
-    neurodata = nwb.NWB(**nwb_file_settings)
+    neurodata = nwb.NWBFile(**nwb_file_settings)
     ########################################################################
     # general metadata section
     #

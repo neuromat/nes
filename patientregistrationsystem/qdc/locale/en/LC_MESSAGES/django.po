@@ -1,0 +1,859 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-15 00:40-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: add_initial_data.py:14
+msgid "Can add alcohol frequency"
+msgstr ""
+
+#: add_initial_data.py:15
+msgid "Can add alcohol period"
+msgstr ""
+
+#: add_initial_data.py:16
+msgid "Can add amount cigarettes"
+msgstr ""
+
+#: add_initial_data.py:17
+msgid "Can add block"
+msgstr ""
+
+#: add_initial_data.py:18
+msgid "Can add classification of diseases"
+msgstr ""
+
+#: add_initial_data.py:19
+msgid "Can add complementary exam"
+msgstr ""
+
+#: add_initial_data.py:20
+msgid "Can add component"
+msgstr ""
+
+#: add_initial_data.py:21
+msgid "Can add component configuration"
+msgstr ""
+
+#: add_initial_data.py:22
+msgid "Can add content type"
+msgstr ""
+
+#: add_initial_data.py:23
+msgid "Can add diagnosis"
+msgstr ""
+
+#: add_initial_data.py:24
+msgid "Can add exam file"
+msgstr ""
+
+#: add_initial_data.py:25
+msgid "Can add experiment"
+msgstr ""
+
+#: add_initial_data.py:26
+msgid "Can add flesh tone"
+msgstr ""
+
+#: add_initial_data.py:27
+msgid "Can add gender"
+msgstr ""
+
+#: add_initial_data.py:28 add_initial_data.py:29
+msgid "Can add group"
+msgstr ""
+
+#: add_initial_data.py:30
+msgid "Can add historical experiment"
+msgstr ""
+
+#: add_initial_data.py:31
+msgid "Can add historical patient"
+msgstr ""
+
+#: add_initial_data.py:32
+msgid "Can add historical questionnaire response"
+msgstr ""
+
+#: add_initial_data.py:33
+msgid "Can add historical social demographic data"
+msgstr ""
+
+#: add_initial_data.py:34
+msgid "Can add historical social history data"
+msgstr ""
+
+#: add_initial_data.py:35
+msgid "Can add historical telephone"
+msgstr ""
+
+#: add_initial_data.py:36
+msgid "Can add instruction"
+msgstr ""
+
+#: add_initial_data.py:37
+msgid "Can add keyword"
+msgstr ""
+
+#: add_initial_data.py:38
+msgid "Can add log entry"
+msgstr ""
+
+#: add_initial_data.py:39
+msgid "Can add marital status"
+msgstr ""
+
+#: add_initial_data.py:40
+msgid "Can add medical record data"
+msgstr ""
+
+#: add_initial_data.py:41
+msgid "Can add migration history"
+msgstr ""
+
+#: add_initial_data.py:42
+msgid "Can add patient"
+msgstr ""
+
+#: add_initial_data.py:43
+msgid "Can add pause"
+msgstr ""
+
+#: add_initial_data.py:44
+msgid "Can add payment"
+msgstr ""
+
+#: add_initial_data.py:45
+msgid "Can add permission"
+msgstr ""
+
+#: add_initial_data.py:46
+msgid "Can add questionnaire"
+msgstr ""
+
+#: add_initial_data.py:47 add_initial_data.py:48
+msgid "Can add questionnaire response"
+msgstr ""
+
+#: add_initial_data.py:49
+msgid "Can add religion"
+msgstr ""
+
+#: add_initial_data.py:50
+msgid "Can add research project"
+msgstr ""
+
+#: add_initial_data.py:51
+msgid "Can add schooling"
+msgstr ""
+
+#: add_initial_data.py:52
+msgid "Can add session"
+msgstr ""
+
+#: add_initial_data.py:53
+msgid "Can add social demographic data"
+msgstr ""
+
+#: add_initial_data.py:54
+msgid "Can add social history data"
+msgstr ""
+
+#: add_initial_data.py:55
+msgid "Can add stimulus"
+msgstr ""
+
+#: add_initial_data.py:56
+msgid "Can add stimulus type"
+msgstr ""
+
+#: add_initial_data.py:57
+msgid "Can add subject"
+msgstr ""
+
+#: add_initial_data.py:58
+msgid "Can add subject of group"
+msgstr ""
+
+#: add_initial_data.py:59
+msgid "Can add survey"
+msgstr ""
+
+#: add_initial_data.py:60
+msgid "Can add task"
+msgstr ""
+
+#: add_initial_data.py:61
+msgid "Can add task for the experimenter"
+msgstr ""
+
+#: add_initial_data.py:62
+msgid "Can add telephone"
+msgstr ""
+
+#: add_initial_data.py:63
+msgid "Can add user"
+msgstr ""
+
+#: add_initial_data.py:64
+msgid "Can add user profile"
+msgstr ""
+
+#: add_initial_data.py:65
+msgid "Can change alcohol frequency"
+msgstr ""
+
+#: add_initial_data.py:66
+msgid "Can change alcohol period"
+msgstr ""
+
+#: add_initial_data.py:67
+msgid "Can change amount cigarettes"
+msgstr ""
+
+#: add_initial_data.py:68
+msgid "Can change block"
+msgstr ""
+
+#: add_initial_data.py:69
+msgid "Can change classification of diseases"
+msgstr ""
+
+#: add_initial_data.py:70
+msgid "Can change complementary exam"
+msgstr ""
+
+#: add_initial_data.py:71
+msgid "Can change component"
+msgstr ""
+
+#: add_initial_data.py:72
+msgid "Can change component configuration"
+msgstr ""
+
+#: add_initial_data.py:73
+msgid "Can change content type"
+msgstr ""
+
+#: add_initial_data.py:74
+msgid "Can change diagnosis"
+msgstr ""
+
+#: add_initial_data.py:75
+msgid "Can change exam file"
+msgstr ""
+
+#: add_initial_data.py:76
+msgid "Can change experiment"
+msgstr ""
+
+#: add_initial_data.py:77
+msgid "Can change flesh tone"
+msgstr ""
+
+#: add_initial_data.py:78
+msgid "Can change gender"
+msgstr ""
+
+#: add_initial_data.py:79 add_initial_data.py:80
+msgid "Can change group"
+msgstr ""
+
+#: add_initial_data.py:81
+msgid "Can change historical experiment"
+msgstr ""
+
+#: add_initial_data.py:82
+msgid "Can change historical patient"
+msgstr ""
+
+#: add_initial_data.py:83
+msgid "Can change historical questionnaire response"
+msgstr ""
+
+#: add_initial_data.py:84
+msgid "Can change historical social demographic data"
+msgstr ""
+
+#: add_initial_data.py:85
+msgid "Can change historical social history data"
+msgstr ""
+
+#: add_initial_data.py:86
+msgid "Can change historical telephone"
+msgstr ""
+
+#: add_initial_data.py:87
+msgid "Can change instruction"
+msgstr ""
+
+#: add_initial_data.py:88
+msgid "Can change keyword"
+msgstr ""
+
+#: add_initial_data.py:89
+msgid "Can change log entry"
+msgstr ""
+
+#: add_initial_data.py:90
+msgid "Can change marital status"
+msgstr ""
+
+#: add_initial_data.py:91
+msgid "Can change medical record data"
+msgstr ""
+
+#: add_initial_data.py:92
+msgid "Can change migration history"
+msgstr ""
+
+#: add_initial_data.py:93
+msgid "Can change patient"
+msgstr ""
+
+#: add_initial_data.py:94
+msgid "Can change pause"
+msgstr ""
+
+#: add_initial_data.py:95
+msgid "Can change payment"
+msgstr ""
+
+#: add_initial_data.py:96
+msgid "Can change permission"
+msgstr ""
+
+#: add_initial_data.py:97
+msgid "Can change questionnaire"
+msgstr ""
+
+#: add_initial_data.py:98 add_initial_data.py:99
+msgid "Can change questionnaire response"
+msgstr ""
+
+#: add_initial_data.py:100
+msgid "Can change religion"
+msgstr ""
+
+#: add_initial_data.py:101
+msgid "Can change research project"
+msgstr ""
+
+#: add_initial_data.py:102
+msgid "Can change research project created by others"
+msgstr ""
+
+#: add_initial_data.py:103
+msgid "Can change schooling"
+msgstr ""
+
+#: add_initial_data.py:104
+msgid "Can change session"
+msgstr ""
+
+#: add_initial_data.py:105
+msgid "Can change social demographic data"
+msgstr ""
+
+#: add_initial_data.py:106
+msgid "Can change social history data"
+msgstr ""
+
+#: add_initial_data.py:107
+msgid "Can change stimulus"
+msgstr ""
+
+#: add_initial_data.py:108
+msgid "Can change stimulus type"
+msgstr ""
+
+#: add_initial_data.py:109
+msgid "Can change subject"
+msgstr ""
+
+#: add_initial_data.py:110
+msgid "Can change subject of group"
+msgstr ""
+
+#: add_initial_data.py:111
+msgid "Can change survey"
+msgstr ""
+
+#: add_initial_data.py:112
+msgid "Can change task"
+msgstr ""
+
+#: add_initial_data.py:113
+msgid "Can change task for the experimenter"
+msgstr ""
+
+#: add_initial_data.py:114
+msgid "Can change telephone"
+msgstr ""
+
+#: add_initial_data.py:115
+msgid "Can change user"
+msgstr ""
+
+#: add_initial_data.py:116
+msgid "Can change user profile"
+msgstr ""
+
+#: add_initial_data.py:117
+msgid "Can delete alcohol frequency"
+msgstr ""
+
+#: add_initial_data.py:118
+msgid "Can delete alcohol period"
+msgstr ""
+
+#: add_initial_data.py:119
+msgid "Can delete amount cigarettes"
+msgstr ""
+
+#: add_initial_data.py:120
+msgid "Can delete block"
+msgstr ""
+
+#: add_initial_data.py:121
+msgid "Can delete classification of diseases"
+msgstr ""
+
+#: add_initial_data.py:122
+msgid "Can delete complementary exam"
+msgstr ""
+
+#: add_initial_data.py:123
+msgid "Can delete component"
+msgstr ""
+
+#: add_initial_data.py:124
+msgid "Can delete component configuration"
+msgstr ""
+
+#: add_initial_data.py:125
+msgid "Can delete content type"
+msgstr ""
+
+#: add_initial_data.py:126
+msgid "Can delete diagnosis"
+msgstr ""
+
+#: add_initial_data.py:127
+msgid "Can delete exam file"
+msgstr ""
+
+#: add_initial_data.py:128
+msgid "Can delete experiment"
+msgstr ""
+
+#: add_initial_data.py:129
+msgid "Can delete flesh tone"
+msgstr ""
+
+#: add_initial_data.py:130
+msgid "Can delete gender"
+msgstr ""
+
+#: add_initial_data.py:131 add_initial_data.py:132
+msgid "Can delete group"
+msgstr ""
+
+#: add_initial_data.py:133
+msgid "Can delete historical experiment"
+msgstr ""
+
+#: add_initial_data.py:134
+msgid "Can delete historical patient"
+msgstr ""
+
+#: add_initial_data.py:135
+msgid "Can delete historical questionnaire response"
+msgstr ""
+
+#: add_initial_data.py:136
+msgid "Can delete historical social demographic data"
+msgstr ""
+
+#: add_initial_data.py:137
+msgid "Can delete historical social history data"
+msgstr ""
+
+#: add_initial_data.py:138
+msgid "Can delete historical telephone"
+msgstr ""
+
+#: add_initial_data.py:139
+msgid "Can delete instruction"
+msgstr ""
+
+#: add_initial_data.py:140
+msgid "Can delete keyword"
+msgstr ""
+
+#: add_initial_data.py:141
+msgid "Can delete log entry"
+msgstr ""
+
+#: add_initial_data.py:142
+msgid "Can delete marital status"
+msgstr ""
+
+#: add_initial_data.py:143
+msgid "Can delete medical record data"
+msgstr ""
+
+#: add_initial_data.py:144
+msgid "Can delete migration history"
+msgstr ""
+
+#: add_initial_data.py:145
+msgid "Can delete patient"
+msgstr ""
+
+#: add_initial_data.py:146
+msgid "Can delete pause"
+msgstr ""
+
+#: add_initial_data.py:147
+msgid "Can delete payment"
+msgstr ""
+
+#: add_initial_data.py:148
+msgid "Can delete permission"
+msgstr ""
+
+#: add_initial_data.py:149
+msgid "Can delete questionnaire"
+msgstr ""
+
+#: add_initial_data.py:150 add_initial_data.py:151
+msgid "Can delete questionnaire response"
+msgstr ""
+
+#: add_initial_data.py:152
+msgid "Can delete religion"
+msgstr ""
+
+#: add_initial_data.py:153
+msgid "Can delete research project"
+msgstr ""
+
+#: add_initial_data.py:154
+msgid "Can delete schooling"
+msgstr ""
+
+#: add_initial_data.py:155
+msgid "Can delete session"
+msgstr ""
+
+#: add_initial_data.py:156
+msgid "Can delete social demographic data"
+msgstr ""
+
+#: add_initial_data.py:157
+msgid "Can delete social history data"
+msgstr ""
+
+#: add_initial_data.py:158
+msgid "Can delete stimulus"
+msgstr ""
+
+#: add_initial_data.py:159
+msgid "Can delete stimulus type"
+msgstr ""
+
+#: add_initial_data.py:160
+msgid "Can delete subject"
+msgstr ""
+
+#: add_initial_data.py:161
+msgid "Can delete subject of group"
+msgstr ""
+
+#: add_initial_data.py:162
+msgid "Can delete survey"
+msgstr ""
+
+#: add_initial_data.py:163
+msgid "Can delete task"
+msgstr ""
+
+#: add_initial_data.py:164
+msgid "Can delete task for the experimenter"
+msgstr ""
+
+#: add_initial_data.py:165
+msgid "Can delete telephone"
+msgstr ""
+
+#: add_initial_data.py:166
+msgid "Can delete user"
+msgstr ""
+
+#: add_initial_data.py:167
+msgid "Can delete user profile"
+msgstr ""
+
+#: add_initial_data.py:168
+msgid "Can view medical record"
+msgstr ""
+
+#: add_initial_data.py:169
+msgid "Can view patient"
+msgstr ""
+
+#: add_initial_data.py:170 add_initial_data.py:171
+msgid "Can view questionnaire response"
+msgstr ""
+
+#: add_initial_data.py:172
+msgid "Can view research project"
+msgstr ""
+
+#: add_initial_data.py:173
+msgid "Can view survey"
+msgstr ""
+
+#: add_initial_data.py:174
+msgid "Can export medical record"
+msgstr ""
+
+#: add_initial_data.py:175
+msgid "Can export patient"
+msgstr ""
+
+#: add_initial_data.py:176
+msgid "Can export questionnaire response"
+msgstr ""
+
+#: add_initial_data.py:177
+msgid "Can register equipment"
+msgstr ""
+
+#: add_initial_data.py:178
+msgid "Can view sensitive patient data"
+msgstr ""
+
+#: add_initial_data.py:179
+msgid "Can send data to plugin"
+msgstr ""
+
+#: add_initial_data.py:183
+msgid "Attendant"
+msgstr ""
+
+#: add_initial_data.py:184
+msgid "Physiotherapist"
+msgstr ""
+
+#: add_initial_data.py:185
+msgid "Doctor"
+msgstr ""
+
+#: add_initial_data.py:186
+msgid "Junior researcher"
+msgstr ""
+
+#: add_initial_data.py:187
+msgid "Senior researcher"
+msgstr ""
+
+#: add_initial_data.py:188
+msgid "Administrator"
+msgstr ""
+
+#: templates/404.html:14 templates/registration/change_password_custom.html:123
+#: templates/registration/logged_out.html:4
+msgid "Home"
+msgstr ""
+
+#: templates/404.html:20
+msgid "404 Page Not Found"
+msgstr ""
+
+#: templates/404.html:21
+msgid "This page does not exist yet!"
+msgstr ""
+
+#: templates/404.html:28
+msgid "Back"
+msgstr ""
+
+#: templates/admin/base_site.html:4
+msgid "QDC site admin test"
+msgstr ""
+
+#: templates/admin/base_site.html:7
+msgid "QDC administration"
+msgstr ""
+
+#: templates/admin/qdc_403.html:9
+msgid "Access is not authorized"
+msgstr ""
+
+#: templates/registration/change_password_custom.html:9
+#: templates/registration/login.html:7
+#: templates/registration/password_reset_form.html:9
+msgid "Neuroscience Experiments System - NES"
+msgstr ""
+
+#: templates/registration/change_password_custom.html:78
+msgid "Password change"
+msgstr ""
+
+#: templates/registration/change_password_custom.html:95
+#: templates/registration/password_reset_confirm.html:84
+msgid ""
+"Password must contain at least 8 characters, including at least one "
+"uppercase letter, digit or special character."
+msgstr ""
+
+#: templates/registration/change_password_custom.html:118
+msgid "Save"
+msgstr ""
+
+#: templates/registration/change_password_custom.html:125
+msgid "Logout"
+msgstr ""
+
+#: templates/registration/logged_out.html:8
+msgid "Thanks for spending some quality time with the Web site today."
+msgstr ""
+
+#: templates/registration/logged_out.html:10
+msgid "Log in again"
+msgstr ""
+
+#: templates/registration/login.html:81
+msgid "User"
+msgstr ""
+
+#: templates/registration/login.html:85
+msgid "Password"
+msgstr ""
+
+#: templates/registration/login.html:87
+msgid "Login"
+msgstr ""
+
+#: templates/registration/login.html:93
+msgid "I forgot my password"
+msgstr ""
+
+#: templates/registration/password_define_email.html:5
+msgid ""
+"Hi, is everything ok?\n"
+"\n"
+"    You are receiving this e-mail for password definition into your user "
+"account.\n"
+"\n"
+"    Please, go to the next page and enter your password:\n"
+"    "
+msgstr ""
+
+#: templates/registration/password_define_email.html:16
+#, python-format
+msgid ""
+"Your username: %(user.username)s\n"
+"\n"
+"    Thank you for using our site!\n"
+"\n"
+"    Neuromat Team.\n"
+"    "
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:13
+msgid ""
+"Your password was configured successfully.\n"
+"           Access the system using your new credentials."
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:16
+msgid "Access"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:81
+#: templates/registration/password_reset_form.html:77
+msgid "Reset password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:85
+msgid "New password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:88
+msgid "Confirm password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:90
+msgid "Confirm"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:93
+msgid "Password reset failed."
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:94
+msgid ""
+"Invalid link for password reset, possibly because this link has already been "
+"used previously. <br/>\n"
+"                Please, request a new password reset."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:16
+msgid ""
+"We sent you a message with instructions to set up your password\n"
+"            for the e-mail provided. "
+msgstr ""
+
+#: templates/registration/password_reset_done.html:18
+msgid "You should receive it soon."
+msgstr ""
+
+#: templates/registration/password_reset_email.html:4
+msgid ""
+"Hi, is everything ok?\n"
+"\n"
+"        You are receiving this e-mail because you requested a password reset "
+"for your user account.\n"
+"\n"
+"        Please, go to the next page and enter a new password:\n"
+"    "
+msgstr ""
+
+#: templates/registration/password_reset_email.html:14
+msgid ""
+"\n"
+"    Thank you for using our site!\n"
+"\n"
+"    Neuromat Team.\n"
+"    "
+msgstr ""
+
+#: templates/registration/password_reset_form.html:61
+msgid "Please enter your e-mail to receive instructions for password reset."
+msgstr ""
+
+#: templates/registration/password_reset_form.html:72
+msgid "E-mail"
+msgstr ""
+
+#: templates/registration/password_reset_subject.txt:2
+#, python-format
+msgid "Password reset on %(site_name)s"
+msgstr ""

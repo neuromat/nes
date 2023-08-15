@@ -3,7 +3,7 @@
     "fields": {
       "name_en": "Auditory",
       "name": "Auditivo",
-      "name_pt_br": "Auditivo"
+      "name_pt_BR": "Auditivo"
     },
     "model": "experiment.stimulustype",
     "pk": 1
@@ -12,7 +12,7 @@
     "fields": {
       "name_en": "Olfactory",
       "name": "Olfativo",
-      "name_pt_br": "Olfativo"
+      "name_pt_BR": "Olfativo"
     },
     "model": "experiment.stimulustype",
     "pk": 2
@@ -21,7 +21,7 @@
     "fields": {
       "name_en": "Visual",
       "name": "Visual",
-      "name_pt_br": "Visual"
+      "name_pt_BR": "Visual"
     },
     "model": "experiment.stimulustype",
     "pk": 3
@@ -30,7 +30,7 @@
     "fields": {
       "name_en": "Somatosensory",
       "name": "Somatosensorial",
-      "name_pt_br": "Somatosensorial"
+      "name_pt_BR": "Somatosensorial"
     },
     "model": "experiment.stimulustype",
     "pk": 4
@@ -39,7 +39,7 @@
     "fields": {
       "name_en": "Interoceptive",
       "name": "Interoceptivo",
-      "name_pt_br": "Interoceptivo"
+      "name_pt_BR": "Interoceptivo"
     },
     "model": "experiment.stimulustype",
     "pk": 6
@@ -49,7 +49,7 @@
     "fields": {
       "name_en": "Gustatory",
       "name": "Gustativo",
-      "name_pt_br": "Gustativo"
+      "name_pt_BR": "Gustativo"
     },
     "pk": 7
   }

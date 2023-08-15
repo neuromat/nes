@@ -1,7 +1,7 @@
 [
   {
     "fields": {
-      "name_pt_br": "Todos os dias",
+      "name_pt_BR": "Todos os dias",
       "name_en": "Every day",
       "name": "Todos os dias"
     },
@@ -10,7 +10,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Todos os finais de semana",
+      "name_pt_BR": "Todos os finais de semana",
       "name_en": "Every weekend",
       "name": "Todos os finais de semana"
     },
@@ -19,7 +19,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Esporadicamente",
+      "name_pt_BR": "Esporadicamente",
       "name_en": "Occasionally",
       "name": "Esporadicamente"
     },
@@ -28,7 +28,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Mais de 10 anos",
+      "name_pt_BR": "Mais de 10 anos",
       "name_en": "More than 10 years",
       "name": "Mais de 10 anos"
     },
@@ -37,7 +37,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "5-10 anos",
+      "name_pt_BR": "5-10 anos",
       "name_en": "5-10 years",
       "name": "5-10 anos"
     },
@@ -46,7 +46,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "1-5 anos",
+      "name_pt_BR": "1-5 anos",
       "name_en": "1-5 years",
       "name": "1-5 anos"
     },
@@ -55,7 +55,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Menos de 1 ano",
+      "name_pt_BR": "Menos de 1 ano",
       "name_en": "Less than 1 year",
       "name": "Menos de 1 ano"
     },
@@ -64,7 +64,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Mais de 3 ma\u00e7os",
+      "name_pt_BR": "Mais de 3 ma\u00e7os",
       "name_en": "More than 3 packes",
       "name": "Mais de 3 ma\u00e7os"
     },
@@ -73,7 +73,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "1-2 ma\u00e7os",
+      "name_pt_BR": "1-2 ma\u00e7os",
       "name_en": "1-2 packes",
       "name": "1-2 ma\u00e7os"
     },
@@ -82,7 +82,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Menos de 1 ma\u00e7o",
+      "name_pt_BR": "Menos de 1 ma\u00e7o",
       "name_en": "Less than 1 pack",
       "name": "Menos de 1 ma\u00e7o"
     },
@@ -91,7 +91,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Amarelo",
+      "name_pt_BR": "Amarelo",
       "name_en": "Yellow",
       "name": "Amarelo"
     },
@@ -100,7 +100,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Branco",
+      "name_pt_BR": "Branco",
       "name_en": "White",
       "name": "Branco"
     },
@@ -109,7 +109,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Ind\u00edgena",
+      "name_pt_BR": "Ind\u00edgena",
       "name_en": "Indian",
       "name": "Ind\u00edgena"
     },
@@ -118,7 +118,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Pardo",
+      "name_pt_BR": "Pardo",
       "name_en": "Brown",
       "name": "Pardo"
     },
@@ -127,7 +127,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Preto",
+      "name_pt_BR": "Preto",
       "name_en": "Black",
       "name": "Preto"
     },
@@ -136,7 +136,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Feminino",
+      "name_pt_BR": "Feminino",
       "name_en": "Female",
       "name": "Feminino"
     },
@@ -145,7 +145,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Masculino",
+      "name_pt_BR": "Masculino",
       "name_en": "Male",
       "name": "Masculino"
     },
@@ -156,7 +156,7 @@
     "fields": {
       "name_en": "Not informed",
       "name": "N\u00e3o Informado",
-      "name_pt_br": "N\u00e3o Informado"
+      "name_pt_BR": "N\u00e3o Informado"
     },
     "model": "patient.maritalstatus",
     "pk": 1
@@ -165,7 +165,7 @@
     "fields": {
       "name_en": "Widower",
       "name": "Vi\u00favo",
-      "name_pt_br": "Vi\u00favo"
+      "name_pt_BR": "Vi\u00favo"
     },
     "model": "patient.maritalstatus",
     "pk": 2
@@ -174,7 +174,7 @@
     "fields": {
       "name_en": "Separated/Divorced",
       "name": "Separado/Divorciado",
-      "name_pt_br": "Separado/Divorciado"
+      "name_pt_BR": "Separado/Divorciado"
     },
     "model": "patient.maritalstatus",
     "pk": 3
@@ -183,14 +183,14 @@
     "fields": {
       "name_en": "Married/Live together",
       "name": "Casado/Convive Junto",
-      "name_pt_br": "Casado/Convive Junto"
+      "name_pt_BR": "Casado/Convive Junto"
     },
     "model": "patient.maritalstatus",
     "pk": 4
   },
   {
     "fields": {
-      "name_pt_br": "Solteiro",
+      "name_pt_BR": "Solteiro",
       "name_en": "Single",
       "name": "Solteiro"
     },
@@ -199,7 +199,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Particular",
+      "name_pt_BR": "Particular",
       "name_en": "Private",
       "name": "Particular"
     },
@@ -208,7 +208,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Conv\u00eanio",
+      "name_pt_BR": "Conv\u00eanio",
       "name_en": "Medical assistance",
       "name": "Conv\u00eanio"
     },
@@ -217,7 +217,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "SUS",
+      "name_pt_BR": "SUS",
       "name_en": "SUS",
       "name": "SUS"
     },
@@ -226,7 +226,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Budismo",
+      "name_pt_BR": "Budismo",
       "name_en": "Budism",
       "name": "Budismo"
     },
@@ -235,7 +235,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Candombl\u00e9",
+      "name_pt_BR": "Candombl\u00e9",
       "name_en": "Candomble",
       "name": "Candombl\u00e9"
     },
@@ -244,7 +244,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Cat\u00f3lica",
+      "name_pt_BR": "Cat\u00f3lica",
       "name_en": "Catholic",
       "name": "Cat\u00f3lica"
     },
@@ -253,7 +253,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Esp\u00edrita",
+      "name_pt_BR": "Esp\u00edrita",
       "name_en": "Spiritualist",
       "name": "Esp\u00edrita"
     },
@@ -262,7 +262,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Evang\u00e9lica",
+      "name_pt_BR": "Evang\u00e9lica",
       "name_en": "Evangelical",
       "name": "Evang\u00e9lica"
     },
@@ -271,7 +271,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Igreja de Jesus Cristo dos Santos dos \u00daltimos Dias",
+      "name_pt_BR": "Igreja de Jesus Cristo dos Santos dos \u00daltimos Dias",
       "name_en": "The Church of Jesus Christ of Latter-day Saints",
       "name": "Igreja de Jesus Cristo dos Santos dos \u00daltimos Dias"
     },
@@ -280,7 +280,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Judaismo",
+      "name_pt_BR": "Judaismo",
       "name_en": "Judaism",
       "name": "Judaismo"
     },
@@ -289,7 +289,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Protestante",
+      "name_pt_BR": "Protestante",
       "name_en": "Protestant",
       "name": "Protestante"
     },
@@ -298,7 +298,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Religi\u00f5es Orientais",
+      "name_pt_BR": "Religi\u00f5es Orientais",
       "name_en": " Eastern religions",
       "name": "Religi\u00f5es Orientais"
     },
@@ -307,7 +307,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Sem religi\u00e3o",
+      "name_pt_BR": "Sem religi\u00e3o",
       "name_en": "No religion",
       "name": "Sem religi\u00e3o"
     },
@@ -316,7 +316,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Testemunha de Jeov\u00e1",
+      "name_pt_BR": "Testemunha de Jeov\u00e1",
       "name_en": "Jehovah's Witness",
       "name": "Testemunha de Jeov\u00e1"
     },
@@ -325,7 +325,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Umbanda",
+      "name_pt_BR": "Umbanda",
       "name_en": "Umbanda",
       "name": "Umbanda"
     },
@@ -334,7 +334,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Analfabeto/ at\u00e9 3\u00aa S\u00e9rie Fundamental",
+      "name_pt_BR": "Analfabeto/ at\u00e9 3\u00aa S\u00e9rie Fundamental",
       "name_en": "Illiterate/until 3th Year Elementary ",
       "name": "Analfabeto/ at\u00e9 3\u00aa S\u00e9rie Fundamental"
     },
@@ -343,7 +343,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "4\u00aa Fundamental",
+      "name_pt_BR": "4\u00aa Fundamental",
       "name_en": "4th Year Elementary",
       "name": "4\u00aa Fundamental"
     },
@@ -352,7 +352,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Fundamental Completo",
+      "name_pt_BR": "Fundamental Completo",
       "name_en": "Elementary Complete",
       "name": "Fundamental Completo"
     },
@@ -361,7 +361,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "M\u00e9dio Completo",
+      "name_pt_BR": "M\u00e9dio Completo",
       "name_en": "College Complete",
       "name": "M\u00e9dio Completo"
     },
@@ -370,7 +370,7 @@
   },
   {
     "fields": {
-      "name_pt_br": "Superior Completo",
+      "name_pt_BR": "Superior Completo",
       "name_en": "Undergraduation Complete",
       "name": "Superior Completo"
     },
