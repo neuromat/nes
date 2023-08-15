@@ -6,17 +6,15 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('plugin', '0001_initial'),
+        ("plugin", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='randomforests',
-            options={'permissions': (
-                ('can_send_data_to_plugin', 'Can send data to plugin'),
-            )
+            name="randomforests",
+            options={
+                "permissions": (("can_send_data_to_plugin", "Can send data to plugin"),)
             },
         ),
     ]

@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('plugin', '0003_auto_20190514_1543'),
+        ("plugin", "0003_auto_20190514_1543"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='randomforests',
-            name='plugin_url',
-            field=models.CharField(default='', max_length=200),
+            model_name="randomforests",
+            name="plugin_url",
+            field=models.CharField(default="", max_length=200),
         ),
     ]

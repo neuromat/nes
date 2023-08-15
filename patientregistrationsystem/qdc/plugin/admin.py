@@ -1,6 +1,5 @@
 from django.contrib import admin
-from solo.admin import SingletonModelAdmin
-
 from plugin.models import RandomForests
+from solo.admin import SingletonModelAdmin
 
 admin.site.register(RandomForests, SingletonModelAdmin)

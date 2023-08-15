@@ -1,7 +1,6 @@
+from custom_user.models import Institution
 from django.db import models
 from solo.models import SingletonModel
-
-from custom_user.models import Institution
 
 
 def get_institution_logo_dir(instance, filename):
