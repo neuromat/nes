@@ -74,7 +74,7 @@ def password_changed(request):
     return contact(request)
 
 
-@login_required
+# @login_required
 def check_upgrade(request):
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
@@ -142,7 +142,7 @@ def upgrade_nes(request):
 
     # criate a log file in path_git_repo_local + 'patientregistrationsystem'
     log_file = settings.BASE_DIR + "/upgrade.log"
-    log = open(log_file, "w")
+    log = open(log_file, "w", encoding="utf-8")
     sys.stdout = log
 
     if ".git" in list_dir:
@@ -171,7 +171,7 @@ def upgrade_nes(request):
             print("There are not migrations")
 
         os.system(
-            "touch %spatientregistrationsystem/qdc/qdc/wsgi.py" % path_git_repo_local
+            f"touch {path_git_repo_local}spatientregistrationsystem/qdc/qdc/wsgi.py"
         )
 
         # check if the current TAG is the latest tag

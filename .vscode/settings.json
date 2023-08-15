@@ -7,6 +7,7 @@
     "python.autoComplete.extraPaths": [
         "${localWorkspaceFolder}"
     ],
+    "python.defaultInterpreterPath": "python",
     "sqltools.connections": [
         {
             "previewLimit": 50,
@@ -28,5 +29,11 @@
             "username": "nes_user",
             "name": "postgres_nes"
         }
-    ]
+    ],
+    "python.analysis.extraPaths": [
+        "${localWorkspaceFolder}"
+    ],
+    "[dockerfile]": {
+        "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+    }
 }

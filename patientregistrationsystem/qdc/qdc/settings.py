@@ -42,7 +42,7 @@ SESSION_COOKIE_AGE = 3600
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     "modeltranslation",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -56,9 +56,9 @@ INSTALLED_APPS = (
     "solo",
     "fixture_magic",
     "maintenance_mode",
-)
+]
 
-PROJECT_APPS = (
+PROJECT_APPS = [
     "quiz",
     "patient",
     "custom_user",
@@ -66,12 +66,12 @@ PROJECT_APPS = (
     "survey",
     "export",
     "configuration",
-    "plugin",
-)
+    "plugin"
+]
 
 INSTALLED_APPS += PROJECT_APPS
 
-MIDDLEWARE = (
+MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -82,7 +82,7 @@ MIDDLEWARE = (
     "qdc.middleware.PasswordChangeMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "maintenance_mode.middleware.MaintenanceModeMiddleware",
-)
+]
 
 CONTEXT_PROCESSORS = {"maintenance_mode.context_processors.maintenance_mode"}
 

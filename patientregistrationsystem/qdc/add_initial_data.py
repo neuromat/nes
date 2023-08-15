@@ -2,12 +2,13 @@
 
 # This file was created based on what is explained in:
 # https://code.djangoproject.com/wiki/InitialSQLDataDiangoORMWay
-from django.utils.translation import gettext as _
+from os import environ
+
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.utils.translation import gettext as _
 
-from os import environ
-environ['DJANGO_SETTINGS_MODULE'] = 'qdc.settings'
+environ["DJANGO_SETTINGS_MODULE"] = "qdc.settings"
 
 PermissionTable = [
     _("Can add alcohol frequency"),
@@ -187,58 +188,76 @@ GroupTable = [
     _("Administrator"),
 ]
 
-patient_content_type = ContentType.objects.get(app_label='patient', model='patient')
-medicalrecorddata_content_type = ContentType.objects.get(app_label='patient', model='medicalrecorddata')
-survey_content_type = ContentType.objects.get(app_label='survey', model='survey')
-patient_quest_response_content_type = ContentType.objects.get(app_label='patient', model='questionnaireresponse')
-researchproject_content_type = ContentType.objects.get(app_label='experiment', model='researchproject')
-experiment_content_type = ContentType.objects.get(app_label='experiment', model='experiment')
-subject_content_type = ContentType.objects.get(app_label='experiment', model='subject')
-questionnaireresponse_content_type = ContentType.objects.get(app_label='experiment', model='questionnaireresponse')
-equipment_content_type = ContentType.objects.get(app_label='experiment', model='equipment')
-user_content_type = ContentType.objects.get(app_label='auth', model='user')
-plugin_content_type = ContentType.objects.get(app_label='plugin', model='randomforests')
+patient_content_type = ContentType.objects.get(app_label="patient", model="patient")
+medicalrecorddata_content_type = ContentType.objects.get(
+    app_label="patient", model="medicalrecorddata"
+)
+survey_content_type = ContentType.objects.get(app_label="survey", model="survey")
+patient_quest_response_content_type = ContentType.objects.get(
+    app_label="patient", model="questionnaireresponse"
+)
+researchproject_content_type = ContentType.objects.get(
+    app_label="experiment", model="researchproject"
+)
+experiment_content_type = ContentType.objects.get(
+    app_label="experiment", model="experiment"
+)
+subject_content_type = ContentType.objects.get(app_label="experiment", model="subject")
+questionnaireresponse_content_type = ContentType.objects.get(
+    app_label="experiment", model="questionnaireresponse"
+)
+equipment_content_type = ContentType.objects.get(
+    app_label="experiment", model="equipment"
+)
+user_content_type = ContentType.objects.get(app_label="auth", model="user")
+plugin_content_type = ContentType.objects.get(app_label="plugin", model="randomforests")
 
 
 # CREATE ATTENDANT
-group_attendant, attendant_created = Group.objects.get_or_create(name='Attendant')
+group_attendant, attendant_created = Group.objects.get_or_create(name="Attendant")
 
-attendant_permission_list = [Permission.objects.get(codename='add_patient', content_type=patient_content_type),
-                             Permission.objects.get(codename='change_patient', content_type=patient_content_type),
-                             Permission.objects.get(codename='view_patient', content_type=patient_content_type)]
+attendant_permission_list = [
+    Permission.objects.get(codename="add_patient", content_type=patient_content_type),
+    Permission.objects.get(
+        codename="change_patient", content_type=patient_content_type
+    ),
+    Permission.objects.get(codename="view_patient", content_type=patient_content_type),
+]
 
 for permission in attendant_permission_list:
     group_attendant.permissions.add(permission)
 
 
 # CREATE PHYSIOTHERAPIST
-group_physiotherapist, physiotherapist_created = Group.objects.get_or_create(name='Physiotherapist')
+group_physiotherapist, physiotherapist_created = Group.objects.get_or_create(
+    name="Physiotherapist"
+)
 
 physiotherapist_permission_list = list(attendant_permission_list)
 physiotherapist_permission_list += [
     Permission.objects.get(
-        codename='view_medicalrecorddata',
-        content_type=medicalrecorddata_content_type),
+        codename="view_medicalrecorddata", content_type=medicalrecorddata_content_type
+    ),
+    Permission.objects.get(codename="view_survey", content_type=survey_content_type),
+    Permission.objects.get(codename="add_survey", content_type=survey_content_type),
+    Permission.objects.get(codename="change_survey", content_type=survey_content_type),
+    Permission.objects.get(codename="delete_survey", content_type=survey_content_type),
     Permission.objects.get(
-        codename='view_survey', content_type=survey_content_type),
+        codename="add_questionnaireresponse",
+        content_type=patient_quest_response_content_type,
+    ),
     Permission.objects.get(
-        codename='add_survey', content_type=survey_content_type),
+        codename="change_questionnaireresponse",
+        content_type=patient_quest_response_content_type,
+    ),
     Permission.objects.get(
-        codename='change_survey', content_type=survey_content_type),
+        codename="view_questionnaireresponse",
+        content_type=patient_quest_response_content_type,
+    ),
     Permission.objects.get(
-        codename='delete_survey', content_type=survey_content_type),
-    Permission.objects.get(
-        codename='add_questionnaireresponse',
-        content_type=patient_quest_response_content_type),
-    Permission.objects.get(
-        codename='change_questionnaireresponse',
-        content_type=patient_quest_response_content_type),
-    Permission.objects.get(
-        codename='view_questionnaireresponse',
-        content_type=patient_quest_response_content_type),
-    Permission.objects.get(
-        codename='delete_questionnaireresponse',
-        content_type=patient_quest_response_content_type)
+        codename="delete_questionnaireresponse",
+        content_type=patient_quest_response_content_type,
+    ),
 ]
 
 for permission in physiotherapist_permission_list:
@@ -246,93 +265,133 @@ for permission in physiotherapist_permission_list:
 
 
 # CREATE DOCTOR
-group_doctor, doctor_created = Group.objects.get_or_create(name='Doctor')
+group_doctor, doctor_created = Group.objects.get_or_create(name="Doctor")
 
 doctor_permission_list = list(physiotherapist_permission_list)
-doctor_permission_list += [Permission.objects.get(codename='add_medicalrecorddata',
-                                                  content_type=medicalrecorddata_content_type)]
+doctor_permission_list += [
+    Permission.objects.get(
+        codename="add_medicalrecorddata", content_type=medicalrecorddata_content_type
+    )
+]
 
 for permission in doctor_permission_list:
     group_doctor.permissions.add(permission)
 
 
 # CREATE JUNIOR RESEARCHER
-group_junior_researcher, junior_researcher_created = Group.objects.get_or_create(name='Junior researcher')
+group_junior_researcher, junior_researcher_created = Group.objects.get_or_create(
+    name="Junior researcher"
+)
 
 junior_researcher_permission_list = list(physiotherapist_permission_list)
-junior_researcher_permission_list += [Permission.objects.get(codename='add_researchproject',
-                                                             content_type=researchproject_content_type),
-                                      Permission.objects.get(codename='change_researchproject',
-                                                             content_type=researchproject_content_type),
-                                      Permission.objects.get(codename='view_researchproject',
-                                                             content_type=researchproject_content_type),
-                                      Permission.objects.get(codename='delete_researchproject',
-                                                             content_type=researchproject_content_type),
-                                      Permission.objects.get(codename='add_experiment',
-                                                             content_type=experiment_content_type),
-                                      Permission.objects.get(codename='change_experiment',
-                                                             content_type=experiment_content_type),
-                                      Permission.objects.get(codename='delete_experiment',
-                                                             content_type=experiment_content_type),
-                                      Permission.objects.get(codename='add_questionnaireresponse',
-                                                             content_type=questionnaireresponse_content_type),
-                                      Permission.objects.get(codename='change_questionnaireresponse',
-                                                             content_type=questionnaireresponse_content_type),
-                                      Permission.objects.get(codename='view_questionnaireresponse',
-                                                             content_type=questionnaireresponse_content_type),
-                                      Permission.objects.get(codename='delete_questionnaireresponse',
-                                                             content_type=questionnaireresponse_content_type),
-                                      Permission.objects.get(codename='register_equipment',
-                                                             content_type=equipment_content_type),
-                                      Permission.objects.get(codename='add_subject',
-                                                             content_type=subject_content_type),
-                                      Permission.objects.get(codename='change_subject',
-                                                             content_type=subject_content_type),
-                                      Permission.objects.get(codename='delete_subject',
-                                                             content_type=subject_content_type),
-                                      Permission.objects.get(codename='can_send_data_to_plugin',
-                                                             content_type=plugin_content_type)
-                                      ]
+junior_researcher_permission_list += [
+    Permission.objects.get(
+        codename="add_researchproject", content_type=researchproject_content_type
+    ),
+    Permission.objects.get(
+        codename="change_researchproject", content_type=researchproject_content_type
+    ),
+    Permission.objects.get(
+        codename="view_researchproject", content_type=researchproject_content_type
+    ),
+    Permission.objects.get(
+        codename="delete_researchproject", content_type=researchproject_content_type
+    ),
+    Permission.objects.get(
+        codename="add_experiment", content_type=experiment_content_type
+    ),
+    Permission.objects.get(
+        codename="change_experiment", content_type=experiment_content_type
+    ),
+    Permission.objects.get(
+        codename="delete_experiment", content_type=experiment_content_type
+    ),
+    Permission.objects.get(
+        codename="add_questionnaireresponse",
+        content_type=questionnaireresponse_content_type,
+    ),
+    Permission.objects.get(
+        codename="change_questionnaireresponse",
+        content_type=questionnaireresponse_content_type,
+    ),
+    Permission.objects.get(
+        codename="view_questionnaireresponse",
+        content_type=questionnaireresponse_content_type,
+    ),
+    Permission.objects.get(
+        codename="delete_questionnaireresponse",
+        content_type=questionnaireresponse_content_type,
+    ),
+    Permission.objects.get(
+        codename="register_equipment", content_type=equipment_content_type
+    ),
+    Permission.objects.get(codename="add_subject", content_type=subject_content_type),
+    Permission.objects.get(
+        codename="change_subject", content_type=subject_content_type
+    ),
+    Permission.objects.get(
+        codename="delete_subject", content_type=subject_content_type
+    ),
+    Permission.objects.get(
+        codename="can_send_data_to_plugin", content_type=plugin_content_type
+    ),
+]
 
 for permission in junior_researcher_permission_list:
     group_junior_researcher.permissions.add(permission)
 
 
 # CREATE SENIOR RESEARCHER
-group_senior_researcher, senior_researcher_created = Group.objects.get_or_create(name='Senior researcher')
+group_senior_researcher, senior_researcher_created = Group.objects.get_or_create(
+    name="Senior researcher"
+)
 
 senior_researcher_permission_list = list(junior_researcher_permission_list)
-senior_researcher_permission_list += [Permission.objects.get(codename='change_researchproject_from_others',
-                                                             content_type=researchproject_content_type),
-                                      Permission.objects.get(codename='export_patient',
-                                                             content_type=patient_content_type),
-                                      Permission.objects.get(codename='export_medicalrecorddata',
-                                                             content_type=medicalrecorddata_content_type),
-                                      Permission.objects.get(codename='export_questionnaireresponse',
-                                                             content_type=patient_quest_response_content_type),
-                                      Permission.objects.get(codename='sensitive_data_patient',
-                                                             content_type=patient_content_type)]
+senior_researcher_permission_list += [
+    Permission.objects.get(
+        codename="change_researchproject_from_others",
+        content_type=researchproject_content_type,
+    ),
+    Permission.objects.get(
+        codename="export_patient", content_type=patient_content_type
+    ),
+    Permission.objects.get(
+        codename="export_medicalrecorddata", content_type=medicalrecorddata_content_type
+    ),
+    Permission.objects.get(
+        codename="export_questionnaireresponse",
+        content_type=patient_quest_response_content_type,
+    ),
+    Permission.objects.get(
+        codename="sensitive_data_patient", content_type=patient_content_type
+    ),
+]
 
 for permission in senior_researcher_permission_list:
     group_senior_researcher.permissions.add(permission)
 
 
 # CREATE ADMINISTRATOR
-group_admininstrator, administrator_created = Group.objects.get_or_create(name='Administrator')
+group_admininstrator, administrator_created = Group.objects.get_or_create(
+    name="Administrator"
+)
 
 administrator_permission_list = list(senior_researcher_permission_list)
-administrator_permission_list += [Permission.objects.get(codename='add_user',
-                                                         content_type=user_content_type),
-                                  Permission.objects.get(codename='change_user',
-                                                         content_type=user_content_type),
-                                  Permission.objects.get(codename='delete_user',
-                                                         content_type=user_content_type),
-                                  Permission.objects.get(codename='delete_patient',
-                                                         content_type=patient_content_type),
-                                  Permission.objects.get(codename='change_researchproject_owner',
-                                                         content_type=researchproject_content_type),
-                                  Permission.objects.get(codename='add_medicalrecorddata',
-                                                         content_type=medicalrecorddata_content_type)]
+administrator_permission_list += [
+    Permission.objects.get(codename="add_user", content_type=user_content_type),
+    Permission.objects.get(codename="change_user", content_type=user_content_type),
+    Permission.objects.get(codename="delete_user", content_type=user_content_type),
+    Permission.objects.get(
+        codename="delete_patient", content_type=patient_content_type
+    ),
+    Permission.objects.get(
+        codename="change_researchproject_owner",
+        content_type=researchproject_content_type,
+    ),
+    Permission.objects.get(
+        codename="add_medicalrecorddata", content_type=medicalrecorddata_content_type
+    ),
+]
 
 for permission in administrator_permission_list:
     group_admininstrator.permissions.add(permission)
