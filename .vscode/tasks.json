@@ -4,7 +4,7 @@
         {
             "label": "Python: lint entire project with mypy",
             "type": "shell",
-            "command": "mypy --no-pretty --show-column-numbers /workspaces/nes/patientregistrationsystem/qdc ",
+            "command": "mypy --no-pretty --show-column-numbers /workspaces/nes/patientregistrationsystem/qdc",
             "group": "test",
             "presentation": {
                 "reveal": "always",

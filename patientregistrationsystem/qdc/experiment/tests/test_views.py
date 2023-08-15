@@ -20,7 +20,7 @@ from django.test import TestCase, override_settings
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
 from django.conf import settings
-from faker.factory import Factory
+from faker import Factory
 
 from custom_user.tests_helper import create_user
 from experiment.import_export import ExportExperiment
@@ -675,7 +675,7 @@ class ExportExperimentTest(TestCase):
             reverse("experiment_export", kwargs={"experiment_id": self.experiment.id})
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEquals(
+        self.assertEqual(
             response.get("Content-Disposition"),
             "attachment; filename=%s" % smart_str("experiment.zip"),
         )
@@ -4433,9 +4433,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         for model in pre_loaded_models:
             # Changes field value to test for newly created instances
             instance = model[0].objects.last()
@@ -4557,9 +4555,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         for model in pre_loaded_models:
             # Changes field value to test for newly created instances
             instance = model[0].objects.last()
@@ -4672,9 +4668,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         for model in pre_loaded_models:
             # Changes field value to test for newly created instances
             instance = model[0].objects.last()

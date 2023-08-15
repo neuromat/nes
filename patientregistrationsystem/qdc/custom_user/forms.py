@@ -1,4 +1,8 @@
 # coding=utf-8
+from custom_user.models import Institution, UserProfile
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 from django.forms import (
     CharField,
     CheckboxSelectMultiple,
@@ -9,12 +13,7 @@ from django.forms import (
     TextInput,
     ValidationError,
 )
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
-
-from django.contrib.auth.forms import PasswordResetForm
-from custom_user.models import Institution, UserProfile
 
 
 class UserForm(ModelForm):
@@ -47,8 +46,7 @@ class UserForm(ModelForm):
                 "id": "email",
                 "type": "email",
                 "data-error": "E-mail inválido",
-                "pattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]"
-                + "+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
+                "pattern": r"^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
             }
         ),
     )
@@ -180,8 +178,7 @@ class ResearcherForm(ModelForm):
                     "id": "email",
                     "type": "email",
                     "data-error": "E-mail inválido",
-                    "pattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]"
-                    + "+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
+                    "pattern": r"^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
                 }
             ),
             "citation_name": TextInput(

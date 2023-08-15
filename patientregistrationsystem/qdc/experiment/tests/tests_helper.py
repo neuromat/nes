@@ -9,7 +9,7 @@ from django.contrib.auth.models import User, Group as UserGroup
 from django.core.files import File
 from django.db import IntegrityError
 from django.test import RequestFactory, TestCase
-from faker import Faker
+from faker import Factory
 
 from custom_user.tests_helper import create_user
 from experiment.models import (
@@ -235,9 +235,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_tms_device(manufacturer):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         TMSDevice.objects.create(
             manufacturer=manufacturer,
             equipment_type=TMSDevice.EQUIPMENT_TYPES[0][0],
@@ -309,9 +307,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_component(experiment, component_type, identification=None, kwargs=None):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         if component_type == Component.TASK_EXPERIMENT:
             model = TaskForTheExperimenter.__name__
@@ -393,9 +389,7 @@ class ObjectsFactory(object):
         :param experimental_protocol: experimental protocol
         :return: group
         """
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         group = Group.objects.create(
             experiment=experiment,
@@ -504,9 +498,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_electrode_localization_system():
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
@@ -535,9 +527,7 @@ class ObjectsFactory(object):
     def create_eeg_electrode_position_setting(
         eeg_electrode_layout_setting, eeg_electrode_position, electrode_model
     ):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         return EEGElectrodePositionSetting.objects.create(
             eeg_electrode_layout_setting=eeg_electrode_layout_setting,
             eeg_electrode_position=eeg_electrode_position,
@@ -550,9 +540,7 @@ class ObjectsFactory(object):
     def create_eeg_electrode_position_collection_status(
         eeg_data, eeg_electrode_position_setting
     ):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         return EEGElectrodePositionCollectionStatus.objects.create(
             eeg_data=eeg_data,
             eeg_electrode_position_setting=eeg_electrode_position_setting,
@@ -619,9 +607,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_electrode_capsize(eeg_electrode_cap):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         return EEGCapSize.objects.create(
             eeg_electrode_cap=eeg_electrode_cap,
             size=fake.word(),
@@ -644,9 +630,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_component_configuration(parent, component):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         return ComponentConfiguration.objects.create(
             name=fake.word(), parent=parent, component=component
@@ -672,17 +656,13 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_information_type():
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         return InformationType.objects.create(name=fake.word(), description=fake.text())
 
     @staticmethod
     def create_file_format():
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         while True:  # nes_code is unique
             # Change this for changes in real FileFormat objects
             # Mading this way because this data is loaded on NES instalation
@@ -698,9 +678,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_generic_data_collection_data(data_conf_tree, subj_of_group):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         file_format = ObjectsFactory.create_file_format()
         return GenericDataCollectionData.objects.create(
@@ -748,9 +726,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_data(data_conf_tree, subj_of_group, eeg_set, eeg_cap_size=None):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         file_format = ObjectsFactory.create_file_format()
         return EEGData.objects.create(
@@ -776,9 +752,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_emg_data_collection_data(data_conf_tree, subj_of_group, emg_set):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         file_format = ObjectsFactory.create_file_format()
         return EMGData.objects.create(
@@ -792,9 +766,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_tms_data_collection_data(data_conf_tree, subj_of_group, tms_set):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         doic = DirectionOfTheInducedCurrent.objects.create(
             name="Direction of Induced Current"
         )
@@ -841,9 +813,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_digital_game_phase_data(data_conf_tree, subj_of_group):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         file_format = ObjectsFactory.create_file_format()
         return DigitalGamePhaseData.objects.create(
@@ -868,9 +838,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_additional_data_data(data_conf_tree, subj_of_group):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         file_format = ObjectsFactory.create_file_format()
         return AdditionalData.objects.create(
@@ -894,9 +862,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_stimulus_type():
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
         return StimulusType.objects.create(name=fake.word())
 
     @staticmethod
@@ -979,9 +945,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_exam_file(patient, user):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         cid10 = ClassificationOfDiseases.objects.create(
             # Limit fake.word because len(fake.word) can be more than 10

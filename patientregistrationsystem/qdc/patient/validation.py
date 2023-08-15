@@ -3,35 +3,34 @@ import re
 
 
 # traduz 123.456.789-10 para 12345678910
-def _translate(cpf): return ''.join(re.findall("\d", cpf))
+def _translate(cpf):
+    return "".join(re.findall(r"\d", cpf))
 
 
 def _exceptions(cpf):
-    """Se o número de CPF estiver dentro das exceções é inválido
-
-    """
+    """Se o número de CPF estiver dentro das exceções é inválido"""
     if len(cpf) != 11:
         return True
     else:
-        s = ''.join(str(x) for x in cpf)
-        if s == '00000000000' or \
-                s == '11111111111' or \
-                s == '22222222222' or \
-                s == '33333333333' or \
-                s == '44444444444' or \
-                s == '55555555555' or \
-                s == '66666666666' or \
-                s == '77777777777' or \
-                s == '88888888888' or \
-                s == '99999999999':
+        s = "".join(str(x) for x in cpf)
+        if (
+            s == "00000000000"
+            or s == "11111111111"
+            or s == "22222222222"
+            or s == "33333333333"
+            or s == "44444444444"
+            or s == "55555555555"
+            or s == "66666666666"
+            or s == "77777777777"
+            or s == "88888888888"
+            or s == "99999999999"
+        ):
             return True
     return False
 
 
 def _gen(cpf):
-    """Gera o próximo dígito do número de CPF
-
-    """
+    """Gera o próximo dígito do número de CPF"""
     res = []
     for i, a in enumerate(cpf):
         b = len(cpf) + 1 - i
@@ -68,9 +67,7 @@ class CPF(object):
         self.cpf = [int(x) for x in cpf]
 
     def __getitem__(self, index):
-        """Retorna o dígito em index como string
-
-        """
+        """Retorna o dígito em index como string"""
 
         return self.cpf[index]
 
@@ -81,12 +78,10 @@ class CPF(object):
 
         """
 
-        return "CPF('%s')" % ''.join(str(x) for x in self.cpf)
+        return "CPF('%s')" % "".join(str(x) for x in self.cpf)
 
     def __eq__(self, other):
-        """Provê teste de igualdade para números de CPF
-
-        """
+        """Provê teste de igualdade para números de CPF"""
 
         return isinstance(other, CPF) and self.cpf == other.cpf
 
@@ -105,9 +100,7 @@ class CPF(object):
         # return r
 
     def isValid(self):
-        """Valida o número de cpf
-
-        """
+        """Valida o número de cpf"""
 
         if _exceptions(self.cpf):
             return False

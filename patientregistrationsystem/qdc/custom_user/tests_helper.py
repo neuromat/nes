@@ -1,5 +1,5 @@
-from django.contrib.auth.models import User, Group
-from faker.factory import Factory
+from django.contrib.auth.models import Group, User
+from faker import Factory
 
 
 def create_user(
@@ -12,9 +12,7 @@ def create_user(
     :param force_password_change: False avoids to enter in password change page
     :return:
     """
-    Faker = Factory.create()
-    fake = Faker
-    fake.seed(0)
+    fake = Factory.create()
 
     password = "passwd"
     if username is None:
@@ -22,7 +20,7 @@ def create_user(
             username = fake.profile()["username"]
             if not User.objects.filter(username=username):
                 break
-    user = User.objects.create_user(
+    user: User = User.objects.create_user(
         username=username,
         password=password,
         email=fake.profile()["mail"],

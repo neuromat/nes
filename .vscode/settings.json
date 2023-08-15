@@ -3,7 +3,21 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true
     },
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.languageServer": "Pylance",
     "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.fixAll": [
+        "source.convertImportFormat",
+        "source.unusedImports"
+    ],
+    "python.analysis.exclude": [
+        "**/docs/",
+        ".git"
+    ],
     "python.autoComplete.extraPaths": [
         "${localWorkspaceFolder}, /usr/local/bin"
     ],
@@ -35,5 +49,7 @@
     ],
     "[dockerfile]": {
         "editor.defaultFormatter": "ms-azuretools.vscode-docker"
-    }
+    },
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }

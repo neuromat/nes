@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # INITIALIZE DATA ####################################################
 
 ## PG DB
@@ -21,7 +23,7 @@
 # fi
 
 ## NES
-if [ -f "${NES_DIR}"/.nes_initialization.placeholder ]; then
+if [ -f "$NES_DIR"/.nes_initialization.placeholder ]; then
     echo "INFO: NES data has already been initialized"
 else
     echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
@@ -53,7 +55,7 @@ else
     chown -R nobody "${NES_DIR}"/.git || true
     chown -R nobody "${NES_DIR}"/patientregistrationsystem
     
-    touch "${NES_DIR}"/.nes_initialization.placeholder
+    touch "$NES_DIR"/.nes_initialization.placeholder
 fi
 
 echo "Done"

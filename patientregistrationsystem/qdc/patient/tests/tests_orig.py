@@ -21,54 +21,50 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.test import TestCase, Client
-from django.test import override_settings
+from django.test import Client, TestCase, override_settings
 from django.test.client import RequestFactory
 from django.utils.translation import gettext as _
-from faker.factory import Factory
-
 from experiment.models import (
+    Block,
+    ComponentConfiguration,
+    DataConfigurationTree,
     Experiment,
     Group,
-    Subject,
-    QuestionnaireResponse as ExperimentQuestionnaireResponse,
-    SubjectOfGroup,
-    ComponentConfiguration,
-    ResearchProject,
     Questionnaire,
-    Block,
-    DataConfigurationTree,
 )
+from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse
+from experiment.models import ResearchProject, Subject, SubjectOfGroup
+from faker import Factory
 from patient.management.commands.import_icd import import_classification_of_diseases
 from patient.models import (
-    ClassificationOfDiseases,
-    MedicalRecordData,
-    Diagnosis,
-    ComplementaryExam,
-    ExamFile,
-    Gender,
-    Schooling,
-    Patient,
     AlcoholFrequency,
     AlcoholPeriod,
     AmountCigarettes,
-    QuestionnaireResponse,
-    Telephone,
+    ClassificationOfDiseases,
+    ComplementaryExam,
+    Diagnosis,
+    ExamFile,
+    Gender,
     MaritalStatus,
+    MedicalRecordData,
+    Patient,
+    QuestionnaireResponse,
+    Schooling,
+    Telephone,
 )
 from patient.validation import CPF
 from patient.views import (
-    medical_record_view,
-    medical_record_update,
+    check_limesurvey_access,
     diagnosis_create,
-    medical_record_create_diagnosis_create,
     exam_create,
     exam_view,
+    medical_record_create_diagnosis_create,
+    medical_record_update,
+    medical_record_view,
     patient_update,
     patient_view,
     restore_patient,
     reverse,
-    check_limesurvey_access,
 )
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -112,9 +108,7 @@ class UtilTests:
     @staticmethod
     # TODO: changed_by can't be None, changed_by is required!
     def create_patient(changed_by):
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         # TODO: create gender before create patient in other helper method
         try:
@@ -163,9 +157,7 @@ class UtilTests:
     @staticmethod
     def create_cid10(code=None):
         """Create classification of desease"""
-        Faker = Factory.create()
-        fake = Faker
-        fake.seed(0)
+        fake = Factory.create()
 
         code = code if code is not None else "A01"
         return ClassificationOfDiseases.objects.create(
@@ -181,7 +173,7 @@ class UtilTests:
         )
 
     @staticmethod
-    def create_diagnosis(medical_record, cid10=None):
+    def create_diagnosis(medical_record, cid10=None) -> Diagnosis:
         if cid10 is None:
             cid10 = UtilTests.create_cid10()
         return Diagnosis.objects.create(
