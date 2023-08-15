@@ -1,6 +1,7 @@
 import json
-from django.conf import settings
+
 from django.apps import apps
+from django.conf import settings
 from django.core import management
 
 SUFFIX_EN = "_en"
@@ -16,41 +17,40 @@ def translate_fixtures_into_english(filename):
     name - model field name
     'Portugues': 'English' - word in Portuguese and its translation in English
     """
-    fixture_data = open(filename)
+    with open(filename, encoding="utf-8") as fixture_data:
+        data_transformed = json.load(fixture_data)
 
-    data_transformed = json.load(fixture_data)
+        result = {}
 
-    result = {}
+        for element in data_transformed:
+            if element["model"] not in result:
+                result[element["model"]] = {}
 
-    for element in data_transformed:
+            # field_name = ''
+            for field in element["fields"].keys():
+                if field in settings.MODELTRANSLATION_CUSTOM_FIELDS:
+                    # print(field)
+                    field_name = field
 
-        if element['model'] not in result:
-            result[element['model']] = {}
+                    if element["fields"][field_name]:
+                        field_data_portuguese = element["fields"][
+                            field_name + SUFFIX_PT_BR
+                        ]
+                        if field_name not in result[element["model"]]:
+                            result[element["model"]][field_name] = {}
 
-        # field_name = ''
-        for field in element['fields'].keys():
-
-            if field in settings.MODELTRANSLATION_CUSTOM_FIELDS:
-                # print(field)
-                field_name = field
-
-                if element['fields'][field_name]:
-                    field_data_portuguese = element['fields'][field_name + SUFFIX_PT_BR]
-                    if field_name not in result[element['model']]:
-                        result[element['model']][field_name] = {}
-
-                    result[element['model']][field_name][field_data_portuguese] = element['fields'][field_name + SUFFIX_EN]
+                        result[element["model"]][field_name][
+                            field_data_portuguese
+                        ] = element["fields"][field_name + SUFFIX_EN]
 
     return result
 
 
 def update_translated_data(data):
-
     # update data in _pt_br
     # management.call_command('update_translation_fields', verbosity=0, interactive=False)
 
     for data_model, data_values in data.items():
-
         model_db = apps.get_model(data_model)
         records_db = model_db.objects.all()
 
@@ -60,7 +60,6 @@ def update_translated_data(data):
                 attrib_value_record = getattr(record, attrib)
                 # print(attrib,attrib_value_record)
                 if attrib_value_record:
-
                     # update data in _en
                     attrib_english = attrib + SUFFIX_EN
                     if attrib_value_record in list(values.keys()):

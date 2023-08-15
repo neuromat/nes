@@ -4,24 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('survey', '0003_alter_survey_options_alter_survey_is_active'),
+        ("survey", "0003_alter_survey_options_alter_survey_is_active"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='survey',
-            options={'permissions': ()},
+            name="survey",
+            options={"permissions": ()},
         ),
         migrations.AlterField(
-            model_name='sensitivequestion',
-            name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="sensitivequestion",
+            name="id",
+            field=models.BigAutoField(
+                auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+            ),
         ),
         migrations.AlterField(
-            model_name='survey',
-            name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="survey",
+            name="id",
+            field=models.BigAutoField(
+                auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+            ),
         ),
     ]

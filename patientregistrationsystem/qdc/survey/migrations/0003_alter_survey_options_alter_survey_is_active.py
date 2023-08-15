@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('survey', '0002_auto_20190401_1335'),
+        ("survey", "0002_auto_20190401_1335"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='survey',
+            name="survey",
             options={},
         ),
         migrations.AlterField(
-            model_name='survey',
-            name='is_active',
+            model_name="survey",
+            name="is_active",
             field=models.BooleanField(null=True),
         ),
     ]
