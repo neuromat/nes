@@ -66,7 +66,7 @@ RUN mkdir -p "$LIMESURVEY_DIR" && \
     chmod -R 770 "${LIMESURVEY_DIR}"/tmp/ && \
     mkdir -p /run/apache2
 
-VOLUME $LIMESURVEY_DIR
+# VOLUME $LIMESURVEY_DIR
 
 # END
 ENV DEBIAN_FRONTEND=dialog
