@@ -27,7 +27,7 @@ if [ -f "$NES_DIR"/.nes_initialization.placeholder ]; then
     echo "INFO: NES data has already been initialized"
 else
     echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
-    cd ../patientregistrationsystem/qdc/
+    cd $NES_DIR/patientregistrationsystem/qdc/
     
 	cat <<-EOF >/tmp/create_superuser.py
 		from django.contrib.auth import get_user_model
@@ -42,6 +42,8 @@ else
     python3 -u manage.py shell < add_initial_data.py || true
     echo "	INFO: load_initial_data.py"
     python3 -u manage.py loaddata load_initial_data.json || true
+    echo "INFO create cachetable"
+    python3 -u manage.py createcachetable || true
     echo "	INFO: create_super_ser.py"
     python3 -u manage.py shell < /tmp/create_superuser.py || true
     echo "	INFO: import cid10"
@@ -52,8 +54,8 @@ else
     rm /tmp/create_superuser.py
     
     # If NES was installed from a release it won"t have a .git directory
-    chown -R nobody "${NES_DIR}"/.git || true
-    chown -R nobody "${NES_DIR}"/patientregistrationsystem
+    sudo chown -R nobody "${NES_DIR}"/.git || true
+    sudo chown -R nobody "${NES_DIR}"/patientregistrationsystem
     
     touch "$NES_DIR"/.nes_initialization.placeholder
 fi

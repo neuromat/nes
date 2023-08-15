@@ -11,10 +11,13 @@
             "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
             "args": [
                 "runserver",
-                "localhost:8000"
+                "localhost:80}"
             ],
             "django": true,
-            "justMyCode": true
+            "justMyCode": false,
+            "env": {
+                "DEBUG": "true"
+            }
         }
     ]
 }

@@ -7,20 +7,25 @@ services:
     volumes:
       - limesurvey_pgdata:/var/lib/postgresql/data:delegated
     restart: unless-stopped
-    #ports:
+    expose:
+      - 5433
+      #ports:
       #- 5433:5432
+      #command: -p 5433
     environment:
+      PGPORT: 5433
       POSTGRES_DB: limesurvey_db
       POSTGRES_USER: lime_db_user
       POSTGRES_PASSWORD: lime_db_password
 
-
   limesurvey:
     image: neuromat/nes-compose:limesurvey
     restart: unless-stopped
-    network_mode: service:limesurvey_db
-    #ports:
-      #- 8080:8080
+    #network_mode: service:limesurvey_db
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
     environment:
       LIMESURVEY_PORT: 8080
       LIMESURVEY_DB_TYPE: pgsql
@@ -52,7 +57,7 @@ services:
     tty: true
     stdin_open: true
     #ports:
-      #- 80:8000
+    # - 80:8000
     environment:
       NES_DB_TYPE: pgsql
       NES_DB_HOST: nes_db
@@ -62,7 +67,7 @@ services:
       NES_DB_PORT: 5432
       NES_SECRET_KEY: _my_very_secret_key_
       NES_IP: 0.0.0.0
-      NES_PORT: 8000
+      NES_PORT: 80
       NES_ADMIN_USER: nes_admin
       NES_ADMIN_EMAIL: nes_admin@nesmail.com
       NES_ADMIN_PASSWORD: nes_admin_password
@@ -71,7 +76,7 @@ services:
       - limesurvey
 
   nes_db:
-    image: postgres:15-bullseye
+    image: postgres:15-bookworm
     restart: unless-stopped
     volumes:
       - nes_pgdata:/var/lib/postgresql/data:delegated
@@ -84,7 +89,7 @@ services:
       POSTGRES_INITDB_ARGS: --auth-host=md5
       # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
       # (Adding the "ports" property to this file will not forward from a Codespace.)
-    #ports:
+      #ports:
       #- 5432:5432
 
 volumes:

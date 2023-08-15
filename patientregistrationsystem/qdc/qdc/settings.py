@@ -35,7 +35,7 @@ DEBUG404 = True
 # SECURITY WARNING: don't run with "is testing" in production
 IS_TESTING = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -173,8 +173,14 @@ USE_L10N = True
 USE_TZ = True
 
 # Database Translation
-MODELTRANSLATION_LANGUAGES = ("pt-br", "en")
-MODELTRANSLATION_FALLBACK_LANGUAGES = ("pt-br", "en")
+MODELTRANSLATION_LANGUAGES = (
+    "pt-br",
+    "en",
+)
+MODELTRANSLATION_FALLBACK_LANGUAGES = (
+    "pt-br",
+    "en",
+)
 
 MODELTRANSLATION_TRANSLATION_FILES = (
     "patient.translation",
@@ -203,12 +209,12 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_ROOT = ""
+STATIC_ROOT = " "
 STATIC_URL = "static/"
 
 ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT: str = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 try:
@@ -216,7 +222,7 @@ try:
 except ImportError:
     pass
 
-VERSION = "1.72.8"
+VERSION = "1.8"
 
 LOGGING = {
     "version": 1,

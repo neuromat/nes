@@ -35,7 +35,7 @@
         },
         {
             "previewLimit": 50,
-            "server": "172.18.0.3",
+            "server": "172.20.0.3",
             "port": 5432,
             "driver": "PostgreSQL",
             "database": "nes_db",

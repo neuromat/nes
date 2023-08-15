@@ -18,7 +18,6 @@ from django.db.models import (
     CharField,
     DateField,
     FloatField,
-    NullBooleanField,
     TextField,
 )
 from django.shortcuts import get_object_or_404
@@ -4133,9 +4132,7 @@ class ExportExecution:
         elif model_field is FloatField:
             # TODO (NES-987): change for 'number' cf. https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
             return "number"
-        elif (
-            model_field is BooleanField or model_field is NullBooleanField
-        ):  # FIXME: NullBooleanField deprecated
+        elif model_field is BooleanField:
             return "boolean"
 
     def _set_datapackage_table_schema(self, headers, model_fields):

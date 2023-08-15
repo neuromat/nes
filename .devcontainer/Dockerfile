@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:3.10-bullseye
+FROM mcr.microsoft.com/devcontainers/python:3.10-bookworm
 
 ENV PYTHONUNBUFFERED 1
 ENV DEBIAN_FRONTEND=dialog
@@ -40,3 +40,6 @@ COPY .devcontainer/entrypoint.sh /
 RUN sudo chmod 777 /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
+
+SHELL ["/bin/sh", "-c"]
+CMD [ "$NES_DIR/scripts/init_data.sh" ]

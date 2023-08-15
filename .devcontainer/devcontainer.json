@@ -37,7 +37,7 @@
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
 	//"postCreateCommand": "sudo /entrypoint.sh",
-	//"postStartCommand": "sudo /entrypoint.sh",
+	//"postStartCommand": "sudo ${localWorkspaceFolder}/scripts/init_data.sh",
 	"overrideCommand": false,
 	"mounts": [
 		//"source=${localWorkspaceFolder}/app-data,target=/data,type=bind,consistency=cached"

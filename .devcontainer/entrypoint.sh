@@ -3,28 +3,6 @@ set -e
 
 PGDATA=${PGDATA:-"/var/lib/postgresql/data"}
 
-# LIMESURVEY
-## SYSTEM OPTIONS
-LIMESURVEY_HOST=${LIMESURVEY_HOST:-"localhost"}
-LIMESURVEY_PORT=${LIMESURVEY_PORT:-"80"}
-LIMESURVEY_DIR=${LIMESURVEY_DIR:-"/var/www/limesurvey"}
-APACHE2_CONF_DIR="$LIMESURVEY_DIR/application/config"
-## CONFIG.PHP OPTIONS
-LIMESURVEY_DB_TYPE=${LIMESURVEY_DB_TYPE:-"pgsql"}
-LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-"db"}
-LIMESURVEY_DB_PORT=${LIMESURVEY_DB_PORT:-"5432"}
-LIMESURVEY_DB_NAME=${LIMESURVEY_DB_NAME:-"limesurvey_db"}
-LIMESURVEY_DB_TABLE_PREFIX=${LIMESURVEY_DB_TABLE_PREFIX:-"lime_"}
-LIMESURVEY_DB_USER=${LIMESURVEY_DB_USER:-"limesurvey_user"}
-LIMESURVEY_DB_PASSWORD=${LIMESURVEY_DB_PASSWORD:-"limesurvey_password"}
-LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-"utf8"}
-LIMESURVEY_URL_FORMAT=${LIMESURVEY_URL_FORMAT:-"path"}
-## SUPER USER CREATION OPTION
-LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-"limesurvey_admin"}
-LIMESURVEY_ADMIN_NAME=${LIMESURVEY_ADMIN_NAME:-"limesurvey_admin_name"}
-LIMESURVEY_ADMIN_EMAIL=${LIMESURVEY_ADMIN_EMAIL:-"admin@limesurvey.false"}
-LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-"limesurvey_admin_password"}
-
 # NES
 ## SYSTEM OPTIONS
 NES_DIR=${NES_DIR:-"/usr/local/nes"}
@@ -44,7 +22,7 @@ NES_DB_PORT=${NES_DB_PORT:-"5432"}
 NES_DB=${NES_DB:-"nes_db"}
 NES_DB_USER=${NES_DB_USER:-"nes_user"}
 NES_DB_PASSWORD=${NES_DB_PASSWORD:-"nes_password"}
-NES_SETUP_PATH=${NES_SETUP_PATH:="/usr/local/nes"}
+NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes"}
 
 # SUPERVISOR
 #SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
@@ -64,7 +42,7 @@ if [ -f "$NES_SETUP_PATH"/nes_wsgi.placeholder ]; then
     echo "INFO: NES wsgi.py file already provisioned"
 else
     echo "INFO: Creating NES wsgi.py file"
-	cat <<-EOF >"$NES_PROJECT_PATH"/qdc/wsgi.py
+	sudo cat <<-EOF >"$NES_PROJECT_PATH"/qdc/wsgi.py
 		import os
 		import sys
 		import site
@@ -76,7 +54,7 @@ else
 		from django.core.wsgi import get_wsgi_application
 		application = get_wsgi_application()
 	EOF
-    chown -R nobody "$NES_PROJECT_PATH"/qdc/wsgi.py
+    sudo chown -R nobody "$NES_PROJECT_PATH"/qdc/wsgi.py
 	touch "$NES_SETUP_PATH"/nes_wsgi.placeholder
 fi
 
@@ -84,7 +62,7 @@ if [ -f "$NES_SETUP_PATH"/nes_settings.placeholder ]; then
     echo "INFO: NES settings_local.py file already provisioned"
 else
     echo "INFO: Creating NES settings_local.py file"
-	cat <<-EOF >"$NES_PROJECT_PATH"/qdc/settings_local.py
+	sudo cat <<-EOF >"$NES_PROJECT_PATH"/qdc/settings_local.py
 		SECRET_KEY = "$NES_SECRET_KEY"
 		DEBUG = True
 		DEBUG404 = True
@@ -109,7 +87,7 @@ else
 		}
 		LOGO_INSTITUTION = "logo-institution.png"
 	EOF
-    chown -R nobody "$NES_PROJECT_PATH"/qdc/settings_local.py
+    sudo chown -R nobody "$NES_PROJECT_PATH"/qdc/settings_local.py
 	touch "$NES_SETUP_PATH"/nes_settings.placeholder
 fi
 
