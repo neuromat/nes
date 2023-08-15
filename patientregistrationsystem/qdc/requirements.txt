@@ -34,7 +34,7 @@ coreapi==2.3.3
 GitPython==3.1.32
 reportlab==3.6.13
 xhtml2pdf==0.2.11
-networkx==3.1
+networkx==2.2
 
 
 mne==1.3.1
@@ -44,6 +44,6 @@ pynwb
 
 # For testing
 goodtables==2.5.4
-Faker==19.3.0
+#Faker==19.3.0
 #goodtables==2.2.1
-#Faker==0.8.17
+Faker==0.8.18
