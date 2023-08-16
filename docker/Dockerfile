@@ -7,6 +7,9 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8  
 
+ARG NES_BRANCH="dev"
+ENV NES_BRANCH=NES_BRANCH
+
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
@@ -28,6 +31,10 @@ RUN apt-get -y update --no-install-recommends && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
+
+
+RUN mkdir -p "$NES_DIR"  && \
+    git clone -j $(nproc) -b "$NES_BRANCH"  https://github.com/mcostat/nes.git "$NES_DIR";
 
 # [Optional] If your requirements rarely change, uncomment this section to add them to the image.
 COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
