@@ -80,11 +80,11 @@ class Migration(migrations.Migration):
                 ),
                 ("code", models.CharField(max_length=10)),
                 ("description", models.CharField(max_length=300)),
-                ("description_pt_BR", models.CharField(null=True, max_length=300)),
+                ("description_pt_br", models.CharField(null=True, max_length=300)),
                 ("description_en", models.CharField(null=True, max_length=300)),
                 ("abbreviated_description", models.CharField(max_length=190)),
                 (
-                    "abbreviated_description_pt_BR",
+                    "abbreviated_description_pt_br",
                     models.CharField(null=True, max_length=190),
                 ),
                 (

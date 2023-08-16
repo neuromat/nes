@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name="fileformat",
-            old_name="description_pt_BR",
+            old_name="description_pt_br",
             new_name="description_pt_br",
         ),
         migrations.RenameField(
@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name="informationtype",
-            old_name="description_pt_BR",
+            old_name="description_pt_br",
             new_name="description_pt_br",
         ),
         migrations.RenameField(

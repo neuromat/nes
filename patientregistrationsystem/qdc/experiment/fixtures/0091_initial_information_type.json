@@ -4,7 +4,7 @@
     "fields": {
       "name": "Medidas cinem\u00e1ticas",
       "description_en": "Kinematic measures",
-      "description_pt_BR": "Medidas cinem\u00e1ticas",
+      "description_pt_br": "Medidas cinem\u00e1ticas",
       "description": "Medidas cinem\u00e1ticas",
       "name_pt_br": "Medidas cinem\u00e1ticas",
       "name_en": "Kinematic measures"
@@ -16,7 +16,7 @@
     "fields": {
       "name": "Estabilometria",
       "description_en": "Stabilometry",
-      "description_pt_BR": "Estabilometria",
+      "description_pt_br": "Estabilometria",
       "description": "Estabilometria",
       "name_pt_br": "Estabilometria",
       "name_en": "Stabilometry"
@@ -28,7 +28,7 @@
     "fields": {
       "name": "Tempo de resposta",
       "description_en": "Response time",
-      "description_pt_BR": "Tempo de resposta",
+      "description_pt_br": "Tempo de resposta",
       "description": "Tempo de resposta",
       "name_pt_br": "Tempo de resposta",
       "name_en": "Response time"
@@ -40,7 +40,7 @@
     "fields": {
       "name": "Medidas psicof\u00edsicas",
       "description_en": "Psychophysical measures",
-      "description_pt_BR": "Medidas psicof\u00edsicas",
+      "description_pt_br": "Medidas psicof\u00edsicas",
       "description": "Medidas psicof\u00edsicas",
       "name_pt_br": "Medidas psicof\u00edsicas",
       "name_en": "Psychophysical measures"
@@ -52,7 +52,7 @@
     "fields": {
       "name": "Resposta verbal",
       "description_en": "Verbal response",
-      "description_pt_BR": "Resposta verbal",
+      "description_pt_br": "Resposta verbal",
       "description": "Resposta verbal",
       "name_pt_br": "Resposta verbal",
       "name_en": "Verbal response"
@@ -64,7 +64,7 @@
     "fields": {
       "name": "Escalas psicom\u00e9tricas",
       "description_en": "Psychometric scales",
-      "description_pt_BR": "Escalas psicom\u00e9tricas",
+      "description_pt_br": "Escalas psicom\u00e9tricas",
       "description": "Escalas psicom\u00e9tricas",
       "name_pt_br": "Escalas psicom\u00e9tricas",
       "name_en": "Psychometric scales"
@@ -76,7 +76,7 @@
     "fields": {
       "name": "Registro unit\u00e1rio",
       "description_en": "Unit recording",
-      "description_pt_BR": "Registro unit\u00e1rio",
+      "description_pt_br": "Registro unit\u00e1rio",
       "description": "Registro unit\u00e1rio",
       "name_pt_br": "Registro unit\u00e1rio",
       "name_en": "Unit recording"
@@ -88,7 +88,7 @@
     "fields": {
       "name": "Registro multiunit\u00e1rio",
       "description_en": "Multiunit recording",
-      "description_pt_BR": "Registro multiunit\u00e1rio",
+      "description_pt_br": "Registro multiunit\u00e1rio",
       "description": "Registro multiunit\u00e1rio",
       "name_pt_br": "Registro multiunit\u00e1rio",
       "name_en": "Multiunit recording"

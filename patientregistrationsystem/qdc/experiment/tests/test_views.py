@@ -6904,7 +6904,7 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
     def test_create_questionnaire_response_build_limesurvey_url_with_correct_date_format(
         self, mockCheckRequiredFields, mockServer
     ):
-        for lang in ["en", "pt_BR"]:
+        for lang in ["en", "pt_br"]:
             mockServer.return_value.get_session_key.return_value = "abc"
             mockServer.return_value.get_summary.return_value = 1
             mockServer.return_value.add_participants.return_value = [

@@ -26,12 +26,12 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name="classificationofdiseases",
-            old_name="abbreviated_description_pt_BR",
+            old_name="abbreviated_description_pt_br",
             new_name="abbreviated_description_pt_br",
         ),
         migrations.RenameField(
             model_name="classificationofdiseases",
-            old_name="description_pt_BR",
+            old_name="description_pt_br",
             new_name="description_pt_br",
         ),
         migrations.RenameField(

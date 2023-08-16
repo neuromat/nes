@@ -1,5 +1,5 @@
 /* ==========================================================
- * bootstrap-formhelpers-countries.pt_BR.js
+ * bootstrap-formhelpers-countries.pt_br.js
  * https://github.com/vlamanna/BootstrapFormHelpers
  * ==========================================================
  * Copyright 2012 Vincent Lamanna

@@ -59,7 +59,7 @@ class QuestionnaireFillTest(TestCase):
         patient = UtilTests.create_patient(self.user)
         survey = UtilTests.create_survey(212121, True)
 
-        for lang in ["en", "pt_BR"]:
+        for lang in ["en", "pt_br"]:
             QuestionnaireFormValidation._set_mocks(mockServer)
 
             mockServer.return_value.get_summary.return_value = 1
