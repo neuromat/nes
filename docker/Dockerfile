@@ -12,7 +12,9 @@ ARG NES_BRANCH="dev"
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
+    python3-dev \
     python-is-python3 \
+    python3-pip \
     pip \
     libpng-dev \
     libpq-dev \
