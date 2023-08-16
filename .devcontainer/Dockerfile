@@ -3,6 +3,10 @@ FROM mcr.microsoft.com/devcontainers/python:3.11-bookworm
 ENV PYTHONUNBUFFERED 1
 ENV DEBIAN_FRONTEND=dialog
 
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8  
+
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
@@ -13,7 +17,6 @@ RUN apt-get -y update --no-install-recommends && \
     #freetype-dev \
     #build-base \
     git \
-    postgresql \
     #openblas-dev \
     libjpeg-dev \
     #hdf5-dev && \
@@ -33,7 +36,6 @@ RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
 
 # END
 ENV DEBIAN_FRONTEND=dialog
-
 
 COPY .devcontainer/entrypoint.sh /
 RUN sudo chmod 777 /entrypoint.sh

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-15 00:40-0300\n"
+"POT-Creation-Date: 2023-08-15 21:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,96 +17,97 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: patient/forms.py:23 patient/templates/patient/register_personal_data.html:44
+
+#: patient/forms.py:32 patient/templates/patient/register_personal_data.html:44
 msgid "Anonymous participant?"
 msgstr ""
 
-#: patient/forms.py:35 patient/forms.py:68 patient/tests/tests_orig.py:715
+#: patient/forms.py:65 patient/forms.py:118 patient/tests/tests_orig.py:707
 msgid "Name must be included"
 msgstr ""
 
-#: patient/forms.py:40 patient/forms.py:152 patient/forms.py:176
+#: patient/forms.py:74 patient/forms.py:270 patient/forms.py:312
 #: patient/views.py:837
 msgid "%m/%d/%Y"
 msgstr ""
 
-#: patient/forms.py:41 patient/forms.py:153 patient/forms.py:178
+#: patient/forms.py:78 patient/forms.py:273 patient/forms.py:315
 msgid "mm/dd/yyyy"
 msgstr ""
 
-#: patient/forms.py:42
+#: patient/forms.py:79
 msgid "Date of birth must be completed"
 msgstr ""
 
-#: patient/forms.py:44
+#: patient/forms.py:86
 msgid "Gender must be filled"
 msgstr ""
 
-#: patient/forms.py:57 patient/tests/tests_orig.py:700
+#: patient/forms.py:105 patient/tests/tests_orig.py:692
 msgid "Incorrect e-mail"
 msgstr ""
 
-#: patient/forms.py:88 patient/forms.py:123 patient/forms.py:127
-#: patient/forms.py:131
+#: patient/forms.py:144 patient/forms.py:221 patient/forms.py:227
+#: patient/forms.py:233
 msgid "Yes"
 msgstr ""
 
-#: patient/forms.py:88 patient/forms.py:123 patient/forms.py:127
-#: patient/forms.py:131
+#: patient/forms.py:144 patient/forms.py:221 patient/forms.py:227
+#: patient/forms.py:233
 msgid "No"
 msgstr ""
 
-#: patient/forms.py:104
+#: patient/forms.py:180
 msgid "Type in profession"
 msgstr ""
 
-#: patient/forms.py:105
+#: patient/forms.py:183
 msgid "Inform occupation"
 msgstr ""
 
-#: patient/forms.py:107 patient/forms.py:108 patient/forms.py:109
-#: patient/forms.py:110 patient/forms.py:111 patient/forms.py:112
-#: patient/forms.py:113 patient/forms.py:114 patient/forms.py:115
+#: patient/forms.py:187 patient/forms.py:190 patient/forms.py:193
+#: patient/forms.py:196 patient/forms.py:199 patient/forms.py:202
+#: patient/forms.py:205 patient/forms.py:208 patient/forms.py:211
 msgid "4 or +"
 msgstr ""
 
-#: patient/forms.py:142
+#: patient/forms.py:255
 msgid "Have already used"
 msgstr ""
 
-#: patient/forms.py:142
+#: patient/forms.py:256
 msgid "It is using"
 msgstr ""
 
-#: patient/forms.py:143
+#: patient/forms.py:257
 msgid "Have never used"
 msgstr ""
 
-#: patient/forms.py:154
+#: patient/forms.py:275
 msgid "Date must be completed"
 msgstr ""
 
-#: patient/forms.py:155
+#: patient/forms.py:281
 msgid "Description"
 msgstr ""
 
-#: patient/forms.py:156
+#: patient/forms.py:284
 msgid "Description must be filled in"
 msgstr ""
 
-#: patient/forms.py:157
+#: patient/forms.py:288
 msgid "Doctor"
 msgstr ""
 
-#: patient/forms.py:158 patient/templates/patient/exams.html:113
+#: patient/forms.py:291 patient/templates/patient/exams.html:113
 msgid "CRM"
 msgstr ""
 
-#: patient/forms.py:159
+#: patient/forms.py:294
 msgid "Place of execution"
 msgstr ""
 
-#: patient/forms.py:179
+#: patient/forms.py:317
 msgid "Fill date must be filled."
 msgstr ""
 
@@ -1715,34 +1716,34 @@ msgstr ""
 msgid "Calculated social class"
 msgstr ""
 
-#: patient/tests/tests_orig.py:373
+#: patient/tests/tests_orig.py:365
 msgid " is not valid"
 msgstr ""
 
-#: patient/tests/tests_orig.py:513 patient/tests/tests_orig.py:528
-#: patient/tests/tests_orig.py:535
+#: patient/tests/tests_orig.py:505 patient/tests/tests_orig.py:520
+#: patient/tests/tests_orig.py:527
 msgid "Social class was not calculated"
 msgstr ""
 
-#: patient/tests/tests_orig.py:526 patient/views.py:310
+#: patient/tests/tests_orig.py:518 patient/views.py:310
 msgid "Social demographic data successfully written."
 msgstr ""
 
-#: patient/tests/tests_orig.py:538 patient/tests/tests_orig.py:590
+#: patient/tests/tests_orig.py:530 patient/tests/tests_orig.py:582
 msgid "Less than 1 pack"
 msgstr ""
 
-#: patient/tests/tests_orig.py:541 patient/tests/tests_orig.py:617
+#: patient/tests/tests_orig.py:533 patient/tests/tests_orig.py:609
 msgid "Sporadically"
 msgstr ""
 
-#: patient/tests/tests_orig.py:544 patient/tests/tests_orig.py:644
+#: patient/tests/tests_orig.py:536 patient/tests/tests_orig.py:636
 msgid "Less than 1 year"
 msgstr ""
 
-#: patient/tests/tests_orig.py:576 patient/tests/tests_orig.py:603
-#: patient/tests/tests_orig.py:630 patient/tests/tests_orig.py:657
-#: patient/tests/tests_orig.py:685 patient/views.py:340
+#: patient/tests/tests_orig.py:568 patient/tests/tests_orig.py:595
+#: patient/tests/tests_orig.py:622 patient/tests/tests_orig.py:649
+#: patient/tests/tests_orig.py:677 patient/views.py:340
 msgid "Social history successfully recorded."
 msgstr ""
 

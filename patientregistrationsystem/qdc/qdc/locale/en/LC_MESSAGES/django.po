@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-15 00:40-0300\n"
+"POT-Creation-Date: 2023-08-15 21:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: qdc/forms.py:17
+
+#: qdc/forms.py:20
 msgid "Current password"
 msgstr ""
 
-#: qdc/forms.py:29
+#: qdc/forms.py:32
 msgid "New password"
 msgstr ""
 
-#: qdc/forms.py:38
+#: qdc/forms.py:41
 msgid "Confirm new password"
 msgstr ""
 
-#: qdc/settings.py:148
+#: qdc/settings.py:150
 msgid "Português"
 msgstr ""
 
-#: qdc/settings.py:152
+#: qdc/settings.py:154
 msgid "English"
 msgstr ""
 

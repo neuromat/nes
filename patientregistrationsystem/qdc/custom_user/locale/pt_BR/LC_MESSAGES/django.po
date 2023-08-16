@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-15 00:40-0300\n"
+"POT-Creation-Date: 2023-08-15 21:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,36 +16,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: custom_user/forms.py:27 custom_user/forms.py:164
+#: custom_user/forms.py:26 custom_user/forms.py:162
 msgid "Type first name"
 msgstr "Entrar primeiro nome"
 
-#: custom_user/forms.py:37 custom_user/forms.py:172
+#: custom_user/forms.py:36 custom_user/forms.py:170
 msgid "Type last name"
 msgstr "Entrar último nome"
 
-#: custom_user/forms.py:46 custom_user/forms.py:179
+#: custom_user/forms.py:45 custom_user/forms.py:177
 msgid "Type e-mail"
 msgstr "Entra e-mail"
 
-#: custom_user/forms.py:65
+#: custom_user/forms.py:63
 msgid "Type user name"
 msgstr "Entrar nome do usuário"
 
-#: custom_user/forms.py:73 custom_user/forms.py:102
+#: custom_user/forms.py:71 custom_user/forms.py:100
 #: custom_user/templates/custom_user/register_users.html:211
 msgid "Type password"
 msgstr "Entrar senha"
 
-#: custom_user/forms.py:91 custom_user/views.py:195
+#: custom_user/forms.py:89 custom_user/views.py:195
 msgid "E-mail already registered"
 msgstr "E-mail já cadastrado"
 
-#: custom_user/forms.py:129 custom_user/forms.py:130
+#: custom_user/forms.py:127 custom_user/forms.py:128
 msgid "E-mail is not registered"
 msgstr "E-mail não cadastrado"
 
-#: custom_user/forms.py:143 custom_user/forms.py:188
+#: custom_user/forms.py:141 custom_user/forms.py:185
 msgid "Type citation name"
 msgstr "Entrar nome para citação"
 
@@ -243,7 +243,7 @@ msgstr ""
 msgid "Deactivate"
 msgstr "Desativar"
 
-#: custom_user/tests.py:131 custom_user/views.py:70 custom_user/views.py:97
+#: custom_user/tests.py:154 custom_user/views.py:70 custom_user/views.py:97
 msgid ""
 "A researcher with this email address has already been registered before. "
 "Please contact your system administrator if you want to reactivate this "
