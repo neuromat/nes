@@ -120,4 +120,6 @@ sudo chmod a+w /dev/pts/0
 
 echo "entrypoint.sh finished"
 
+/bin/sh -exc $NES_DIR/scripts/init_data.sh
+
 exec "$@"
