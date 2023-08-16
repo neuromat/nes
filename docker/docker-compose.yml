@@ -58,6 +58,7 @@ services:
     #ports:
     # - 80:8000
     environment:
+      NES_DIR: "/nes"
       NES_DB_TYPE: pgsql
       NES_DB_HOST: nes_db
       NES_DB: nes_db
