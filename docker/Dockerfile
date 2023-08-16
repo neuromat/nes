@@ -38,7 +38,7 @@ RUN mkdir -p $NES_DIR  && \
     git clone -j $(nproc) -b $NES_BRANCH  https://github.com/mcostat/nes.git $NES_DIR;
 
 # [Optional] If your requirements rarely change, uncomment this section to add them to the image.
-COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
+COPY $NES_DIR/_patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
 RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
@@ -47,7 +47,7 @@ ENV DEBIAN_FRONTEND=dialog
 
 EXPOSE 80
 
-COPY .devcontainer/entrypoint.sh /
+COPY /entrypoint.sh /
 RUN sudo chmod 777 /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
