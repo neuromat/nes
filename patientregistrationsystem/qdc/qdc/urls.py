@@ -97,8 +97,9 @@ urlpatterns += (
         # Aqui pode dar erro javascriptcatalog
         re_path(
             r"^jsi18n/$",
-            JavaScriptCatalog.as_view(domain="djangojs"),
-            js_info_dict,
+            JavaScriptCatalog.as_view(
+                domain="djangojs",
+            ),
             name="javascript-catalog",
         ),
     ]

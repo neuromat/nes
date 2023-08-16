@@ -9,17 +9,16 @@ services:
     restart: unless-stopped
     expose:
       - 5433
-      #ports:
-      #- 5433:5432
-      #command: -p 5433
     environment:
       PGPORT: 5433
       POSTGRES_DB: limesurvey_db
-      POSTGRES_USER: lime_db_user
-      POSTGRES_PASSWORD: lime_db_password
+      POSTGRES_USER: limesurvey_user
+      POSTGRES_PASSWORD: lime_password
 
   limesurvey:
     image: neuromat/nes-compose:limesurvey
+    volumes:
+      - "limesurvey_data:/var/www/limesurvey"
     restart: unless-stopped
     #network_mode: service:limesurvey_db
     expose:
@@ -33,8 +32,8 @@ services:
       LIMESURVEY_DB_PORT: 5433
       LIMESURVEY_DB_NAME: limesurvey_db
       LIMESURVEY_DB_TABLE_PREFIX: lime_
-      LIMESURVEY_DB_USERNAME: lime_db_user
-      LIMESURVEY_DB_PASSWORD: lime_db_password
+      LIMESURVEY_DB_USERNAME: limesurvey_user
+      LIMESURVEY_DB_PASSWORD: lime_password
       LIMESURVEY_ADMIN_USER: lime_admin
       LIMESURVEY_ADMIN_PASSWORD: lime_admin_password
       LIMESURVEY_ADMIN_NAME: Lime Administrator
@@ -95,3 +94,4 @@ services:
 volumes:
   nes_pgdata:
   limesurvey_pgdata:
+  limesurvey_data:

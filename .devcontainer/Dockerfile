@@ -36,8 +36,7 @@ ENV DEBIAN_FRONTEND=dialog
 
 
 COPY .devcontainer/entrypoint.sh /
-
-#RUN sudo chmod 777 /entrypoint.sh
+RUN sudo chmod 777 /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
