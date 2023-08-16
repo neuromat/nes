@@ -23,7 +23,7 @@
 # fi
 
 ## NES
-if [ -f "$NES_DIR"/.nes_initialization.placeholder ]; then
+if [ -f $NES_DIR/.nes_initialization.placeholder ]; then
     echo "INFO: NES data has already been initialized"
 else
     echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
@@ -32,7 +32,7 @@ else
 	cat <<-EOF >/tmp/create_superuser.py
 		from django.contrib.auth import get_user_model
 		User = get_user_model()
-		User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
+		User.objects.create_superuser($NES_ADMIN_USER, $NES_ADMIN_EMAIL, $NES_ADMIN_PASSWORD)
 	EOF
     
     echo "	INFO: Migrate"
@@ -54,10 +54,10 @@ else
     rm /tmp/create_superuser.py
     
     # If NES was installed from a release it won"t have a .git directory
-    sudo chown -R nobody "${NES_DIR}"/.git || true
-    sudo chown -R nobody "${NES_DIR}"/patientregistrationsystem
+    sudo chown -R nobody $NES_DIR/.git || true
+    sudo chown -R nobody $NES_DIR/patientregistrationsystem
     
-    touch "$NES_DIR"/.nes_initialization.placeholder
+    touch $NES_DIR/.nes_initialization.placeholder
 fi
 
 echo "Done"

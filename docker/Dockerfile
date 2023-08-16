@@ -46,6 +46,8 @@ RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
 # END
 ENV DEBIAN_FRONTEND=dialog
 
+EXPOSE 80
+
 COPY .devcontainer/entrypoint.sh /
 RUN sudo chmod 777 /entrypoint.sh
 

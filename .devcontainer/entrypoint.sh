@@ -55,10 +55,10 @@ if [ "$NES_DB_TYPE" != "pgsql" ]; then
     exit 1
 fi
 
-mkdir -p "$NES_SETUP_PATH"
+mkdir -p $NES_SETUP_PATH
 
 # NES SETUP ####################################################
-if [ -f "$NES_SETUP_PATH"/nes_wsgi.placeholder ]; then
+if [ -f $NES_SETUP_PATH/nes_wsgi.placeholder ]; then
     echo "INFO: NES wsgi.py file already provisioned"
 else
     echo "INFO: Creating NES wsgi.py file"
