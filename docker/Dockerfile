@@ -7,7 +7,6 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8  
 
-ARG NES_DIR="/workspaces/nes"
 ARG NES_BRANCH="dev"
 
 # [Optional] Uncomment this section to install additional OS packages.
