@@ -8,7 +8,6 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8  
 
 ARG NES_BRANCH="dev"
-ENV NES_BRANCH=NES_BRANCH
 
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get -y update --no-install-recommends && \
