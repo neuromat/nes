@@ -14,6 +14,30 @@
         "source.convertImportFormat",
         "source.unusedImports"
     ],
+    "python.analysis.packageIndexDepths": [
+        {
+            "name": "django",
+            "depth": 5
+        }
+    ],
+    "pylint.args": [
+        "--disable=C0111",
+        "--disable=reportGeneralTypeIssues"
+    ],
+    "pylint.path": [
+        "/usr/local/bin"
+    ],
+    "python.linting.mypyEnabled": false,
+    "python.linting.mypyArgs": [
+        "--ignore-missing-imports",
+        "--follow-imports=silent",
+        "--show-column-numbers",
+        "--allow-untyped-defs",
+        "--allow-subclassing-any",
+        "--allow-untyped-calls",
+        "--strict"
+    ],
+    "python.analysis.include": [],
     "python.analysis.exclude": [
         "**/docs/",
         ".git"

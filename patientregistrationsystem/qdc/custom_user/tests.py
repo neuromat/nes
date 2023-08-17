@@ -1,5 +1,8 @@
 # -*- coding: UTF-8 -*-
+from importlib.util import resolve_name
 import re
+
+from django.http import HttpRequest
 
 from custom_user.models import Institution, User, UserProfile
 from custom_user.tests_helper import create_user
@@ -10,9 +13,13 @@ from custom_user.views import (
     user_update,
 )
 from django.contrib.auth.models import Group
-from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.tokens import (
+    PasswordResetTokenGenerator,
+    default_token_generator,
+)
 from django.contrib.messages import get_messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.sites.requests import RequestSite
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.test import TestCase
@@ -20,6 +27,8 @@ from django.test.client import RequestFactory
 from django.urls import resolve, reverse
 from django.utils.http import int_to_base36
 from django.utils.translation import gettext as _
+from qdc import settings
+from requests import Request
 
 USER_USERNAME = "myadmin"
 USER_PWD = "mypassword"
@@ -30,7 +39,8 @@ PATTERN = r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})"
 
 
 class FormUserValidation(TestCase):
-    user = ""
+    user: User
+    debug: bool
 
     def setUp(self):
         self.user = User.objects.create_superuser(
@@ -45,8 +55,11 @@ class FormUserValidation(TestCase):
         profile.force_password_change = False
         profile.save()
 
-        self.group = Group.objects.create(name="group")
+        self.group: Group = Group.objects.create(name="group")
         self.group.save()
+
+        self.debug = settings.DEBUG
+        settings.DEBUG = False
 
         self.factory = RequestFactory()
 
@@ -64,21 +77,24 @@ class FormUserValidation(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
+    def tearDown(self) -> None:
+        settings.DEBUG = self.debug
+
     @staticmethod
     def reset(
-        user_added=None,
-        request=None,
-        domain_override=None,
-        email_template_name="registration/password_reset_email.html",
-        use_https=False,
-        token_generator=default_token_generator,
-    ):
+        user_added: User | None = None,
+        request: HttpRequest | None = None,
+        domain_override: RequestSite | None = None,
+        email_template_name: str = "registration/password_reset_email.html",
+        use_https: bool = False,
+        token_generator: PasswordResetTokenGenerator = default_token_generator,
+    ) -> None:
         """Reset users password"""
         if not user_added.email:
             raise ValueError("Email address is required to send an email")
 
         if not domain_override:
-            current_site = get_current_site(request)
+            current_site: Site | RequestSite = get_current_site(request)
             site_name = current_site.name
             domain = current_site.domain
         else:
@@ -366,10 +382,15 @@ class FormUserValidation(TestCase):
         self.data["email"] = "fulano@detal.com"
         self.data["username"] = username
         self.data["login_enabled"] = False
+        self.data["password"] = ""
         self.client.post(reverse(USER_NEW), self.data)
 
-        fulano = User.objects.get(username=username)
+        fulano: User = User.objects.get(username=username)
+
         self.assertTrue(fulano.is_active)
+        # https://stackoverflow.com/questions/71049149/django-unset-a-users-password-but-still-allow-password-reset
+        self.assertTrue(fulano.has_usable_password())
+        fulano.set_unusable_password()
         self.assertFalse(fulano.has_usable_password())
 
     def test_remove_researcher_without_system_access(self):
@@ -446,6 +467,9 @@ class InstitutionTests(TestCase):
         profile.force_password_change = False
         profile.save()
 
+        self.debug = settings.DEBUG
+        settings.DEBUG = False
+
         self.factory = RequestFactory()
 
         self.data = {
@@ -462,7 +486,10 @@ class InstitutionTests(TestCase):
             name="CEPID NeuroMat", acronym="NeuroMat", country="BR"
         )
 
-    def test_institution_new_status_code(self):
+    def tearDown(self) -> None:
+        settings.DEBUG = self.debug
+
+    def test_institution_new_status_code(self) -> None:
         url = reverse("institution_new")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -485,7 +512,7 @@ class InstitutionTests(TestCase):
             Institution.objects.filter(name="Faculdade de Medicina").count(), 1
         )
 
-    def test_institution_create_wrong_action(self):
+    def test_institution_create_wrong_action(self) -> None:
         self.data = {
             "name": "Faculdade de Medicina",
             "acronym": "FM",
@@ -496,7 +523,7 @@ class InstitutionTests(TestCase):
         message = list(get_messages(response.wsgi_request))
         self.assertEqual(len(message), 1)
 
-    def test_institution_view_status_code(self):
+    def test_institution_view_status_code(self) -> None:
         institution = Institution.objects.first()
         url = reverse("institution_view", args=(institution.id,))
         response = self.client.get(url)
@@ -507,7 +534,7 @@ class InstitutionTests(TestCase):
         view = resolve("/user/institution/1/")
         self.assertEqual(view.func, institution_view)
 
-    def test_institution_view_and_action_remove(self):
+    def test_institution_view_and_action_remove(self) -> None:
         institution = Institution.objects.first()
         self.data["action"] = "remove"
         self.client.post(reverse("institution_view", args=(institution.pk,)), self.data)
@@ -556,7 +583,7 @@ class InstitutionTests(TestCase):
         view = resolve("/user/institution/edit/1/")
         self.assertEqual(view.func, institution_update)
 
-    def test_institution_update(self):
+    def test_institution_update(self) -> None:
         institution = Institution.objects.first()
         self.data = {
             "name": "RIDC NeuroMat",
@@ -572,17 +599,22 @@ class InstitutionTests(TestCase):
 
 
 class PasswordResetTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         url = reverse("password_reset")
         self.response = self.client.get(url)
+        self.debug: bool = settings.DEBUG
+        settings.DEBUG = False
 
-    def test_status_code(self):
+    def tearDown(self) -> None:
+        settings.DEBUG = self.debug
+
+    def test_status_code(self) -> None:
         self.assertEqual(self.response.status_code, 200)
 
-    def test_csrf(self):
+    def test_csrf(self) -> None:
         self.assertContains(self.response, "csrfmiddlewaretoken")
 
-    def test_first_time_user_login_redirects_to_change_password_page(self):
+    def test_first_time_user_login_redirects_to_change_password_page(self) -> None:
         user, passwd = create_user(force_password_change=True)
         response = self.client.post(
             reverse("login"),

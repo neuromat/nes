@@ -14,7 +14,22 @@
                 "localhost:80"
             ],
             "django": true,
-            "justMyCode": false,
+            "justMyCode": true,
+            "env": {
+                "DEBUG": "true"
+            }
+        },
+        {
+            "name": "Python: Django Test user",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
+            "args": [
+                "test",
+                "custom_user",
+            ],
+            "django": true,
+            "justMyCode": true,
             "env": {
                 "DEBUG": "true"
             }

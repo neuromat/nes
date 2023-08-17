@@ -64,7 +64,8 @@
 				"mrmlnc.vscode-apache",
 				"mtxr.sqltools",
 				"mtxr.sqltools-driver-pg",
-				"shakram02.bash-beautify"
+				"shakram02.bash-beautify",
+				"eamodio.gitlens"
 			]
 		}
 	},

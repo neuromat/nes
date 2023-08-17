@@ -15,8 +15,10 @@ types-python-dateutil
 python-dateutil==2.8.2
 psycopg2>=2.9.7, <3.0
 
-pyflakes>=3.1.0
-pylint>=2.17.5
+#pyflakes>=3.1.0
+#pylint>=2.17.5
+pylance
+#mypy
 
 
 # Obs.: error -> ERROR: botocore 1.14.7 has requirement docutils<0.16,>=0.10, but you'll have docutils 0.16 which is incompatible.
