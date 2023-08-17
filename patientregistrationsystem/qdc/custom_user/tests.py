@@ -463,13 +463,14 @@ class InstitutionTests(TestCase):
             email="jenkins.neuromat@gmail.com",
             password=USER_PWD,
         )
+        self.user.is_superuser = True
         self.user.is_staff = True
         self.user.save()
         profile, created = UserProfile.objects.get_or_create(user=self.user)
         profile.force_password_change = False
         profile.save()
 
-        self.debug = settings.DEBUG
+        self.debug: bool = settings.DEBUG
         settings.DEBUG = False
 
         self.factory = RequestFactory()
@@ -498,7 +499,7 @@ class InstitutionTests(TestCase):
         self.assertTemplateUsed(response, "custom_user/institution_register.html")
 
     def test_institution_new_url_resolves_institution_new_view(self):
-        view = resolve("/user/institution/new/")
+        view = resolve(r"/user/institution/new/")
         self.assertEqual(view.func, institution_create)
 
     def test_institution_create(self):

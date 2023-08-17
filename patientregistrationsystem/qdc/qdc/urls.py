@@ -16,7 +16,7 @@ from .forms import PasswordChangeFormCustomized
 
 admin.autodiscover()
 
-urlpatterns = i18n_patterns(
+urlpatterns = [
     re_path(r"^admin/", admin.site.urls),
     re_path(r"^patient/", include("patient.urls")),
     re_path(r"^user/", include("custom_user.urls")),
@@ -30,7 +30,7 @@ urlpatterns = i18n_patterns(
     re_path(
         r"^logout/$",
         authviews.logout_then_login,
-        {"login_url": "/home"},
+        {"login_re_path": "/home"},
         name="logout",
     ),
     re_path(
@@ -78,8 +78,7 @@ urlpatterns = i18n_patterns(
     re_path(r"^i18n/", include("django.conf.urls.i18n")),
     re_path(r"^home/check_upgrade/$", qdcviews.check_upgrade, name="check_upgrade"),
     re_path(r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"),
-    re_path(r"^upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"),
-)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # internationalization
 js_info_dict = {
@@ -92,21 +91,22 @@ js_info_dict = {
     ),
 }
 
-urlpatterns += (
-    [
-        # Aqui pode dar erro javascriptcatalog
-        re_path(
-            r"^jsi18n/$",
-            JavaScriptCatalog.as_view(
-                domain="djangojs",
-            ),
-            name="javascript-catalog",
+urlpatterns += [
+    # Aqui pode dar erro javascriptcatalog
+    re_path(
+        r"^jsi18n/$",
+        JavaScriptCatalog.as_view(
+            domain="djangojs",
         ),
-    ]
-    # FIXME arrumar os arquivos estaticos de DEBUG
-    # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
-    # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
-)
+        name="javascript-catalog",
+    ),
+]
+
+# FIXME arrumar os arquivos estaticos de DEBUG
+# static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+# static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
+# )
+
 
 if settings.DEBUG404:
     urlpatterns += [
