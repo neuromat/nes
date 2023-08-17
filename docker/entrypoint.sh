@@ -5,12 +5,12 @@ PGDATA=${PGDATA:-"/var/lib/postgresql/data"}
 
 # LIMESURVEY
 ## SYSTEM OPTIONS
-LIMESURVEY_HOST=${LIMESURVEY_HOST:-"localhost"}
+LIMESURVEY_HOST=${LIMESURVEY_HOST:-"127.0.0.1"}
 LIMESURVEY_PORT=${LIMESURVEY_PORT:-"8080"}
 LIMESURVEY_DIR="$LIMESURVEY_DIR"
 APACHE2_CONF_DIR="$LIMESURVEY_DIR/application/config"
 ## CONFIG.PHP OPTIONS
-LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-"localhost"}
+LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-"127.0.0.1"}
 LIMESURVEY_DB_PORT=${LIMESURVEY_DB_PORT:-"5433"}
 LIMESURVEY_DB_NAME=${LIMESURVEY_DB_NAME:-"limesurvey_db"}
 LIMESURVEY_DB_TABLE_PREFIX=${LIMESURVEY_DB_TABLE_PREFIX:-"lime_"}
@@ -29,8 +29,8 @@ NES_DIR=${NES_DIR:-"/usr/local/nes"}
 ## SETTINGS_LOCAL OPTIONS
 ### DJANGO
 NES_SECRET_KEY=${NES_SECRET_KEY:-"your_secret_key"}
-NES_IP=${NES_IP:-0.0.0.0}
-NES_PORT=${NES_PORT:-8000}
+NES_IP=${NES_IP:-"0.0.0.0"}
+NES_PORT=${NES_PORT:-"80"}
 NES_ADMIN_USER=${NES_ADMIN_USER:-"nes_admin"}
 NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-"nes_admin@nesmail.false"}
 NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-"nes_admin_password"}
@@ -42,7 +42,7 @@ NES_DB_PORT=${NES_DB_PORT:-"5432"}
 NES_DB=${NES_DB:-"nes_db"}
 NES_DB_USER=${NES_DB_USER:-"nes_user"}
 NES_DB_PASSWORD=${NES_DB_PASSWORD:-"nes_password"}
-NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes"}
+NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes/setup"}
 
 # SUPERVISOR
 #SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
@@ -50,19 +50,19 @@ NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes"}
 # Entrypoint only variable
 NES_PROJECT_PATH="$NES_DIR/patientregistrationsystem/qdc"
 
-if [ "$NES_DB_TYPE" != "pgsql" ]; then
+if [ $NES_DB_TYPE != "pgsql" ]; then
     echo "Unfortunately, for the time being, NES only works with PostgreSQL."
     exit 1
 fi
 
-mkdir -p "$NES_SETUP_PATH"
+mkdir -p $NES_PROJECT_PATH
 
 # NES SETUP ####################################################
-if [ -f "$NES_SETUP_PATH"/nes_wsgi.placeholder ]; then
+if [ -f $NES_PROJECT_PATH/nes_wsgi.placeholder ]; then
     echo "INFO: NES wsgi.py file already provisioned"
 else
     echo "INFO: Creating NES wsgi.py file"
-	sudo cat <<-EOF >"$NES_PROJECT_PATH"/qdc/wsgi.py
+	cat <<-EOF >$NES_PROJECT_PATH/qdc/wsgi.py
 		import os
 		import sys
 		import site
@@ -74,15 +74,15 @@ else
 		from django.core.wsgi import get_wsgi_application
 		application = get_wsgi_application()
 	EOF
-    sudo chown -R nobody "$NES_PROJECT_PATH"/qdc/wsgi.py
-    touch "$NES_SETUP_PATH"/nes_wsgi.placeholder
+    chown -R nobody $NES_PROJECT_PATH/qdc/wsgi.py
+    touch $NES_PROJECT_PATH/nes_wsgi.placeholder
 fi
 
-if [ -f "$NES_SETUP_PATH"/nes_settings.placeholder ]; then
+if [ -f $NES_PROJECT_PATH/nes_settings.placeholder ]; then
     echo "INFO: NES settings_local.py file already provisioned"
 else
     echo "INFO: Creating NES settings_local.py file"
-	sudo cat <<-EOF >"$NES_PROJECT_PATH"/qdc/settings_local.py
+	cat <<-EOF >$NES_PROJECT_PATH/qdc/settings_local.py
 		SECRET_KEY = "$NES_SECRET_KEY"
 		DEBUG = True
 		DEBUG404 = True
@@ -107,10 +107,10 @@ else
 		}
 		LOGO_INSTITUTION = "logo-institution.png"
 	EOF
-    sudo chown -R nobody "$NES_PROJECT_PATH"/qdc/settings_local.py
-    touch "$NES_SETUP_PATH"/nes_settings.placeholder
+    chown -R nobody $NES_PROJECT_PATH/qdc/settings_local.py
+    touch $NES_PROJECT_PATH/nes_settings.placeholder
 fi
-
+echo "criou arquivos de config"
 while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"; do
     sleep 0.2
 done
@@ -138,45 +138,49 @@ done
 # fi
 
 ## NES
-if [ -f $NES_DIR/.nes_initialization.placeholder ]; then
-    echo "INFO: NES data has already been initialized"
-else
+#if [ -f $NES_DIR/.nes_initialization.placeholder ]; then
+    #echo "INFO: NES data has already been initialized"
+#else
     echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
     cd $NES_DIR/patientregistrationsystem/qdc/
     
 	cat <<-EOF >/tmp/create_superuser.py
 		from django.contrib.auth import get_user_model
 		User = get_user_model()
-		User.objects.create_superuser($NES_ADMIN_USER, $NES_ADMIN_EMAIL, $NES_ADMIN_PASSWORD)
+		User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
+		User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
 	EOF
     
     echo "	INFO: Migrate"
-    python3 -u manage.py migrate
+    python -u manage.py migrate
     # Different versions may have different commands
     echo "	INFO: add_initial_data.py"
-    python3 -u manage.py shell < add_initial_data.py || true
+    python -u manage.py shell < add_initial_data.py || true
     echo "	INFO: load_initial_data.py"
-    python3 -u manage.py loaddata load_initial_data.json || true
+    python -u manage.py loaddata load_initial_data.json || true
     echo "INFO create cachetable"
-    python3 -u manage.py createcachetable || true
+    python -u manage.py createcachetable || true
     echo "	INFO: create_super_ser.py"
-    python3 -u manage.py shell < /tmp/create_superuser.py || true
+    python -u manage.py shell < /tmp/create_superuser.py || true
     echo "	INFO: import cid10"
-    python3 -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
+    #python -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
     echo "	INFO: createcachetable"
-    python3 -u manage.py createcachetable || true
+    python -u manage.py createcachetable || true
     
     rm /tmp/create_superuser.py
     
     # If NES was installed from a release it won"t have a .git directory
-    sudo chown -R nobody $NES_DIR/.git || true
-    sudo chown -R nobody $NES_DIR/patientregistrationsystem
+    chown -R nobody $NES_DIR/.git || true
+    chown -R nobody $NES_DIR/patientregistrationsystem
     
     touch $NES_DIR/.nes_initialization.placeholder
-fi
+#fi
 
 echo "Done"
 
 echo "entrypoint.sh finished"
+python -u $NES_DIR/patientregistrationsystem/qdc/manage.py migrate
+
+python -u $NES_DIR/patientregistrationsystem/qdc/manage.py runserver 0.0.0.0:80
 
 exec "$@"
