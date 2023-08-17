@@ -7,10 +7,11 @@ services:
     volumes:
       - limesurvey_pgdata:/var/lib/postgresql/data:delegated
     restart: unless-stopped
+    ports:
+      - "5433:5432"
     expose:
       - 5433
     environment:
-      PGPORT: 5433
       POSTGRES_DB: limesurvey_db
       POSTGRES_USER: limesurvey_user
       POSTGRES_PASSWORD: lime_password
@@ -18,13 +19,11 @@ services:
   limesurvey:
     image: neuromat/nes-compose:limesurvey
     volumes:
-      - "limesurvey_data:/var/www/limesurvey"
+      - limesurvey_data:/var/www/limesurvey
     restart: unless-stopped
     #network_mode: service:limesurvey_db
     expose:
       - 8080
-    ports:
-      - 8080:8080
     environment:
       LIMESURVEY_PORT: 8080
       LIMESURVEY_DB_TYPE: pgsql
@@ -45,16 +44,21 @@ services:
 
   nes:
     build:
-      context: ..
+      context: .
       dockerfile: Dockerfile
     volumes:
-      - ../..:/usr/local/nes:cached
+      - ../..:/var
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-    network_mode: service:nes_db
+    #network_mode: host #service:nes_db
+    #network_mode: service:nes_db
     tty: true
     stdin_open: true
+    ports:
+      - "80:80"
+    expose:
+      - 80
     environment:
       NES_DIR: "/usr/local/nes"
       NES_DB_TYPE: pgsql
@@ -87,8 +91,9 @@ services:
       POSTGRES_INITDB_ARGS: --auth-host=md5
       # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
       # (Adding the "ports" property to this file will not forward from a Codespace.)
-      #ports:
-      #- 5432:5432
+    expose:
+      - 5432
+
 
 volumes:
   nes_pgdata:
