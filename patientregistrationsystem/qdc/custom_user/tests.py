@@ -3,6 +3,7 @@ from importlib.util import resolve_name
 import re
 
 from django.http import HttpRequest
+from sqlalchemy import false
 
 from custom_user.models import Institution, User, UserProfile
 from custom_user.tests_helper import create_user
@@ -22,13 +23,14 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.sites.requests import RequestSite
 from django.shortcuts import get_object_or_404
 from django.template import loader
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.test.client import RequestFactory
 from django.urls import resolve, reverse
 from django.utils.http import int_to_base36
 from django.utils.translation import gettext as _
 from qdc import settings
 from requests import Request
+
 
 USER_USERNAME = "myadmin"
 USER_PWD = "mypassword"
@@ -621,4 +623,5 @@ class PasswordResetTests(TestCase):
             data={"username": user.username, "password": passwd},
             follow=True,
         )
+        # TODO: fetch_redirect_response=False check
         self.assertRedirects(response, reverse("password_change"))

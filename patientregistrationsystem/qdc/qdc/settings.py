@@ -82,9 +82,9 @@ MIDDLEWARE = [
     "django.middleware.locale.LocaleMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "qdc.middleware.PasswordChangeMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "maintenance_mode.middleware.MaintenanceModeMiddleware",
+    "qdc.middleware.PasswordChangeMiddleware",
 ]
 
 CONTEXT_PROCESSORS = {"maintenance_mode.context_processors.maintenance_mode"}

@@ -7,10 +7,9 @@ services:
     volumes:
       - limesurvey_pgdata:/var/lib/postgresql/data:delegated
     restart: unless-stopped
-    expose:
-      - 5433
+    ports:
+      - 5433:5432
     environment:
-      PGPORT: 5433
       POSTGRES_DB: limesurvey_db
       POSTGRES_USER: limesurvey_user
       POSTGRES_PASSWORD: lime_password
@@ -56,7 +55,7 @@ services:
     tty: true
     stdin_open: true
     #ports:
-    # - 80:8000
+    # - 80:80
     environment:
       NES_DB_TYPE: pgsql
       NES_DB_HOST: nes_db
