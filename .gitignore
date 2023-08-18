@@ -1,6 +1,3 @@
-patientregistrationsystem/qdc/ /
-
-
 *.pyc
 patientregistrationsystem/qdc/.idea
 patientregistrationsystem/qdc/qdc/settings.py
