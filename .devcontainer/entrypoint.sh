@@ -127,8 +127,11 @@ else
 	cat <<-EOF >/tmp/create_superuser.py
 		from django.contrib.auth import get_user_model
 		User = get_user_model()
-		User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
-		User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
+  		try:
+			User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
+			User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
+   		except e:
+     			print(e)
 	EOF
     
 	echo "	INFO: makemigrations"
