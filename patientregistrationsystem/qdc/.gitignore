@@ -16,5 +16,3 @@ qdc/wsgi.py
 
 # file created by django-maintenance-mode package
 qdc/maintenance_mode_state.txt
-
-*/admin/
