@@ -25,15 +25,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SECRET_KEY = ""
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-DEBUG404 = True
+DEBUG = False
+DEBUG404 = False
 
 # Put this line in local settings to put in maintenance mode, or uncomment, and
 # restart application server
 # MAINTENANCE_MODE = True
 
 # SECURITY WARNING: don't run with "is testing" in production
-IS_TESTING = True
+IS_TESTING = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 

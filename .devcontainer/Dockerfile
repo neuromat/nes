@@ -1,6 +1,11 @@
 FROM mcr.microsoft.com/devcontainers/python:3.11-bookworm
 
-ENV PYTHONUNBUFFERED 1
+# Keeps Python from generating .pyc files in the container
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Turns off buffering for easier container logging
+ENV PYTHONUNBUFFERED=1
+
 ENV DEBIAN_FRONTEND=dialog
 
 ENV LANG en_US.UTF-8  
@@ -34,13 +39,7 @@ COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
 RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
-# END
-ENV DEBIAN_FRONTEND=dialog
-
 COPY .devcontainer/entrypoint.sh /
 RUN sudo chmod 777 /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-SHELL ["/bin/sh", "-c"]
-CMD [ "/bin/sh", "-c", "$NES_DIR/scripts/init_data.sh" ]

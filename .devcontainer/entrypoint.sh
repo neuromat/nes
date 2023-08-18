@@ -148,9 +148,11 @@ else
     #python -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
     echo "	INFO: createcachetable"
     python3 -u manage.py createcachetable || true
+
+	mkdir static
 	echo "INFO: colectstatic"
 	python3 -u manage.py collectstatic || true
-	
+
     
     rm /tmp/create_superuser.py
     
