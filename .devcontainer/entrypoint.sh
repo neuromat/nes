@@ -131,21 +131,26 @@ else
 		User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
 	EOF
     
+	echo "	INFO: makemigrations"
+	python3 -u manage.py makemigrations || true
     echo "	INFO: Migrate"
-    python -u manage.py migrate
+    python3 -u manage.py migrate || true
     # Different versions may have different commands
     echo "	INFO: add_initial_data.py"
-    python -u manage.py shell < add_initial_data.py || true
+    python3 -u manage.py shell < add_initial_data.py || true
     echo "	INFO: load_initial_data.py"
-    python -u manage.py loaddata load_initial_data.json || true
+    python3 -u manage.py loaddata load_initial_data.json || true
     echo "INFO create cachetable"
-    python -u manage.py createcachetable || true
+    python3 -u manage.py createcachetable || true
     echo "	INFO: create_super_ser.py"
-    python -u manage.py shell < /tmp/create_superuser.py || true
+    python3 -u manage.py shell < /tmp/create_superuser.py || true
     echo "	INFO: import cid10"
     #python -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
     echo "	INFO: createcachetable"
-    python -u manage.py createcachetable || true
+    python3 -u manage.py createcachetable || true
+	echo "INFO: colectstatic"
+	python3 -u manage.py collectstatic || true
+	
     
     rm /tmp/create_superuser.py
     
@@ -160,6 +165,5 @@ fi
 echo "Done"
 
 echo "entrypoint.sh finished"
-python -u $NES_DIR/patientregistrationsystem/qdc/manage.py migrate
 
 exec "$@"
