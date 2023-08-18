@@ -152,7 +152,7 @@ else
     echo "	INFO: createcachetable"
     python3 -u manage.py createcachetable || true
 
-	mkdir static
+	#mkdir static
 	echo "INFO: colectstatic"
 	python3 -u manage.py collectstatic || true
 
