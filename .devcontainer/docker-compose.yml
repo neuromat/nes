@@ -7,8 +7,8 @@ services:
     volumes:
       - limesurvey_pgdata:/var/lib/postgresql/data:delegated
     restart: unless-stopped
-    ports:
-      - "5433:5432"
+    expose:
+      - 5432
     environment:
       POSTGRES_DB: limesurvey_db
       POSTGRES_USER: limesurvey_user
@@ -28,7 +28,7 @@ services:
       LIMESURVEY_PORT: 8080
       LIMESURVEY_DB_TYPE: pgsql
       LIMESURVEY_DB_HOST: limesurvey_db
-      LIMESURVEY_DB_PORT: 5433
+      LIMESURVEY_DB_PORT: 5432
       LIMESURVEY_DB_NAME: limesurvey_db
       LIMESURVEY_DB_TABLE_PREFIX: lime_
       LIMESURVEY_DB_USERNAME: limesurvey_user

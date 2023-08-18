@@ -40,6 +40,6 @@ RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
 COPY .devcontainer/entrypoint.sh /
-RUN sudo chmod 777 /entrypoint.sh
+RUN chmod 777 /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
