@@ -211,7 +211,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_ROOT = " "
+STATIC_ROOT: str = os.path.join(BASE_DIR, "static")
 STATIC_URL = "static/"
 
 ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"

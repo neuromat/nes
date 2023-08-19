@@ -130,8 +130,8 @@ else
   		try:
 			User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
 			User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
-   		except e:
-     			print(e)
+   		except:
+     			print("erro criando super usuario.")
 	EOF
     
 	echo "	INFO: makemigrations"
@@ -149,19 +149,17 @@ else
     python3 -u manage.py shell < /tmp/create_superuser.py || true
     echo "	INFO: import cid10"
     #python -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
-    echo "	INFO: createcachetable"
-    python3 -u manage.py createcachetable || true
 
-	#mkdir static
+	mkdir static || true
 	echo "INFO: colectstatic"
-	python3 -u manage.py collectstatic || true
+	python3 -u manage.py collectstatic --no-input || true
 
     
     rm /tmp/create_superuser.py
     
     # If NES was installed from a release it won"t have a .git directory
     chown -R nobody $NES_DIR/.git || true
-    chown -R nobody $NES_DIR/patientregistrationsystem
+    chown -R vscode $NES_DIR/patientregistrationsystem
     
     touch $NES_DIR/.nes_initialization.placeholder
 	chown -R nobody $NES_DIR/.nes_initialization.placeholder
