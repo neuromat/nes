@@ -69,6 +69,8 @@ services:
       NES_ADMIN_USER: nes_admin
       NES_ADMIN_EMAIL: nes_admin@nesmail.com
       NES_ADMIN_PASSWORD: nes_admin_password
+      LIMESURVEY_HOST: limesurvey
+      LIMESURVEY_PORT: 8080
     depends_on:
       - nes_db
       - limesurvey
@@ -87,8 +89,8 @@ services:
       POSTGRES_INITDB_ARGS: --auth-host=md5
       # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
       # (Adding the "ports" property to this file will not forward from a Codespace.)
-      #ports:
-      #- 5432:5432
+      ports:
+        - "5432:5432"
 
 volumes:
   nes_pgdata:
