@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from base64 import b64decode, b64encode
 
 from django.conf import settings
-from jsonrpc_requests import Server, TransportError
+from jsonrpclib import Server
 
 
 class ABCSearchEngine(ABC):
@@ -22,7 +22,7 @@ class ABCSearchEngine(ABC):
     ]
 
     session_key = None
-    server = None
+    server: Server = None
 
     def __init__(self, limesurvey_rpc=None):
         self.limesurvey_rpc = (
@@ -40,7 +40,7 @@ class ABCSearchEngine(ABC):
             self.session_key = (
                 None if isinstance(self.session_key, dict) else self.session_key
             )
-        except TransportError:
+        except:
             self.session_key = None
         # TODO: catch user/password exception
 

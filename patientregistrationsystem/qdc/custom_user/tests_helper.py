@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group, User
-from faker import Factory
+from faker import Factory, Generator
 
 
 def create_user(
@@ -12,7 +12,7 @@ def create_user(
     :param force_password_change: False avoids to enter in password change page
     :return:
     """
-    fake = Factory.create()
+    fake: Generator = Factory.create()
 
     password = "passwd"
     if username is None:

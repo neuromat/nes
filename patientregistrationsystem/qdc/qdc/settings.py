@@ -25,15 +25,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SECRET_KEY = ""
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-DEBUG404 = False
+DEBUG = True
+DEBUG404 = True
 
 # Put this line in local settings to put in maintenance mode, or uncomment, and
 # restart application server
 # MAINTENANCE_MODE = True
 
 # SECURITY WARNING: don't run with "is testing" in production
-IS_TESTING = False
+IS_TESTING = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_jenkins",
     "simple_history",
-    "jsonrpc_requests",
+    "jsonrpclib",
     "solo",
     "fixture_magic",
     "maintenance_mode",
@@ -171,6 +171,7 @@ TIME_ZONE = "America/Sao_Paulo"
 USE_I18N = True
 
 USE_L10N = True
+# DATE_FORMAT = "Y-m-d"
 
 USE_TZ = True
 
@@ -212,7 +213,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_ROOT: str = os.path.join(BASE_DIR, "static")
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
 ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"
 

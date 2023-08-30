@@ -5,7 +5,7 @@ PGDATA=${PGDATA:-"/var/lib/postgresql/data"}
 
 # LIMESURVEY
 ## SYSTEM OPTIONS
-LIMESURVEY_HOST=${LIMESURVEY_HOST:-"limesurvey_db"}
+LIMESURVEY_HOST=${LIMESURVEY_HOST:-"limesurvey"}
 LIMESURVEY_PORT=${LIMESURVEY_PORT:-"8080"}
 LIMESURVEY_DIR="$LIMESURVEY_DIR"
 APACHE2_CONF_DIR="$LIMESURVEY_DIR/application/config"
@@ -19,10 +19,10 @@ LIMESURVEY_DB_PASSWORD=${LIMESURVEY_DB_PASSWORD:-"limesurvey_password"}
 LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-"utf8"}
 LIMESURVEY_URL_FORMAT=${LIMESURVEY_URL_FORMAT:-"path"}
 ## SUPER USER CREATION OPTION
-LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-"limesurvey_admin"}
-LIMESURVEY_ADMIN_NAME=${LIMESURVEY_ADMIN_NAME:-"limesurvey_admin_name"}
+LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-"lime_admin"}
+LIMESURVEY_ADMIN_NAME=${LIMESURVEY_ADMIN_NAME:-"lime_admin_name"}
 LIMESURVEY_ADMIN_EMAIL=${LIMESURVEY_ADMIN_EMAIL:-"limesurvey@limemail.false"}
-LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-"limesurvey_admin_password"}
+LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-"lime_admin_password"}
 # NES
 ## SYSTEM OPTIONS
 #NES_DIR=${NES_DIR:-"/usr/local/nes"}
@@ -125,13 +125,13 @@ else
     cd $NES_DIR/patientregistrationsystem/qdc/
     
 	cat <<-EOF >/tmp/create_superuser.py
-		from django.contrib.auth import get_user_model
-		User = get_user_model()
-  		try:
-			User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
-			User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
-   		except:
-     			print("erro criando super usuario.")
+from django.contrib.auth import get_user_model
+User = get_user_model()
+try:
+    User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
+    User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
+except:
+    print("erro criando super usuario.")
 	EOF
     
 	echo "	INFO: makemigrations"

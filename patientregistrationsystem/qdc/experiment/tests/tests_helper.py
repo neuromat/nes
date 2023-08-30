@@ -95,14 +95,18 @@ from patient.models import (
 )
 from patient.tests.tests_orig import UtilTests
 from survey.tests.tests_helper import create_survey
+import os
 
 
 class ExperimentTestCase(TestCase):
     def setUp(self):
         super(ExperimentTestCase, self).setUp()
-
         # create the groups of users and their permissions
-        exec(open("add_initial_data.py").read())
+        exec(
+            open(
+                os.getcwd() + "/patientregistrationsystem/qdc/add_initial_data.py"
+            ).read()
+        )
 
         self.user, self.user_passwd = create_user(UserGroup.objects.all())
 

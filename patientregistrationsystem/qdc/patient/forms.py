@@ -10,7 +10,7 @@ from django.forms import (
     TypedChoiceField,
 )
 from django.forms.widgets import Textarea
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from patient.models import (
     ComplementaryExam,
     ExamFile,
@@ -72,6 +72,7 @@ class PatientForm(ModelForm):
             "medical_record": TextInput(attrs={"class": "form-control"}),
             "date_birth": DateInput(
                 format=_("%m/%d/%Y"),
+                # format="%Y-%m-%d",
                 attrs={
                     "class": "form-control datepicker",
                     "required": "",

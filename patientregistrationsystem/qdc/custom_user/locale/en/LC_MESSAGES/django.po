@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-15 21:16-0300\n"
+"POT-Creation-Date: 2023-08-29 19:13-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -244,7 +244,7 @@ msgstr ""
 msgid "Deactivate"
 msgstr ""
 
-#: custom_user/tests.py:154 custom_user/views.py:70 custom_user/views.py:97
+#: custom_user/tests.py:172 custom_user/views.py:70 custom_user/views.py:97
 msgid ""
 "A researcher with this email address has already been registered before. "
 "Please contact your system administrator if you want to reactivate this "

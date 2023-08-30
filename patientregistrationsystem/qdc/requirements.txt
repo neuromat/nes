@@ -9,7 +9,7 @@ django-simple-history==3.1.1
 django-maintenance-mode>=0.16.3
 django-fixture-magic>=0.1.5
 django-solo==2.1.0
-jsonrpc-requests==0.4.0
+jsonrpclib==0.2.1 #FIXME: nao compativel com python 3.11
 
 types-python-dateutil
 python-dateutil==2.8.2
@@ -18,7 +18,7 @@ psycopg2>=2.9.7, <3.0
 #pyflakes>=3.1.0
 #pylint>=2.17.5
 pylance
-#mypy
+
 
 
 # Obs.: error -> ERROR: botocore 1.14.7 has requirement docutils<0.16,>=0.10, but you'll have docutils 0.16 which is incompatible.
