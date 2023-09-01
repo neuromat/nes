@@ -149,6 +149,7 @@ class GroupForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled."),
@@ -294,6 +295,7 @@ class InstructionForm(ModelForm):
             "text": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "required": "",
                     "rows": "6",
                     "data-error": _("Instruction must be filled."),
@@ -501,6 +503,7 @@ class ResearchProjectForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "id": "id_description",
+                    "style": "resize: vertical;",
                     "class": "form-control",
                     "rows": "4",
                     "required": "",
@@ -556,6 +559,7 @@ class PublicationForm(ModelForm):
             "title": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "required": "",
                     "rows": "2",
                     "data-error": _("Title must be filled."),
@@ -565,6 +569,7 @@ class PublicationForm(ModelForm):
             "citation": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "required": "",
                     "rows": "6",
                     "data-error": _("Citation must be filled."),
@@ -645,6 +650,7 @@ class EEGDataForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled."),
@@ -653,6 +659,7 @@ class EEGDataForm(ModelForm):
             "file_format_description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("File format description must be filled."),
@@ -661,6 +668,7 @@ class EEGDataForm(ModelForm):
             "eeg_setting_reason_for_change": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Reason for change must be filled."),
@@ -714,6 +722,7 @@ class EEGSettingForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled."),
@@ -779,6 +788,7 @@ class EEGSolutionForm(ModelForm):
             "components": Textarea(
                 attrs={
                     "id": "id_description",
+                    "style": "resize: vertical;",
                     "class": "form-control",
                     "rows": "4",
                     "disabled": "",
@@ -2007,6 +2017,7 @@ class TMSDataForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled."),
@@ -2073,6 +2084,7 @@ class TMSSettingForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled."),
@@ -2116,6 +2128,7 @@ class CoilModelForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "disabled": "",
                     "id": "id_coil_description",
@@ -2142,6 +2155,8 @@ class ContextTreeForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled."),
@@ -2191,6 +2206,7 @@ class DigitalGamePhaseDataForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled."),
@@ -2199,6 +2215,7 @@ class DigitalGamePhaseDataForm(ModelForm):
             "file_format_description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("File format description must be filled."),
@@ -2262,6 +2279,7 @@ class GenericDataCollectionDataForm(ModelForm):
             "file_format_description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("File format description must be filled."),
@@ -2285,6 +2303,7 @@ class ResendExperimentForm(ModelForm):
             "reason_for_resending": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Reason must be filled."),

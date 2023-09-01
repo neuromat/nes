@@ -27,10 +27,10 @@
             "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
             "args": [
                 "test",
-                "experiment",
+                "patient",
             ],
             "django": true,
-            "justMyCode": true,
+            "justMyCode": false,
             "env": {
                 "DEBUG": "true"
             }

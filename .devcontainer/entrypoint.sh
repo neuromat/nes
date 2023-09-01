@@ -160,7 +160,7 @@ except:
     rm /tmp/create_superuser.py
     
     # If NES was installed from a release it won"t have a .git directory
-    chown -R nobody $NES_DIR/.git || true
+    #chown -R nobody $NES_DIR/.git || true
     chown -R vscode $NES_DIR/patientregistrationsystem
     
     touch $NES_DIR/.nes_initialization.placeholder
