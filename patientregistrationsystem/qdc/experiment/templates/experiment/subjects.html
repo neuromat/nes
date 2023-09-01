@@ -34,7 +34,6 @@
 {% endblock %}
 
 {% block content %}
-
     <div class="tab-pane fade in active" id="subjectBreadCrumb">
         <div class="col-md-10">
             <ol class="breadcrumb">
@@ -99,10 +98,11 @@
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"> <i class="glyphicon
                                             glyphicon-search"></i></span>
-                                            <input id="search_key" class="form-control" {% if perms.patient.sensitive_data_patient %}
-                                            placeholder="{% trans "Type participant name, CPF or code" %}"
+                                            <input id="search_key" class="form-control" 
+                                            {% if perms.patient.sensitive_data_patient %} placeholder="{% trans "Type participant name, CPF or code" %}"
                                             {% else %} placeholder="{% trans "Type participant code" %}"
-                                        {% endif %} type="text" autofocus="true">
+                                        {% endif %} 
+                                        type="text" autofocus="true">
                                         </div>
                                         {% csrf_token %}
                                         <ul id="list_results" class="participant-list"
@@ -179,7 +179,7 @@
                                                 <td>
                                                     <div class="col-xs-2 col-sm-2" >
                                                         {% if can_change and perms.patient.sensitive_data_patient %}
-                                                            <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file'
+                                                            <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file"
                                                                data-toggle="tooltip" data-placement="top" title="{% trans "Upload consent form" %}">
                                                                 <span class="glyphicon glyphicon-paperclip"></span>
                                                             </a>
@@ -200,7 +200,7 @@
                                                     <div class="row">
                                                         {% if limesurvey_available %}
                                                             <div class="col-xs-2 col-sm-2">
-                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/'
+                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/"
                                                                    data-toggle="tooltip" data-placement="top" title="{% trans "Fill questionnaires" %}">
                                                                     <span class="glyphicon glyphicon-list-alt"></span>
                                                                 </a>
@@ -222,7 +222,7 @@
                                                     {% if experimental_protocol_info.number_of_eeg_data %}
                                                         <div class="row">
                                                             <div class="col-xs-4 col-sm-4">
-                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg'
+                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded EEG data files" %}">
                                                                     <span class="glyphicon glyphicon-flash"></span> {% trans "EEG" %}
                                                                 </a>
@@ -240,7 +240,7 @@
                                                     {% if experimental_protocol_info.number_of_emg_data %}
                                                         <div class="row">
                                                             <div class="col-xs-4 col-sm-4">
-                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg'
+                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded EMG data files" %}">
                                                                     <span class="glyphicon glyphicon-stats"></span> {% trans "EMG" %}
                                                                 </a>
@@ -258,7 +258,7 @@
                                                     {% if experimental_protocol_info.number_of_tms_data %}
                                                         <div class="row">
                                                             <div class="col-xs-4 col-sm-4">
-                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/tms'
+                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/tms"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded TMS data files" %}">
                                                                     <span class="glyphicon glyphicon-magnet"></span> {% trans "TMS" %}
                                                                 </a>
@@ -276,7 +276,7 @@
                                                     {% if experimental_protocol_info.number_of_digital_game_phase_data %}
                                                         <div class="row">
                                                             <div class="col-xs-4 col-sm-4">
-                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/digital_game_phase'
+                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/digital_game_phase"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded goalkeeper game phase data files" %}">
                                                                     <span class="glyphicon glyphicon-play-circle"></span> {% trans "Game" %}
                                                                 </a>
@@ -294,7 +294,7 @@
                                                     {% if experimental_protocol_info.number_of_generic_data_collection_data %}
                                                         <div class="row">
                                                             <div class="col-xs-4 col-sm-4">
-                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/generic_data_collection'
+                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/generic_data_collection"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded generic collection data files" %}">
                                                                     <span class="glyphicon glyphicon-file"></span> {% trans "Data collection" %}
                                                                 </a>
@@ -312,7 +312,7 @@
                                                     <div class="row">
                                                         <div class="col-xs-12 col-sm-12">
                                                             <span style="background-color: steelblue" class="badge">{{ item.number_of_additional_data_uploaded }}</span>
-                                                            <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data' data-toggle="tooltip" title="{% trans "Uploaded additional data files" %}">
+                                                            <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data" data-toggle="tooltip" title="{% trans "Uploaded additional data files" %}">
                                                                 {% trans "Additional" %}
                                                             </a>
                                                         </div>

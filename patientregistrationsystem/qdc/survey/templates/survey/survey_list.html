@@ -9,7 +9,7 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li class="active" ><ahref="/survey/list">{% trans "Questionnaires" %}</a></li>
+                <li class="active" >{% trans "Questionnaires" %}</li>
             </ol>
         </div>
     </div>
@@ -30,7 +30,7 @@
                         <tbody>
                         {% for questionnaire in questionnaires_list %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "View" %}" href="/survey/{{ questionnaire.id }}">{{ questionnaire.lime_survey_id }} - {{ questionnaire.title }}</a></td>
+                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "View" %}" href="/survey/{{ questionnaire.id }}"> {{ questionnaire.lime_survey_id }} - {{ questionnaire.title }} </a></td>
                                 <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
                                 <td style="text-align: center">{% if questionnaire.is_active == True %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% else %}<span class="glyphicon glyphicon-remove" style="color: red"></span> {% endif %}</td>
                             </tr>

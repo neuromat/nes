@@ -32,7 +32,7 @@ urlpatterns = (
         re_path(
             r"^logout/$",
             authviews.logout_then_login,
-            {"login_re_path": "/home"},
+            {"login_url": "/home"},
             name="logout",
         ),
         re_path(
@@ -81,13 +81,14 @@ urlpatterns = (
             qdcviews.language_change,
             name="language_change",
         ),
-        re_path(r"i18n/", include("django.conf.urls.i18n")),
-        re_path(r"^home/check_upgrade/$", qdcviews.check_upgrade, name="check_upgrade"),
+        re_path(r"^i18n/", include("django.conf.urls.i18n")),
+        re_path(r"^home/check_upgrade/$", qdcviews.contact, name="check_upgrade"),
         re_path(r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 )
+
 
 # internationalization
 js_info_dict = {
@@ -101,8 +102,8 @@ js_info_dict = {
 }
 
 urlpatterns += [
-    path(
-        "jsi18n/",
+    re_path(
+        r"^jsi18n/$",
         cache_page(86400, key_prefix="jsi18n-%s" % settings.VERSION)(
             JavaScriptCatalog.as_view(domain="djangojs")
         ),

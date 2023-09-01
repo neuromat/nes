@@ -41,7 +41,8 @@
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Questionnaire" %}</label>
-                                <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error={% trans "Please, select a questionnaire from the list." %} {% if not creating %}disabled{% endif %}>
+                                <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" {% if not creating %} disabled {% endif %} 
+                                data-error={% trans "Please, select a questionnaire from the list." %} >
                                     {% if creating %}
                                         <option selected="selected" value="">---------</option>
                                         {% for survey in questionnaires_list %}
