@@ -418,6 +418,7 @@ input, textarea, select, .form-row p {
     font-family: "Lucida Grande", Verdana, Arial, sans-serif;
     font-weight: normal;
     font-size: 11px;
+    resize: vertical;
 }
 
 textarea {

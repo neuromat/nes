@@ -7,10 +7,11 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as authviews
-from django.urls import re_path
+from django.urls import re_path, path
 from django.views.i18n import JavaScriptCatalog
 from django.views.static import serve as staticserve
 from qdc import views as qdcviews
+from django.views.decorators.cache import cache_page
 
 from .forms import PasswordChangeFormCustomized
 
@@ -80,7 +81,7 @@ urlpatterns = (
             qdcviews.language_change,
             name="language_change",
         ),
-        re_path(r"^i18n/", include("django.conf.urls.i18n")),
+        re_path(r"i18n/", include("django.conf.urls.i18n")),
         re_path(r"^home/check_upgrade/$", qdcviews.check_upgrade, name="check_upgrade"),
         re_path(r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"),
     ]
@@ -100,11 +101,10 @@ js_info_dict = {
 }
 
 urlpatterns += [
-    # Aqui pode dar erro javascriptcatalog
-    re_path(
-        r"^jsi18n/$",
-        JavaScriptCatalog.as_view(
-            domain="djangojs",
+    path(
+        "jsi18n/",
+        cache_page(86400, key_prefix="jsi18n-%s" % settings.VERSION)(
+            JavaScriptCatalog.as_view(domain="djangojs")
         ),
         name="javascript-catalog",
     ),

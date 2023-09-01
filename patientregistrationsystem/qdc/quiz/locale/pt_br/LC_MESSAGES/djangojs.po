@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: quiz/static/quiz/jquery-ui-1.11.2/jquery-ui.min.js:8
+#: quiz/static/quiz/jquery-ui-1.13.2/jquery-ui.min.js:8
 msgid "'"
 msgstr "'"
 

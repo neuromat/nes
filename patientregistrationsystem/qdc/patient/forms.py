@@ -70,11 +70,13 @@ class PatientForm(ModelForm):
             ),
             "origin": TextInput(attrs={"class": "form-control"}),
             "medical_record": TextInput(attrs={"class": "form-control"}),
-            "date_birth": DateInput(
-                format=_("%m/%d/%Y"),
+            "date_birth": TextInput(
+                # format=_("%m/%d/%Y"),
                 # format="%Y-%m-%d",
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    "class": "form-control",
                     "required": "",
                     "placeholder": _("mm/dd/yyyy"),
                     "data-error": _("Date of birth must be completed"),
@@ -116,7 +118,7 @@ class PatientForm(ModelForm):
             # validate the name
             name = self.cleaned_data.get("name", None)
             if name in EMPTY_VALUES:
-                self._errors["name"] = self.error_class([_("Name must be included")])
+                self._errors["name"] = self.error_class([_("Name must be included")])  # type: ignore
         return self.cleaned_data
 
 
@@ -267,10 +269,13 @@ class ComplementaryExamForm(ModelForm):
         fields = ["date", "description", "doctor", "doctor_register", "exam_site"]
 
         widgets = {
-            "date": DateInput(
-                format=_("%m/%d/%Y"),
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
                     "data-error": _("Date must be completed"),
@@ -280,6 +285,7 @@ class ComplementaryExamForm(ModelForm):
                 attrs={
                     "class": "form-control",
                     "placeholder": _("Description"),
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled in"),
@@ -309,10 +315,12 @@ class QuestionnaireResponseForm(ModelForm):
         fields = ["date"]
 
         widgets = {
-            "date": DateInput(
-                format=_("%m/%d/%Y"),
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "class": "form-control",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
                     "data-error": _("Fill date must be filled."),

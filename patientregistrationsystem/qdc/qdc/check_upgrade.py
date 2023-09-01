@@ -6,7 +6,7 @@ from django.conf import settings
 from git.repo import Repo
 
 
-def check_upgrade():
+def check_upgrade() -> bool:
     # FIXME arrumar isso
     print(os.path.dirname(os.path.abspath(__file__)))
     repo = Repo("https://github.com/mcostat/nes.git")
@@ -23,13 +23,13 @@ def check_upgrade():
     if int(remote_version[0]) == int(current_version[0]):
         if int(remote_version[1]) > int(current_version[1]):
             return True
+        elif int(remote_version[1]) == int(current_version[1]):
+            if int(remote_version[2]) > int(current_version[2]):
+                return True
+            else:
+                return False
         else:
-            if int(remote_version[1]) == int(current_version[1]):
-                if int(remote_version[2]) > int(current_version[2]):
-                    return True
-                else:
-                    if int(remote_version[2]) == int(current_version[2]):
-                        return False
+            return False
     else:
         if int(remote_version[0]) > int(current_version[0]):
             return True

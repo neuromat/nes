@@ -120,6 +120,7 @@ class ExperimentForm(ModelForm):
             "description": Textarea(
                 attrs={
                     "class": "form-control",
+                    "style": "resize: vertical;",
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled."),
@@ -162,10 +163,11 @@ class QuestionnaireResponseForm(ModelForm):
         fields = ["date"]
 
         widgets = {
-            "date": DateInput(
-                format=_("%m/%d/%Y"),
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
                     "data-error": _("Fill date must be filled."),
@@ -505,21 +507,25 @@ class ResearchProjectForm(ModelForm):
                     "data-error": _("Description must be filled."),
                 }
             ),
-            "start_date": DateInput(
-                format=_("%m/%d/%Y"),
+            "start_date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "id": "id_start_date",
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("Initial date must be filled."),
+                    "data-error": _("Initial date must be filled"),
                 },
             ),
-            "end_date": DateInput(
-                format=_("%m/%d/%Y"),
+            "end_date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "id": "id_end_date",
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                 },
             ),
@@ -600,13 +606,16 @@ class EEGDataForm(ModelForm):
         ]
 
         widgets = {
-            "date": DateInput(
-                format=_("%m/%d/%Y"),
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("Fill date must be filled."),
+                    "data-error": _("Date must be completed"),
                 },
             ),
             "time": TimeInput(
@@ -1431,13 +1440,16 @@ class EMGDataForm(ModelForm):
         ]
 
         widgets = {
-            "date": DateInput(
-                format=_("%m/%d/%Y"),
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("Fill date must be filled."),
+                    "data-error": _("Fill date must be filled"),
                 },
             ),
             "time": TimeInput(
@@ -1515,13 +1527,16 @@ class AdditionalDataForm(ModelForm):
         ]
 
         widgets = {
-            "date": DateInput(
-                format=_("%m/%d/%Y"),
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("Fill date must be filled."),
+                    "data-error": _("Fill date must be filled"),
                 },
             ),
             "file_format": Select(
@@ -1559,25 +1574,31 @@ class SubjectStepDataForm(ModelForm):
         fields = ["start_date", "start_time", "end_date", "end_time"]
 
         widgets = {
-            "start_date": DateInput(
-                format=_("%m/%d/%Y"),
+            "start_date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("Start date must be filled."),
+                    "data-error": _("Start date must be filled"),
                 },
             ),
             "start_time": TimeInput(
                 attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
             ),
-            "end_date": DateInput(
-                format=_("%m/%d/%Y"),
+            "end_date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("End date must be filled."),
+                    "data-error": _("End date must be filled"),
                 },
             ),
             "end_time": TimeInput(
@@ -1948,13 +1969,16 @@ class TMSDataForm(ModelForm):
         ]
 
         widgets = {
-            "date": DateInput(
-                format=_("%m/%d/%Y"),
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("Fill date must be filled."),
+                    "data-error": _("Fill date must be filled"),
                 },
             ),
             "time": TimeInput(
@@ -2142,13 +2166,16 @@ class DigitalGamePhaseDataForm(ModelForm):
         ]
 
         widgets = {
-            "date": DateInput(
-                format=_("%m/%d/%Y"),
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("Fill date must be filled."),
+                    "data-error": _("Fill date must be filled"),
                 },
             ),
             "time": TimeInput(
@@ -2202,13 +2229,16 @@ class GenericDataCollectionDataForm(ModelForm):
         ]
 
         widgets = {
-            "date": DateInput(
-                format=_("%m/%d/%Y"),
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
                 attrs={
-                    "class": "form-control datepicker",
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("Fill date must be filled."),
+                    "data-error": _("Fill date must be filled"),
                 },
             ),
             "time": TimeInput(

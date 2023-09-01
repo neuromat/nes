@@ -166,14 +166,13 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, "qdc/locale"),
 )
 
-TIME_ZONE = "America/Sao_Paulo"
+USE_TZ = True
+# TIME_ZONE = "America/Sao_Paulo"
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
 USE_L10N = True
-# DATE_FORMAT = "Y-m-d"
-
-USE_TZ = True
 
 # Database Translation
 MODELTRANSLATION_LANGUAGES = (
@@ -213,19 +212,19 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_ROOT: str = os.path.join(BASE_DIR, "static")
-STATIC_URL = "/static/"
+STATIC_URL = "static/"
 
 ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"
 
 MEDIA_ROOT: str = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
+MEDIA_URL = "media/"
 
 try:
     from .settings_local import *
 except ImportError:
     pass
 
-VERSION = "1.8"
+VERSION = "1.8.0"
 
 LOGGING = {
     "version": 1,

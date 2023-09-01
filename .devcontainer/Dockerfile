@@ -12,18 +12,17 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8  
 
-# [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
     python-is-python3 \
     pip \
+    libjpeg-dev \
     libpng-dev \
     libpq-dev \
     #freetype-dev \
     #build-base \
     git \
     #openblas-dev \
-    libjpeg-dev \
     #hdf5-dev && \
     apache2 \
     libapache2-mod-wsgi-py3 \

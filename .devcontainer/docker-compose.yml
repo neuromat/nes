@@ -19,7 +19,6 @@ services:
     volumes:
       - "limesurvey_data:/var/www/limesurvey"
     restart: unless-stopped
-    #network_mode: service:limesurvey_db
     expose:
       - 8080
     ports:
@@ -63,7 +62,7 @@ services:
       NES_DB_USER: nes_user
       NES_DB_PASSWORD: nes_password
       NES_DB_PORT: 5432
-      NES_SECRET_KEY: _my_very_secret_key_
+      NES_SECRET_KEY: your_secret_key
       NES_IP: 0.0.0.0
       NES_PORT: 80
       NES_ADMIN_USER: nes_admin

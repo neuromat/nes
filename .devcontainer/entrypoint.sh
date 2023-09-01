@@ -76,6 +76,7 @@ else
 	EOF
     chown -R nobody $NES_PROJECT_PATH/qdc/wsgi.py
     touch $NES_PROJECT_PATH/nes_wsgi.placeholder
+	chown -R nobody $NES_PROJECT_PATH/nes_wsgi.placeholder
 fi
 
 if [ -f $NES_PROJECT_PATH/nes_settings.placeholder ]; then
@@ -87,7 +88,7 @@ else
 		DEBUG = True
 		DEBUG404 = True
 		TEMPLATE_DEBUG = DEBUG
-		IS_TESTING = False
+		IS_TESTING = True
 		ALLOWED_HOSTS = ["localhost","127.0.0.1","$NES_IP"]
 		DATABASES = {
 		    "default": {
@@ -105,10 +106,11 @@ else
 		    "USER": "$LIMESURVEY_ADMIN_USER",
 		    "PASSWORD": "$LIMESURVEY_ADMIN_PASSWORD"
 		}
-		LOGO_INSTITUTION = "logo-institution.png"
+		LOGO_INSTITUTION = "$NES_PROJECT_PATH/logo-institution.png"
 	EOF
     chown -R nobody $NES_PROJECT_PATH/qdc/settings_local.py
     touch $NES_PROJECT_PATH/nes_settings.placeholder
+	chown -R nobody $NES_PROJECT_PATH/nes_settings.placeholder
 fi
 echo "criou arquivos de config"
 while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"; do
@@ -148,7 +150,7 @@ except:
     echo "	INFO: create_super_ser.py"
     python3 -u manage.py shell < /tmp/create_superuser.py || true
     echo "	INFO: import cid10"
-    #python -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
+    python -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
 
 	mkdir static || true
 	echo "INFO: colectstatic"
