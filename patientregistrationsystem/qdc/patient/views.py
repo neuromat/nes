@@ -6,8 +6,9 @@ from functools import partial
 from operator import itemgetter
 
 from django.contrib import messages
-from django.contrib.auth import PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
+from django.http.response import HttpResponse
 from django.urls import reverse
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
@@ -64,7 +65,7 @@ permission_required = partial(permission_required, raise_exception=True)
 
 @login_required
 @permission_required("patient.view_patient")
-def patient_view(request, patient_id):
+def patient_view(request, patient_id) -> HttpResponse:
     current_tab = get_current_tab(request)
     patient = get_object_or_404(Patient, pk=patient_id)
 

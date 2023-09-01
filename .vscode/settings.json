@@ -6,7 +6,7 @@
     "python.analysis.autoImportCompletions": true,
     "python.analysis.inlayHints.functionReturnTypes": true,
     "python.analysis.inlayHints.variableTypes": true,
-    "python.languageServer": "Pylance",
+    "python.languageServer": "Default",
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.autoSearchPaths": true,
@@ -17,7 +17,8 @@
     "python.analysis.packageIndexDepths": [
         {
             "name": "django",
-            "depth": 5
+            "depth": 5,
+            "includeAllSymbols": true
         }
     ],
     "pylint.args": [
@@ -26,16 +27,6 @@
     ],
     "pylint.path": [
         "/usr/local/bin"
-    ],
-    "python.linting.mypyEnabled": false,
-    "python.linting.mypyArgs": [
-        "--ignore-missing-imports",
-        "--follow-imports=silent",
-        "--show-column-numbers",
-        "--allow-untyped-defs",
-        "--allow-subclassing-any",
-        "--allow-untyped-calls",
-        "--strict"
     ],
     "python.analysis.include": [],
     "python.analysis.exclude": [
@@ -75,5 +66,5 @@
         "editor.defaultFormatter": "ms-azuretools.vscode-docker"
     },
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
 }
