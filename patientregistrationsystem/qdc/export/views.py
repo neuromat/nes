@@ -1508,7 +1508,7 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
                 for group_selected_id in groups_selected:
                     group_selected = Group.objects.filter(pk=group_selected_id)
                     subject_of_groups = SubjectOfGroup.objects.filter(
-                        group=group_selected
+                        group__in=group_selected
                     )
                     for subject_of_group in subject_of_groups:
                         patient = subject_of_group.subject.patient
@@ -1805,7 +1805,7 @@ def search_diagnoses(request):
 def select_experiments_by_study(request, study_id):
     research_project = ResearchProject.objects.filter(pk=study_id)
 
-    experiment_list = Experiment.objects.filter(research_project=research_project)
+    experiment_list = Experiment.objects.filter(research_project__in=research_project)
 
     json_experiment_list = serializers.serialize("json", experiment_list)
 
@@ -1814,7 +1814,7 @@ def select_experiments_by_study(request, study_id):
 
 def select_groups_by_experiment(request, experiment_id):
     experiment = Experiment.objects.filter(pk=experiment_id)
-    group_list = Group.objects.filter(experiment=experiment)
+    group_list = Group.objects.filter(experiment__in=experiment)
     json_group_list = serializers.serialize("json", group_list)
 
     return HttpResponse(json_group_list, content_type="application/json")
