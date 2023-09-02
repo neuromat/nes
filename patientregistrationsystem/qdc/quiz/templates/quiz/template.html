@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<html xml:lang="en" lang="en">
 
 <head>
     {% load static %}
@@ -7,20 +7,20 @@
     {% load l10n %}
     {% load qdc_tags %}
     {% load solo_tags %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
     <title>{% trans "Neuroscience Experiments System - NES" %}</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="NeuroMat">
 
     <link rel="stylesheet" href="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.css' %}">
-    <link href="{% static 'quiz/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}" rel="stylesheet">
-    <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'quiz/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}">
+    <link rel="stylesheet" href="{% static 'quiz/toastr/toastr.css' %}">
     <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.7.0/css/font-awesome.min.css' %}">
-    <style type="text/css">
 
-        /* Layout based on http://mystrd.at/modern-clean-css-sticky-footer/ */
+    <style type="text/css">
         html {
             position: relative;
             min-height: 100%;
@@ -66,98 +66,97 @@
 
         
         @media (min-width: 979px) {
-        #myMenu.affix-top {
-            position: static;
-            margin-top:30px;
-            width:228px;
-        }
+            #myMenu.affix-top {
+                position: static;
+                margin-top:30px;
+                width:228px;
+            }
+            
+            #myMenu.affix-bottom {
+                position: relative;
+            }
         
-        #myMenu.affix-bottom {
-            position: relative;
-        }
-    
-        #myMenu.affix {
-            position: fixed;
-            top:70px;
-            width:228px;
-        }
+            #myMenu.affix {
+                position: fixed;
+                top:70px;
+                width:228px;
+            }
         }
 
     </style>
 
-    {% block header %}
-    {% endblock %}
-
+    {% block header %}{% endblock %}
 </head>
+
 <body>
-<div class="container">
-    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/home/">{% trans "NES" %}</a>
+<header>
+    <nav class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/home/">{% trans "NES" %}</a>
+            </div>
 
-        <div class="navbar-header">
-        </div>
-
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
-            <ol class="nav navbar-nav navbar-right">
-                {% if perms.configuration.upgrade_rights and if_upgrade %}
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ol class="nav navbar-nav navbar-right">
+                    {% if perms.configuration.upgrade_rights and if_upgrade %}
+                        <li>
+                            <a href="/home/upgrade_nes/"><span class="fa fa-download"></span>Upgrade_nes</a>
+                        </li>
+                    {% endif %}
                     <li>
-                        <a href="/home/upgrade_nes/"><span class="fa fa-download"></span>Upgrade_nes</a>
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+
+                        <a class="btn-default dropdown-toggle navbar-inverse" data-toggle="dropdown" href="#">
+                            <span style="font-size: 0.85em;" class="fa fa-globe"></span>
+                            {{ LANGUAGE_CODE|language_name_local }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown dropdown-user dropdown-menu" role="menu">
+                            {% for language in languages %}
+                                {% if language.code != LANGUAGE_CODE %}
+                                    <li>
+                                        <a href="/language/change/{{ language.code }}?next={{ request.get_full_path }}">
+                                            <span style="font-size: 0.85em;" class="fa fa-globe"></span>
+                                            {{ language.name_local }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+
                     </li>
-                {% endif %}
-                <li>
+                    <li>
+                        <a class="btn-default dropdown-toggle navbar-inverse"
+                        data-toggle="dropdown" href="#">
+                            <span style="font-size: 0.85em;" class="fa fa-user-circle"></span> {{ request.user.username }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown dropdown-user dropdown-menu" role="menu">
+                            <li><a href="/password_change"><span class="fa fa-key"></span> {% trans "Change password" %}</a></li>
+                            <li><a href="{% url 'logout' %}"><span class="fa fa-power-off"></span> {% trans "Logout" %}</a></li>
+                        </ul>
 
-                    {% get_current_language as LANGUAGE_CODE %}
-                    {% get_available_languages as LANGUAGES %}
-                    {% get_language_info_list for LANGUAGES as languages %}
-
-                    <a class="btn-default dropdown-toggle navbar-inverse" data-toggle="dropdown" href="#">
-                        <span style="font-size: 0.85em;" class="fa fa-globe"></span>
-                        {{ LANGUAGE_CODE|language_name_local }}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown dropdown-user dropdown-menu" role="menu">
-                        {% for language in languages %}
-                            {% if language.code != LANGUAGE_CODE %}
-                                <li>
-                                    <a href="/language/change/{{ language.code }}?next={{ request.get_full_path }}">
-                                        <span style="font-size: 0.85em;" class="fa fa-globe"></span>
-                                        {{ language.name_local }}
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-
-                </li>
-                <li>
-                    <a class="btn-default dropdown-toggle navbar-inverse"
-                       data-toggle="dropdown" href="#">
-                        <span style="font-size: 0.85em;" class="fa fa-user-circle"></span> {{ request.user.username }}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown dropdown-user dropdown-menu" role="menu">
-                        <li><a href="/password_change"><span class="fa fa-key"></span> {% trans "Change password" %}</a></li>
-                        <li><a href="{% url 'logout' %}"><span class="fa fa-power-off"></span> {% trans "Logout" %}</a></li>
-                    </ul>
-
-                </li>
-            </ol>
+                    </li>
+                </ol>
+            </div>
         </div>
     </nav>
     <div id="fix-for-navbar-fixed-top-spacing" style="height: 62px;">&nbsp;</div>
-</div>
+</header>
 
 {% block form %}{% endblock %}
 
 <div class="container">
     <div class="row">
-        <div class="col-xs-12 col-md-2">
+        <nav class="col-xs-12 col-md-2">
             <ul id="myMenu" class="nav nav-pills nav-stacked">
 
                 <li {% block activeContact %}{% endblock %}>
@@ -241,7 +240,7 @@
                 {% endif %}
 
             </ul>
-        </div>
+        </nav>
 
         <div class="col-xs-12 col-md-10 content">
             <div id="myMenuContent" class="tab-content">
@@ -249,19 +248,20 @@
             </div>
         </div>
     </div>
-
 </div>
 
 {% block end_form %}{% endblock %}
 
-<div class="footer">
-    <a href="http://ccsl.ime.usp.br">
-        <img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre"
-             height="34px" width="96px">
-    </a>
+<footer class="footer">
+    <div class="container">
+        <a href="http://ccsl.ime.usp.br">
+            <img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre"
+                height="34px" width="96px">
+        </a>
 
-    <span class="version_number">v{% settings_value "VERSION" %}</span>
-</div>
+        <span class="version_number">v{% settings_value "VERSION" %}</span>
+    </div>
+</footer>
 
 
 <script src="{% static 'quiz/jquery/jquery-2.2.4.js' %}"></script>

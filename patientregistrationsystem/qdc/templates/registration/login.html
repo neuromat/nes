@@ -1,7 +1,16 @@
+<!DOCTYPE html>
+<html xml:lang="en" lang="en">
+<head>
 {% load static %}
-
 {% load i18n static %}
+{% load l10n %}
 {% load qdc_tags %}
+
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<title>{% trans "Neuroscience Experiments System - NES" %}</title>
+<meta name="description" content="">
+<meta name="author" content="NeuroMat">
 
 {% block extrahead %}
     <title>{% trans "Neuroscience Experiments System - NES" %}</title>
@@ -9,59 +18,60 @@
 
 {% block extrastyle %}
 
-    <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
-    <link href="{% static 'quiz/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'quiz/toastr/toastr.css' %}">
+    <link rel="stylesheet" href="{% static 'quiz/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.7.0/css/font-awesome.min.css' %}">
 
     <style>
         body {
             padding-top: 40px;
             padding-bottom: 40px;
-            background-color: #fff;
+            background-color: #eee;
         }
-
         .form-signin {
             max-width: 330px;
             padding: 15px;
             margin: 0 auto;
         }
-
         .form-signin .form-signin-heading,
         .form-signin .checkbox {
             margin-bottom: 10px;
         }
-
         .form-signin .checkbox {
-            font-weight: normal;
+            font-weight: 400;
         }
-
         .form-signin .form-control {
             position: relative;
-            height: auto;
             -webkit-box-sizing: border-box;
             -moz-box-sizing: border-box;
             box-sizing: border-box;
+            height: auto;
             padding: 10px;
             font-size: 16px;
         }
-
         .form-signin .form-control:focus {
             z-index: 2;
         }
-
         .form-signin input[type="email"] {
             margin-bottom: -1px;
             border-bottom-right-radius: 0;
             border-bottom-left-radius: 0;
         }
-
+        .form-signin input[type="text"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
         .form-signin input[type="password"] {
             margin-bottom: 10px;
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
     </style>
-
 {% endblock %}
+</head>
+
+<body>
 {% block content %}
 
     <div class="container">
@@ -70,7 +80,30 @@
 
             <h2 class="form-signin-heading">NES</h2>
 
-            <div class="container span6 offset3 well" style="margin-bottom: 0">
+            <div class="row" align="center">
+                <span style="color: #428bca; font-size: 50px" class="fa fa-user-circle"></span>
+                <br/><br/>
+            </div>
+
+            <label for="id_username" class="sr-only"> {% trans 'User' %} </label>
+            <input id="id_username" type="text" class="form-control" placeholder="{% trans 'User' %}" name="username" required autofocus/>
+            
+            <label for="id_password" class="sr-only"> {% trans 'Password' %} </label>
+            <input id="id_password" type="password" class="form-control" name="password" placeholder="{% trans 'Password' %}" required/>
+
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">{% trans "Login" %}</button>
+
+            <input type="hidden" name="next" value="{{ next }}"/>
+
+            <div class="checkbox">
+                <label>
+                    <a href="/user/password/reset">{% trans "I forgot my password" %}</a>
+                </label>
+            </div>
+
+
+            {% comment %} <div class="container span6 offset3 well" style="margin-bottom: 0">
 
                 <div class="row" align="center">
                     <span style="color: #428bca; font-size: 50px" class="fa fa-user"></span>
@@ -93,7 +126,7 @@
                     </label>
                 </div>
 
-            </div>
+            </div> {% endcomment %}
 
             <h6 style="margin-top: 0; text-align: right; font-family: 'Comic Sans MS'; font-size: 14px; color: blueviolet;">
                 v{% settings_value "VERSION" %}
@@ -118,3 +151,5 @@
     {% endif %}
 
 {% endblock %}
+</body>
+</html>
