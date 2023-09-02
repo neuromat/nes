@@ -35,7 +35,7 @@
 
         <div class="tab-pane fade in active" id="menuUserTab">
             <div class="col-md-10">
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
                     <h4>{% trans "Questionnaire information" %}</h4>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
@@ -79,7 +79,7 @@
                 {% if not creating and not editing %}
 
                     {# Sensitive questions table #}
-                    <div class="container span6 offset3 well ">
+                    <div class="container-fluid well">
                         <div class="row">
                             <div class="col-xs-12 col-md-12">
                                 <h4>{% trans "Sensitive questions" %}</h4>
@@ -113,7 +113,7 @@
                     </div>
 
                     {# Answers #}
-                    <div class="container span6 offset3 well ">
+                    <div class="container-fluid well">
                         <div class="row">
                             <div class="col-xs-12 col-md-12">
                                 <h4>{% trans "Answered by participants" %}</h4>
@@ -175,14 +175,14 @@
                     </div>
 
                     {% if perms.experiment.view_researchproject %}
-                        <div class="container span6 offset3 well ">
+                        <div class="container-fluid well">
                             <div class="row">
                                 <div class="col-xs-12 col-md-12">
                                     <h4>{% trans "Used in experiments" %}</h4>
                                 </div>
                             </div>
                             {% for dict in experiments_questionnaire_data_list %}
-                                <div class="container span6 offset3 well ">
+                                <div class="container-fluid well">
                                     <div class="row" style="margin-bottom: 5px">
                                         <div class="col-xs-12 col-md-8">
                                             <strong>{% trans "Experiment:" %}</strong><br/>

@@ -26,7 +26,7 @@
             min-height: 100%;
         }
         body {
-            margin: 0 0 30px; /* bottom = footer height */
+            margin-bottom: 40px;
         }
         .footer {
             position: absolute;
@@ -34,6 +34,7 @@
             bottom: 0;
             height: 30px;
             width: 100%;
+            background-color: #f5f5f5;
         }
         .version_number {
             float:right;
@@ -62,6 +63,9 @@
         }
         .import-results {
             background-color: #dff0d8;
+        }
+        .content {
+            margin-top:10px
         }
 
         
@@ -154,7 +158,7 @@
 
 {% block form %}{% endblock %}
 
-<div class="container">
+<div id="main" class="container">
     <div class="row">
         <nav class="col-xs-12 col-md-2">
             <ul id="myMenu" class="nav nav-pills nav-stacked">
@@ -214,7 +218,7 @@
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
                     <li {% block activeExport %}{% endblock %}>
                         <a href="/export/">
-                            <span class="glyphicon glyphicon-export"></span>
+                            <span class="fa fa-upload"></span>
                             {% trans "Export" %}
                         </a>
                     </li>
@@ -223,7 +227,7 @@
                 {% if perms.experiment.register_equipment %}
                     <li {% block activeSetup %}{% endblock %}>
                         <a href="/experiment/setup/">
-                            <span class="glyphicon glyphicon-cog"></span>
+                            <span class="fa fa-cog"></span>
                             {% trans "Set up" %}
                         </a>
                     </li>
@@ -233,7 +237,7 @@
                 {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
                     <li {% block activePlugin %}{% endblock %}>
                         <a href="/plugin/">
-                            <span class="glyphicon glyphicon-cloud-upload"></span>
+                            <span class="fa fa-cloud-upload"></span>
                             {% trans "Plugin" %}
                         </a>
                     </li>
@@ -253,10 +257,9 @@
 {% block end_form %}{% endblock %}
 
 <footer class="footer">
-    <div class="container">
+    <div class="container bg-light">
         <a href="http://ccsl.ime.usp.br">
-            <img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre"
-                height="34px" width="96px">
+            <img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" height="34px" width="96px">
         </a>
 
         <span class="version_number">v{% settings_value "VERSION" %}</span>

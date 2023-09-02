@@ -77,8 +77,8 @@
         </div>
     </div>
 
-    <div class="container">
-        <div class="col-md-10 span6 offset3 well pull-right">
+    <div class="col-md-10">
+        <div class="container-fluid well">
             <h4>{% trans "Basic Information" %}</h4>
             <div class="row">
                 <div class="col-xs-6 col-sm-6">
@@ -117,7 +117,7 @@
                         <label for="name" class="control-label">E-mail<b style="color: red;">*</b></label>
 
                         <div class="input-group input-group-sm">
-                            <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                            <span class="input-group-addon"> <span class="fa fa-envelope"></span></span>
                             {{ form.email }}
                         </div>
                         <div class="help-block with-errors">
@@ -164,7 +164,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-10 span6 offset3 well pull-right" id="user_account">
+        <div class="container-fluid well" id="user_account">
             <div class="row">
                 <div class="col-xs-12 col-sm-12">
                     <div class="form-group" id="username">
@@ -228,9 +228,10 @@
             </div>
         </div>
 
-        <div class="col-md-10 span6 offset3 well pull-right" id="profiles">
+        <div class="container-fluid well" id="profiles">
+            <h4>{% trans "Profiles" %}</h4>
             <div class="row">
-                <h4>{% trans "Profiles" %}</h4>
+                <div class="container-fluid">
                 <div class="form-group">
                     <label class="control-label">{% trans "In which these profiles does user identify?" %} <b style="color: red;">*</b></label>
                     <div class="input-group  input-group-sm">
@@ -253,37 +254,36 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
     </div>
 
-    <div class="container">
-        <div class="col-md-10 pull-right">
-            <div class="btn-toolbar">
-                <div class="btn-group pull-left">
-                    {% if not creating and perms.auth.delete_user and current_user_id != user.id %}
-                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
-                    {% endif %}
-                </div>
-                <div class="btn-group pull-right">
-                    {% if creating or editing %}
-                        <button type="submit" name="action" value="save" class="btn btn-primary" id="submit">{% trans "Save" %}</button>
-                    {% else  %}
-                        <div class="btn-group">
-                            <a href="/user/edit/{{ user }}" class="btn btn-primary">{% trans "Edit" %}</a>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="btn-group pull-right">
-                    {% if creating %}
-                        <a href="/user/list" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
-                    {% elif editing %}
-                        <div class="btn-group">
-                            <a href="/user/view/{{ user }}" class="btn">{% trans "Back" %}</a>
-                        </div>
-                    {% else %}
-                        <a href="/user/list" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
-                    {% endif %}
-                </div>
+    <div class="col-md-10">
+        <div class="btn-toolbar">
+            <div class="btn-group pull-left">
+                {% if not creating and perms.auth.delete_user and current_user_id != user.id %}
+                    <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
+                {% endif %}
+            </div>
+            <div class="btn-group pull-right">
+                {% if creating or editing %}
+                    <button type="submit" name="action" value="save" class="btn btn-primary" id="submit">{% trans "Save" %}</button>
+                {% else  %}
+                    <div class="btn-group">
+                        <a href="/user/edit/{{ user }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="btn-group pull-right">
+                {% if creating %}
+                    <a href="/user/list" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                {% elif editing %}
+                    <div class="btn-group">
+                        <a href="/user/view/{{ user }}" class="btn">{% trans "Back" %}</a>
+                    </div>
+                {% else %}
+                    <a href="/user/list" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                {% endif %}
             </div>
         </div>
     </div>

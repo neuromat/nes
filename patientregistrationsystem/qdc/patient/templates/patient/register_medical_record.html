@@ -7,7 +7,7 @@
     <div class="tab-pane {% if currentTab == '3' %}active{% endif %}" id="tab4">
         <div class="row">
             <div class="col-md-12">
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
                     <div class="form-group">
                         <div class="row">
                             <div class="col-sm-12" style="text-align: right; vertical-align: bottom">
@@ -44,7 +44,7 @@
                                                    href="/patient/{{ patient_id }}/medical_record/edit/{{ record.pk }}/?status=edit"></a>
                                             </td>
                                         {% else %}
-                                            <td><a class="glyphicon glyphicon-search"
+                                            <td><a class="fa fa-search"
                                                    href="/patient/{{ patient_id }}/medical_record/{{ record.pk }}/?status=view"></a>
                                             </td>
                                         {% endif %}

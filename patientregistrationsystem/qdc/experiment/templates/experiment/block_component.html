@@ -75,7 +75,7 @@
     {% if not updating and not creating %}
         <div class="row">
             <div class="col-xs-12 col-sm-12">
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
 
                     {% if component.type == "sequence" %}
                         <h4>{% trans "Steps with fixed position" %}</h4>
@@ -129,13 +129,13 @@
                                                                                     <td  class="text-right col-md-1">
                                                                                         {% if accordion != configuration_list|last %}
                                                                                             {# onclick is needed because if we use href nothing happens, because of the collapse and expand actions of the accordion. #}
-                                                                                            <a class="btn glyphicon glyphicon-arrow-down" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/down/');"></a>
+                                                                                            <a class="btn fa fa-arrow-down" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/down/');"></a>
                                                                                         {% endif %}
                                                                                     </td>
                                                                                     <td class="col-md-1">
                                                                                         {% if accordion != configuration_list|first %}
                                                                                             {# onclick is needed because if we use href nothing happens, because of the collapse and expand actions of the accordion. #}
-                                                                                            <a class="btn glyphicon glyphicon-arrow-up" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/up/');"></a>
+                                                                                            <a class="btn fa fa-arrow-up" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/up/');"></a>
                                                                                         {% endif %}
                                                                                     </td>
                                                                                 {% else %}
@@ -223,7 +223,7 @@
                 </div>
 
                 {% if component.type == "sequence" %}
-                    <div class="container span6 offset3 well ">
+                    <div class="container-fluid well">
                         <div class="form-group">
 
                             <h4>{% trans "Steps with random position" %}</h4>

@@ -51,7 +51,7 @@
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
-            <div class="container span6 offset3 well ">
+            <div class="container-fluid well">
                 {% if perms.patient.export_patient %}
                     <h4>{% trans "Plugin" %}</h4>
                     <div class="row">
@@ -125,7 +125,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="container span6 offset3 well ">
+                                    <div class="container-fluid well">
                                     <h4>{% trans "List of participants" %}</h4>
                                     <div class="panel-body">
                                         <div class="col-md-5 col-sm-12">
@@ -210,7 +210,7 @@
                             </div>
                             <div id="collapse_participant" class="panel-collapse collapse">
                                 {# List of Participants Section #}
-                                <div class="container span6 offset3 well ">
+                                <div class="container-fluid well">
                                     <h4>{% trans "List of participants" %}</h4>
                                     <div class="panel-body">
                                         <div class="col-md-5 col-sm-12">

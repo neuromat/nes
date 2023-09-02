@@ -63,7 +63,7 @@
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
-            <div class="container span6 offset3 well ">
+            <div class="container-fluid well">
                 <h4><span class="glyphicon glyphicon-info-sign"></span> {% trans "Basic experiment information" %}</h4>
                 <div class="row" {% if creating %}style="display: none;"{% endif %}>
                     <div class="col-xs-12 col-sm-12">
@@ -165,7 +165,7 @@
 
                 {% if experiment.is_public and portal != '' or experiment.last_sending and portal != '' %}
 
-                    <div class="container span6 offset3 well ">
+                    <div class="container-fluid well">
 
                         <h4><span class="fa fa-database"></span> {% trans "NeuroMat Portal - Experimental data sending " %}</h4>
 
@@ -233,7 +233,7 @@
                     </div>
                 {% endif %}
 
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
                     <h4><span class="fa fa-user"></span> {% trans "Researchers" %}</h4>
                     <div class="form-group">
                         <table class="table table-striped">
@@ -261,13 +261,13 @@
                                     </td>
                                     <td class="text-right col-md-1">
                                         {% if not forloop.last %}
-                                            <a class="btn glyphicon glyphicon-arrow-down"
+                                            <a class="btn fa fa-arrow-down"
                                                href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/down/"></a>
                                         {% endif %}
                                     </td>
                                     <td class="col-md-1">
                                         {% if not forloop.first %}
-                                            <a class="btn glyphicon glyphicon-arrow-up"
+                                            <a class="btn fa fa-arrow-up"
                                                href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/up/"></a>
                                         {% endif %}
                                     </td>
@@ -288,7 +288,7 @@
                     {% endif %}
                 </div>
 
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
                 <h4><span class="fa fa-users"></span> {% trans "Groups" %}</h4>
                     {% if group_list %}
                         <div class="form-group">
@@ -328,7 +328,7 @@
                     {% endif %}
                 </div>
 
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
                 <h4><span class="glyphicon glyphicon-flash"></span> {% trans "EEG Settings" %}</h4>
 
                     {% if eeg_setting_list %}
@@ -362,7 +362,7 @@
                     {% endif %}
                 </div>
 
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
                 <h4><span class="glyphicon glyphicon-stats"></span> {% trans "EMG Settings" %}</h4>
                     {% if emg_setting_list %}
                         <div class="form-group">
@@ -395,7 +395,7 @@
                     {% endif %}
                 </div>
 
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
                 <h4><span class="glyphicon glyphicon-magnet"></span> {% trans "TMS Settings" %}</h4>
                     {% if tms_setting_list %}
                         <div class="form-group">
@@ -428,7 +428,7 @@
                     {% endif %}
                 </div>
 
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
                 <h4><span class="glyphicon glyphicon-tree-conifer"></span> {% trans "Context trees" %}</h4>
                     {% if context_tree_list %}
                         <div class="form-group">
@@ -463,7 +463,7 @@
 
 
 
-                <div class="container span6 offset3 well ">
+                <div class="container-fluid well">
                     <h4><span class="glyphicon glyphicon-tasks"></span> {% trans "Steps of experimental protocol" %}</h4>
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">

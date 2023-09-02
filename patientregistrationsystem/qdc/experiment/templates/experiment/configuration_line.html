@@ -23,12 +23,12 @@
                 </td>
                 <td  class="text-right col-md-1">
                     {% if configuration != configuration_list|last|last %}
-                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}/down/"></a>
+                        <a class="btn fa fa-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}/down/"></a>
                     {% endif %}
                 </td>
                 <td class="col-md-1">
                     {% if configuration != configuration_list|first|first %}
-                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}/up/"></a>
+                        <a class="btn fa fa-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}/up/"></a>
                     {% endif %}
                 </td>
             {% else %}

@@ -43,9 +43,9 @@
                 {% if patients %}
                     <form role="form" action="" method="POST">
                     {% csrf_token %}
-                        <div class="container span6 offset3 well ">
+                        <div class="container-fluid well">
                             <h4>{% trans "Conflict" %}</h4>
-                            <div class="container span6 offset3 well ">
+                            <div class="container-fluid well">
                                 {% trans "There is a conflict with one or more participants to be imported with the participants already in the database." %}<br>
                                 {% trans "You can decide whether you want to update the patient in the database or create a new patient them." %}<br><br>
                                 <div class="panel panel-default">
