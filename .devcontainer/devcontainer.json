@@ -71,7 +71,8 @@
 				"mtxr.sqltools-driver-pg",
 				"shakram02.bash-beautify",
 				"eamodio.gitlens",
-				"junstyle.vscode-django-support"
+				"junstyle.vscode-django-support",
+				"bibhasdn.django-html"
 			]
 		}
 	}

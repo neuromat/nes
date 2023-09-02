@@ -85,7 +85,7 @@
                     <div class="form-group {% if form.errors.first_name %}has-error{% endif %}">
                         <label for="name" class="control-label">{% trans "First name" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
-                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                             {{ form.first_name }}
                         </div>
                         <div class="help-block with-errors">
@@ -99,7 +99,7 @@
                     <div class="form-group {% if form.errors.last_name %}has-error{% endif %}">
                         <label for="name" class="control-label">{% trans "Last name" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
-                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                             {{ form.last_name }}
                         </div>
                         <div class="help-block with-errors">
@@ -143,7 +143,7 @@
                     <div class="form-group"  id="citation_name_id">
                         <label>{% trans "Citation name" %}</label>
                         <div class="input-group input-group-sm">
-                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                             {{ profile_form.citation_name }}
                         </div>
                     </div>
@@ -172,7 +172,7 @@
                             <label for="name" class="control-label">{% trans "Username" %}<b style="color: red;">*</b></label>
 
                             <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                                 {{ form.username }}
                             </div>
                             <div class="help-block with-errors">
@@ -191,7 +191,7 @@
                     <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
                         <label for="id_new_password1" class="control-label">{% trans "Password" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm right-inner-addon">
-                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                             <div id="show"></div>
                             {{ form.password }}
                         </div>
@@ -206,7 +206,7 @@
                     <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password2_form_group">
                         <label for="name" class="control-label">{% trans "Please confirm password" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm has-feedback">
-                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                             <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
                                    placeholder="{% trans "Type password" %}" type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
                         </div>

@@ -146,7 +146,7 @@
                                                                 <tr>
                                                                     <td colspan="2">
                                                                         <a data-toggle="collapse" href="#collapse_{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}">
-                                                                            {% trans "Reuse questionnaire response" %} <span class="glyphicon glyphicon-chevron-right"></span>
+                                                                            {% trans "Reuse questionnaire response" %} <span class="fa fa-arrow-right"></span>
                                                                         </a>
                                                                         <div id="collapse_{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}"
                                                                              class="panel-collapse collapse out" role="tabpanel">

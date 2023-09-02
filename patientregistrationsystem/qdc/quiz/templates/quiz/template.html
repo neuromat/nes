@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
@@ -14,7 +14,7 @@
     <meta name="author" content="NeuroMat">
 
     <link rel="stylesheet" href="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.css' %}">
-    <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'quiz/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}" rel="stylesheet">
     <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
     <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.7.0/css/font-awesome.min.css' %}">
@@ -63,6 +63,26 @@
         .import-results {
             background-color: #dff0d8;
         }
+
+        
+        @media (min-width: 979px) {
+        #myMenu.affix-top {
+            position: static;
+            margin-top:30px;
+            width:228px;
+        }
+        
+        #myMenu.affix-bottom {
+            position: relative;
+        }
+    
+        #myMenu.affix {
+            position: fixed;
+            top:70px;
+            width:228px;
+        }
+        }
+
     </style>
 
     {% block header %}
@@ -87,8 +107,7 @@
             <ol class="nav navbar-nav navbar-right">
                 {% if perms.configuration.upgrade_rights and if_upgrade %}
                     <li>
-                        <a href="/home/upgrade_nes/"><span class="glyphicon
-                        glyphicon-download-alt"></span>Upgrade_nes</a>
+                        <a href="/home/upgrade_nes/"><span class="fa fa-download"></span>Upgrade_nes</a>
                     </li>
                 {% endif %}
                 <li>
@@ -98,7 +117,7 @@
                     {% get_language_info_list for LANGUAGES as languages %}
 
                     <a class="btn-default dropdown-toggle navbar-inverse" data-toggle="dropdown" href="#">
-                        <span style="font-size: 0.85em;" class="glyphicon glyphicon-globe"></span>
+                        <span style="font-size: 0.85em;" class="fa fa-globe"></span>
                         {{ LANGUAGE_CODE|language_name_local }}
                         <span class="caret"></span>
                     </a>
@@ -107,7 +126,7 @@
                             {% if language.code != LANGUAGE_CODE %}
                                 <li>
                                     <a href="/language/change/{{ language.code }}?next={{ request.get_full_path }}">
-                                        <span style="font-size: 0.85em;" class="glyphicon glyphicon-globe"></span>
+                                        <span style="font-size: 0.85em;" class="fa fa-globe"></span>
                                         {{ language.name_local }}
                                     </a>
                                 </li>
@@ -119,7 +138,7 @@
                 <li>
                     <a class="btn-default dropdown-toggle navbar-inverse"
                        data-toggle="dropdown" href="#">
-                        <span style="font-size: 0.85em;" class="glyphicon glyphicon-user"></span> {{ request.user.username }}
+                        <span style="font-size: 0.85em;" class="fa fa-user-circle"></span> {{ request.user.username }}
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown dropdown-user dropdown-menu" role="menu">
@@ -138,12 +157,12 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-xs-12 col-md-2">
             <ul id="myMenu" class="nav nav-pills nav-stacked">
 
                 <li {% block activeContact %}{% endblock %}>
                     <a href="/home/">
-                        <span class="glyphicon glyphicon-home"></span>
+                        <span class="fa fa-home"></span>
                         {% trans "Home" %}
                     </a>
                 </li>
@@ -151,7 +170,7 @@
                 {% if perms.patient.view_patient %}
                     <li {% block activePatient %}{% endblock %} >
                         <a href="/patient/find/">
-                            <span class="glyphicon glyphicon-screenshot"></span>
+                            <span class="fa fa-users"></span>
                             {% trans "Participants" %}
                         </a>
                     </li>
@@ -169,7 +188,7 @@
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedPublication %}{% endblock %}>
                         <a href="/experiment/publication/list/">
-                            <span class="glyphicon glyphicon-book"></span>
+                            <span class="fa fa-book"></span>
                             {% trans "Publications" %}
                         </a>
                     </li>
@@ -178,7 +197,7 @@
                 {% if perms.survey.view_survey %}
                     <li {% block activeAdvancedSurvey %}{% endblock %}>
                         <a href="/survey/list/">
-                            <span class="glyphicon glyphicon-list-alt"></span>
+                            <span class="fa fa-list-alt"></span>
                             {% trans "Questionnaires" %}
                         </a>
                     </li>
@@ -187,7 +206,7 @@
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}>
                         <a href="/user/list">
-                            <span class="glyphicon glyphicon-user"></span>
+                            <span class="fa fa-user"></span>
                             {% trans "Researchers" %}
                         </a>
                     </li>
@@ -223,17 +242,17 @@
 
             </ul>
         </div>
-        <div id="myMenuContent" class="tab-content">
-            {% block content %}
-            {% endblock %}
-        </div>
 
+        <div class="col-xs-12 col-md-10 content">
+            <div id="myMenuContent" class="tab-content">
+                {% block content %} {% endblock %}
+            </div>
+        </div>
     </div>
 
 </div>
 
-{% block end_form %}
-{% endblock %}
+{% block end_form %}{% endblock %}
 
 <div class="footer">
     <a href="http://ccsl.ime.usp.br">
@@ -245,7 +264,7 @@
 </div>
 
 
-<script src="{% static 'quiz/jquery/jquery-2.0.0.min.js' %}"></script>
+<script src="{% static 'quiz/jquery/jquery-2.2.4.js' %}"></script>
 <script src="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.js' %}"></script>
 
 {# Apply a date picker and a mask to every field that has the class "datepicker" #}
@@ -273,13 +292,12 @@
     });
 </script>
 
-<script src="{% static 'quiz/bootstrap-3.0.0-dist/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'quiz/masked_input/jquery.maskedinput.js' %}"></script>
-<script src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
-<script src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}" type="text/javascript"></script>
-<script src="{% static 'quiz/toastr/toastr.js' %}"></script>
-<script src="{% static 'quiz/js/quiz.js' %}"></script>
-<!--<script src="{% url 'javascript-catalog' %}"></script>-->
+<script type="text/javascript" src="{% static 'quiz/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/masked_input/jquery.maskedinput.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/toastr/toastr.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/js/quiz.js' %}"></script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script>
     {% if messages %}
@@ -303,7 +321,6 @@
         showErrorMessage(gettext('Please, correct the highlighted fields.'))
     {% endif %}
 </script>
-{% block script %}
-{% endblock %}
+{% block script %}{% endblock %}
 </body>
 </html>

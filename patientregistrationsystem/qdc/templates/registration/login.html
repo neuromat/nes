@@ -10,7 +10,7 @@
 {% block extrastyle %}
 
     <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
-    <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'quiz/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}" rel="stylesheet">
 
     <style>
         body {
@@ -65,7 +65,6 @@
 {% block content %}
 
     <div class="container">
-
         <form method="post" class="form-signin" action="{% url 'login' %}">
             {% csrf_token %}
 
@@ -74,7 +73,7 @@
             <div class="container span6 offset3 well" style="margin-bottom: 0">
 
                 <div class="row" align="center">
-                    <span style="color: #428bca; font-size: 50px" class="glyphicon glyphicon-user"></span>
+                    <span style="color: #428bca; font-size: 50px" class="fa fa-user"></span>
                     <br/><br/>
                 </div>
 
@@ -105,7 +104,7 @@
     </div>
 
     <script src="{% static 'quiz/jquery/jquery-1.9.1.min.js' %}"></script>
-    <script src="{% static 'quiz/jquery/jquery-migrate-1.2.1.min.js' %}"></script>
+    <script src="{% static 'quiz/jquery/jquery-migrate-1.4.1.js' %}"></script>
     <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
