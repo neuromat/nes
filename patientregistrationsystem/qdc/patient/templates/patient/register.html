@@ -32,157 +32,159 @@
 {% endblock %}
 
 {% block content %}
-            <div class="tab-pane fade in active" id="mainMenuAddTab">
-                <div class="col-md-10">
-                    <div class="tabbable" id="myTabs">
+<div class="tab-pane fade in active" id="mainMenuAddTab">
+    <div class="col-md-10">
+        <div class="tabbable" id="myTabs">
 
-                        <ul class="nav nav-tabs nav-justified" id="idTabs">
-                            {# Ids are included only when editing, so that javascript can act. #}
-                            {% if patient_id != None %}
-                                <li {% if currentTab == '0' %}class="active"{% endif %}>
-                                    <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=0"
-                                            {% if editing %} id="linkToTab0"{% endif %}>{% trans "Personal data" %}</a></li>
-                                <li {% if currentTab == '1' %}class="active"{% endif %}>
-                                    <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=1"
-                                            {% if editing %} id="linkToTab1"{% endif %}>{% trans "Social demographic data" %}</a></li>
-                                <li {% if currentTab == '2' %}class="active"{% endif %}>
-                                    <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=2"
-                                            {% if editing %} id="linkToTab2"{% endif %}>{% trans "Social history" %}</a></li>
-                                <li {% if currentTab == '3' %}class="active"{% endif %}>
-                                    <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=3"
-                                            {% if editing %} id="linkToTab3"{% endif %}>{% trans "Medical evaluation" %}</a></li>
-                                {% if perms.survey.view_survey %}
-                                    <li {% if currentTab == '4' %}class="active"{% endif %}>
-                                        <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=4"
-                                                {% if editing %} id="linkToTab4"{% endif %}>{% trans "Questionnaires" %}</a></li>
-                                {% endif %}
+            <ul class="nav nav-tabs " id="idTabs">
+                {# Ids are included only when editing, so that javascript can act. #}
+                {% if patient_id != None %}
+                    <li {% if currentTab == '0' %}class="active"{% endif %}>
+                        <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=0"
+                                {% if editing %} id="linkToTab0"{% endif %}>{% trans "Personal data" %}</a></li>
+                    <li {% if currentTab == '1' %}class="active"{% endif %}>
+                        <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=1"
+                                {% if editing %} id="linkToTab1"{% endif %}>{% trans "Social demographic data" %}</a></li>
+                    <li {% if currentTab == '2' %}class="active"{% endif %}>
+                        <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=2"
+                                {% if editing %} id="linkToTab2"{% endif %}>{% trans "Social history" %}</a></li>
+                    <li {% if currentTab == '3' %}class="active"{% endif %}>
+                        <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=3"
+                                {% if editing %} id="linkToTab3"{% endif %}>{% trans "Medical evaluation" %}</a></li>
+                    {% if perms.survey.view_survey %}
+                        <li {% if currentTab == '4' %}class="active"{% endif %}>
+                            <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=4"
+                                    {% if editing %} id="linkToTab4"{% endif %}>{% trans "Questionnaires" %}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li {% if currentTab == '0' %}class="active"{% endif %}>
+                        <a href="" class="invalidLink">{% trans "Personal data" %}</a></li>
+                    <li {% if currentTab == '1' %}class="active"{% endif %}>
+                        <a href="" class="invalidLink">{% trans "Social demographic data" %}</a></li>
+                    <li {% if currentTab == '2' %}class="active"{% endif %}>
+                        <a href="" class="invalidLink">{% trans "Social history" %}</a></li>
+                    <li {% if currentTab == '3' %}class="active"{% endif %}>
+                        <a href="" class="invalidLink">{% trans "Medical evaluation" %}</a></li>
+                    {% if perms.survey.view_survey %}
+                        <li {% if currentTab == '4' %}class="active"{% endif %}>
+                            <a href="" class="invalidLink">{% trans "Questionnaires" %}</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+
+            <input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}" style="visibility: hidden"/>
+            <input type="text" id="action" name="action" style="visibility: hidden"/>
+            <input type="text" id="nextTab" name="nextTab" style="visibility: hidden"/>
+            <input type="text" id="nextTabURL" name="nextTabURL" style="visibility: hidden"/>
+
+            <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
+
+            <div class="tab-content">
+                {% if messages %}
+                    {% for message in messages %}
+
+                        {% if message.tags == "success" %}
+                            <script>showSuccessMessage('{{ message }}')</script>
+                        {% endif %}
+
+                        {% if message.tags == "warning" %}
+                            <script>showWarningMessage('{{ message }}')</script>
+                        {% endif %}
+
+                        {% if message.tags == "error" %}
+                            <script>showErrorMessage('{{ message }}')</script>
+                        {% endif %}
+
+                        {% if message.tags == "info" %}
+                            <script>showInfoMessage('{{ message }}')</script>
+                        {% endif %}
+
+                    {% endfor %}
+                {% endif %}
+
+                {% block sub_content %}{% endblock %}
+
+                <div class="btn-toolbar">
+                    <div class="btn-group pull-left">
+                        {% if not editing %}
+                            {% if perms.patient.delete_patient %}
+                                <button type="button" class="btn btn-danger"
+                                        onclick="$('#modalRemove').modal('show')">{% trans "Delete participant" %}
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="btn-group pull-right">
+                        <div class="btn-group">
+                            <a href="/patient/find/" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                        </div>
+                        {% if editing %}
+                            <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">{% trans "Save and show before" %}</button>
+                            <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Save and show next" %}</button>
+                            {% if currentTab == '0' %}
+                                <button type="button" class="btn btn-primary" id="savetab">{% trans "Save" %}</button>
                             {% else %}
-                                <li {% if currentTab == '0' %}class="active"{% endif %}>
-                                    <a href="" class="invalidLink">{% trans "Personal data" %}</a></li>
-                                <li {% if currentTab == '1' %}class="active"{% endif %}>
-                                    <a href="" class="invalidLink">{% trans "Social demographic data" %}</a></li>
-                                <li {% if currentTab == '2' %}class="active"{% endif %}>
-                                    <a href="" class="invalidLink">{% trans "Social history" %}</a></li>
-                                <li {% if currentTab == '3' %}class="active"{% endif %}>
-                                    <a href="" class="invalidLink">{% trans "Medical evaluation" %}</a></li>
-                                {% if perms.survey.view_survey %}
-                                    <li {% if currentTab == '4' %}class="active"{% endif %}>
-                                        <a href="" class="invalidLink">{% trans "Questionnaires" %}</a></li>
-                                {% endif %}
+                                <button type="submit" name="action" value="save" class="btn btn-primary" id="save_submit_button">{% trans "Save" %}</button>
                             {% endif %}
-                        </ul>
-
-                        <input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}" style="visibility: hidden"/>
-                        <input type="text" id="action" name="action" style="visibility: hidden"/>
-                        <input type="text" id="nextTab" name="nextTab" style="visibility: hidden"/>
-                        <input type="text" id="nextTabURL" name="nextTabURL" style="visibility: hidden"/>
-
-                        <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
-
-                        <div class="tab-content">
-                            {% if messages %}
-                                {% for message in messages %}
-
-                                    {% if message.tags == "success" %}
-                                        <script>showSuccessMessage('{{ message }}')</script>
-                                    {% endif %}
-
-                                    {% if message.tags == "warning" %}
-                                        <script>showWarningMessage('{{ message }}')</script>
-                                    {% endif %}
-
-                                    {% if message.tags == "error" %}
-                                        <script>showErrorMessage('{{ message }}')</script>
-                                    {% endif %}
-
-                                    {% if message.tags == "info" %}
-                                        <script>showInfoMessage('{{ message }}')</script>
-                                    {% endif %}
-
-                                {% endfor %}
+                        {% else %}
+                            <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">{% trans "Show before" %}</button>
+                            <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Show next" %}</button>
+                            {% if perms.patient.change_patient %}
+                                <button type="button" class="btn btn-primary" id="editPatient">{% trans "Edit" %}</button>
                             {% endif %}
-
-                            {% block sub_content %}{% endblock %}
-
-                            <div class="btn-toolbar">
-                                <div class="btn-group pull-left">
-                                    {% if not editing %}
-                                        {% if perms.patient.delete_patient %}
-                                            <button type="button" class="btn btn-secondary"
-                                                    style="background-color: indianred; color: #ffffff"
-                                                    onclick="$('#modalRemove').modal('show')">{% trans "Delete participant" %}
-                                            </button>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                                <div class="btn-group pull-right">
-                                    {% if editing %}
-                                        <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">{% trans "Save and show before" %}</button>
-                                        <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Save and show next" %}</button>
-                                        {% if currentTab == '0' %}
-                                            <button type="button" class="btn btn-primary" id="savetab">{% trans "Save" %}</button>
-                                        {% else %}
-                                            <button type="submit" name="action" value="save" class="btn btn-primary" id="save_submit_button">{% trans "Save" %}</button>
-                                        {% endif %}
-                                    {% else %}
-                                        <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">{% trans "Show before" %}</button>
-                                        <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Show next" %}</button>
-                                        {% if perms.patient.change_patient %}
-                                            <button type="button" class="btn btn-primary" id="editPatient">{% trans "Edit" %}</button>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            {# Modal for saving while changing tab using tabs #}
-            <div class="modal fade" id="modalSaveTab" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            {% trans "Would you like to save?" %}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                            <button type="button" class="btn btn-default" id="savetab_modal_dont_save">{% trans "Do not save" %}</button>
-                            <button type="button" class="btn btn-primary" id="savetab_modal_save">{% trans "Save" %}</button>
-                        </div>
-                    </div>
-                </div>
+{# Modal for saving while changing tab using tabs #}
+<div class="modal fade" id="modalSaveTab" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                {% trans "Would you like to save?" %}
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-default" id="savetab_modal_dont_save">{% trans "Do not save" %}</button>
+                <button type="button" class="btn btn-primary" id="savetab_modal_save">{% trans "Save" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-            {# Modal for alerting if user tries to change tab before creating the patient. #}
-            <div class="modal fade" id="modalInvalidLink" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            {% trans "It is necessary to save personnal data before you can access other tabs." %}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "OK" %}</button>
-                        </div>
-                    </div>
-                </div>
+{# Modal for alerting if user tries to change tab before creating the patient. #}
+<div class="modal fade" id="modalInvalidLink" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                {% trans "It is necessary to save personnal data before you can access other tabs." %}
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "OK" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-            <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            {% trans "Are you sure you want to delete participant?" %}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                            <button type="button" class="btn btn-primary" id="removePatient"
-                                    style="background-color: indianred; color: #ffffff">{% trans "Delete" %}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+<div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                {% trans "Are you sure you want to delete participant?" %}
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-primary" id="removePatient"
+                        style="background-color: indianred; color: #ffffff">{% trans "Delete" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block end_form %}

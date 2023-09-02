@@ -28,6 +28,15 @@
 {% block activePatient %}class="active"{% endblock %}
 
 {% block content %}
+    <div class="tab-pane fade in active" id="mainMenuSearchCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li class="active">{% trans "Search Participants" %}</li>
+            </ol>
+        </div>
+    </div>
+
     <div class="tab-pane fade in active" id="mainMenuSearchTab">
         <div class="col-md-10">
             <div class="container-fluid well">

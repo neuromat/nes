@@ -35,21 +35,24 @@
 
     <div class="tab-pane fade in active" id="mainMenuContactTab">
         <div class="row">
-            <h3>{% trans "Neuroscience Experiments System - NES" %}</h3>
 
-            <br/>
+            <div class="container-fluid">
+                <h3>{% trans "Neuroscience Experiments System - NES" %}</h3>
 
-            {% if institution_config.code %}
-                <h4><span class="fa fa-institution"></span> {{ institution_config.code }}</h4>
-            {% endif %}
+                <br/>
 
-            {% if contact_config.name %}
-                <h5><span class="fa fa-user"></span> {{ contact_config.name }}</h5>
-            {% endif %}
+                {% if institution_config.code %}
+                    <h4><span class="fa fa-institution"></span> {{ institution_config.code }}</h4>
+                {% endif %}
 
-            {% if contact_config.email %}
-                <h5><span class="fa fa-envelope"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES" target="_top">{{ contact_config.email }}</a></h5>
-            {% endif %}
+                {% if contact_config.name %}
+                    <h5><span class="fa fa-user"></span> {{ contact_config.name }}</h5>
+                {% endif %}
+
+                {% if contact_config.email %}
+                    <h5><span class="fa fa-envelope"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES" target="_top">{{ contact_config.email }}</a></h5>
+                {% endif %}
+            </div>
 
             <br/>
             <div class="" style="">

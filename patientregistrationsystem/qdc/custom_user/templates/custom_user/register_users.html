@@ -236,7 +236,7 @@
                     <label class="control-label">{% trans "In which these profiles does user identify?" %} <b style="color: red;">*</b></label>
                     <div class="input-group  input-group-sm">
                         {% for group_permission in group_permissions %}
-                            <div class="myradio">
+                            <div class="checkbox" style="padding-bottom: 8px;">
                                 <label>
                                     {% if group_permission.checked == True %}
                                         <input name="groups" type="checkbox" checked="checked" value={{ group_permission.group.pk }} {% if viewing %}disabled{% endif %}> {%  trans group_permission.group.name %}
