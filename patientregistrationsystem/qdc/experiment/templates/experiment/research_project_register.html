@@ -306,6 +306,13 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}
+
 {% block script %}
     <script>
         $("#modalCopyExperiment").on('show.bs.modal', function (event) {
@@ -316,11 +323,4 @@
         });
     </script>
     <script src="{% static 'quiz/js/research_project.js' %}"></script>
-{% endblock %}
-
-{% endblock %}
-
-{% block end_form %}
-    </form>
-    </div>
 {% endblock %}

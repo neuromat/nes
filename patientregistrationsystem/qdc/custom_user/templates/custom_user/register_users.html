@@ -30,7 +30,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="user_form" method="post" onsubmit="return Validate()" data-toggle="validator">
+    <form id="user_form" role="form" method="post" onsubmit="return Validate()" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -82,8 +82,8 @@
             <h4>{% trans "Basic Information" %}</h4>
             <div class="row">
                 <div class="col-xs-6 col-sm-6">
-                    <div class="form-group {% if form.errors.first_name %}has-error{% endif %}">
-                        <label for="name" class="control-label">{% trans "First name" %}<b style="color: red;">*</b></label>
+                    <div class="form-group has-error {% if form.errors.first_name %}has-error{% endif %}">
+                        <label for="id_first_name" class="control-label">{% trans "First name" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                             {{ form.first_name }}
@@ -97,7 +97,7 @@
                 </div>
                 <div class="col-xs-6 col-sm-6">
                     <div class="form-group {% if form.errors.last_name %}has-error{% endif %}">
-                        <label for="name" class="control-label">{% trans "Last name" %}<b style="color: red;">*</b></label>
+                        <label for="id_last_name" class="control-label">{% trans "Last name" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                             {{ form.last_name }}
@@ -114,8 +114,7 @@
             <div class="row">
                 <div class="col-xs-6 col-sm-6">
                     <div class="form-group {% if form.errors.email %}has-error{% endif %}" id="mailDivId">
-                        <label for="name" class="control-label">E-mail<b style="color: red;">*</b></label>
-
+                        <label for="id_email" class="control-label">E-mail<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"> <span class="fa fa-envelope"></span></span>
                             {{ form.email }}
@@ -129,7 +128,7 @@
                 </div>
                 <div class="col-xs-6 col-sm-6">
                     <div class="form-group">
-                        <label>{% trans "Institution" %}</label>
+                        <label for="id_institution" class="control-label">{% trans "Institution" %}</label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"> <span class="fa fa-building"></span></span>
                             {{ profile_form.institution }}
@@ -141,7 +140,7 @@
             <div class="row">
                 <div class="col-xs-6 col-sm-6">
                     <div class="form-group"  id="citation_name_id">
-                        <label>{% trans "Citation name" %}</label>
+                        <label for="id_citation_name" class="control-label">{% trans "Citation name" %}</label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                             {{ profile_form.citation_name }}
@@ -154,7 +153,7 @@
                 <div class="col-xs-10 col-sm-10">
                     <div class="form-group">
                         <input type="text" id="operation" value="{% if creating %}creating{% elif editing %}editing{% else %}viewing{% endif %}" hidden="hidden">
-                        <label>{%  trans "Can this researcher access the system?" %}</label><br>
+                        <label for="operation" >{%  trans "Can this researcher access the system?" %}</label><br>
                         <ul id="optradio">
                             {% for radio in profile_form.login_enabled %}
                                 <li><label for="optradio_{{radio.id_for_label|last}}"><input id="optradio_{{radio.id_for_label|last}}" {% if radio.data.selected %}checked="checked"{% endif %} name="login_enabled" type="radio" value="{{radio.data.value}}" {% if viewing %}disabled{% endif %} {% if profile_form.login_enabled.value == True and radio.data.value == False %}onchange="$('#modalDeactivate').modal('show')"{% endif %}> {{radio.data.label}}</label></li>
@@ -169,8 +168,7 @@
                 <div class="col-xs-12 col-sm-12">
                     <div class="form-group" id="username">
                         <div class="form-group {% if form.errors.username %}has-error{% endif %}">
-                            <label for="name" class="control-label">{% trans "Username" %}<b style="color: red;">*</b></label>
-
+                            <label for="id_username" class="control-label">{% trans "Username" %}<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="fa fa-user"></span></span>
                                 {{ form.username }}
@@ -186,12 +184,11 @@
             </div>
 
             <div class="row" id="div_password">
-{#                <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left" title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >#}
                 <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left">
                     <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
                         <label for="id_new_password1" class="control-label">{% trans "Password" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm right-inner-addon">
-                            <span class="input-group-addon"> <span class="fa fa-user"></span></span>
+                            <span class="input-group-addon"> <span class="fa fa-asterisk"></span></span>
                             <div id="show"></div>
                             {{ form.password }}
                         </div>
@@ -204,11 +201,11 @@
                 </div>
                 <div class="col-xs-6 col-sm-6">
                     <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password2_form_group">
-                        <label for="name" class="control-label">{% trans "Please confirm password" %}<b style="color: red;">*</b></label>
+                        <label for="id_new_password2" class="control-label">{% trans "Please confirm password" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm has-feedback">
-                            <span class="input-group-addon"> <span class="fa fa-user"></span></span>
-                            <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
-                                   placeholder="{% trans "Type password" %}" type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
+                            <span class="input-group-addon"> <span class="fa fa-asterisk"></span></span>
+                            <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required
+                                   placeholder="{% trans 'Type password' %}" type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
                         </div>
                         <div class="help-block with-errors">
                             {% for error in form.errors.password %}
@@ -233,8 +230,8 @@
             <div class="row">
                 <div class="container-fluid">
                 <div class="form-group">
-                    <label class="control-label">{% trans "In which these profiles does user identify?" %} <b style="color: red;">*</b></label>
-                    <div class="input-group  input-group-sm">
+                    <label for="check_profile" class="control-label">{% trans "In which these profiles does user identify?" %} <b style="color: red;">*</b></label>
+                    <div id="check_profile" class="input-group  input-group-sm checkbox">
                         {% for group_permission in group_permissions %}
                             <div class="checkbox" style="padding-bottom: 8px;">
                                 <label>

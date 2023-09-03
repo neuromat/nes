@@ -22,14 +22,20 @@ $(document).ready(function () {
     $('input[name = "login_enabled"]').on('change', function(e) {
         if(e.currentTarget.value == "False") {
             username_field.prop('disabled', true);
+            username_field.prop('required', false);
             password1_field.prop('disabled', true);
+            password1_field.prop('required', false);
             password2_field.prop('disabled', true);
+            password2_field.prop('required', false);
             div_user_account.hide();
             div_profiles.hide();
         } else if (e.currentTarget.value == "True") {
             username_field.prop('disabled', false);
+            username_field.prop('required', true);
             password1_field.prop('disabled', false);
+            password1_field.prop('required', true);
             password2_field.prop('disabled', false);
+            password2_field.prop('required', true);
             div_user_account.show();
             div_profiles.show();
         }
@@ -37,16 +43,22 @@ $(document).ready(function () {
 
     if (optradio_0.checked){
         username_field.prop('disabled', true);
+        username_field.prop('required', false);
         password1_field.prop('disabled', true);
+        password1_field.prop('required', false);
         password2_field.prop('disabled', true);
+        password2_field.prop('required', false);
         div_user_account.hide();
         div_profiles.hide();
     }
 
     if (optradio_1.checked){
         username_field.prop('disabled', false);
+        username_field.prop('required', true);
         password1_field.prop('disabled', false);
+        password1_field.prop('required', true);
         password2_field.prop('disabled', false);
+        password2_field.prop('required', true);
         div_user_account.show();
         div_profiles.show();
     }
@@ -62,6 +74,11 @@ $(document).ready(function () {
     if(operation.val()=="editing") {
         if (optradio_1.checked){
             div_password_flag.hide();
+            password_flag.prop('checked', false);
+            password1_field.prop('disabled', true);
+            password1_field.prop('required', false);
+            password2_field.prop('disabled', true);
+            password2_field.prop('required', false);
         }
 
         $('input[name = "login_enabled"]').on('change', function(e) {

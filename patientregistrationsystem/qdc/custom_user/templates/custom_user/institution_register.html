@@ -6,7 +6,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="user_form" method="post" data-toggle="validator">
+    <form id="user_form" role="form" method="post" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -68,8 +68,8 @@
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group {% if institution_form.name.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Name" %} <b style="color: red;">*</b></label>
+                        <div class="form-group has-feedback {% if institution_form.name.errors %}has-error{% endif %}">
+                            <label for="id_name" class="control-label">{% trans "Name" %} <b style="color: red;">*</b></label>
                             {{ institution_form.name }}
                             <div class="help-block with-errors">
                                 {% for error in institution_form.name.errors %}

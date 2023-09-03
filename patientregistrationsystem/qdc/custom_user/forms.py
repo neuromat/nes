@@ -24,6 +24,7 @@ class UserForm(ModelForm):
                 "class": "form-control",
                 "autofocus": "true",
                 "placeholder": _("Type first name"),
+                "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
             }
         ),
     )
@@ -34,6 +35,7 @@ class UserForm(ModelForm):
                 "class": "form-control",
                 "autofocus": "true",
                 "placeholder": _("Type last name"),
+                "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
             }
         ),
     )
@@ -43,10 +45,10 @@ class UserForm(ModelForm):
             attrs={
                 "class": "form-control",
                 "placeholder": _("Type e-mail"),
-                "id": "email",
+                "id": "id_email",
                 "type": "email",
                 "data-error": "E-mail inválido",
-                "pattern": r"^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
+                "pattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
             }
         ),
     )
@@ -61,6 +63,7 @@ class UserForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "placeholder": _("Type user name"),
+                    "pattern": "^[A-z]{1}[_A-z0-9]{2,}$",
                 }
             ),
             "password": PasswordInput(
@@ -160,6 +163,7 @@ class ResearcherForm(ModelForm):
                     "autofocus": "true",
                     "required": "",
                     "placeholder": _("Type first name"),
+                    "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
                 }
             ),
             "last_name": TextInput(
@@ -168,6 +172,7 @@ class ResearcherForm(ModelForm):
                     "autofocus": "true",
                     "required": "",
                     "placeholder": _("Type last name"),
+                    "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
                 }
             ),
             "email": TextInput(
@@ -175,10 +180,10 @@ class ResearcherForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "placeholder": _("Type e-mail"),
-                    "id": "email",
+                    "id": "id_email",
                     "type": "email",
                     "data-error": "E-mail inválido",
-                    "pattern": r"^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
+                    "pattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
                 }
             ),
             "citation_name": TextInput(
@@ -194,7 +199,12 @@ class InstitutionForm(ModelForm):
 
         widgets = {
             "name": TextInput(
-                attrs={"class": "form-control", "required": "", "autofocus": ""}
+                attrs={
+                    "class": "form-control",
+                    "required": "",
+                    "autofocus": "",
+                    "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
+                }
             ),
             "acronym": TextInput(attrs={"class": "form-control"}),
             "country": Select(attrs={"class": "form-control"}),

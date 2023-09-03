@@ -9,7 +9,6 @@
 {% block content %}
     {% if messages %}
         {% for message in messages %}
-
             {% if message.tags == "success" %}
                 <script>showSuccessMessage('{{ message }}')</script>
             {% endif %}

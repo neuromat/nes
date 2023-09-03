@@ -14,10 +14,10 @@
     <meta name="description" content="">
     <meta name="author" content="NeuroMat">
 
-    <link rel="stylesheet" href="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.min.css' %}">
     <link rel="stylesheet" href="{% static 'quiz/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}">
-    <link rel="stylesheet" href="{% static 'quiz/toastr/toastr.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'quiz/toastr/toastr.min.css' %}">
     <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.7.0/css/font-awesome.min.css' %}">
 
     <style type="text/css">
@@ -95,7 +95,7 @@
 
 <body>
 <header>
-    <nav class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
+    <nav class="navbar  navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -258,7 +258,7 @@
 {% block end_form %}{% endblock %}
 
 <footer class="footer">
-    <div class="container bg-light">
+    <div class="container bg-default">
         <a href="http://ccsl.ime.usp.br">
             <img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" height="34px" width="96px">
         </a>
@@ -275,7 +275,7 @@
 <script>
     $(document).ready(function() {
         $('.datepicker').datepicker({
-            dateFormat: gettext('mm/dd/yy'),
+            dateFormat: gettext("mm/dd/yyyy"),
             dayNames: [gettext('Sunday'),gettext('Monday'),gettext('Tuesday'),
                 gettext('Wednesday'),gettext('Thursday'),gettext('Friday'),gettext('Saturday')],
             dayNamesMin: [gettext('Su'),gettext('Mo'),gettext('Tu'),gettext('We'),gettext('Th'),
@@ -297,10 +297,10 @@
 </script>
 
 <script type="text/javascript" src="{% static 'quiz/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/masked_input/jquery.maskedinput.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
+{% comment %} <script type="text/javascript" src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script> {% endcomment %}
 <script type="text/javascript" src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/toastr/toastr.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/toastr/toastr.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'quiz/js/quiz.js' %}"></script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script>
