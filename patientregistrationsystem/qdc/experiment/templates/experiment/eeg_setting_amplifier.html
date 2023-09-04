@@ -7,9 +7,7 @@
     <h4>{% trans "EEG amplifier settings" %}</h4>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="container-fluid">
             <div class="form-group">
                 <label class="control-label">{% trans "Manufacturer" %} </label>
 
@@ -26,9 +24,7 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="container-fluid">
             <div class="form-group">
                 <label class="control-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
 
@@ -46,9 +42,7 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="container-fluid">
             <div class="form-group">
                 <label class="control-label">{% trans "Description" %} </label>
                 {{ equipment_form.description }}
@@ -58,9 +52,7 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="container-fluid">
             <div class="form-group">
                 <label class="control-label">{% trans "Gain (times)" %} </label>
                 {{ selection_form.gain }}
@@ -74,9 +66,7 @@
 {% block settings %}
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="container-fluid">
             <div class="form-group {% if setting_form.gain.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "Configured gain (times)" %} </label>
                 {{ setting_form.gain }}
@@ -90,9 +80,7 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="container-fluid">
             <div class="form-group {% if setting_form.sampling_rate.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "Sampling rate (Hz)" %} </label>
                 {{ setting_form.sampling_rate }}
@@ -106,9 +94,7 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="container-fluid">
             <div class="form-group">
                 <label class="control-label">{% trans "Number of used channels" %} <b style="color: red;">*</b></label>
                 {{ setting_form.number_of_channels_used }}

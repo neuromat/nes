@@ -69,22 +69,21 @@
             margin-top:10px
         }
 
-        
-        @media (min-width: 979px) {
-            #myMenu.affix-top {
-                position: static;
-                margin-top:30px;
-                width:228px;
-            }
-            
-            #myMenu.affix-bottom {
-                position: relative;
-            }
-        
-            #myMenu.affix {
+        textarea {
+            resize: vertical;
+        }
+         
+        @media screen and (min-width: 992px) {
+            #sidenav-left {
                 position: fixed;
-                top:70px;
-                width:228px;
+                width: auto;
+            }
+            .sidenav {
+                height: auto;
+                padding: 15px;
+            }
+            .row.content {
+                height: auto;
             }
         }
 
@@ -164,8 +163,8 @@
 
 <div id="main" class="container">
     <div class="row">
-        <nav class="col-xs-12 col-md-2">
-            <ul id="myMenu" class="nav nav-pills nav-stacked">
+        <nav class="col-xs-12 col-md-2" id="#leftCol">
+            <ul class="nav nav-pills nav-stacked sidenav" id="sidenav-left">
 
                 <li {% block activeContact %}{% endblock %}>
                     <a href="/home/">
@@ -272,7 +271,7 @@
 
 
 <script src="{% static 'quiz/jquery/jquery-2.2.4.js' %}"></script>
-<script src="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.js' %}"></script>
+<script src="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'quiz/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
 {% comment %} <script type="text/javascript" src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script> {% endcomment %}

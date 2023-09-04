@@ -1318,7 +1318,7 @@ class ComponentConfiguration(models.Model):
     )
 
     # This is null when the parent is a parallel block.
-    random_position = models.BooleanField(blank=True)
+    random_position = models.BooleanField(blank=True, null=True)
 
     requires_start_and_end_datetime = models.BooleanField(default=False)
 

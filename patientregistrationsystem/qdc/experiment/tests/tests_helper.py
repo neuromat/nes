@@ -102,11 +102,7 @@ class ExperimentTestCase(TestCase):
     def setUp(self):
         super(ExperimentTestCase, self).setUp()
         # create the groups of users and their permissions
-        exec(
-            open(
-                os.getcwd() + "/patientregistrationsystem/qdc/add_initial_data.py"
-            ).read()
-        )
+        exec(open(os.getcwd() + "/add_initial_data.py").read())
 
         self.user, self.user_passwd = create_user(UserGroup.objects.all())
 
