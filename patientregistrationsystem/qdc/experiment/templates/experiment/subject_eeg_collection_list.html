@@ -102,7 +102,7 @@
                                                                 {% for eeg_file in eeg_data.eeg_file_list %}
                                                                     <tr>
                                                                         <td>{{ eeg_file.file.size|filesizeformat }}</td>
-                                                                        <td><a href="{{ eeg_file.file.url }}" data-toggle="tooltip" data-placement="top" title="{% trans "Download file" %}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                                        <td><a href="{{ eeg_file.file.url }}" data-toggle="tooltip" data-placement="top" title="{% trans "Download file" %}"><span class="fa fa-download"></span></a></td>
                                                                         <td>
                                                                             {% if eeg_file.can_export_to_nwb %}
                                                                                 <a onclick="handle_processing();" href="/experiment/eeg_file/{{ eeg_file.id }}/export_nwb/{{ eeg_collection.eeg_configuration.id }}{{ forloop.counter }}/{{ process_requisition }}" data-toggle="tooltip" data-placement="top" title="{% trans "Export nwb file format" %}">
@@ -122,7 +122,7 @@
                                                 <tr>
                                                     <td colspan="7">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data">
-                                                            <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            <span class="fa fa-plus"></span>
                                                             {% trans "New EEG data file" %}
                                                         </a>
                                                     </td>

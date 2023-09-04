@@ -145,6 +145,9 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown dropdown-user dropdown-menu" role="menu">
+                            {% if request.user.is_superuser %}
+                                <li><a href="/admin"><span class="fa fa-star"></span> {% trans "Admin" %}</a></li>
+                            {% endif %}
                             <li><a href="/password_change"><span class="fa fa-key"></span> {% trans "Change password" %}</a></li>
                             <li><a href="{% url 'logout' %}"><span class="fa fa-power-off"></span> {% trans "Logout" %}</a></li>
                         </ul>
@@ -270,6 +273,13 @@
 
 <script src="{% static 'quiz/jquery/jquery-2.2.4.js' %}"></script>
 <script src="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
+{% comment %} <script type="text/javascript" src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script> {% endcomment %}
+<script type="text/javascript" src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/toastr/toastr.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'quiz/js/quiz.js' %}"></script>
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
 {# Apply a date picker and a mask to every field that has the class "datepicker" #}
 <script>
@@ -296,13 +306,6 @@
     });
 </script>
 
-<script type="text/javascript" src="{% static 'quiz/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
-{% comment %} <script type="text/javascript" src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script> {% endcomment %}
-<script type="text/javascript" src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/toastr/toastr.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/js/quiz.js' %}"></script>
-<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script>
     {% if messages %}
         {% for message in messages %}

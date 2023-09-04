@@ -82,7 +82,7 @@
             <h4>{% trans "Basic Information" %}</h4>
             <div class="row">
                 <div class="col-xs-6 col-sm-6">
-                    <div class="form-group has-error {% if form.errors.first_name %}has-error{% endif %}">
+                    <div class="form-group {% if form.errors.first_name %}has-error{% endif %}">
                         <label for="id_first_name" class="control-label">{% trans "First name" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"> <span class="fa fa-user"></span></span>
@@ -170,7 +170,7 @@
                         <div class="form-group {% if form.errors.username %}has-error{% endif %}">
                             <label for="id_username" class="control-label">{% trans "Username" %}<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="fa fa-user"></span></span>
+                                <span class="input-group-addon"> <span class="fa fa-user-circle"></span></span>
                                 {{ form.username }}
                             </div>
                             <div class="help-block with-errors">
@@ -241,7 +241,7 @@
                                         <input name="groups" type="checkbox" value={{ group_permission.group.pk }} {% if viewing %}disabled{% endif %}> {%  trans group_permission.group.name %}
                                     {% endif %}
                                 </label>
-                                <h5>
+                                <h5 class="text-justify">
                                     <small>
                                         ({% for permission in group_permission.group.permissions.all %}{%  trans permission.name %}, {% endfor %})
                                     </small>

@@ -146,9 +146,9 @@
                                                                                 {% endif %}
                                                                                 <td class="text-center col-md-1">
                                                                                     {% if accordion.0.id in protected_uses_of_step %}
-                                                                                        <a class="btn glyphicon glyphicon-ban-circle" style="color: indianred;" data-toggle="tooltip" data-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
+                                                                                        <a class="btn fa fa-ban" style="color: indianred;" data-toggle="tooltip" data-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
                                                                                     {% else %}
-                                                                                        <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
+                                                                                        <a class="btn fa fa-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
                                                                                     {% endif %}
                                                                                 </td>
                                                                             {% else %}
@@ -267,9 +267,9 @@
                                                                             {% if not component_configuration and can_change %}
                                                                                 <td class="text-center col-md-1">
                                                                                     {% if accordion.0.id in protected_uses_of_step %}
-                                                                                        <a class="btn glyphicon glyphicon-ban-circle" style="color: indianred;" data-toggle="tooltip" data-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
+                                                                                        <a class="btn fa fa-ban" style="color: indianred;" data-toggle="tooltip" data-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
                                                                                     {% else %}
-                                                                                        <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
+                                                                                        <a class="btn fa fa-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
                                                                                     {% endif %}
                                                                                 </td>
                                                                             {% endif %}

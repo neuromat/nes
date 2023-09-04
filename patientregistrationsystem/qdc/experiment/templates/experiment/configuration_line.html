@@ -41,10 +41,10 @@
             <td class="text-center col-md-1">
                 {% if configuration.id in protected_uses_of_step %}
                     {# Warn that there is data collected for this step #}
-                    <a data-toggle="tooltip" data-placement="right" style="color: indianred;" class="btn glyphicon glyphicon-ban-circle" title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}" ></a>
+                    <a data-toggle="tooltip" data-placement="right" style="color: indianred;" class="btn fa fa-ban" title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}" ></a>
                 {% else %}
                     {# Remove item from the list #}
-                    <a data-toggle="tooltip" data-placement="right" style="color: indianred;" class="btn glyphicon glyphicon-remove" title="{% trans "Delete uses from list" %}" onclick="show_modal_remove('fixed', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});"></a>
+                    <a data-toggle="tooltip" data-placement="right" style="color: indianred;" class="btn fa fa-remove" title="{% trans "Delete uses from list" %}" onclick="show_modal_remove('fixed', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});"></a>
                 {% endif %}
             </td>
         {% else %}

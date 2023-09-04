@@ -60,7 +60,7 @@
                             <div class="form-group {% if patient_form.errors.cpf %}has-error{% endif %}">
                                 <label for="cpf" class="control-label">{% trans "Security id" %}</label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                                    <span class="input-group-addon"> <span class="fa fa-id-card"></span></span>
                                     {{ patient_form.cpf }}
                                 </div>
                                 <div class="help-block with-errors">
@@ -78,7 +78,7 @@
                             <div class="form-group">
                                 <label>{% trans "Origin" %}</label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-import"></span></span>
+                                    <span class="input-group-addon"> <span class="fa fa-check"></span></span>
                                     {{ patient_form.origin }}
                                 </div>
                             </div>
@@ -98,7 +98,7 @@
                             <div class="form-group {% if patient_form.errors.date_birth %}has-error{% endif %}">
                                 <label for="date_birth" class="control-label">{% trans "Date of birth" %} <b style="color: red;">*</b></label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
+                                    <span class="input-group-addon"> <span class="fa fa-birthday-cake"></span></span>
                                     {{ patient_form.date_birth }}
                                 </div>
                                 <div class="help-block with-errors">
@@ -114,7 +114,7 @@
                             <div class="form-group">
                                 <label for="id_gender" class="control-label">{% trans "Gender" %} <b style="color: red;">*</b></label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                    <span class="input-group-addon"> <span class="fa fa-intersex"></span></span>
                                     {{ patient_form.gender }}
                                 </div>
                                 <div class="help-block with-errors"></div>
@@ -135,7 +135,7 @@
                             <div class="form-group">
                                 <label>{% trans "Marital status" %}</label>
                                 <div class="input-group  input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                    <span class="input-group-addon"> <span class="fa fa-genderless"></span></span>
                                     {{ patient_form.marital_status }}
                                 </div>
                             </div>
@@ -282,7 +282,7 @@
                             <div class="col-xs-6 col-sm-3">
                                 <div class="form-group">
                                     <div class="input-group  input-group-sm">
-                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                                        <span class="input-group-addon"> <span class="fa fa-phone"></span></span>
                                         {{ telephone_form.number }}
                                     </div>
                                 </div>
@@ -290,7 +290,7 @@
                             <div class="col-xs-6 col-sm-3">
                                 <div class="form-group">
                                     <div class="input-group  input-group-sm">
-                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-tag"></span></span>
+                                        <span class="input-group-addon"> <span class="fa fa-tag"></span></span>
                                         {{ telephone_form.type }}
                                     </div>
                                     <div class="help-block with-errors"></div>
@@ -299,7 +299,7 @@
                             <div class="col-xs-8 col-sm-4">
                                 <div class="form-group">
                                     <div class="input-group  input-group-sm">
-                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-pencil"></span></span>
+                                        <span class="input-group-addon"> <span class="fa fa-pencil"></span></span>
                                         {{ telephone_form.note }}
                                     </div>
                                     <div class="help-block with-errors"></div>

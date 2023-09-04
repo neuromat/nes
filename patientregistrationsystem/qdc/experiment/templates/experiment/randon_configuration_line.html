@@ -20,9 +20,9 @@
     {% if not component_configuration and can_change %}
         <td class="text-center col-md-1">
             {% if configuration.id in protected_uses_of_step %}
-                <a class="btn glyphicon glyphicon-ban-circle" data-toggle="tooltip" data-placement="right" style="color: indianred;" title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}"></a>
+                <a class="btn fa fa-ban" data-toggle="tooltip" data-placement="right" style="color: indianred;" title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}"></a>
             {% else %}
-                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" style="color: indianred;" onclick="show_modal_remove('random', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});" title="{% trans "Delete uses from list" %}"></a>
+                <a class="btn fa fa-remove" data-toggle="tooltip" data-placement="right" style="color: indianred;" onclick="show_modal_remove('random', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});" title="{% trans "Delete uses from list" %}"></a>
             {% endif %}
         </td>
     {% endif %}

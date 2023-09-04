@@ -141,9 +141,9 @@
                                                         <td>
                                                             {{ exam_file.content.name }}
                                                             <div class="btn-toolbar pull-right">
-                                                            <button class="btn btn-default pull-left" type="button" onclick="location.href='{{ exam_file.content.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                                            <button class="btn btn-default pull-left" type="button" onclick="location.href='{{ exam_file.content.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
                                                                 {% if not viewing %}
-                                                                    <button class="btn btn-default pull-right" type="button" onclick="show_modal_remove({{ exam_file.id }})"><span class="glyphicon glyphicon-remove" style="color: indianred"></span></button>
+                                                                    <button class="btn btn-default pull-right" type="button" onclick="show_modal_remove({{ exam_file.id }})"><span class="fa fa-remove" style="color: indianred"></span></button>
                                                                 {% endif %}
                                                             </div>
                                                         </td>

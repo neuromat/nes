@@ -33,7 +33,7 @@
                                 <td><a data-toggle="tooltip" data-placement="left" href="/survey/{{ questionnaire.id }}" title="{% trans 'View' %}"> 
                                     {{ questionnaire.lime_survey_id }} - {{ questionnaire.title }} </a></td>
                                 <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
-                                <td style="text-align: center">{% if questionnaire.is_active == True %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% else %}<span class="glyphicon glyphicon-remove" style="color: red"></span> {% endif %}</td>
+                                <td style="text-align: center">{% if questionnaire.is_active == True %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% else %}<span class="fa fa-remove" style="color: red"></span> {% endif %}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

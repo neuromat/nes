@@ -15,6 +15,14 @@ from django.forms import (
 )
 from django.utils.translation import gettext_lazy as _
 
+from custom_user.regex_utils import (
+    EMAIL_REGEX,
+    FIRSTNAME_REGEX,
+    LASTNAME_REGEX,
+    PASSWORD_REGEX,
+    USERNAME_REGEX,
+)
+
 
 class UserForm(ModelForm):
     first_name = CharField(
@@ -24,7 +32,6 @@ class UserForm(ModelForm):
                 "class": "form-control",
                 "autofocus": "true",
                 "placeholder": _("Type first name"),
-                "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
             }
         ),
     )
@@ -35,7 +42,6 @@ class UserForm(ModelForm):
                 "class": "form-control",
                 "autofocus": "true",
                 "placeholder": _("Type last name"),
-                "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
             }
         ),
     )
@@ -47,8 +53,8 @@ class UserForm(ModelForm):
                 "placeholder": _("Type e-mail"),
                 "id": "id_email",
                 "type": "email",
-                "data-error": "E-mail inválido",
-                "pattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
+                "data-error": _("Invalid e-mail"),
+                # "pattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
             }
         ),
     )
@@ -61,17 +67,28 @@ class UserForm(ModelForm):
             "username": TextInput(
                 attrs={
                     "class": "form-control",
+                    "name": "username",
                     "required": "",
                     "placeholder": _("Type user name"),
-                    "pattern": "^[A-z]{1}[_A-z0-9]{2,}$",
+                    "data-minlength": "6",
+                    "data-error": _(
+                        "Username must start with a letter and contain only alphanumeric characters (6-30)"
+                    ),
+                    "pattern": USERNAME_REGEX,
                 }
             ),
             "password": PasswordInput(
                 attrs={
                     "id": "id_new_password1",
+                    "name": "password",
                     "required": "",
                     "class": "form-control",
                     "placeholder": _("Type password"),
+                    "data-minlength": "8",
+                    "data-error": _(
+                        "Password must contain at least a number, an uppercase letter and a lowercase letter (8-127)"
+                    ),
+                    "pattern": PASSWORD_REGEX,
                     "onkeyup": "passwordForce(); if(beginCheckPassword1)checkPassExt();",
                 }
             ),
@@ -101,8 +118,12 @@ class UserFormUpdate(UserForm):
                 "id": "id_new_password1",
                 "class": "form-control",
                 "placeholder": _("Type password"),
-                "onkeyup": "passwordForce(); "
-                "if(beginCheckPassword1) checkPassExt();",
+                "data-minlength": "8",
+                "data-error": _(
+                    "Password must contain at least a number, an uppercase letter and a lowercase letter (8-127)"
+                ),
+                "pattern": PASSWORD_REGEX,
+                "onkeyup": "passwordForce(); if(beginCheckPassword1)checkPassExt();",
             }
         ),
     )
@@ -163,7 +184,9 @@ class ResearcherForm(ModelForm):
                     "autofocus": "true",
                     "required": "",
                     "placeholder": _("Type first name"),
-                    "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
+                    "data-error": _("Only use letters and spaces"),
+                    "pattern": FIRSTNAME_REGEX,
+                    "text-transformation": "uppercase",
                 }
             ),
             "last_name": TextInput(
@@ -172,18 +195,21 @@ class ResearcherForm(ModelForm):
                     "autofocus": "true",
                     "required": "",
                     "placeholder": _("Type last name"),
-                    "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
+                    "data-error": _("Only use letters and spaces"),
+                    "pattern": LASTNAME_REGEX,
+                    "text-transformation": "uppercase",
                 }
             ),
             "email": TextInput(
                 attrs={
+                    "name": "email",
                     "class": "form-control",
                     "required": "",
                     "placeholder": _("Type e-mail"),
                     "id": "id_email",
                     "type": "email",
                     "data-error": "E-mail inválido",
-                    "pattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
+                    "pattern": EMAIL_REGEX,
                 }
             ),
             "citation_name": TextInput(
@@ -203,7 +229,7 @@ class InstitutionForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "autofocus": "",
-                    "pattern": "^[A-z]{1,}([- ]{0,1}[A-z]{0,}){0,3}[A-z]$",
+                    "pattern": "",
                 }
             ),
             "acronym": TextInput(attrs={"class": "form-control"}),

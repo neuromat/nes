@@ -80,13 +80,13 @@
                                                 <h6>
                                                     {% if data_collection.subject_step_data %}
                                                         <a href="/experiment/subject_step_data/edit/{{ data_collection.subject_step_data.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "Set start and end date/time" %}">
-                                                            <span class="glyphicon glyphicon-time"></span>
+                                                            <span class="fa fa-clock-0"></span>
                                                         </a>
                                                         {% if data_collection.subject_step_data.start_time %}<i>{% trans "from" %}</i> {{ data_collection.subject_step_data.start_time }}{% endif %}
                                                         {% if data_collection.subject_step_data.end_time %}<i>{% trans "to" %}</i> {{ data_collection.subject_step_data.end_time }}{% endif %}
                                                     {% else %}
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/subject_step_data/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/add" data-toggle="tooltip" data-placement="left" title="{% trans "Set start and end date/time" %}">
-                                                            <span class="glyphicon glyphicon-time"></span>
+                                                            <span class="fa fa-clock-0"></span>
                                                             <i>{% trans "Set start and end date/time" %}</i>
                                                         </a>
                                                     {% endif %}
@@ -123,7 +123,7 @@
                                                                 {% for additional_data_file in additional_data.additional_data_files.all %}
                                                                     <tr>
                                                                         <td>{{ additional_data_file.file.size|filesizeformat }}</td>
-                                                                        <td><a href="{{ additional_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                                        <td><a href="{{ additional_data_file.file.url }}"><span class="fa fa-download"></span></a></td>
                                                                     </tr>
                                                                 {% endfor %}
 
@@ -136,7 +136,7 @@
                                                 <tr>
                                                     <td colspan="5">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/add">
-                                                            <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            <span class="fa fa-plus"></span>
                                                             {% trans "New additional data file" %}
                                                         </a>
                                                     </td>

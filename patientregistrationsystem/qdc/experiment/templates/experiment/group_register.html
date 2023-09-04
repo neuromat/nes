@@ -106,7 +106,7 @@
                                 <div class="form-group">
                                     <input id="group_id" value="{{ group.id }}" style="display: none;">
                                     <div class="input-group  input-group-sm "><span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-edit"></span></span>
+                                            <span class="fa fa-edit"></span></span>
                                         <input class="form-control" id="get_diseases" type="text"
                                                placeholder="{%  trans "Inform disease diagnosis or disease code (ICD-10)" %}">
                                     </div>
@@ -140,7 +140,7 @@
                                                 <td>
                                                     {{ classification_of_diseases.abbreviated_description }}
                                                     {% if can_change %}
-                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                        <a class="btn fa fa-remove" data-toggle="tooltip"
                                                            data-placement="right" title="{% trans "Delete" %}" style="color: indianred;
                                                        position: relative; float: right; padding: 0"
                                                            onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a>
@@ -278,11 +278,11 @@
 
                                                     {% if can_change %}
                                                        {% if group_has_data_collection %}
-                                                        <a class="btn glyphicon glyphicon-ban-circle" data-toggle="tooltip" data-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
+                                                        <a class="btn fa fa-ban" data-toggle="tooltip" data-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
                                                            title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}">
                                                         </a>
                                                        {% else %}
-                                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
+                                                            <a class="btn fa fa-remove" data-toggle="tooltip" data-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
                                                                title="{% trans "UnConfigure experimental protocol" %}" onclick="show_modal_remove_experimental_protocol();">
                                                             </a>
                                                        {% endif %}

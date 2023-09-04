@@ -26,8 +26,9 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
                 "class": "form-control",
                 "required": "",
                 "data-minlength": "8",
-                "data-error": "Password must contain at least 8 characters, "
-                "including at least one uppercase letter, digit or special character.",
+                "data-error": "Password must contain at least %d characters, "
+                "including at least one uppercase letter, digit or special character."
+                % self.MIN_LENGTH,
                 "pattern": r"([a-z]*([A-Z]|[0-9]|[ !@#\$%&'\(\)\*\+,-\.\/:;<=>\?\[\\\\\]_\{\|\}~])[a-z]*){1,}",
                 "placeholder": _("New password"),
             }
@@ -39,6 +40,7 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
                 "required": "",
                 "data-match": "#id_new_password1",
                 "placeholder": _("Confirm new password"),
+                "data-error": _("Passwords don't match"),
             }
         )
 
@@ -64,8 +66,9 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
                 break
         if not ok:
             raise ValidationError(
-                "Password must contain at least 8 characters, "
+                "Password must contain at least %d characters, "
                 "including at least one uppercase letter, digit or special character."
+                % self.MIN_LENGTH,
             )
 
         return password1

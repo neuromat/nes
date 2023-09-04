@@ -21,6 +21,7 @@ $(document).ready(function () {
 
     $('input[name = "login_enabled"]').on('change', function(e) {
         if(e.currentTarget.value == "False") {
+            console.log("teste")
             username_field.prop('disabled', true);
             username_field.prop('required', false);
             password1_field.prop('disabled', true);

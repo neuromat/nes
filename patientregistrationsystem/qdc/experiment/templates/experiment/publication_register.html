@@ -131,7 +131,7 @@
                                     <td style="text-align: center">{% if experiment.is_public %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
                                     <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
                                     <td class="text-center col-md-1">
-                                        <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_experiment_from_publication('{{ experiment.id }}');" title="{% trans "Remove experiment from list" %}"></a>
+                                        <a class="btn fa fa-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_experiment_from_publication('{{ experiment.id }}');" title="{% trans "Remove experiment from list" %}"></a>
                                     </td>
                                 </tr>
                             {% endfor %}

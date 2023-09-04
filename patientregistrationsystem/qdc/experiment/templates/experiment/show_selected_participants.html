@@ -52,7 +52,7 @@
                             <tbody>
                             {% for participant in participants_list %}
                                 <tr>
-                                    <td><a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="left" title="{% trans "Delete participant" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                    <td><a class="btn fa fa-remove" data-toggle="tooltip" data-placement="left" title="{% trans "Delete participant" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                    onclick="show_modal_remove({{ participant.id }});"></a>{{ participant.code }}</td>
                                     <td>{{ participant.date_birth|timesince }}</td>
                                     <td>{{ participant.gender }}</td>
@@ -76,13 +76,13 @@
                 <div class="btn-group pull-right">
                     <button type="submit" name="action" value="next-step-2" class="btn btn-primary"
                             {% if not participants_list|length %}disabled{% endif %}>{% trans "Add participants" %}
-                        <span class="glyphicon glyphicon-forward"></span>
+                        <span class="fa fa-forward"></span>
                     </button>
                 </div>
 
                 <div class="btn-group pull-right">
                     <button type="submit" name="action" value="previous-step-2" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-backward"></span>
+                        <span class="fa fa-backward"></span>
                         {% trans "Previous" %}
                     </button>
                 </div>

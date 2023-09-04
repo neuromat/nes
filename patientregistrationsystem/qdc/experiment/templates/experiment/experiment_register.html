@@ -64,7 +64,7 @@
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <div class="container-fluid well">
-                <h4><span class="glyphicon glyphicon-info-sign"></span> {% trans "Basic experiment information" %}</h4>
+                <h4><span class="fa fa-info-circle"></span> {% trans "Basic experiment information" %}</h4>
                 <div class="row" {% if creating %}style="display: none;"{% endif %}>
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
@@ -125,7 +125,7 @@
                                     {{ experiment_form.ethics_committee_project_file }}
                                 {% else %}
                                     {{ experiment_form.ethics_committee_project_file.value }}
-                                    <button class="btn btn-default" type="button" onclick="location.href='{{ experiment.ethics_committee_project_file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                    <button class="btn btn-default" type="button" onclick="location.href='{{ experiment.ethics_committee_project_file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
                                 {% endif %}
                                 <div class="help-block with-errors"></div>
                             </div>
@@ -173,7 +173,7 @@
 
                             <div class="row">
                                 <div class="col-md-4">
-                                    <span class="glyphicon glyphicon-refresh"> </span>
+                                    <span class="fa fa-refresh"> </span>
                                     <label class="control-label">{% trans "Last update of the experiment:" %}</label>
                                 </div>
                                 <div class="col-md-8">
@@ -183,7 +183,7 @@
 
                             <div class="row">
                                 <div class="col-md-4">
-                                    <span class="glyphicon glyphicon-send"> </span>
+                                    <span class="fa fa-send"> </span>
                                     <label class="control-label">{% trans "Last sending status:" %}</label>
                                 </div>
                                 <div class="col-md-8">
@@ -273,7 +273,7 @@
                                     </td>
                                     <td style="text-align: right">
                                         {% if can_change %}
-                                            <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove researcher" %}"></a>
+                                            <a class="btn fa fa-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove researcher" %}"></a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -329,7 +329,7 @@
                 </div>
 
                 <div class="container-fluid well">
-                <h4><span class="glyphicon glyphicon-flash"></span> {% trans "EEG Settings" %}</h4>
+                <h4><span class="fa fa-flash"></span> {% trans "EEG Settings" %}</h4>
 
                     {% if eeg_setting_list %}
                         <div class="form-group">
@@ -396,7 +396,7 @@
                 </div>
 
                 <div class="container-fluid well">
-                <h4><span class="glyphicon glyphicon-magnet"></span> {% trans "TMS Settings" %}</h4>
+                <h4><span class="fa fa-magnet"></span> {% trans "TMS Settings" %}</h4>
                     {% if tms_setting_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -429,7 +429,7 @@
                 </div>
 
                 <div class="container-fluid well">
-                <h4><span class="glyphicon glyphicon-tree-conifer"></span> {% trans "Context trees" %}</h4>
+                <h4><span class="fa fa-tree"></span> {% trans "Context trees" %}</h4>
                     {% if context_tree_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -464,7 +464,7 @@
 
 
                 <div class="container-fluid well">
-                    <h4><span class="glyphicon glyphicon-tasks"></span> {% trans "Steps of experimental protocol" %}</h4>
+                    <h4><span class="fa fa-tasks"></span> {% trans "Steps of experimental protocol" %}</h4>
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary">{% trans "Manage" %}</a>

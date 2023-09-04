@@ -170,7 +170,7 @@
                                             <tr>
                                                 <td>
                                                     {% if perms.experiment.delete_subject and can_change %}
-                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="left" title="{% trans "Delete participant" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                                        <a class="btn fa fa-remove" data-toggle="tooltip" data-placement="left" title="{% trans "Delete participant" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                            onclick="show_modal_remove({{ item.subject.id }});"></a>
                                                     {% endif %}
                                                     {% get_name_or_code item.subject.patient.id %}
@@ -181,10 +181,10 @@
                                                         {% if can_change and perms.patient.sensitive_data_patient %}
                                                             <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file"
                                                                data-toggle="tooltip" data-placement="top" title="{% trans "Upload consent form" %}">
-                                                                <span class="glyphicon glyphicon-paperclip"></span>
+                                                                <span class="fa fa-paperclip"></span>
                                                             </a>
                                                         {% else %}
-                                                            <span class="glyphicon glyphicon-paperclip"></span>
+                                                            <span class="fa fa-paperclip"></span>
                                                         {% endif %}
                                                     </div>
                                                     <div class="col-xs-10 col-sm-10" >
@@ -224,7 +224,7 @@
                                                             <div class="col-xs-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded EEG data files" %}">
-                                                                    <span class="glyphicon glyphicon-flash"></span> {% trans "EEG" %}
+                                                                    <span class="fa fa-flash"></span> {% trans "EEG" %}
                                                                 </a>
                                                             </div>
                                                             <div class="col-xs-8 col-sm-8">
@@ -260,7 +260,7 @@
                                                             <div class="col-xs-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/tms"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded TMS data files" %}">
-                                                                    <span class="glyphicon glyphicon-magnet"></span> {% trans "TMS" %}
+                                                                    <span class="fa fa-magnet"></span> {% trans "TMS" %}
                                                                 </a>
                                                             </div>
                                                             <div class="col-xs-8 col-sm-8">
@@ -296,7 +296,7 @@
                                                             <div class="col-xs-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/generic_data_collection"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded generic collection data files" %}">
-                                                                    <span class="glyphicon glyphicon-file"></span> {% trans "Data collection" %}
+                                                                    <span class="fa fa-file"></span> {% trans "Data collection" %}
                                                                 </a>
                                                             </div>
                                                             <div class="col-xs-8 col-sm-8">

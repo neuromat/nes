@@ -71,8 +71,8 @@
                                 <div class="col-xs-4 col-sm-6">
                                     <div class="btn-toolbar">
                                         {% if perms.patient.sensitive_data_patient %}
-                                            <button class="btn btn-default" type="button" onclick="location.href='{{ file_list.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
-                                            <button class="btn btn-default" type="button" onclick="$('#modalRemove').modal('show')"><span class="glyphicon glyphicon-remove" style="color: indianred"></span></button>
+                                            <button class="btn btn-default" type="button" onclick="location.href='{{ file_list.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                            <button class="btn btn-default" type="button" onclick="$('#modalRemove').modal('show')"><span class="fa fa-remove" style="color: indianred"></span></button>
                                         {% endif %}
                                     </div>
                                 </div>

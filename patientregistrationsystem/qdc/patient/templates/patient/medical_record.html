@@ -95,7 +95,7 @@
                                 <input id="patient_id" value="{{ patient_id }}" style="display: none;">
                                 <input id="medical_record_id" value="{{ record_id }}" style="display: none;">
                                 <div class="input-group  input-group-sm "><span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-edit"></span></span>
+                                    <span class="fa fa-edit"></span></span>
                                     <input class="form-control" placeholder="{% trans "Specify diagnosis or disease code (ICD-10)" %}"
                                            id="id_whichComplementaryExam" type="text">
                                 </div>
@@ -129,7 +129,7 @@
                                                 <td>
                                                     <b>{{ diagnosis.classification_of_diseases }}</b>
                                                     {% if editing %}
-                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                                        <a class="btn fa fa-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                            onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }});"></a>
                                                     {% endif %}
                                                     <br/>

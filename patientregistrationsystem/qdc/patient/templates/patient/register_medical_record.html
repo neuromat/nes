@@ -40,7 +40,7 @@
                                     <td>{{ record.record_responsible }}</td>
                                     {% if perms.patient.view_medicalrecorddata %}
                                         {% if editing %}
-                                            <td><a class="glyphicon glyphicon-edit"
+                                            <td><a class="fa fa-edit"
                                                    href="/patient/{{ patient_id }}/medical_record/edit/{{ record.pk }}/?status=edit"></a>
                                             </td>
                                         {% else %}

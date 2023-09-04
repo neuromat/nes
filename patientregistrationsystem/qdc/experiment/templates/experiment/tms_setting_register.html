@@ -95,7 +95,7 @@
             {% if not editing %}
 
                 <div class="container-fluid well">
-                    <h4><span class="glyphicon glyphicon-cog"></span> {% trans "Settings:" %}</h4>
+                    <h4><span class="fa fa-cog"></span> {% trans "Settings:" %}</h4>
                     <div class="form-group">
                         <table class="table table-striped col-xs-12 col-md-12">
                             <thead>
@@ -130,7 +130,7 @@
                                     </td>
                                     <td>
                                         {% if tms_setting.tms_device_setting %}
-                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                            <a class="btn fa fa-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                onclick="show_modal_remove_setting('tms_device');"></a>
                                         {% endif %}
                                     </td>
