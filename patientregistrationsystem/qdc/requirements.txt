@@ -2,10 +2,10 @@ pip>=23.2.1
 setuptools>=68.0.0
 future>= 0.18.3
 
-django>=4.2.4
+django>=4.2.4,<5
 django-jenkins==0.110.0
-django-modeltranslation>=0.18.1
-django-simple-history==3.1.1
+django-modeltranslation>=0.18.11
+django-simple-history==3.3.0
 django-maintenance-mode>=0.16.3
 django-fixture-magic>=0.1.5
 django-solo==2.1.0
@@ -13,7 +13,7 @@ jsonrpclib==0.2.1 #FIXME: nao compativel com python 3.11
 
 types-python-dateutil
 python-dateutil==2.8.2
-psycopg2>=2.9.7, <3.0
+psycopg2>=2.9.7, <3
 
 pylance
 pylint
@@ -30,10 +30,10 @@ h5py>=2.6.0
 # https://github.com/matplotlib/matplotlib/blob/f6e0ee49c598f59c6e6cf4eefe473e4dc634a58a/doc/api/prev_api_changes/api_changes_3.4.0/development.rst
 matplotlib>=1.5.3,<3.4
 
-pydot==1.2.4
+pydot==1.4.2
 coreapi==2.3.3
-GitPython==3.1.32
-reportlab==3.6.13
+GitPython==3.1.34
+reportlab>=3.6,<4
 xhtml2pdf==0.2.11
 networkx==2.8.8
 

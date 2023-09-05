@@ -50,11 +50,11 @@ services:
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-    network_mode: service:nes_db
+    #network_mode: service:nes_db
     tty: true
     stdin_open: true
-    #ports:
-    # - 80:80
+    ports:
+      - "8000:8000"
     environment:
       NES_DB_TYPE: pgsql
       NES_DB_HOST: nes_db
@@ -79,6 +79,10 @@ services:
     restart: unless-stopped
     volumes:
       - nes_pgdata:/var/lib/postgresql/data:delegated
+    expose: 
+      - 5432
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: nes_db
       POSTGRES_USER: nes_user
@@ -88,8 +92,7 @@ services:
       POSTGRES_INITDB_ARGS: --auth-host=md5
       # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
       # (Adding the "ports" property to this file will not forward from a Codespace.)
-    ports:
-      - "5432:5432"
+    
 
 volumes:
   nes_pgdata:

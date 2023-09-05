@@ -4024,6 +4024,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         response = self.client.post(reverse("export_view"), data)
 
         temp_dir = tempfile.mkdtemp()
+        print("a")
         json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = "sensor_position.png"
@@ -4063,7 +4064,12 @@ class ExportFrictionlessDataTest(ExportTestCase):
         history.save()
         # Get the file uploaded and substitute it by a real EEG raw file
         eegfile = EEGFile.objects.first()
-        with File(open("export/tests/example.raw", "rb")) as f:
+        with File(
+            open(
+                "export/tests/example.raw",
+                "rb",
+            )
+        ) as f:
             eegfile.file.save("example.raw", f)
         eegfile.save()
 

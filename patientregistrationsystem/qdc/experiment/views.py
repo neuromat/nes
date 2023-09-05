@@ -259,15 +259,15 @@ from .portal import (
 permission_required = partial(permission_required, raise_exception=True)
 
 icon_class = {
-    "block": "glyphicon glyphicon-th-large",
+    "block": "fa fa-th-large",
     "instruction": "fa fa-comment",
-    "pause": "fa fa-clock",
+    "pause": "fa fa-clock-o",
     "questionnaire": "fa fa-list-alt",
     "stimulus": "fa fa-headphones",
     "task": "fa fa-check",
     "task_experiment": "fa fa-wrench",
     "eeg": "fa fa-flash",
-    "emg": "fa fa-chart",
+    "emg": "fa fa-line-chart",
     "tms": "fa fa-magnet",
     "experimental_protocol": "fa fa-tasks",
     "digital_game_phase": "fa fa-play-circle",
@@ -5232,7 +5232,7 @@ def eegelectrodenet_update(
         if net_system:
             localization_system.checked = True
             if EEGElectrodeLayoutSetting.objects.filter(
-                eeg_electrode_net_system=net_system
+                eeg_electrode_net_system__in=net_system
             ):
                 localization_system.used = True
                 localization_system.disabled = True
@@ -5285,7 +5285,7 @@ def eegelectrodenet_view(
                 eeg_electrode_net=eegelectrodenet
             )
             if net_system and EEGElectrodeLayoutSetting.objects.filter(
-                eeg_electrode_net_system=net_system
+                eeg_electrode_net_system__in=net_system
             ):
                 messages.error(
                     request,
@@ -5344,7 +5344,7 @@ def eegelectrodenet_view(
         if net_system:
             localization_system.checked = True
             if EEGElectrodeLayoutSetting.objects.filter(
-                eeg_electrode_net_system=net_system
+                eeg_electrode_net_system__in=net_system
             ):
                 localization_system.used = True
 
@@ -7769,10 +7769,10 @@ def get_sensors_position(eeg_data):
             # If EGI 129 channels
             if nes_code == "MNE-RawFromEGI":
                 if channels == 129:
-                    montage = mne.channels.read_montage("GSN-HydroCel-129")
+                    montage = mne.channels.read_custom_montage("GSN-HydroCel-129")
 
                 if channels == 128:
-                    montage = mne.channels.read_montage("GSN-HydroCel-128")
+                    montage = mne.channels.read_custom_montage("GSN-HydroCel-128")
 
                 if montage != "":
                     i = 0
@@ -7798,7 +7798,7 @@ def get_sensors_position(eeg_data):
 
                     raw.rename_channels(mapping)
             if nes_code == "MNE-RawFromBrainVision":
-                montage = mne.channels.read_montage("standard_1020")
+                montage = mne.channels.read_custom_montage("standard_1020")
 
             if montage != "":
                 raw.set_montage(montage)
@@ -10797,13 +10797,13 @@ def get_experimental_protocol_image(experimental_protocol, tree, url=False):
         subgraph.add_edge(pydot.Edge(last_node, ending_node))
 
     # graph file name
-    file_name = "experimental_protocol_" + str(experimental_protocol.id) + ".svg"
+    file_name = "experimental_protocol_" + str(experimental_protocol.id) + ".png"
 
     # writing
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
 
     try:
-        graph.write(path.join(path_complete, file_name), format="png")
+        graph.write_png(path.join(path_complete, file_name))
     except:
         return None
 

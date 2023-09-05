@@ -68,7 +68,7 @@
                 {% endif %}
             </div>
             {# Questionnaires Info Section #}
-            <div class="container span6 offset3 well">
+            <div class="container-fluid well">
                 <h4>{% trans "Questionnaires data to be sent" %}</h4>
                 <div class="panel-body">
                     <div class="col-md-5 col-sm-12">
@@ -98,7 +98,7 @@
                 {# For Floresta plugin it's needed "headings" input with value "code" #}
                 <input type="hidden" name="headings" value="code">
                 {% csrf_token %}
-                <div class="container span6 offset3 well">
+                <div class="container-fluid well">
                     <div class="row">
                         <div class="panel-group" id="accordion">
                             <div class="panel-heading">
@@ -107,7 +107,7 @@
                                     {% trans 'Per Experiment' %} </a></h4>
                             </div>
                             <div id="collapse_experiment" class="panel-collapse collapse in">
-                                <div id="studies_container" class="container span6 offset3 well">
+                                <div id="studies_container" class="container-fluid well">
                                     <h4>{% trans "Filters selection" %}</h4>
                                     <div class="form-group">
                                         <div class="row">
@@ -200,7 +200,7 @@
                 {% csrf_token %}
                 {# For Floresta plugin it's needed "headings" input with value "code" #}
                 <input type="hidden" name="headings" value="code">
-                <div class="container span6 offset3 well">
+                <div class="container-fluid well">
                     <div class="row">
                         <div class="panel-group" id="accordion">
                             <div class="panel-heading">

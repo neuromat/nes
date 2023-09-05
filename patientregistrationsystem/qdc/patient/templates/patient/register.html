@@ -36,37 +36,37 @@
     <div class="col-md-10">
         <div class="tabbable" id="myTabs">
 
-            <ul class="nav nav-tabs " id="idTabs">
+            <ul class="nav nav-tabs" id="idTabs">
                 {# Ids are included only when editing, so that javascript can act. #}
                 {% if patient_id != None %}
-                    <li {% if currentTab == '0' %}class="active"{% endif %}>
+                    <li role="presentation" {% if currentTab == '0' %}class="active"{% endif %}>
                         <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=0"
                                 {% if editing %} id="linkToTab0"{% endif %}>{% trans "Personal data" %}</a></li>
-                    <li {% if currentTab == '1' %}class="active"{% endif %}>
+                    <li role="presentation" {% if currentTab == '1' %}class="active"{% endif %}>
                         <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=1"
                                 {% if editing %} id="linkToTab1"{% endif %}>{% trans "Social demographic data" %}</a></li>
-                    <li {% if currentTab == '2' %}class="active"{% endif %}>
+                    <li role="presentation" {% if currentTab == '2' %}class="active"{% endif %}>
                         <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=2"
                                 {% if editing %} id="linkToTab2"{% endif %}>{% trans "Social history" %}</a></li>
-                    <li {% if currentTab == '3' %}class="active"{% endif %}>
+                    <li role="presentation" {% if currentTab == '3' %}class="active"{% endif %}>
                         <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=3"
                                 {% if editing %} id="linkToTab3"{% endif %}>{% trans "Medical evaluation" %}</a></li>
                     {% if perms.survey.view_survey %}
-                        <li {% if currentTab == '4' %}class="active"{% endif %}>
+                        <li role="presentation" {% if currentTab == '4' %}class="active"{% endif %}>
                             <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=4"
                                     {% if editing %} id="linkToTab4"{% endif %}>{% trans "Questionnaires" %}</a></li>
                     {% endif %}
                 {% else %}
-                    <li {% if currentTab == '0' %}class="active"{% endif %}>
+                    <li role="presentation" {% if currentTab == '0' %}class="active"{% endif %}>
                         <a href="" class="invalidLink">{% trans "Personal data" %}</a></li>
-                    <li {% if currentTab == '1' %}class="active"{% endif %}>
+                    <li role="presentation" {% if currentTab == '1' %}class="active"{% endif %}>
                         <a href="" class="invalidLink">{% trans "Social demographic data" %}</a></li>
-                    <li {% if currentTab == '2' %}class="active"{% endif %}>
+                    <li role="presentation" {% if currentTab == '2' %}class="active"{% endif %}>
                         <a href="" class="invalidLink">{% trans "Social history" %}</a></li>
-                    <li {% if currentTab == '3' %}class="active"{% endif %}>
+                    <li role="presentation" {% if currentTab == '3' %}class="active"{% endif %}>
                         <a href="" class="invalidLink">{% trans "Medical evaluation" %}</a></li>
                     {% if perms.survey.view_survey %}
-                        <li {% if currentTab == '4' %}class="active"{% endif %}>
+                        <li role="presentation" {% if currentTab == '4' %}class="active"{% endif %}>
                             <a href="" class="invalidLink">{% trans "Questionnaires" %}</a></li>
                     {% endif %}
                 {% endif %}
@@ -119,16 +119,16 @@
                             <a href="/patient/find/" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                         </div>
                         {% if editing %}
-                            <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">{% trans "Save and show before" %}</button>
-                            <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Save and show next" %}</button>
+                            <button type="button" class="btn btn-default {% if currentTab == '0' %} disabled {% endif %}" id="prevtab">{% trans "Save and show before" %}</button>
+                            <button type="button" class="btn btn-default {% if currentTab == '4' %} disabled {% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Save and show next" %}</button>
                             {% if currentTab == '0' %}
                                 <button type="button" class="btn btn-primary" id="savetab">{% trans "Save" %}</button>
                             {% else %}
                                 <button type="submit" name="action" value="save" class="btn btn-primary" id="save_submit_button">{% trans "Save" %}</button>
                             {% endif %}
                         {% else %}
-                            <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">{% trans "Show before" %}</button>
-                            <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Show next" %}</button>
+                            <button type="button" class="btn btn-default" {% if currentTab == '0' %} disabled {% endif %} id="prevtab">{% trans "Show before" %}</button>
+                            <button type="button" class="btn btn-default" {% if currentTab == '4' %} disabled {% elif currentTab == '3' and not perms.survey.view_survey %} disabled {% endif %} id="nexttab">{% trans "Show next" %}</button>
                             {% if perms.patient.change_patient %}
                                 <button type="button" class="btn btn-primary" id="editPatient">{% trans "Edit" %}</button>
                             {% endif %}
@@ -178,8 +178,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                <button type="button" class="btn btn-primary" id="removePatient"
-                        style="background-color: indianred; color: #ffffff">{% trans "Delete" %}
+                <button type="button" class="btn btn-danger" id="removePatient">{% trans "Delete" %}
                 </button>
             </div>
         </div>

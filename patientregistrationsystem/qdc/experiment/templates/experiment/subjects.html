@@ -96,8 +96,7 @@
                                         <label>{% trans "Add participant" %}</label>
 
                                         <div class="input-group input-group-sm">
-                                            <span class="input-group-addon"> <i class="glyphicon
-                                            glyphicon-search"></i></span>
+                                            <span class="input-group-addon"> <i class="fa fa-search"></i></span>
                                             <input id="search_key" class="form-control" 
                                             {% if perms.patient.sensitive_data_patient %} placeholder="{% trans "Type participant name, CPF or code" %}"
                                             {% else %} placeholder="{% trans "Type participant code" %}"
@@ -242,7 +241,7 @@
                                                             <div class="col-xs-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded EMG data files" %}">
-                                                                    <span class="glyphicon glyphicon-stats"></span> {% trans "EMG" %}
+                                                                    <span class="fa fa-bar-chart"></span> {% trans "EMG" %}
                                                                 </a>
                                                             </div>
                                                             <div class="col-xs-8 col-sm-8">
@@ -278,7 +277,7 @@
                                                             <div class="col-xs-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/digital_game_phase"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded goalkeeper game phase data files" %}">
-                                                                    <span class="glyphicon glyphicon-play-circle"></span> {% trans "Game" %}
+                                                                    <span class="fa fa-play-circle"></span> {% trans "Game" %}
                                                                 </a>
                                                             </div>
                                                             <div class="col-xs-8 col-sm-8">

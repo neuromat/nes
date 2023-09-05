@@ -65,14 +65,14 @@
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
-            <div class="container span6 offset3 well">
+            <div class="container-fluid well">
 
                 <h4>{% trans "EMG electrode settings" %}</h4>
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Electrode type" %} </label>
+                            <label for="id_electrode_type" class="control-label">{% trans "Electrode type" %} <b style="color: red;">*</b></label>
                             {{ emg_electrode_model_form.electrode_type }}
                             <div class="help-block with-errors"></div>
 
@@ -82,7 +82,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Electrode" %} </label>
+                            <label for="id_electrode" class="control-label">{% trans "Electrode" %} <b style="color: red;">*</b></label>
                             {{ emg_electrode_setting_form.electrode }}
                             <div class="help-block with-errors"></div>
 
@@ -92,7 +92,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Description" %} </label>
+                            <label for="id_description" class="control-label">{% trans "Description" %} </label>
                             {{ emg_electrode_model_form.description }}
                             <div class="help-block with-errors"></div>
                         </div>

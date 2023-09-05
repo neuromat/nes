@@ -900,9 +900,9 @@ class ImportExperiment:
         """
         if (
             self.data[successor]["model"] not in ONE_TO_ONE_RELATION
-            and not digraph.node[successor]["pre_loaded"]
+            and not digraph.nodes[successor]["pre_loaded"]
         ):
-            if not digraph.node[successor]["updated"]:
+            if not digraph.nodes[successor]["updated"]:
                 self.data[successor]["pk"] = next_id
 
                 # Patch for repeated next_id in same models
@@ -917,7 +917,7 @@ class ImportExperiment:
                     # TODO: verify better way to update next_id
                     next_id = max(updated_ids) + 1
                     self.data[successor]["pk"] = next_id
-                digraph.node[successor]["updated"] = True
+                digraph.nodes[successor]["updated"] = True
         for predecessor in digraph.predecessors(successor):
             if "relation" in digraph[predecessor][successor]:
                 relation = digraph[predecessor][successor]["relation"]
@@ -962,14 +962,14 @@ class ImportExperiment:
                     digraph.add_edge(index_from, index_to)
 
         for node in digraph.nodes():
-            digraph.node[node]["atributes"] = self.data[node]
-            digraph.node[node]["updated"] = False
+            digraph.nodes[node]["atributes"] = self.data[node]
+            digraph.nodes[node]["updated"] = False
             if self.data[node]["model"] not in PRE_LOADED_MODELS_NOT_EDITABLE:
-                digraph.node[node]["pre_loaded"] = False
+                digraph.nodes[node]["pre_loaded"] = False
             else:
-                digraph.node[node]["pre_loaded"] = True
+                digraph.nodes[node]["pre_loaded"] = True
 
-        # set digraph.node[node]['pre_loaded'] == True for models inherited
+        # set digraph.nodes[node]['pre_loaded'] == True for models inherited
         nodes = [
             node
             for node in digraph.nodes
@@ -986,7 +986,7 @@ class ImportExperiment:
                     if self.data[node_inheritance]["model"] == model
                     and self.data[node]["pk"] == self.data[node_inheritance]["pk"]
                 )
-                digraph.node[node_inheritance]["pre_loaded"] = True
+                digraph.nodes[node_inheritance]["pre_loaded"] = True
 
         return digraph
 
