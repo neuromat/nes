@@ -66,9 +66,9 @@
             background-color: #dff0d8;
         }
         .content {
-            margin-top:20px
+            margin-top:20px;
         }
-
+        
         textarea {
             resize: vertical;
         }
@@ -280,7 +280,7 @@
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
 {# Apply a date picker and a mask to every field that has the class "datepicker" #}
-<script>
+{% comment %} <script>
     $(document).ready(function() {
         $('.datepicker').datepicker({
             dateFormat: gettext("mm/dd/yyyy"),
@@ -302,7 +302,7 @@
         }).
         mask("99/99/9999");
     });
-</script>
+</script> {% endcomment %}
 
 <script>
     {% if messages %}

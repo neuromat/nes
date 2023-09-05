@@ -2,28 +2,29 @@
  * Created by diogopedrosa on 4/24/15.
  */
 
-$(document).ready(function () {
-    var id_number_of_mandatory_components = $("#id_number_of_mandatory_components");
-    var all_mandatory_components = $("#id_all_mandatory");
-    var not_all_mandatory_components = $("#id_not_all_mandatory");
+$(document).ready(
+    function () {
+        var id_number_of_mandatory_components = $("#id_number_of_mandatory_components");
+        var all_mandatory_components = $("#id_all_mandatory");
+        var not_all_mandatory_components = $("#id_not_all_mandatory");
 
-    if (id_number_of_mandatory_components.val() == "") {
-        id_number_of_mandatory_components.prop('disabled', true);
-        all_mandatory_components.prop('checked', true);
-    } else {
-        not_all_mandatory_components.prop('checked', true);
-    }
+        if (id_number_of_mandatory_components.val() == "") {
+            id_number_of_mandatory_components.prop('disabled', true);
+            all_mandatory_components.prop('checked', true);
+        } else {
+            not_all_mandatory_components.prop('checked', true);
+        }
 
-    all_mandatory_components.click(function () {
-        id_number_of_mandatory_components.prop('value', "");
-        id_number_of_mandatory_components.prop('disabled', true);
-        fix_bootstrap_error_message();
-    });
+        all_mandatory_components.click(function () {
+            id_number_of_mandatory_components.prop('value', "");
+            id_number_of_mandatory_components.prop('disabled', true);
+            fix_bootstrap_error_message();
+        });
 
-    not_all_mandatory_components.click(function () {
-        id_number_of_mandatory_components.prop('disabled', false);
-        id_number_of_mandatory_components.focus();
-    });
+        not_all_mandatory_components.click(function () {
+            id_number_of_mandatory_components.prop('disabled', false);
+            id_number_of_mandatory_components.focus();
+        });
 
     function fix_bootstrap_error_message() {
         setTimeout(function () {
@@ -42,7 +43,7 @@ $(document).ready(function () {
 
     function expand() {
         // Replace right arrow by the down arrow
-        $(this).find(".glyphicon-chevron-right").switchClass('glyphicon-chevron-right', 'glyphicon-chevron-down');
+        $(this).find(".fa-chevron-right").switchClass('fa-chevron-right', 'fa-chevron-down');
 
         // Change the listener of the click event
         $(this).unbind("click");
@@ -56,7 +57,7 @@ $(document).ready(function () {
 
     function collapse() {
         // Replace down arrow by the right arrow
-        $(this).find(".glyphicon-chevron-down").switchClass('glyphicon-chevron-down', 'glyphicon-chevron-right');
+        $(this).find(".fa-chevron-down").switchClass('fa-chevron-down', 'fa-chevron-right');
 
         // Change the listener of the click event
         $(this).unbind("click");

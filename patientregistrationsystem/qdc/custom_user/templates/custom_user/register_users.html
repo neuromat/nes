@@ -165,19 +165,17 @@
         </div>
         <div class="container-fluid well" id="user_account">
             <div class="row">
-                <div class="col-xs-12 col-sm-12">
-                    <div class="form-group" id="username">
-                        <div class="form-group {% if form.errors.username %}has-error{% endif %}">
-                            <label for="id_username" class="control-label">{% trans "Username" %}<b style="color: red;">*</b></label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="fa fa-user-circle"></span></span>
-                                {{ form.username }}
-                            </div>
-                            <div class="help-block with-errors">
-                                {% for error in form.errors.username %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
+                <div class="form-group" id="username">
+                    <div class="form-group {% if form.errors.username %}has-error{% endif %}">
+                        <label for="id_username" class="control-label">{% trans "Username" %}<b style="color: red;">*</b></label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="fa fa-user-circle"></span></span>
+                            {{ form.username }}
+                        </div>
+                        <div class="help-block with-errors">
+                            {% for error in form.errors.username %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -219,7 +217,8 @@
             <div class="row" id="div_password_flag">
                 <div class="col-xs-12 col-sm-12">
                     <div class="form-group">
-                        <input type="checkbox" id="password_flag" name="password_flag" {% if creating %}checked="checked" disabled {% endif %}> <b>{% trans "Update password" %}</b> </input>
+                        <input type="checkbox" id="password_flag" name="password_flag" {% if creating %}checked="checked" disabled {% endif %}>
+                        <label for="password_flag" class="control-label"><b> {% trans "Update password" %}</b></label>
                     </div>
                 </div>
             </div>
@@ -256,7 +255,7 @@
     </div>
 
     <div class="col-md-10">
-        <div class="btn-toolbar">
+        <div class="btn-toolbar" role="toolbar">
             <div class="btn-group pull-left">
                 {% if not creating and perms.auth.delete_user and current_user_id != user.id %}
                     <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>

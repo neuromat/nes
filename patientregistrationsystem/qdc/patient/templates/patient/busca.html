@@ -47,18 +47,20 @@
                         <input id="search_key" class="form-control" type="text" placeholder="{% trans 'Type participant name, CPF or code' %}">
                     </div>
                     {% csrf_token %}
-                    <ul id="list_results" class="participant-list"  style="list-style: none;">  </ul>
-                </div>
-                <div class="btn-group pull-right">
-                    <a id="prev_btn" class="btn btn-default">{% trans "Previous" %}</a>
-                    <a id="next_btn" class="btn btn-default">{% trans "Next" %}</a>
-                </div>
-                <div class="btn-group pull-left">
-                    {% if perms.patient.add_patient %}
-                        <a href="/patient/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                    {% endif %}
+                    <div id="list_results" class="list-group participant-list"  style="list-style: none;">  </div>
                 </div>
 
+                <div class="btn-toolbar" role="toolbar" >
+                    <div class="btn-group pull-right">
+                        <a id="prev_btn" class="btn btn-default">{% trans "Previous" %}</a>
+                        <a id="next_btn" class="btn btn-default">{% trans "Next" %}</a>
+                    </div>
+                    <div class="btn-group pull-left">
+                        {% if perms.patient.add_patient %}
+                            <a href="/patient/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

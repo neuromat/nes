@@ -154,7 +154,7 @@
                                                                             {% for patient_questionnaire_response in subject_questionnaire.patient_questionnaire_responses %}
 
                                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/reuse_fill/{{ patient_questionnaire_response.patient_questionnaire_response.id }}" class="{% if not limesurvey_available %} disabled {% endif %}">
-                                                                                    <span class="glyphicon glyphicon-unchecked"></span>
+                                                                                    <span class="fa fa-square-o"></span>
                                                                                 </a>
 
                                                                                 {{ patient_questionnaire_response.patient_questionnaire_response.date }}

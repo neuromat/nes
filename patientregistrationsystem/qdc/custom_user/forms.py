@@ -30,7 +30,6 @@ class UserForm(ModelForm):
         widget=TextInput(
             attrs={
                 "class": "form-control",
-                "autofocus": "true",
                 "placeholder": _("Type first name"),
             }
         ),
@@ -40,7 +39,6 @@ class UserForm(ModelForm):
         widget=TextInput(
             attrs={
                 "class": "form-control",
-                "autofocus": "true",
                 "placeholder": _("Type last name"),
             }
         ),
@@ -181,7 +179,6 @@ class ResearcherForm(ModelForm):
             "first_name": TextInput(
                 attrs={
                     "class": "form-control",
-                    "autofocus": "true",
                     "required": "",
                     "placeholder": _("Type first name"),
                     "data-error": _("Only use letters and spaces"),
@@ -192,7 +189,6 @@ class ResearcherForm(ModelForm):
             "last_name": TextInput(
                 attrs={
                     "class": "form-control",
-                    "autofocus": "true",
                     "required": "",
                     "placeholder": _("Type last name"),
                     "data-error": _("Only use letters and spaces"),
@@ -208,8 +204,7 @@ class ResearcherForm(ModelForm):
                     "placeholder": _("Type e-mail"),
                     "id": "id_email",
                     "type": "email",
-                    "data-error": "E-mail inválido",
-                    "pattern": EMAIL_REGEX,
+                    "data-error": _("Invalid e-mail"),
                 }
             ),
             "citation_name": TextInput(
@@ -228,7 +223,6 @@ class InstitutionForm(ModelForm):
                 attrs={
                     "class": "form-control",
                     "required": "",
-                    "autofocus": "",
                     "pattern": "",
                 }
             ),
