@@ -39,7 +39,8 @@ networkx==2.8.8
 mne==1.3.1
 
 #pynwb
--e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
+#-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
+src/nwb/dist/nwb-1.0.0-py3-none-any.whl
 
 
 # For testing
