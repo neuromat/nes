@@ -1,4 +1,5 @@
 import json
+import typing
 
 from django.apps import apps
 from django.conf import settings
@@ -20,7 +21,7 @@ def translate_fixtures_into_english(filename):
     with open(filename, encoding="utf-8") as fixture_data:
         data_transformed = json.load(fixture_data)
 
-        result = {}
+        result: dict[typing.Any, typing.Any] = {}
 
         for element in data_transformed:
             if element["model"] not in result:

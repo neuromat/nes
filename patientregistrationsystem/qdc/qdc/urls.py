@@ -17,7 +17,8 @@ from .forms import PasswordChangeFormCustomized
 
 admin.autodiscover()
 
-urlpatterns = i18n_patterns(
+urlpatterns = [
+    re_path(r"^rosetta/", include("rosetta.urls")),
     re_path(r"^admin/", admin.site.urls),
     re_path(r"^patient/", include("patient.urls")),
     re_path(r"^user/", include("custom_user.urls")),
@@ -79,7 +80,7 @@ urlpatterns = i18n_patterns(
     re_path(r"^i18n/", include("django.conf.urls.i18n")),
     re_path(r"^home/check_upgrade/$", qdcviews.contact, name="check_upgrade"),
     re_path(r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"),
-)
+]
 
 
 # internationalization

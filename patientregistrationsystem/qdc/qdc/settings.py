@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "solo",
     "fixture_magic",
     "maintenance_mode",
+    "rosetta",
 ]
 
 PROJECT_APPS = [

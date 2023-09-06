@@ -9,6 +9,7 @@ django-simple-history==3.3.0
 django-maintenance-mode>=0.16.3
 django-fixture-magic>=0.1.5
 django-solo==2.1.0
+django-rosetta
 jsonrpclib==0.2.1 #FIXME: nao compativel com python 3.11
 
 types-python-dateutil
