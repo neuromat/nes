@@ -14,7 +14,7 @@ from os import path
 
 import mne
 import numpy as np
-import pynwb as nwb
+import nwb
 import pydot
 from configuration.models import LocalInstitution
 from dateutil.relativedelta import relativedelta

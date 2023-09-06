@@ -13,7 +13,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="breadCrumb">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -59,7 +59,7 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="container-fluid well">
 
                 <h4>{% trans "Subject step data" %}</h4>
@@ -116,7 +116,7 @@
 
             </div>
 
-            <div class="btn-toolbar">
+            <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group pull-left">
                     {% if not editing and perms.experiment.delete_researchproject %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>

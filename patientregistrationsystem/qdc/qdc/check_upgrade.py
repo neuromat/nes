@@ -16,7 +16,6 @@ def check_upgrade() -> bool:
     tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
 
     remote_version = str(tags[-1]).rsplit("-", 1)[-1]
-    remote_version = remote_version.split(".")
     current_version = settings.VERSION.split(".")
     print(remote_version)
     print(current_version)

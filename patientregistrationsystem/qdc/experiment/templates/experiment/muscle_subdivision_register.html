@@ -42,7 +42,7 @@
 
 
     <div class="tab-pane fade in active" id="equipmentBreadCrumb">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
@@ -65,7 +65,7 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="container-fluid well">
                 <h4>{% trans "Muscle subdivision" %}</h4>
                 <div class="row">
@@ -117,7 +117,7 @@
 
             {% endif %}
 
-            <div class="btn-toolbar">
+            <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group pull-left">
                     {% if not editing and perms.experiment.delete_muscle_subdivision and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>

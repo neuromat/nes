@@ -3,10 +3,9 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true
     },
-    "[django-html]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "junstyle.vscode-django-support"
-      },
+
+    
+    "[django-html]": {},
     "python.analysis.autoImportCompletions": true,
     "python.analysis.inlayHints.functionReturnTypes": true,
     "python.analysis.inlayHints.variableTypes": true,
@@ -21,26 +20,35 @@
     "python.analysis.packageIndexDepths": [
         {
             "name": "django",
-            "depth": 5,
-            "includeAllSymbols": true
+            "depth": 10,
+            "includeAllSymbols": true,
+        },
+        {
+            "name": "custom_user",
+            "depth": 10,
+            "includeAllSymbols": true,
         }
     ],
     "pylint.args": [
         "--disable=C0111",
-        "--disable=reportGeneralTypeIssues"
+        "--disable=reportGeneralTypeIssues",
+        "--load-plugins",
+        // "pylint_django",
+        //"--django-settings-module=patientregistrationsystem.qdc.qdc.settings"
     ],
     "pylint.path": [
-        "/usr/local/bin"
+        
     ],
     "python.analysis.include": [],
     "python.analysis.exclude": [
-        "**/docs/",
-        ".git"
+        "../docs/",
+        ".git",
+        "docs/"
     ],
     "python.autoComplete.extraPaths": [
-        "${localWorkspaceFolder}, /usr/local/bin"
+        "${localWorkspaceFolder}, /usr/local/bin/python"
     ],
-    "python.defaultInterpreterPath": "python",
+    "python.defaultInterpreterPath": "/usr/local/bin/python",
     "sqltools.connections": [
         {
             "previewLimit": 50,
@@ -64,11 +72,10 @@
         }
     ],
     "python.analysis.extraPaths": [
-        "${localWorkspaceFolder}"
+        "${localWorkspaceFolder}",
+        "patientregistrationsystem/qdc"
     ],
     "[dockerfile]": {
         "editor.defaultFormatter": "ms-azuretools.vscode-docker"
     },
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
 }

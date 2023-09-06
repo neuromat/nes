@@ -113,7 +113,7 @@ def user_create(request, template_name="custom_user/register_users.html"):
 @login_required
 @permission_required("auth.change_user")
 def user_view(request, user_id, template_name="custom_user/register_users.html"):
-    user = get_object_or_404(User, pk=user_id)
+    user: User = get_object_or_404(User, pk=user_id)
     form = UserFormUpdate(request.POST or None, instance=user)
     profile_form = UserProfileForm(request.POST or None, instance=user.user_profile)
     group_permissions = get_group_permissions(user)

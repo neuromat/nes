@@ -30,7 +30,7 @@
         {% endif %}
 
         <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <ol class="breadcrumb">
                     <li><a href="/home">{% trans "Home" %}</a></li>
                     <li class="active">{% trans "Studies" %}</li>
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="col-md-10">
+        <div class="col-md-12">
             {% if perms.patient.export_patient %}
                 {% if patients %}
                     <form role="form" action="" method="POST">

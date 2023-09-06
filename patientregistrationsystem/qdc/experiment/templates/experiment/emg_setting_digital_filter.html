@@ -41,7 +41,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -64,7 +64,7 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="container-fluid well">
 
                 <h4>{% trans "EMG digital filter settings" %}</h4>
@@ -192,7 +192,7 @@
 
             </div>
 
-            <div class="btn-toolbar">
+            <div class="btn-toolbar" role="toolbar">
                 {% if editing or creating%}
                     <div class="btn-group pull-right">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save setting" %}</button>

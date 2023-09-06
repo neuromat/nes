@@ -15,9 +15,6 @@ types-python-dateutil
 python-dateutil==2.8.2
 psycopg2>=2.9.7, <3
 
-pylance
-pylint
-
 
 
 # Obs.: error -> ERROR: botocore 1.14.7 has requirement docutils<0.16,>=0.10, but you'll have docutils 0.16 which is incompatible.
@@ -40,11 +37,16 @@ networkx==2.8.8
 
 mne==1.3.1
 
-pynwb
-#-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
+#pynwb
+-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
+
 
 # For testing
 goodtables==2.5.4
-#Faker==19.3.0
-#goodtables==2.2.1
 Faker==2.0.4
+
+# Development
+pylint
+pylint-django
+django-stubs
+mypy

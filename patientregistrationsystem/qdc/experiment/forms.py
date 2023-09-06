@@ -624,7 +624,11 @@ class EEGDataForm(ModelForm):
                 },
             ),
             "time": TimeInput(
-                attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "HH:mm",
+                    "pattern": r"\d{2}:\d{2}",
+                }
             ),
             "eeg_setting": Select(
                 attrs={

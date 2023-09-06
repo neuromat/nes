@@ -36,6 +36,10 @@ DEBUG404 = True
 IS_TESTING = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://cleanly-accurate-pegasus.ngrok-free.app",
+    "https://localhost:8000",
+]
 
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

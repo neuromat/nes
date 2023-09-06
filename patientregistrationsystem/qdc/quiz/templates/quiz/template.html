@@ -93,7 +93,9 @@
 </head>
 
 <body>
+    
 <header>
+    <form  id="language_form" action="{% url 'set_language' %}" method="post">{% csrf_token %}
     <nav class="navbar  navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
@@ -105,7 +107,7 @@
                 </button>
                 <a class="navbar-brand" href="/home/">{% trans "NES" %}</a>
             </div>
-
+            
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ol class="nav navbar-nav navbar-right">
                     {% if perms.configuration.upgrade_rights and if_upgrade %}
@@ -118,24 +120,25 @@
                         {% get_available_languages as LANGUAGES %}
                         {% get_language_info_list for LANGUAGES as languages %}
 
+                        <input id="language" name="language" type="hidden">
                         <a class="btn-default dropdown-toggle navbar-inverse" data-toggle="dropdown" href="#">
                             <span  class="fa fa-globe"></span>
                             {{ LANGUAGE_CODE|language_name_local }}
                             <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown dropdown-user dropdown-menu" role="menu">
+                        </a> 
+                        
+                        <ul class="dropdown dropdown-user dropdown-menu" role="menu" name="language">
                             {% for language in languages %}
                                 {% if language.code != LANGUAGE_CODE %}
                                     <li>
-                                        <a href="/language/change/{{ language.code }}?next={{ request.get_full_path }}">
+                                        <a href="javascript:{}" onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit();">
                                             <span  class="fa fa-globe"></span>
                                             {{ language.name_local }}
                                         </a>
                                     </li>
                                 {% endif %}
                             {% endfor %}
-                        </ul>
-
+                        </ul>   
                     </li>
                     <li>
                         <a class="btn-default dropdown-toggle navbar-inverse"
@@ -156,6 +159,7 @@
             </div>
         </div>
     </nav>
+</form>
 </header>
 
 {% block form %}{% endblock %}
@@ -270,7 +274,8 @@
 
 
 <script src="{% static 'quiz/jquery/jquery-2.2.4.js' %}"></script>
-<script src="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
+<script src="{% static 'quiz/jquery/jquery-migrate-1.4.1.js' %}"></script>
+<script src="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.js' %}"></script>
 <script type="text/javascript" src="{% static 'quiz/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
 {% comment %} <script type="text/javascript" src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script> {% endcomment %}

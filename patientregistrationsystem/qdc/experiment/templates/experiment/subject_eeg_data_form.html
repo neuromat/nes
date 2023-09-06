@@ -50,7 +50,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="eegDataProjectBreadCrumb">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -100,7 +100,7 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="container-fluid well">
 
                 <h4>{% trans "EEG data collection" %}</h4>
@@ -339,7 +339,7 @@
                         {% else %}
 
                             {% if image %}
-                                <div class="col-md-10">
+                                <div class="col-md-12">
                                     <div hidden="hidden">
                                         <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
                                         <input id="image_status" type="text" value="{{ editing }}">
@@ -413,7 +413,7 @@
                 </div>
             </div>
 
-            <div class="btn-toolbar">
+            <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group pull-left">
                     {% if not editing and perms.experiment.delete_researchproject and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
@@ -575,6 +575,7 @@
             $id_eeg_setting.each((function() {
                     if ($id_eeg_setting.val() == $eeg_setting_default_id){
                         $id_eeg_setting_reason_for_change.prop( "disabled", true );
+                        $id_eeg_setting_reason_for_change.prop( "required", false );
                         $div_reason_for_change.hide();
                     }
             }));
@@ -582,10 +583,12 @@
             $id_eeg_setting.on('change', (function() {
                 if ($id_eeg_setting.val() == $eeg_setting_default_id){
                     $id_eeg_setting_reason_for_change.prop( "disabled", true );
+                    $id_eeg_setting_reason_for_change.prop( "required", false );
                     $div_reason_for_change.hide();
                 }
                 else {
                     $id_eeg_setting_reason_for_change.prop( "disabled", false );
+                    $id_eeg_setting_reason_for_change.prop( "required", true );
                     $div_reason_for_change.show();
                 }
             }));

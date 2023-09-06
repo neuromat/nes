@@ -40,9 +40,11 @@ function change_cap_size_according_eeg_setting() {
 
         if (all_eeg_cap_size.length == 0) {
             eeg_cap_size_field.prop( "disabled", true );
+            eeg_cap_size_field.prop( "required", false );
             div_cap_size.hide();
         } else {
             eeg_cap_size_field.prop( "disabled", false );
+            eeg_cap_size_field.prop( "required", true );
             div_cap_size.show();
         }
 

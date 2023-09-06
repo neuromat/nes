@@ -72,7 +72,7 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="breadCrumb">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
@@ -99,7 +99,7 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div hidden="hidden">
                 <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
                 <input id="map_file" type="text" value="{{ localization_system.map_image_file.url }}">
@@ -147,7 +147,7 @@
                  </div>
             </div>
 
-            <div class="btn-toolbar">
+            <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group pull-left">
                     {% if not editing %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>

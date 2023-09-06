@@ -15,7 +15,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="subjectBreadCrumb">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 {% if origin == 'subject' %}
@@ -48,7 +48,7 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
+        <div class="col-md-12">
 
             {% if completed %}
                 <div style="text-align: right; color: steelblue">
@@ -159,7 +159,7 @@
                         <div id="group-{{ group_of_questions.id }}" class="tab-pane fade {% if forloop.first %} in active{% endif %}">
 
                             <div class="container-fluid well">
-                                <div class="col-md-10">
+                                <div class="col-md-12">
 
                                     <h4><span class="fa fa-tag"></span> {{ group_of_questions.name }}</h4>
                                     <br/>
@@ -222,7 +222,7 @@
 
             </div>
 
-            <div class="btn-toolbar">
+            <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group pull-left" {% if response_is_reused_in_experiment %}data-toggle="tooltip" data-placement="right" title="{% trans "This response cannot be deleted because it is used in an experiment." %}{% endif %}">
                     {% if not creating and can_change %}
                         {% if origin == 'experiment_subject' and perms.experiment.delete_questionnaireresponse or origin == 'subject' and perms.patient.delete_questionnaireresponse %}
@@ -238,7 +238,7 @@
                         {% if can_change %}
                             {% if creating %}
                                 {% if perms.experiment.add_questionnaireresponse %}
-                                    <div class="btn-toolbar">
+                                <div class="btn-toolbar" role="toolbar">
                                         <div class="btn-group pull-left"></div>
                                         {# NES-1041 Commented out while the issue is not resumed #}
                                         {# See the commits that starts with NES-1041 to see the progress #}

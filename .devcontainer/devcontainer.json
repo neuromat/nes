@@ -14,7 +14,7 @@
 		5432,
 		5433,
 		8080,
-		8000,
+		8000
 	],
 	"portsAttributes": {
 		"80": {
@@ -71,9 +71,8 @@
 				"mtxr.sqltools",
 				"mtxr.sqltools-driver-pg",
 				"shakram02.bash-beautify",
-				"eamodio.gitlens",
-				"junstyle.vscode-django-support",
-				"bibhasdn.django-html"
+				"bibhasdn.django-html",
+				"matangover.mypy"
 			]
 		}
 	}

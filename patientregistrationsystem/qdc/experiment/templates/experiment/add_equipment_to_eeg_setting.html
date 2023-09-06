@@ -41,7 +41,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -62,7 +62,7 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="container-fluid well">
 
                 <h4>{% if creating %}{% trans "Add" %}{% endif %} {{ equipment_type_name }}</h4>
@@ -155,7 +155,7 @@
             </div>
 
 
-            <div class="btn-toolbar">
+            <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group pull-left">
                     {% if not editing and perms.experiment.delete_experiment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>

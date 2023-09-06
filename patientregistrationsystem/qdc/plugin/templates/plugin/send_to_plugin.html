@@ -23,7 +23,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="participantsSelectionBreadCrumb">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <ol class="breadcrumb">
                 <li><a href="/">{% trans "Home" %}</a></li>
                 <li><a href="/plugin">{% trans "Plugin" %}</a></li>
@@ -50,7 +50,7 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="container-fluid well">
                 {% if perms.patient.export_patient %}
                     <h4>{% trans "Plugin" %}</h4>

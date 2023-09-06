@@ -6,6 +6,7 @@
 window.onload = function() {
     var eeg_positions = document.getElementById("eeg_electrode_position");
     var positions = eval(eeg_positions.value);
+    
     used();
     pintar(positions);
 };
@@ -136,7 +137,6 @@ function pintar(positions){
         var position = positions[i];
         x = parseInt(position.x);
         y = parseInt(position.y);
-
         context.beginPath();
         context.arc(x, y, 5, 0, 2 * Math.PI);
         context.fillStyle = "red";
