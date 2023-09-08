@@ -67,9 +67,9 @@
                                     {% for user in object_list %}
                                         <tr>
                                             {% if user.first_name and user.last_name %}
-                                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/user/view/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></td>
+                                                <td><a data-toggle="tooltip" data-placement="left" title data-original-title="{% trans "Edit" %}" href="/user/view/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></td>
                                             {% else %}
-                                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/user/view/{{ user.id }}"><em>{% trans "Name not registered" %}</em></a></td>
+                                                <td><a data-toggle="tooltip" data-placement="left" title data-original-title="{% trans "Edit" %}" href="/user/view/{{ user.id }}"><em>{% trans "Name not registered" %}</em></a></td>
                                             {% endif %}
                                             <td>{{ user.email }}</td>
                                             <td>{% if user.user_profile.institution %}{{ user.user_profile.institution.acronym }}{% endif %}</td>
@@ -148,4 +148,13 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+    $(function(){
+        $("[data-toggle=tooltip]").tooltip();
+    });
+</script>
 {% endblock %}

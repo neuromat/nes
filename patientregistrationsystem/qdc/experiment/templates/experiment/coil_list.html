@@ -57,7 +57,7 @@
                         {% for equipment in equipments %}
                             <tr>
                                 <td>{% if perms.experiment.register_equipment %}
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans 'Visualize' %}"
                                            href="/experiment/coil/{{ equipment.id }}">
                                             {{ equipment.name }}
                                         </a>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-15 00:40-0300\n"
+"POT-Creation-Date: 2023-09-06 17:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: add_initial_data.py:14
 msgid "Can add alcohol frequency"
 msgstr ""
@@ -677,7 +678,7 @@ msgstr ""
 msgid "Administrator"
 msgstr ""
 
-#: templates/404.html:14 templates/registration/change_password_custom.html:123
+#: templates/404.html:14 templates/registration/change_password_custom.html:124
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr ""
@@ -707,27 +708,27 @@ msgid "Access is not authorized"
 msgstr ""
 
 #: templates/registration/change_password_custom.html:9
-#: templates/registration/login.html:7
+#: templates/registration/login.html:11 templates/registration/login.html:16
 #: templates/registration/password_reset_form.html:9
 msgid "Neuroscience Experiments System - NES"
 msgstr ""
 
-#: templates/registration/change_password_custom.html:78
+#: templates/registration/change_password_custom.html:79
 msgid "Password change"
 msgstr ""
 
-#: templates/registration/change_password_custom.html:95
+#: templates/registration/change_password_custom.html:96
 #: templates/registration/password_reset_confirm.html:84
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
 msgstr ""
 
-#: templates/registration/change_password_custom.html:118
+#: templates/registration/change_password_custom.html:119
 msgid "Save"
 msgstr ""
 
-#: templates/registration/change_password_custom.html:125
+#: templates/registration/change_password_custom.html:126
 msgid "Logout"
 msgstr ""
 
@@ -739,19 +740,19 @@ msgstr ""
 msgid "Log in again"
 msgstr ""
 
-#: templates/registration/login.html:81
+#: templates/registration/login.html:88 templates/registration/login.html:89
 msgid "User"
 msgstr ""
 
-#: templates/registration/login.html:85
+#: templates/registration/login.html:91 templates/registration/login.html:92
 msgid "Password"
 msgstr ""
 
-#: templates/registration/login.html:87
+#: templates/registration/login.html:95
 msgid "Login"
 msgstr ""
 
-#: templates/registration/login.html:93
+#: templates/registration/login.html:101
 msgid "I forgot my password"
 msgstr ""
 

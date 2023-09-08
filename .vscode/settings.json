@@ -10,7 +10,7 @@
     "python.analysis.inlayHints.functionReturnTypes": true,
     "python.analysis.inlayHints.variableTypes": true,
     "python.languageServer": "Default",
-    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.typeCheckingMode": "off",
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.autoSearchPaths": true,
     "python.analysis.fixAll": [

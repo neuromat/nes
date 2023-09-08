@@ -2,48 +2,48 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-10 10:54-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2023-09-06 03:34+0000\n"
+"Last-Translator:   <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Translated-Using: django-rosetta 0.9.9\n"
 
 #: custom_user/forms.py:19
 msgid "Type first name"
-msgstr ""
+msgstr "Entre com o primeiro nome"
 
 #: custom_user/forms.py:20
 msgid "Type last name"
-msgstr ""
+msgstr "Entre com o sobrenome"
 
 #: custom_user/forms.py:22
 msgid "Type user name"
-msgstr ""
+msgstr "Entre com o nome de usuário"
 
 #: custom_user/forms.py:22
 msgid "Type citation name"
-msgstr "Entrar nome para citação"
+msgstr "Entre com nome para citação"
 
 #: custom_user/forms.py:24 custom_user/forms.py:47
 msgid "Type password"
-msgstr ""
+msgstr "Entre com a senha"
 
 #: custom_user/forms.py:27
 msgid "Type e-mail"
-msgstr ""
+msgstr "Entre com o email"
 
 #: custom_user/forms.py:73 custom_user/forms.py:74
 msgid "E-mail is not registered"
-msgstr ""
+msgstr "Email não está registrado"
 
 #: custom_user/templates/custom_user/register_users.html:34
 msgid ""
@@ -70,27 +70,27 @@ msgstr ""
 
 #: custom_user/views.py:37
 msgid "User created successfully."
-msgstr ""
+msgstr "Usuário criado com sucesso."
 
 #: custom_user/views.py:40
 msgid "It was not possible to create user."
-msgstr ""
+msgstr "Não foi possível criar o usuário."
 
 #: custom_user/views.py:45
 msgid "This user name already exists."
-msgstr ""
+msgstr "Esse nome de usuário já existe."
 
 #: custom_user/views.py:47
 msgid "This username already exists in an disabled user."
-msgstr ""
+msgstr "Esse nome de usuário já existe num usuário desabilitado."
 
 #: custom_user/views.py:91
 msgid "User updated successfully."
-msgstr ""
+msgstr "Usuário criado com sucesso."
 
 #: custom_user/views.py:99
 msgid "User deleted successfully."
-msgstr ""
+msgstr "Usuário deletado com sucesso."
 
 #~ msgid "É necessário escolher pelo menos um perfil de usuário!"
 #~ msgstr "É necessário escolher pelo menos um perfil de usuário!"

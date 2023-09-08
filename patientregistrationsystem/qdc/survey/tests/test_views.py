@@ -72,7 +72,7 @@ LIME_SURVEY_TOKEN_ID_1 = 1
 #
 #             # Importar grupo de questoes
 #             handle_file_import = \
-#                 open('quiz/static/quiz/tests/limesurvey_groups.lsg', 'r')
+#                 open('data/static/quiz/tests/limesurvey_groups.lsg', 'r')
 #             questions_data = handle_file_import.read()
 #             questions_id = \
 #                 lime_survey.insert_questions(sid, questions_data, 'lsg')

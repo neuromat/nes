@@ -1,60 +1,54 @@
 # coding=utf-8
+from ast import Return
 import datetime
 import re
-
 from functools import partial
 from operator import itemgetter
 
+from django.conf import settings
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http.response import HttpResponse
-from django.urls import reverse
+from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.conf import settings
+from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.core.cache import cache
-
-from experiment.models import (
-    Subject,
-    SubjectOfGroup,
-    QuestionnaireResponse as ExperimentQuestionnaireResponse,
-    Questionnaire,
-)
-
-from patient.forms import QuestionnaireResponseForm
+from experiment.models import Questionnaire
+from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse
+from experiment.models import Subject, SubjectOfGroup
 from patient.forms import (
-    PatientForm,
-    TelephoneForm,
-    SocialDemographicDataForm,
-    SocialHistoryDataForm,
     ComplementaryExamForm,
     ExamFileForm,
+    PatientForm,
+    QuestionnaireResponseForm,
+    SocialDemographicDataForm,
+    SocialHistoryDataForm,
+    TelephoneForm,
 )
 from patient.models import (
-    Patient,
-    Telephone,
-    SocialDemographicData,
-    SocialHistoryData,
-    MedicalRecordData,
     ClassificationOfDiseases,
+    ComplementaryExam,
     Diagnosis,
     ExamFile,
-    ComplementaryExam,
+    MedicalRecordData,
+    Patient,
     QuestionnaireResponse,
+    SocialDemographicData,
+    SocialHistoryData,
+    Telephone,
 )
-
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 from survey.survey_utils import find_questionnaire_name
 from survey.views import (
-    get_questionnaire_responses,
     check_limesurvey_access,
-    get_questionnaire_language,
     csv_to_list,
+    get_questionnaire_language,
+    get_questionnaire_responses,
 )
 
 # pylint: disable=E1101
@@ -112,6 +106,8 @@ def patient_view(request, patient_id) -> HttpResponse:
                 return patient_view_questionnaires(request, patient, context, False)
             else:
                 raise PermissionDenied
+
+    raise PermissionDenied
 
 
 @login_required

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-29 19:13-0300\n"
+"POT-Creation-Date: 2023-09-08 01:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,37 +18,57 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: custom_user/forms.py:26 custom_user/forms.py:162
+#: custom_user/forms.py:33 custom_user/forms.py:183
 msgid "Type first name"
 msgstr ""
 
-#: custom_user/forms.py:36 custom_user/forms.py:170
+#: custom_user/forms.py:42 custom_user/forms.py:193
 msgid "Type last name"
 msgstr ""
 
-#: custom_user/forms.py:45 custom_user/forms.py:177
+#: custom_user/forms.py:51 custom_user/forms.py:204
 msgid "Type e-mail"
 msgstr ""
 
-#: custom_user/forms.py:63
+#: custom_user/forms.py:54 custom_user/forms.py:207
+msgid "Invalid e-mail"
+msgstr ""
+
+#: custom_user/forms.py:70
 msgid "Type user name"
 msgstr ""
 
-#: custom_user/forms.py:71 custom_user/forms.py:100
-#: custom_user/templates/custom_user/register_users.html:211
+#: custom_user/forms.py:73
+msgid ""
+"Username must start with a letter and contain only alphanumeric characters "
+"(6-30)"
+msgstr ""
+
+#: custom_user/forms.py:84 custom_user/forms.py:118
+#: custom_user/templates/custom_user/register_users.html:206
 msgid "Type password"
 msgstr ""
 
-#: custom_user/forms.py:89 custom_user/views.py:195
+#: custom_user/forms.py:87 custom_user/forms.py:121
+msgid ""
+"Password must contain at least a number, an uppercase letter and a lowercase "
+"letter (8-127)"
+msgstr ""
+
+#: custom_user/forms.py:107 custom_user/views.py:195
 msgid "E-mail already registered"
 msgstr ""
 
-#: custom_user/forms.py:127 custom_user/forms.py:128
+#: custom_user/forms.py:149 custom_user/forms.py:150
 msgid "E-mail is not registered"
 msgstr ""
 
-#: custom_user/forms.py:141 custom_user/forms.py:185
+#: custom_user/forms.py:163 custom_user/forms.py:211
 msgid "Type citation name"
+msgstr ""
+
+#: custom_user/forms.py:184 custom_user/forms.py:194
+msgid "Only use letters and spaces"
 msgstr ""
 
 #: custom_user/models.py:10
@@ -59,95 +79,95 @@ msgstr ""
 msgid "Yes, a username and password must be configured"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:35
+#: custom_user/templates/custom_user/initial_page.html:34
 #: custom_user/templates/custom_user/institution_register.html:47
 #: custom_user/templates/custom_user/register_users.html:69
 msgid "Home"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:36
+#: custom_user/templates/custom_user/initial_page.html:35
 #: custom_user/templates/custom_user/institution_register.html:48
 #: custom_user/templates/custom_user/register_users.html:70
 msgid "Researchers and Institutions"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:44
+#: custom_user/templates/custom_user/initial_page.html:43
 msgid "Researchers"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:50
+#: custom_user/templates/custom_user/initial_page.html:49
 msgid "Show/Hide researchers"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:60
+#: custom_user/templates/custom_user/initial_page.html:59
 msgid "Researcher"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:61
+#: custom_user/templates/custom_user/initial_page.html:60
 msgid "E-mail"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:62
+#: custom_user/templates/custom_user/initial_page.html:61
 #: custom_user/templates/custom_user/institution_register.html:67
-#: custom_user/templates/custom_user/register_users.html:132
+#: custom_user/templates/custom_user/register_users.html:131
 msgid "Institution"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:63
-#: custom_user/templates/custom_user/register_users.html:172
+#: custom_user/templates/custom_user/initial_page.html:62
+#: custom_user/templates/custom_user/register_users.html:170
 msgid "Username"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:64
-#: custom_user/templates/custom_user/register_users.html:144
+#: custom_user/templates/custom_user/initial_page.html:63
+#: custom_user/templates/custom_user/register_users.html:143
 msgid "Citation name"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:71
-#: custom_user/templates/custom_user/initial_page.html:73
+#: custom_user/templates/custom_user/initial_page.html:70
+#: custom_user/templates/custom_user/initial_page.html:72
 #: custom_user/templates/custom_user/institution_register.html:122
-#: custom_user/templates/custom_user/register_users.html:272
+#: custom_user/templates/custom_user/register_users.html:269
 msgid "Edit"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:73
+#: custom_user/templates/custom_user/initial_page.html:72
 msgid "Name not registered"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:87
-#: custom_user/templates/custom_user/initial_page.html:144
+#: custom_user/templates/custom_user/initial_page.html:86
+#: custom_user/templates/custom_user/initial_page.html:143
 msgid "Insert new"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:99
+#: custom_user/templates/custom_user/initial_page.html:98
 msgid "Institutions"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:105
+#: custom_user/templates/custom_user/initial_page.html:104
 msgid "Show/Hide institutions"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:115
+#: custom_user/templates/custom_user/initial_page.html:114
 #: custom_user/templates/custom_user/institution_register.html:72
 msgid "Name"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:116
+#: custom_user/templates/custom_user/initial_page.html:115
 #: custom_user/templates/custom_user/institution_register.html:83
 msgid "Acronym"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:117
+#: custom_user/templates/custom_user/initial_page.html:116
 #: custom_user/templates/custom_user/institution_register.html:97
 msgid "Country"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:118
+#: custom_user/templates/custom_user/initial_page.html:117
 #: custom_user/templates/custom_user/institution_register.html:108
 msgid "Parent"
 msgstr ""
 
-#: custom_user/templates/custom_user/initial_page.html:125
+#: custom_user/templates/custom_user/initial_page.html:124
 msgid "Visualize"
 msgstr ""
 
@@ -164,21 +184,21 @@ msgid "Delete institution"
 msgstr ""
 
 #: custom_user/templates/custom_user/institution_register.html:136
-#: custom_user/templates/custom_user/register_users.html:269
+#: custom_user/templates/custom_user/register_users.html:266
 msgid "Save"
 msgstr ""
 
 #: custom_user/templates/custom_user/institution_register.html:140
 #: custom_user/templates/custom_user/institution_register.html:159
-#: custom_user/templates/custom_user/register_users.html:278
-#: custom_user/templates/custom_user/register_users.html:298
-#: custom_user/templates/custom_user/register_users.html:312
+#: custom_user/templates/custom_user/register_users.html:275
+#: custom_user/templates/custom_user/register_users.html:294
+#: custom_user/templates/custom_user/register_users.html:308
 msgid "Cancel"
 msgstr ""
 
 #: custom_user/templates/custom_user/institution_register.html:144
+#: custom_user/templates/custom_user/register_users.html:278
 #: custom_user/templates/custom_user/register_users.html:281
-#: custom_user/templates/custom_user/register_users.html:284
 msgid "Back"
 msgstr ""
 
@@ -187,8 +207,8 @@ msgid "Are you sure you want to delete this institution?"
 msgstr ""
 
 #: custom_user/templates/custom_user/institution_register.html:160
-#: custom_user/templates/custom_user/register_users.html:264
-#: custom_user/templates/custom_user/register_users.html:299
+#: custom_user/templates/custom_user/register_users.html:261
+#: custom_user/templates/custom_user/register_users.html:295
 msgid "Delete"
 msgstr ""
 
@@ -208,43 +228,43 @@ msgstr ""
 msgid "Last name"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:157
+#: custom_user/templates/custom_user/register_users.html:156
 msgid "Can this researcher access the system?"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:192
+#: custom_user/templates/custom_user/register_users.html:187
 msgid "Password"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:207
+#: custom_user/templates/custom_user/register_users.html:202
 msgid "Please confirm password"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:225
+#: custom_user/templates/custom_user/register_users.html:221
 msgid "Update password"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:233
+#: custom_user/templates/custom_user/register_users.html:228
 msgid "Profiles"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:235
+#: custom_user/templates/custom_user/register_users.html:232
 msgid "In which these profiles does user identify?"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:295
+#: custom_user/templates/custom_user/register_users.html:291
 msgid "Are you sure you want to delete this researcher?"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:309
+#: custom_user/templates/custom_user/register_users.html:305
 msgid "Are you sure you want to deactivate this researcher's system access?"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:313
+#: custom_user/templates/custom_user/register_users.html:309
 msgid "Deactivate"
 msgstr ""
 
-#: custom_user/tests.py:172 custom_user/views.py:70 custom_user/views.py:97
+#: custom_user/tests.py:171 custom_user/views.py:70 custom_user/views.py:97
 msgid ""
 "A researcher with this email address has already been registered before. "
 "Please contact your system administrator if you want to reactivate this "

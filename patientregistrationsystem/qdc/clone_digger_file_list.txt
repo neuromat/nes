@@ -1,7 +1,0 @@
-experiment/views.py
-patient/views.py
-export/views.py
-survey/views.py
-export/export.py
-experiment/templatetags/subjects_tags.py
-survey/templatetags/subjects_tags_survey.py

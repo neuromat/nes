@@ -4003,7 +4003,7 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Anexar arquivo
-        consent_form_file = SimpleUploadedFile("quiz/consent_form.txt", b"rb")
+        consent_form_file = SimpleUploadedFile("data/consent_form.txt", b"rb")
         self.data = {"action": "upload", "consent_form": consent_form_file}
         # url = reverse('upload_file', args=[group.pk, subject_mock.pk])
         # request = self.factory.post(url, self.data)d

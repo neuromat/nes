@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-15 00:40-0300\n"
+"POT-Creation-Date: 2023-09-06 17:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: survey/survey_utils.py:541 survey/survey_utils.py:558
 msgid "Could not get list of groups from LimeSurvey"
 msgstr ""
@@ -30,64 +31,66 @@ msgstr ""
 msgid "There's no question with name %s"
 msgstr ""
 
-#: survey/templates/survey/survey_list.html:15
-msgid "List of questionnaires"
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:20
-#: survey/templates/survey/survey_register.html:43
-msgid "Questionnaire"
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:21
-#: survey/templates/survey/survey_register.html:60
-msgid "Required fill"
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:22
-msgid "Is active?"
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:28
-msgid "View"
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:37
-#: survey/templates/survey/survey_register.html:63
-msgid "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey."
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:38
-#: survey/templates/survey/survey_register.html:64
-msgid "See more details in"
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:42
-msgid "Insert new questionnaire"
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:49
-msgid ""
-"Click to update questionnaire title if not displaying the title in selected "
-"NES language"
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:54
-msgid "Update informations about the questionnaires"
-msgstr ""
-
-#: survey/templates/survey/survey_list.html:54
-msgid "Update"
-msgstr ""
-
+#: survey/templates/survey/survey_list.html:11
 #: survey/templates/survey/survey_register.html:19
 #: survey/templates/survey/survey_sensitive_fields.html:18
 msgid "Home"
 msgstr ""
 
+#: survey/templates/survey/survey_list.html:12
 #: survey/templates/survey/survey_register.html:20
 #: survey/templates/survey/survey_sensitive_fields.html:19
 msgid "Questionnaires"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:20
+msgid "List of questionnaires"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:25
+#: survey/templates/survey/survey_register.html:43
+msgid "Questionnaire"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:26
+#: survey/templates/survey/survey_register.html:61
+msgid "Required fill"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:27
+msgid "Is active?"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:33
+msgid "View"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:43
+#: survey/templates/survey/survey_register.html:64
+msgid "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey."
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:44
+#: survey/templates/survey/survey_register.html:65
+msgid "See more details in"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:48
+msgid "Insert new questionnaire"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:55
+msgid ""
+"Click to update questionnaire title if not displaying the title in selected "
+"NES language"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:60
+msgid "Update informations about the questionnaires"
+msgstr ""
+
+#: survey/templates/survey/survey_list.html:60
+msgid "Update"
 msgstr ""
 
 #: survey/templates/survey/survey_register.html:23
@@ -102,42 +105,42 @@ msgstr ""
 msgid "Questionnaire information"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:44
+#: survey/templates/survey/survey_register.html:45
 msgid "Please, select a questionnaire from the list."
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:72
-#: survey/templates/survey/survey_register.html:109
+#: survey/templates/survey/survey_register.html:73
+#: survey/templates/survey/survey_register.html:110
 msgid "Edit"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:84
+#: survey/templates/survey/survey_register.html:85
 msgid "Sensitive questions"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:91
+#: survey/templates/survey/survey_register.html:92
 msgid "Question code"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:92
+#: survey/templates/survey/survey_register.html:93
 msgid "Question"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:118
+#: survey/templates/survey/survey_register.html:119
 msgid "Answered by participants"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:125
+#: survey/templates/survey/survey_register.html:126
 #: survey/templates/survey/survey_register.html:214
 msgid "Participant"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:126
+#: survey/templates/survey/survey_register.html:127
 #: survey/templates/survey/survey_register.html:215
 msgid "Fills"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:130
+#: survey/templates/survey/survey_register.html:131
 #: survey/templates/survey/survey_register.html:219
 msgid "Update LimeSurvey Fill date"
 msgstr ""
@@ -147,17 +150,17 @@ msgid "It has to be filled"
 msgstr ""
 
 #: survey/templates/survey/survey_register.html:157
-#: survey/templates/survey/survey_register.html:243
+#: survey/templates/survey/survey_register.html:242
 msgid "Complete"
 msgstr ""
 
 #: survey/templates/survey/survey_register.html:159
-#: survey/templates/survey/survey_register.html:245
+#: survey/templates/survey/survey_register.html:244
 msgid "Incomplete"
 msgstr ""
 
 #: survey/templates/survey/survey_register.html:162
-#: survey/templates/survey/survey_register.html:248
+#: survey/templates/survey/survey_register.html:247
 msgid "No status"
 msgstr ""
 
@@ -185,27 +188,27 @@ msgstr ""
 msgid "Name of the use:"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:270
-#: survey/templates/survey/survey_register.html:301
+#: survey/templates/survey/survey_register.html:269
+#: survey/templates/survey/survey_register.html:300
 msgid "Delete"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:276
+#: survey/templates/survey/survey_register.html:275
 #: survey/templates/survey/survey_sensitive_fields.html:65
 msgid "Save"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:280
-#: survey/templates/survey/survey_register.html:300
+#: survey/templates/survey/survey_register.html:279
+#: survey/templates/survey/survey_register.html:299
 #: survey/templates/survey/survey_sensitive_fields.html:68
 msgid "Cancel"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:284
+#: survey/templates/survey/survey_register.html:283
 msgid "Back"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:297
+#: survey/templates/survey/survey_register.html:296
 msgid "Are you sure you want to delete questionnaire?"
 msgstr ""
 

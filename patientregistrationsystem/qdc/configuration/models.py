@@ -1,9 +1,10 @@
+from typing import LiteralString
 from custom_user.models import Institution
 from django.db import models
 from solo.models import SingletonModel
 
 
-def get_institution_logo_dir(instance, filename):
+def get_institution_logo_dir(instance, filename) -> LiteralString:
     return "institution_logo/%s/%s" % (instance.id, filename)
 
 

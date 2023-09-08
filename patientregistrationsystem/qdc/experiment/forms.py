@@ -519,7 +519,7 @@ class ResearchProjectForm(ModelForm):
                     "class": "form-control",
                     "placeholder": _("mm/dd/yyyy"),
                     "required": "",
-                    "data-error": _("Initial date must be filled"),
+                    "data-error": _("Initial date must be filled."),
                 },
             ),
             "end_date": TextInput(

@@ -1,9 +1,6 @@
 # -*- coding: UTF-8 -*-
-from importlib.util import resolve_name
 import re
-
-from django.http import HttpRequest
-from sqlalchemy import false
+from importlib.util import resolve_name
 
 from custom_user.models import Institution, User, UserProfile
 from custom_user.tests_helper import create_user
@@ -19,8 +16,10 @@ from django.contrib.auth.tokens import (
     default_token_generator,
 )
 from django.contrib.messages import get_messages
-from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.sites.models import Site
 from django.contrib.sites.requests import RequestSite
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.test import SimpleTestCase, TestCase
@@ -30,7 +29,7 @@ from django.utils.http import int_to_base36
 from django.utils.translation import gettext as _
 from qdc import settings
 from requests import Request
-
+from sqlalchemy import false
 
 USER_USERNAME = "myadmin"
 USER_PWD = "mypassword"
@@ -92,7 +91,7 @@ class FormUserValidation(TestCase):
         token_generator: PasswordResetTokenGenerator = default_token_generator,
     ) -> None:
         """Reset users password"""
-        if not user_added.email:
+        if not user_added or not user_added.email:
             raise ValueError("Email address is required to send an email")
 
         if not domain_override:

@@ -18,9 +18,9 @@
 
 {% block extrastyle %}
 
-    <link rel="stylesheet" href="{% static 'quiz/toastr/toastr.min.css' %}">
-    <link rel="stylesheet" href="{% static 'quiz/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'data/toastr/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'data/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'data/font-awesome-4.7.0/css/font-awesome.min.css' %}">
 
     <style>
         body {
@@ -136,10 +136,10 @@
 
     </div>
 
-    <script src="{% static 'quiz/jquery/jquery-2.2.4.min.js' %}"></script>
-    <script src="{% static 'quiz/jquery/jquery-migrate-1.4.1.js' %}"></script>
-    <script src="{% static 'quiz/toastr/toastr.min.js' %}"></script>
-    <script src="{% static 'quiz/js/quiz.js' %}"></script>
+    <script src="{% static 'data/jquery/jquery-2.2.4.min.js' %}"></script>
+    <script src="{% static 'data/jquery/jquery-migrate-1.4.1.js' %}"></script>
+    <script src="{% static 'data/toastr/toastr.min.js' %}"></script>
+    <script src="{% static 'data/js/quiz.js' %}"></script>
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
     {% if form.non_field_errors %}

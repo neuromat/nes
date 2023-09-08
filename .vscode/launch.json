@@ -12,7 +12,7 @@
             "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
             "args": [
                 "runserver",
-                "0.0.0.0:8000"
+                "0.0.0.0:80"
             ],
             "django": true,
             "justMyCode": false,

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import warnings
 
 from django.utils.translation import gettext_lazy as _
 
@@ -36,10 +37,7 @@ DEBUG404 = True
 IS_TESTING = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
-CSRF_TRUSTED_ORIGINS = [
-    "https://cleanly-accurate-pegasus.ngrok-free.app",
-    "https://localhost:8000",
-]
+
 
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -47,7 +45,7 @@ SESSION_COOKIE_AGE = 3600
 
 CSRF_USE_SESSIONS = True
 # CSRF_COOKIE_SECURE = True
-# CSRF_COOKIE_HTTPONLY = True
+
 
 # Application definition
 
@@ -66,6 +64,7 @@ INSTALLED_APPS = [
     "fixture_magic",
     "maintenance_mode",
     "rosetta",
+    "axes",
 ]
 
 PROJECT_APPS = [
@@ -92,6 +91,7 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
     "maintenance_mode.middleware.MaintenanceModeMiddleware",
     "qdc.middleware.PasswordChangeMiddleware",
+    "axes.middleware.AxesMiddleware",
 ]
 
 CONTEXT_PROCESSORS = {"maintenance_mode.context_processors.maintenance_mode"}
@@ -116,6 +116,14 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = [
+    # AxesStandaloneBackend should be the first backend in the AUTHENTICATION_BACKENDS list.
+    "axes.backends.AxesStandaloneBackend",
+    # Django ModelBackend is the default authentication backend.
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 
 CACHES = {
     "default": {
@@ -168,7 +176,7 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, "experiment/locale"),
     os.path.join(BASE_DIR, "survey/locale"),
     os.path.join(BASE_DIR, "custom_user/locale"),
-    os.path.join(BASE_DIR, "quiz/locale"),
+    os.path.join(BASE_DIR, "data/locale"),
     os.path.join(BASE_DIR, "export/locale"),
     os.path.join(BASE_DIR, "qdc/locale"),
 )
@@ -246,3 +254,10 @@ LOGGING = {
         "level": "WARNING",
     },
 }
+
+warnings.filterwarnings(
+    "error",
+    r"DateTimeField .* received a naive datetime",
+    RuntimeWarning,
+    r"django\.db\.models\.fields",
+)

@@ -172,7 +172,7 @@ def upgrade_nes(request):
             print("There are not migrations")
 
         os.system(
-            f"touch {path_git_repo_local}spatientregistrationsystem/qdc/qdc/wsgi.py"
+            f"touch {path_git_repo_local}patientregistrationsystem/qdc/qdc/wsgi.py"
         )
 
         # check if the current TAG is the latest tag

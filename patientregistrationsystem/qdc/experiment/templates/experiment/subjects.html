@@ -449,8 +449,8 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'quiz/js/subjects.js' %}"></script>
-    <script src="{% static 'quiz/js/search_and_table.js' %}"></script>
+    <script src="{% static 'data/js/subjects.js' %}"></script>
+    <script src="{% static 'data/js/search_and_table.js' %}"></script>
     <script>
         $(document).ready(function () {
             searchAndTable("/experiment/subject/search/", {"group_id": $("#group_id").val()});

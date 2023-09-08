@@ -10,7 +10,8 @@ ENV DEBIAN_FRONTEND=dialog
 
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8  
+ENV LC_ALL en_US.UTF-8
+
 
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
@@ -19,7 +20,7 @@ RUN apt-get -y update --no-install-recommends && \
     libjpeg-dev \
     libpng-dev \
     libpq-dev \
-    #freetype-dev \
+    libfreetype6-dev \
     #build-base \
     git \
     #openblas-dev \
@@ -33,12 +34,16 @@ RUN apt-get -y update --no-install-recommends && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
 
-# [Optional] If your requirements rarely change, uncomment this section to add them to the image.
+
 COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
 RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
+COPY $NES_DIR/patientregistrationsystem/qdc/src/nwb/dist/nwb-1.0.0-py3-none-any.whl .
+RUN pip3 --disable-pip-version-check install nwb-1.0.0-py3-none-any.whl \
+    && rm nwb-1.0.0-py3-none-any.whl
+
 COPY .devcontainer/entrypoint.sh /
-RUN chmod 777 /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

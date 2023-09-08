@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-15 00:40-0300\n"
+"POT-Creation-Date: 2023-09-08 01:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,54 +17,59 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: quiz/templates/quiz/contato.html:41 quiz/templates/quiz/template.html:10
+
+#: quiz/templates/quiz/contato.html:39 quiz/templates/quiz/template.html:14
 msgid "Neuroscience Experiments System - NES"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:81
+#: quiz/templates/quiz/template.html:107
 msgid "NES"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:126
+#: quiz/templates/quiz/template.html:150
+msgid "Admin"
+msgstr ""
+
+#: quiz/templates/quiz/template.html:152
 msgid "Change password"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:127
+#: quiz/templates/quiz/template.html:153
 msgid "Logout"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:147
+#: quiz/templates/quiz/template.html:174
 msgid "Home"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:155
+#: quiz/templates/quiz/template.html:182
 msgid "Participants"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:164
+#: quiz/templates/quiz/template.html:191
 msgid "Studies"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:173
+#: quiz/templates/quiz/template.html:200
 msgid "Publications"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:182
+#: quiz/templates/quiz/template.html:209
 msgid "Questionnaires"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:191
+#: quiz/templates/quiz/template.html:218
 msgid "Researchers"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:200
+#: quiz/templates/quiz/template.html:227
 msgid "Export"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:209
+#: quiz/templates/quiz/template.html:236
 msgid "Set up"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:219
+#: quiz/templates/quiz/template.html:246
 msgid "Plugin"
 msgstr ""

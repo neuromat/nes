@@ -15,11 +15,10 @@
     <meta name="description" content="">
     <meta name="author" content="NeuroMat">
 
-    <link rel="stylesheet" href="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'quiz/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
-    {% comment %} <link rel="stylesheet" href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}"> {% endcomment %}
-    <link rel="stylesheet" href="{% static 'quiz/toastr/toastr.min.css' %}">
-    <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'data/jquery-ui-1.13.2/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'data/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'data/toastr/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'data/font-awesome-4.7.0/css/font-awesome.min.css' %}">
 
     <style type="text/css">
         html {
@@ -265,7 +264,7 @@
 <footer class="footer">
     <div class="container">
         <a href="http://ccsl.ime.usp.br">
-            <img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" height="34px" width="96px">
+            <img src="{% static 'data/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" height="34px" width="96px">
         </a>
 
         <span class="version_number">v{% settings_value "VERSION" %}</span>
@@ -273,41 +272,15 @@
 </footer>
 
 
-<script src="{% static 'quiz/jquery/jquery-2.2.4.js' %}"></script>
-<script src="{% static 'quiz/jquery/jquery-migrate-1.4.1.js' %}"></script>
-<script src="{% static 'quiz/jquery-ui-1.13.2/jquery-ui.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
-{% comment %} <script type="text/javascript" src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script> {% endcomment %}
-<script type="text/javascript" src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/toastr/toastr.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'quiz/js/quiz.js' %}"></script>
+<script type="text/javascript" src="{% static 'data/jquery/jquery-2.2.4.js' %}"></script>
+<script type="text/javascript" src="{% static 'data/jquery/jquery-migrate-1.4.1.js' %}"></script>
+<script type="text/javascript" src="{% static 'data/jquery-ui-1.13.2/jquery-ui.js' %}"></script>
+<script type="text/javascript" src="{% static 'data/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'data/masked_input/jquery.maskedinput.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'data/Bootstrap-Validator-Master/dist/validator.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'data/toastr/toastr.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'data/js/quiz.js' %}"></script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
-
-{# Apply a date picker and a mask to every field that has the class "datepicker" #}
-{% comment %} <script>
-    $(document).ready(function() {
-        $('.datepicker').datepicker({
-            dateFormat: gettext("mm/dd/yyyy"),
-            dayNames: [gettext('Sunday'),gettext('Monday'),gettext('Tuesday'),
-                gettext('Wednesday'),gettext('Thursday'),gettext('Friday'),gettext('Saturday')],
-            dayNamesMin: [gettext('Su'),gettext('Mo'),gettext('Tu'),gettext('We'),gettext('Th'),
-                gettext('Fr'),gettext('Sa'),gettext('Su')],
-            dayNamesShort: [gettext('Sun'),gettext('Mon'),gettext('Tue'),gettext('Wed'),
-                gettext('Thu'),gettext('Fri'),gettext('Sat'),gettext('Sun')],
-            monthNames: [gettext('January'),gettext('February'),gettext('March'),
-                gettext('April'),gettext('May'),gettext('June'),
-                gettext('July'),gettext('August'),gettext('September'),
-                gettext('October'),gettext('November'),gettext('December')],
-            monthNamesShort: [gettext('Jan'),gettext('Feb'),gettext('Mar'),gettext('Apr'),
-                gettext('May'),gettext('Jun'),gettext('Jul'),gettext('Aug'),
-                gettext('Sep'),gettext('Oct'),gettext('Nov'),gettext('Dec')],
-            nextText: gettext('Next'),
-            prevText: gettext('Previous')
-        }).
-        mask("99/99/9999");
-    });
-</script> {% endcomment %}
 
 <script>
     {% if messages %}
