@@ -1103,6 +1103,7 @@ class Component(models.Model):
     EMG = "emg"
     TMS = "tms"
     DIGITAL_GAME_PHASE = "digital_game_phase"
+    MEDIA_COLLECTION = "media_collection"
     GENERIC_DATA_COLLECTION = "generic_data_collection"
     COMPONENT_TYPES = (
         (BLOCK, _("Set of steps")),
@@ -1117,6 +1118,7 @@ class Component(models.Model):
         (TMS, _("TMS")),
         (DIGITAL_GAME_PHASE, _("Goalkeeper game phase")),
         (GENERIC_DATA_COLLECTION, _("Generic data collection")),
+        (MEDIA_COLLECTION, _("Media collection")),
     )
 
     identification = models.CharField(max_length=50)
@@ -1237,9 +1239,26 @@ class InformationType(models.Model):
         return self.name
 
 
+class InformationTypeMedia(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
 class GenericDataCollection(Component):
     information_type = models.ForeignKey(
         InformationType, on_delete=models.CASCADE, null=False, blank=False
+    )
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
+
+class MediaCollection(Component):
+    information_type_media = models.ForeignKey(
+        InformationTypeMedia, on_delete=models.CASCADE, null=False, blank=False
     )
 
     def save(self, *args, **kwargs):
@@ -1447,6 +1466,20 @@ def get_data_file_dir(instance, filename):
             "generic_data_collection",
         )
 
+    elif isinstance(instance, MediaCollectionFile):
+        directory = path.join(
+            "data_collection_files",
+            str(instance.media_collection_data.subject_of_group.group.experiment.id),
+            str(instance.media_collection_data.subject_of_group.group.id),
+            str(instance.media_collection_data.subject_of_group.subject.id),
+            str(
+                instance.media_collection_data.data_configuration_tree.id
+                if instance.media_collection_data.data_configuration_tree
+                else 0
+            ),
+            "media_collection",
+        )
+
     elif isinstance(instance, DigitalGamePhaseFile):
         directory = path.join(
             "data_collection_files",
@@ -1595,7 +1628,7 @@ class FileFormat(models.Model):
     nes_code = models.CharField(null=True, blank=True, max_length=50, unique=True)
 
     name = models.CharField(max_length=50)
-    extension = models.CharField(max_length=20)
+    extension = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     tags = models.ManyToManyField(Tag)
 
@@ -1773,6 +1806,21 @@ class GenericDataCollectionData(DataFile, DataCollection):
         self.changed_by = value
 
 
+class MediaCollectionData(DataFile, DataCollection):
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+
 class EEGFile(models.Model):
     eeg_data = models.ForeignKey(
         EEGData, on_delete=models.CASCADE, related_name="eeg_files"
@@ -1808,6 +1856,15 @@ class GenericDataCollectionFile(models.Model):
         GenericDataCollectionData,
         on_delete=models.CASCADE,
         related_name="generic_data_collection_files",
+    )
+    file = models.FileField(upload_to=get_data_file_dir)
+
+
+class MediaCollectionFile(models.Model):
+    media_collection_data = models.ForeignKey(
+        MediaCollectionData,
+        on_delete=models.CASCADE,
+        related_name="media_collection_files",
     )
     file = models.FileField(upload_to=get_data_file_dir)
 

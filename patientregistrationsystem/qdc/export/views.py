@@ -31,6 +31,7 @@ from experiment.models import (
     GenericDataCollectionData,
     Group,
     Instruction,
+    MediaCollectionData,
     Questionnaire,
 )
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse
@@ -990,6 +991,12 @@ def get_component_with_data_and_metadata(group, component_list):
         )
         if generic_data_list:
             component_list.append("generic_data")
+    if "media_data" not in component_list:
+        media_data_list = MediaCollectionData.objects.filter(
+            subject_of_group__group=group
+        )
+        if media_data_list:
+            component_list.append("media_data")
 
     return component_list
 

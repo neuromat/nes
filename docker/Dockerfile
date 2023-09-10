@@ -48,10 +48,7 @@ RUN pip3 --disable-pip-version-check install nwb-1.0.0-py3-none-any.whl \
     && rm nwb-1.0.0-py3-none-any.whl
 
 
-EXPOSE 80
-
 COPY /entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT /entrypoint.sh
-#CMD ["run"]

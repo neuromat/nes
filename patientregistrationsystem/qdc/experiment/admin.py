@@ -2,9 +2,27 @@ from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 from modeltranslation.admin import TranslationAdmin
 
-from .models import QuestionnaireResponse, StimulusType, Tag, ADConverter, StandardizationSystem, ElectrodeShape, \
-    MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, CoilOrientation, \
-    DirectionOfTheInducedCurrent, BrainArea, BrainAreaSystem, InformationType, GoalkeeperGame, GoalkeeperPhase
+from .models import (
+    InformationTypeMedia,
+    QuestionnaireResponse,
+    StimulusType,
+    Tag,
+    ADConverter,
+    StandardizationSystem,
+    ElectrodeShape,
+    MeasureSystem,
+    MeasureUnit,
+    TetheringSystem,
+    AmplifierDetectionType,
+    ElectrodeConfiguration,
+    CoilOrientation,
+    DirectionOfTheInducedCurrent,
+    BrainArea,
+    BrainAreaSystem,
+    InformationType,
+    GoalkeeperGame,
+    GoalkeeperPhase,
+)
 
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
 
@@ -29,5 +47,6 @@ admin.site.register(DirectionOfTheInducedCurrent)
 admin.site.register(BrainArea)
 admin.site.register(BrainAreaSystem)
 admin.site.register(InformationType)
+admin.site.register(InformationTypeMedia)
 admin.site.register(GoalkeeperGame)
 admin.site.register(GoalkeeperPhase)

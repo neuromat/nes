@@ -10,6 +10,7 @@ $(document).ready(
 
         if (id_number_of_mandatory_components.val() == "") {
             id_number_of_mandatory_components.prop('disabled', true);
+            id_number_of_mandatory_components.prop('required', false);
             all_mandatory_components.prop('checked', true);
         } else {
             not_all_mandatory_components.prop('checked', true);
@@ -18,11 +19,13 @@ $(document).ready(
         all_mandatory_components.click(function () {
             id_number_of_mandatory_components.prop('value', "");
             id_number_of_mandatory_components.prop('disabled', true);
+            id_number_of_mandatory_components.prop('required', false);
             fix_bootstrap_error_message();
         });
 
         not_all_mandatory_components.click(function () {
             id_number_of_mandatory_components.prop('disabled', false);
+            id_number_of_mandatory_components.prop('required', true);
             id_number_of_mandatory_components.focus();
         });
 

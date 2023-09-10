@@ -16,6 +16,7 @@ $(document).ready(function () {
 
     if (id_number_of_repetitions.val() == "") {
         id_number_of_repetitions.prop('disabled', true);
+        id_number_of_repetitions.prop('required', false);
         unlimited_number_of_repetitions.prop('checked', true);
     } else {
         limited_number_of_repetitions.prop('checked', true);
@@ -27,7 +28,9 @@ $(document).ready(function () {
 
     if (id_interval_between_repetitions_value.val() == "") {
         id_interval_between_repetitions_value.prop('disabled', true);
+        id_interval_between_repetitions_value.prop('required', false);
         id_interval_between_repetitions_unit.prop('disabled', true);
+        id_interval_between_repetitions_unit.prop('required', false);
         undefined_interval.prop('checked', true);
     } else {
         defined_interval.prop('checked', true);
@@ -78,7 +81,9 @@ $(document).ready(function () {
     limited_number_of_repetitions.click(function () {
         manage_interval_disable_flag();
         id_number_of_repetitions.prop('disabled', false);
+        id_number_of_repetitions.prop('readonly', false);
         id_number_of_repetitions.focus();
+        fix_bootstrap_error_message_repetitions();
     });
 
     // Keypress is not always called. That's why we're using keyup.
@@ -93,7 +98,9 @@ $(document).ready(function () {
 
     undefined_interval.click(function () {
         id_interval_between_repetitions_value.prop('disabled', true);
+        id_interval_between_repetitions_value.prop('required', false);
         id_interval_between_repetitions_unit.prop('disabled', true);
+        id_interval_between_repetitions_unit.prop('required', false);
 
         id_interval_between_repetitions_value.prop('value', "");
         id_interval_between_repetitions_unit.prop('value', "");
@@ -103,7 +110,9 @@ $(document).ready(function () {
 
     defined_interval.click(function () {
         id_interval_between_repetitions_value.prop('disabled', false);
+        id_interval_between_repetitions_value.prop('required', true);
         id_interval_between_repetitions_unit.prop('disabled', false);
+        id_interval_between_repetitions_unit.prop('required', true);
 
         id_interval_between_repetitions_value.focus();
     });

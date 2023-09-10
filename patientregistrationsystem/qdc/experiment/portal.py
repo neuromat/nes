@@ -53,6 +53,7 @@ from .models import (
     Group,
     Instruction,
     IntramuscularElectrode,
+    MediaCollection,
     NeedleElectrode,
     Questionnaire,
     QuestionnaireResponse,
@@ -1510,6 +1511,16 @@ def send_steps_to_portal(
         params[
             "information_type_description"
         ] = step_specialization.information_type.description
+
+    elif step_type == "media_collection":
+        api_step_method = "generic_data_collection_step"
+        step_specialization = MediaCollection.objects.get(pk=component.id)
+        params[
+            "information_type_media_name"
+        ] = step_specialization.information_type_media.name
+        params[
+            "information_type_media_description"
+        ] = step_specialization.information_type_media.description
 
     elif step_type == "stimulus":
         api_step_method = "stimulus_step"

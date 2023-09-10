@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-06 17:50+0000\n"
+"POT-Creation-Date: 2023-09-08 03:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,43 +35,43 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: export/forms.py:10
+#: export/forms.py:22
 msgid "Question code"
 msgstr ""
 
-#: export/forms.py:11
+#: export/forms.py:23
 msgid "Full question text"
 msgstr ""
 
-#: export/forms.py:12
+#: export/forms.py:24
 msgid "Abbreviated question text"
 msgstr ""
 
-#: export/forms.py:16
+#: export/forms.py:28
 msgid "Answer codes"
 msgstr ""
 
-#: export/forms.py:17
+#: export/forms.py:29
 msgid "Full answers"
 msgstr ""
 
-#: export/forms.py:21
+#: export/forms.py:33
 msgid "Comma separated values"
 msgstr ""
 
-#: export/forms.py:22
+#: export/forms.py:34
 msgid "Tab separated values"
 msgstr ""
 
-#: export/forms.py:44
+#: export/forms.py:61
 msgid "Response must be selected"
 msgstr ""
 
-#: export/forms.py:94
+#: export/forms.py:128
 msgid "Min age must be filled."
 msgstr ""
 
-#: export/forms.py:97
+#: export/forms.py:139
 msgid "Max age must be filled."
 msgstr ""
 

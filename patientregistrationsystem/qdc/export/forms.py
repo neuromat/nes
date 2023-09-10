@@ -1,31 +1,45 @@
 # coding=utf-8
-from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, MultipleChoiceField, \
-    CheckboxSelectMultiple, ChoiceField, SelectMultiple, IntegerField, NumberInput, RadioSelect
+from django.forms import (
+    ModelForm,
+    Form,
+    TextInput,
+    CharField,
+    BooleanField,
+    MultipleChoiceField,
+    CheckboxSelectMultiple,
+    ChoiceField,
+    SelectMultiple,
+    IntegerField,
+    NumberInput,
+    RadioSelect,
+)
 
 from django.utils.translation import gettext_lazy as _
 
 from patient.models import Patient, Diagnosis
 
 HEADINGS_CHOICES = (
-    ('code', _("Question code")),
-    ('full', _("Full question text")),
-    ('abbreviated', _("Abbreviated question text")),
+    ("code", _("Question code")),
+    ("full", _("Full question text")),
+    ("abbreviated", _("Abbreviated question text")),
 )
 
 RESPONSES_CHOICES = (
-    ('short', _("Answer codes")),
-    ('long', _("Full answers")),
+    ("short", _("Answer codes")),
+    ("long", _("Full answers")),
 )
 
 FORMATS_CHOICES = (
-    ('csv', _("Comma separated values")),
-    ('tsv', _("Tab separated values")),
+    ("csv", _("Comma separated values")),
+    ("tsv", _("Tab separated values")),
 )
 
 
 class ExportForm(Form):
     title = CharField(
-        required=False, widget=TextInput(attrs={'class': 'form-control', 'disabled': ''}))
+        required=False,
+        widget=TextInput(attrs={"class": "form-control", "disabled": ""}),
+    )
     per_participant = BooleanField(initial=True, required=False)
     per_questionnaire = BooleanField(initial=True, required=False)
     per_eeg_raw_data = BooleanField(initial=True, required=False)
@@ -37,65 +51,100 @@ class ExportForm(Form):
     per_stimulus_data = BooleanField(initial=True, required=False)
     per_generic_data = BooleanField(initial=True, required=False)
 
-    questionnaire_entrance_selected = []
+    questionnaire_entrance_selected: list = []
 
-    headings = ChoiceField(widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False)
+    headings = ChoiceField(
+        widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False
+    )
     responses = MultipleChoiceField(
-        widget=CheckboxSelectMultiple(attrs={'data-error': _('Response must be selected')}),
-        choices=RESPONSES_CHOICES, required=False)
-    filesformat = ChoiceField(widget=RadioSelect(), choices=FORMATS_CHOICES, required=False)
+        widget=CheckboxSelectMultiple(
+            attrs={"data-error": _("Response must be selected")}
+        ),
+        choices=RESPONSES_CHOICES,
+        required=False,
+    )
+    filesformat = ChoiceField(
+        widget=RadioSelect(), choices=FORMATS_CHOICES, required=False
+    )
 
 
 class ParticipantsSelectionForm(ModelForm):
     class Meta:
         model = Patient
 
-        fields = [
-            'gender', 'marital_status', 'country', 'city', 'state'
-        ]
+        fields = ["gender", "marital_status", "country", "city", "state"]
 
         widgets = {
-            'gender': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
-            'marital_status': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
-            'country': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
-            'state': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
-            'city': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
+            "gender": SelectMultiple(
+                attrs={"class": "form-control", "required": "", "disabled": ""}
+            ),
+            "marital_status": SelectMultiple(
+                attrs={"class": "form-control", "required": "", "disabled": ""}
+            ),
+            "country": SelectMultiple(
+                attrs={"class": "form-control", "required": "", "disabled": ""}
+            ),
+            "state": SelectMultiple(
+                attrs={"class": "form-control", "required": "", "disabled": ""}
+            ),
+            "city": SelectMultiple(
+                attrs={"class": "form-control", "required": "", "disabled": ""}
+            ),
         }
 
     def __init__(self, *args, **kwargs):
         super(ParticipantsSelectionForm, self).__init__(*args, **kwargs)
-        self.fields['gender'].empty_label = None
-        self.fields['marital_status'].empty_label = None
-        self.fields['country'].empty_label = None
-        self.fields['state'].empty_label = None
-        self.fields['city'].empty_label = None
+        self.fields["gender"].empty_label = None
+        self.fields["marital_status"].empty_label = None
+        self.fields["country"].empty_label = None
+        self.fields["state"].empty_label = None
+        self.fields["city"].empty_label = None
 
-        self.fields['gender'].required = True
-        self.fields['marital_status'].required = True
-        self.fields['country'].required = True
-        self.fields['state'].required = True
-        self.fields['city'].required = True
+        self.fields["gender"].required = True
+        self.fields["marital_status"].required = True
+        self.fields["country"].required = True
+        self.fields["state"].required = True
+        self.fields["city"].required = True
 
         if not self.data.get("gender"):
-            self.fields['gender'].required = False
+            self.fields["gender"].required = False
         if not self.data.get("marital_status"):
-            self.fields['marital_status'].required = False
+            self.fields["marital_status"].required = False
         if not self.data.get("country"):
-            self.fields['country'].required = False
+            self.fields["country"].required = False
         if not self.data.get("state"):
-            self.fields['state'].required = False
+            self.fields["state"].required = False
         if not self.data.get("city"):
-            self.fields['city'].required = False
+            self.fields["city"].required = False
 
 
 class AgeIntervalForm(Form):
-
-    min_age = IntegerField(min_value=0, widget=NumberInput(attrs={'class': 'form-control', 'required': "",
-                                                                  'data-error': _('Min age must be filled.'),
-                                                                  'disabled': ''}))
-    max_age = IntegerField(min_value=0, widget=NumberInput(attrs={'class': 'form-control', 'required': "",
-                                                                  'data-error': _('Max age must be filled.'),
-                                                                  'disabled': ''}))
+    min_age = IntegerField(
+        min_value=0,
+        widget=NumberInput(
+            attrs={
+                "class": "form-control",
+                "required": "",
+                "min": "0",
+                "max": "999",
+                "data-error": _("Min age must be filled."),
+                "disabled": "",
+            }
+        ),
+    )
+    max_age = IntegerField(
+        min_value=0,
+        widget=NumberInput(
+            attrs={
+                "class": "form-control",
+                "required": "",
+                "min": "0",
+                "max": "999",
+                "data-error": _("Max age must be filled."),
+                "disabled": "",
+            }
+        ),
+    )
 
     def clean(self):
         cleaned_data = super(AgeIntervalForm, self).clean()
@@ -114,12 +163,13 @@ class AgeIntervalForm(Form):
 
 
 class DiagnosisSelectionForm(ModelForm):
-
     class Meta:
         model = Diagnosis
 
-        fields = ['description']
+        fields = ["description"]
 
         widgets = {
-            'description': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
+            "description": SelectMultiple(
+                attrs={"class": "form-control", "required": "", "disabled": ""}
+            ),
         }

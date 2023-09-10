@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html xml:lang="en" lang="en">
 <head>
-{% load static %}
-{% load i18n static %}
-{% load l10n %}
-{% load qdc_tags %}
+    {% load static %}
+    {% load i18n static %}
+    {% load l10n %}
+    {% load qdc_tags %}
 
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-<title>{% trans "Neuroscience Experiments System - NES" %}</title>
-<meta name="description" content="">
-<meta name="author" content="NeuroMat">
-
-{% block extrahead %}
     <title>{% trans "Neuroscience Experiments System - NES" %}</title>
-{% endblock %}
+    <meta name="description" content="">
+    <meta name="author" content="NeuroMat">
 
 {% block extrastyle %}
 
@@ -85,12 +82,15 @@
                 <br/><br/>
             </div>
 
+            <hr class="hr" />
+
             <label for="id_username" class="sr-only"> {% trans 'User' %} </label>
             <input id="id_username" type="text" class="form-control" placeholder="{% trans 'User' %}" name="username" autocomplete="username" required autofocus/>
             
             <label for="id_password" class="sr-only"> {% trans 'Password' %} </label>
             <input id="id_password" type="password" class="form-control" name="password" autocomplete="current-password" placeholder="{% trans 'Password' %}" required/>
 
+            <hr class="hr" />
 
             <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">{% trans "Login" %}</button>
 

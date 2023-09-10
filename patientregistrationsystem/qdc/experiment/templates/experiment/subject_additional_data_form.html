@@ -123,7 +123,7 @@
                             {% if creating or editing %}
                                 <label class="control-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
                                 <br/>
-                                <input type="file" name="additional_data_files" multiple>
+                                <input type="file" name="additional_data_files" id="id_file" accept="" multiple>
                                 <br/>
                             {% endif %}
 
@@ -223,6 +223,8 @@
             var $div_file_format_description = $("#div-file-format-description");
             var $id_file = $("#id_file");
             var $other_code = null;
+            var $media_code = null;
+            var $media_extension = null;
             var $txt_code = null;
             var $txt_extension = null;
             var $raw_code = null;
@@ -239,10 +241,15 @@
                     {% elif item.code == 'MNE-RawFromBrainVision' %}
                         $raw_code = {{ item.id }};
                         $raw_extension = "{{ item.extension }}";
+                    {% elif item.code == "media" %}
+                        $media_code = {{item.id}};
+                        $media_extension = "{{ item.extension }}";
+                        console.log($media_extension);
                     {% endif %}
                 {% endfor %}
 
                 $id_file_format.each((function() {
+                    console.log($id_file_format.val());
                     if ($id_file_format.val() == $other_code)
                     {
                         $id_file.removeAttr("accept");
@@ -262,7 +269,15 @@
                     }
                     else if ($id_file_format.val() == $raw_code)
                     {
+                        console.log($id_file_format.val());
                         $id_file.attr("accept", $raw_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                    else if ($id_file_format.val() == $media_code)
+                    {
+                       
+                        $id_file.attr("accept", $media_extension);
                         $id_file_format_description.prop( "disabled", true );
                         $div_file_format_description.hide();
                     }
@@ -279,6 +294,7 @@
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", false );
+                        $id_file_format_description.prop( "required", false );
                         $div_info_raw_data.hide();
                         $div_file_format_description.show();
                     }
@@ -286,6 +302,7 @@
                     {
                         $id_file.attr("accept", $txt_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                         $div_info_raw_data.hide();
                     }
@@ -293,16 +310,27 @@
                     {
                         $id_file.attr("accept", $raw_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                         $div_info_raw_data.show();
                         $div_info_raw_data.html("Upload the three files(.avg, .vhdr, .vmrk) to visualize the raw data" +
                                 " from Brain " +
                                 "Vision");
                     }
+                    else if ($id_file_format.val() == $media_code)
+                    {
+                       
+                        $id_file.attr("accept", $media_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
+                        $div_file_format_description.hide();
+                        $div_info_raw_data.hide();
+                    }
                     else
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", true );
                         $div_file_format_description.hide();
                         $div_info_raw_data.hide();
                     }

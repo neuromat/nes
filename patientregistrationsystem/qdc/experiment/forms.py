@@ -71,6 +71,8 @@ from experiment.models import (
     Instruction,
     Manufacturer,
     Material,
+    MediaCollection,
+    MediaCollectionData,
     Muscle,
     MuscleSide,
     MuscleSubdivision,
@@ -203,6 +205,7 @@ class ComponentForm(ModelForm):
                     "required": "",
                     "data-error": _("Identification must be filled."),
                     "autofocus": "",
+                    "maxlength": "50",
                 }
             ),
             # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
@@ -262,10 +265,12 @@ class ComponentConfigurationForm(ModelForm):
 
         widgets = {
             "name": TextInput(attrs={"class": "form-control"}),
-            "number_of_repetitions": TextInput(
+            "number_of_repetitions": NumberInput(
                 attrs={
                     "class": "form-control",
+                    "min": "1",
                     "data-error": _("Quantity of repetitions must be filled."),
+                    "placeholder": _("Repetitions"),
                 }
             ),
             "interval_between_repetitions_value": TextInput(
@@ -439,6 +444,22 @@ class GenericDataCollectionForm(ModelForm):
         }
 
 
+class MediaCollectionForm(ModelForm):
+    class Meta:
+        model = MediaCollection
+        fields = ["information_type_media"]
+
+        widgets = {
+            "information_type_media": Select(
+                attrs={
+                    "class": "form-control",
+                    "required": "",
+                    "data-error": _("Information type must be filled."),
+                }
+            ),
+        }
+
+
 class BlockForm(ModelForm):
     type = TypedChoiceField(
         required=True,
@@ -458,7 +479,7 @@ class BlockForm(ModelForm):
         fields = ["number_of_mandatory_components", "type"]
 
         widgets = {
-            "number_of_mandatory_components": TextInput(
+            "number_of_mandatory_components": NumberInput(
                 attrs={
                     "class": "form-control",
                     "required": "",
@@ -496,6 +517,7 @@ class ResearchProjectForm(ModelForm):
                     "required": "",
                     "data-error": _("Title must be filled."),
                     "autofocus": "",
+                    "maxlength": "255",
                 }
             ),
             # Even though maxlength is already set in the model, it has be
@@ -2295,6 +2317,51 @@ class GenericDataCollectionDataForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(GenericDataCollectionDataForm, self).__init__(*args, **kwargs)
+
+
+class MediaCollectionDataForm(ModelForm):
+    class Meta:
+        model = MediaCollectionData
+
+        fields = [
+            "date",
+            "time",
+            # "file_format",
+            "description",
+            # 'file',
+            # "file_format_description",
+        ]
+
+        widgets = {
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
+                attrs={
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
+                    "placeholder": _("mm/dd/yyyy"),
+                    "required": "",
+                    "data-error": _("Fill date must be filled"),
+                },
+            ),
+            "time": TimeInput(
+                attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
+            ),
+            "description": Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": "4",
+                    "required": "",
+                    "data-error": _("Description must be filled."),
+                }
+            ),
+            # It is not possible to set the 'required' attribute because it affects the edit screen
+            # 'file': FileInput(attrs={'required': ""})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(MediaCollectionDataForm, self).__init__(*args, **kwargs)
 
 
 class ResendExperimentForm(ModelForm):

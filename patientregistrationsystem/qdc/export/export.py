@@ -44,6 +44,7 @@ from experiment.models import (
     GenericDataCollectionData,
     Group,
     IntramuscularElectrode,
+    MediaCollectionData,
     NeedleElectrode,
     Questionnaire,
 )
@@ -1244,6 +1245,91 @@ class ExportExecution:
                                         "generic_data_collection_directory": "Generic_Data_Collection_"
                                         + index,
                                         "generic_data_collection_file_list": generic_data_collection_data.generic_data_collection_files.all(),
+                                    }
+                                )
+
+                if self.get_input_data("component_list")["per_media_data"]:
+                    for path_generic in create_list_of_trees(
+                        group.experimental_protocol, "media_collection"
+                    ):
+                        generic_component_configuration = (
+                            ComponentConfiguration.objects.get(pk=path_generic[-1][0])
+                        )
+                        component_step = generic_component_configuration.component
+                        step_number = path_generic[-1][4]
+                        step_identification = path_generic[-1][3]
+
+                        data_configuration_tree_id = list_data_configuration_tree(
+                            generic_component_configuration.id,
+                            [item[0] for item in path_generic],
+                        )
+                        for subject_of_group in subjects_of_group:
+                            media_collection_data_list = MediaCollectionData.objects.filter(
+                                subject_of_group=subject_of_group,
+                                data_configuration_tree_id=data_configuration_tree_id,
+                            )
+
+                            for media_collection_data in media_collection_data_list:
+                                subject_code = (
+                                    media_collection_data.subject_of_group.subject.patient.code
+                                )
+                                media_collection_data_list = []
+                                for (
+                                    media
+                                ) in media_collection_data.media_collection_files.all():
+                                    media_collection_data_list.append(
+                                        {
+                                            "media_filename": path.join(
+                                                settings.MEDIA_ROOT,
+                                                generic_data.file.name,
+                                            )
+                                        }
+                                    )
+
+                                if (
+                                    subject_code
+                                    not in self.per_group_data[group_id][
+                                        "data_per_participant"
+                                    ]
+                                ):
+                                    self.per_group_data[group_id][
+                                        "data_per_participant"
+                                    ][subject_code] = {}
+
+                                if (
+                                    "media_collection_data_list"
+                                    not in self.per_group_data[group_id][
+                                        "data_per_participant"
+                                    ][subject_code]
+                                ):
+                                    self.per_group_data[group_id][
+                                        "data_per_participant"
+                                    ][subject_code]["media_collection_data_list"] = []
+                                    self.per_group_data[group_id][
+                                        "data_per_participant"
+                                    ][subject_code]["data_index"] = 1
+                                else:
+                                    self.per_group_data[group_id][
+                                        "data_per_participant"
+                                    ][subject_code]["data_index"] += 1
+                                index = str(
+                                    self.per_group_data[group_id][
+                                        "data_per_participant"
+                                    ][subject_code]["data_index"]
+                                )
+                                self.per_group_data[group_id]["data_per_participant"][
+                                    subject_code
+                                ]["media_collection_data_list"].append(
+                                    {
+                                        "step_number": step_number,
+                                        "step_identification": step_identification,
+                                        "directory_step_name": "Step_"
+                                        + str(step_number)
+                                        + "_"
+                                        + component_step.component_type.upper(),
+                                        "media_collection_directory": "Media_Collection_"
+                                        + index,
+                                        "media_collection_file_list": media_collection_data.media_collection_files.all(),
                                     }
                                 )
 
@@ -3707,6 +3793,93 @@ class ExportExecution:
                                 [
                                     complete_generic_data_filename,
                                     export_generic_data_directory,
+                                    datapackage_resource,
+                                ]
+                            )
+                if (
+                    "media_collection_data_list"
+                    in self.per_group_data[group_id]["data_per_participant"][
+                        participant_code
+                    ]
+                ):
+                    if not path.exists(path_per_participant):
+                        error_msg, path_per_participant = create_directory(
+                            participant_data_directory, participant_name
+                        )
+                        if error_msg != "":
+                            return error_msg
+                    media_collection_data_list = self.per_group_data[group_id][
+                        "data_per_participant"
+                    ][participant_code]["media_collection_data_list"]
+                    for media_collection_data in media_collection_data_list:
+                        directory_step_name = media_collection_data[
+                            "directory_step_name"
+                        ]
+                        path_media_collection_data = path.join(
+                            path_per_participant, directory_step_name
+                        )
+                        if not path.exists(path_media_collection_data):
+                            (
+                                error_msg,
+                                path_media_collection_data,
+                            ) = create_directory(
+                                path_per_participant, directory_step_name
+                            )
+                            if error_msg:
+                                return error_msg
+                        export_media_directory = path.join(
+                            participant_export_directory, directory_step_name
+                        )
+                        directory_data_name = media_collection_data[
+                            "media_collection_directory"
+                        ]
+                        path_per_media = path.join(
+                            path_media_collection_data, directory_data_name
+                        )
+                        if not path.exists(path_per_media):
+                            error_msg, path_per_media = create_directory(
+                                path_media_collection_data, directory_data_name
+                            )
+                            if error_msg:
+                                return error_msg
+                        export_media_directory = path.join(
+                            export_media_directory, directory_data_name
+                        )
+                        for media_file in media_collection_data[
+                            "media_collection_file_list"
+                        ]:
+                            path_media_collection_file = path.join(
+                                settings.MEDIA_ROOT, media_file.file.name
+                            )
+                            filename = path.basename(path_media_collection_file)
+                            complete_media_filename = path.join(
+                                path_per_media, filename
+                            )
+
+                            # For datapackage resources
+                            unique_name = slugify(filename)
+                            file_format_nes_code = (
+                                media_file.media_collection_data.file_format.nes_code
+                            )
+                            information_type_media = (
+                                media_file.media_collection_data.data_configuration_tree.component_configuration.component.genericdatacollection.information_type_media.name
+                            )
+                            datapackage_resource = {
+                                "name": unique_name,
+                                "title": unique_name,
+                                "path": path.join(export_media_directory, filename),
+                                "description": "Data Collection (format: %s), information type: %s"
+                                % (file_format_nes_code, information_type_media),
+                            }
+
+                            with open(path_media_collection_file, "rb") as f:
+                                data = f.read()
+                            with open(complete_media_filename, "wb") as f:
+                                f.write(data)
+                            self.files_to_zip_list.append(
+                                [
+                                    complete_media_filename,
+                                    export_media_directory,
                                     datapackage_resource,
                                 ]
                             )

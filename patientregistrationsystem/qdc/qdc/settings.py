@@ -43,7 +43,10 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 3600
 
+# SECURE_SSL_REDIRECT = True
+
 CSRF_USE_SESSIONS = True
+SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 
 
@@ -81,6 +84,7 @@ PROJECT_APPS = [
 INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -90,8 +94,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "maintenance_mode.middleware.MaintenanceModeMiddleware",
-    "qdc.middleware.PasswordChangeMiddleware",
     "axes.middleware.AxesMiddleware",
+    "qdc.middleware.PasswordChangeMiddleware",
 ]
 
 CONTEXT_PROCESSORS = {"maintenance_mode.context_processors.maintenance_mode"}
@@ -182,8 +186,8 @@ LOCALE_PATHS = (
 )
 
 USE_TZ = True
-# TIME_ZONE = "America/Sao_Paulo"
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/Sao_Paulo"
+# TIME_ZONE = "UTC"
 
 USE_I18N = True
 

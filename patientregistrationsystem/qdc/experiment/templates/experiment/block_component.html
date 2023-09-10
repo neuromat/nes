@@ -38,8 +38,7 @@
                     {% trans "Sub-steps will be executed one after another" as text_1 %}
                     {% trans "Sub-steps will be executed at the same time" as text_2 %}
                     {% for radio in specific_form.type %}
-                        <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="
-                        {% cycle text_1 text_2 %}">
+                        <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="{% cycle text_1 text_2 %}">
                             <div class="radio-inline">{{ radio }}</div>
                         </span>
                     {% endfor %}
@@ -54,7 +53,7 @@
                 <div class="radio-inline" style="vertical-align: top">
                     <input id="id_all_mandatory" name="radio_number_of_mandatory_components" type="radio" value="all"
                             {% if not updating and not creating or reusing or component_configuration %} disabled="True" {% endif %}>
-                        {% trans "All" %}
+                    <label for="id_all_mandatory" class="control-label"> {% trans "All" %}</label>
                 </div>
                 <div class="radio-inline">
                     <input id="id_not_all_mandatory" name="radio_number_of_mandatory_components" type="radio" value="not_all"

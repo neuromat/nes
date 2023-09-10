@@ -18,6 +18,7 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
                 "autofocus": "true",
                 "required": "",
                 "placeholder": _("Current password"),
+                "autocomplete": "current-password",
             }
         )
 
@@ -31,6 +32,7 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
                 % self.MIN_LENGTH,
                 "pattern": r"([a-z]*([A-Z]|[0-9]|[ !@#\$%&'\(\)\*\+,-\.\/:;<=>\?\[\\\\\]_\{\|\}~])[a-z]*){1,}",
                 "placeholder": _("New password"),
+                "autocomplete": "new-password",
             }
         )
 
@@ -41,6 +43,7 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
                 "data-match": "#id_new_password1",
                 "placeholder": _("Confirm new password"),
                 "data-error": _("Passwords don't match"),
+                "autocomplete": "new-password",
             }
         )
 

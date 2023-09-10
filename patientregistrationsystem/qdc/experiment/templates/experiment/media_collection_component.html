@@ -5,31 +5,31 @@
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">{% trans "New generic data collection" %}</li>
+        <li class="active">{% trans "New media collection" %}</li>
     {% endif %}
 
 {% endblock %}
 
-{% block component_label %}{% trans "the generic data collection" %}{% endblock %}
+{% block component_label %}{% trans "the media collection" %}{% endblock %}
 
 {% block component_add_new %}
     <li role="presentation">
-        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/generic_data_collection{% if position %}?position={{ position }}{% endif %}')">
+        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/media_collection{% if position %}?position={{ position }}{% endif %}')">
             << {% trans "New instruction" %} >>
         </a>
     </li>
 {% endblock %}
 
 {% block component_button_label %}
-    {% trans "New generic data collection" %}
+    {% trans "New media collection" %}
 {% endblock %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-xs-6 col-sm-12">
             <div class="form-group">
-                <label for="id_information_type" class="control-label">{% trans "Information type" %} <b style="color: red;">*</b></label>
-                    {{ specific_form.information_type }}
+                <label for="id_information_type_media" class="control-label">{% trans "Information type" %} <b style="color: red;">*</b></label>
+                    {{ specific_form.information_type_media }}
                 <div class="help-block with-errors"></div>
             </div>
         </div>

@@ -113,6 +113,8 @@ from .forms import (
     InstructionForm,
     ManufacturerRegisterForm,
     MaterialRegisterForm,
+    MediaCollectionDataForm,
+    MediaCollectionForm,
     MuscleRegisterForm,
     MuscleSideRegisterForm,
     MuscleSubdivisionRegisterForm,
@@ -202,6 +204,9 @@ from .models import (
     Keyword,
     Manufacturer,
     Material,
+    MediaCollection,
+    MediaCollectionData,
+    MediaCollectionFile,
     Muscle,
     MuscleSide,
     MuscleSubdivision,
@@ -273,6 +278,7 @@ icon_class = {
     "digital_game_phase": "fa fa-play-circle",
     "generic_data_collection": "fa fa-file",
     "additional_data": "fa fa-puzzle-piece",
+    "media_collection": "fa fa-camera",
 }
 
 data_type_name = {
@@ -283,6 +289,7 @@ data_type_name = {
     "digital_game_phase": _("goalkeeper game"),
     "generic_data_collection": _("generic data collection"),
     "questionnaire": _("questionnaire"),
+    "media_collection": _("media collection"),
 }
 
 delimiter = "-"
@@ -1399,6 +1406,9 @@ def date_of_first_data_collection(subject_of_group):
         GenericDataCollectionData.objects.filter(
             subject_of_group=subject_of_group
         ).aggregate(Min("date"))["date__min"],
+        MediaCollectionData.objects.filter(subject_of_group=subject_of_group).aggregate(
+            Min("date")
+        )["date__min"],
     ]
 
     for date_to_compare in dates_to_compare:
@@ -1831,6 +1841,32 @@ def send_all_experiments_to_portal():
                             generic_data_collection_data,
                         )
 
+                    # Media collection data
+                    media_collection_data_list = MediaCollectionData.objects.filter(
+                        subject_of_group__group=group
+                    )
+
+                    for media_collection_data in media_collection_data_list:
+                        portal_file_id_list = []
+                        for (
+                            media_collection_file
+                        ) in media_collection_data.media_collection_files.all():
+                            portal_file = send_file_to_portal(
+                                media_collection_file.file.name
+                            )
+                            portal_file_id_list.append(portal_file["id"])
+
+                        send_media_collection_data_to_portal(
+                            portal_participant_list[
+                                media_collection_data.subject_of_group.id
+                            ],
+                            portal_step_list[
+                                media_collection_data.data_configuration_tree.id
+                            ],
+                            portal_file_id_list,
+                            media_collection_data,
+                        )
+
                     send_experimental_protocol_to_portal(
                         portal_group_id=portal_group["id"],
                         textual_description=textual_description,
@@ -2076,6 +2112,10 @@ def group_has_data_collection(group_id):
         ).count()
         > 0
         or GenericDataCollectionData.objects.filter(
+            subject_of_group__group_id=group_id
+        ).count()
+        > 0
+        or MediaCollectionData.objects.filter(
             subject_of_group__group_id=group_id
         ).count()
         > 0
@@ -5776,6 +5816,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         "number_of_tms_data": 0,
         "number_of_digital_game_phase_data": 0,
         "number_of_generic_data_collection_data": 0,
+        "number_of_media_collection_data": 0,
     }
 
     group = get_object_or_404(Group, id=group_id)
@@ -5822,6 +5863,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         list_of_generic_data_collection_configuration = create_list_of_trees(
             group.experimental_protocol, "generic_data_collection"
         )
+        list_of_media_collection_configuration = create_list_of_trees(
+            group.experimental_protocol, "media_collection"
+        )
 
         experimental_protocol_info = {
             "number_of_questionnaires": len(list_of_questionnaires_configuration),
@@ -5833,6 +5877,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             ),
             "number_of_generic_data_collection_data": len(
                 list_of_generic_data_collection_configuration
+            ),
+            "number_of_media_collection_data": len(
+                list_of_media_collection_configuration
             ),
         }
 
@@ -6048,6 +6095,31 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     / len(list_of_generic_data_collection_configuration)
                 )
 
+            # Generic media data files
+            number_of_media_collection_data_files_uploaded = 0
+            # for each component_configuration of tms...
+            for (
+                media_collection_configuration
+            ) in list_of_media_collection_configuration:
+                path = [item[0] for item in media_collection_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(
+                    path[-1], path
+                )
+                media_collection_data_files = MediaCollectionData.objects.filter(
+                    subject_of_group=subject_of_group,
+                    data_configuration_tree_id=data_configuration_tree_id,
+                )
+                if len(media_collection_data_files):
+                    number_of_media_collection_data_files_uploaded += 1
+
+            percentage_of_media_collection_data_files_uploaded = 0
+            if len(list_of_media_collection_configuration) > 0:
+                percentage_of_media_collection_data_files_uploaded = (
+                    100
+                    * number_of_media_collection_data_files_uploaded
+                    / len(list_of_media_collection_configuration)
+                )
+
             # If any questionnaire has responses or any eeg/emg/tms/digital_game_phase/generic_data_collection
             # data file was uploaded, the subject can't be removed from the group.
             if (
@@ -6056,6 +6128,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 or number_of_tms_data_files_uploaded
                 or number_of_digital_game_phase_data_files_uploaded
                 or number_of_generic_data_collection_data_files_uploaded
+                or number_of_media_collection_data_files_uploaded
                 or number_of_questionnaires_filled
             ):
                 can_remove = False
@@ -6097,6 +6170,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     ),
                     "percentage_of_generic_data_collection_data_files_uploaded": int(
                         percentage_of_generic_data_collection_data_files_uploaded
+                    ),
+                    "number_of_media_collection_data_files_uploaded": number_of_media_collection_data_files_uploaded,
+                    "total_of_media_collection_data_files": len(
+                        list_of_media_collection_configuration
+                    ),
+                    "percentage_of_media_collection_data_files_uploaded": int(
+                        percentage_of_media_collection_data_files_uploaded
                     ),
                     "number_of_additional_data_uploaded": AdditionalData.objects.filter(
                         subject_of_group=subject_of_group
@@ -6334,6 +6414,27 @@ def get_data_collections_from_group(group, data_type=None):
                     {
                         "type": "generic_data_collection",
                         "icon_class": icon_class["generic_data_collection"],
+                        "description": _("Data collection"),
+                        "count": participant_quantity,
+                    }
+                )
+        elif component_configuration.component.component_type == "media_collection":
+            participant_quantity = (
+                MediaCollectionData.objects.filter(
+                    subject_of_group__group=group,
+                    data_configuration_tree_id=data_configuration_tree_id,
+                )
+                .values("subject_of_group__subject")
+                .distinct()
+                .count()
+                if data_type is None or data_type == "media_collection"
+                else None
+            )
+            if participant_quantity:
+                data_list.append(
+                    {
+                        "type": "media_collection",
+                        "icon_class": icon_class["media_collection"],
                         "description": _("Data collection"),
                         "count": participant_quantity,
                     }
@@ -9660,6 +9761,212 @@ def subject_generic_data_collection_view(
 
 
 @login_required
+@permission_required("experiment.view_researchproject")
+def subject_media_collection_view(
+    request,
+    group_id,
+    subject_id,
+    template_name="experiment/subject_media_collection_collection_list.html",
+):
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    media_collection_collections = []
+
+    list_of_paths = create_list_of_trees(
+        group.experimental_protocol, "media_collection"
+    )
+
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    for path in list_of_paths:
+        media_collection_configuration = ComponentConfiguration.objects.get(
+            pk=path[-1][0]
+        )
+
+        data_configuration_tree_id = list_data_configuration_tree(
+            media_collection_configuration.id, [item[0] for item in path]
+        )
+
+        media_collection_data_list = MediaCollectionData.objects.filter(
+            subject_of_group=subject_of_group,
+            data_configuration_tree__id=data_configuration_tree_id,
+        )
+
+        media_collection_collections.append(
+            {
+                "media_collection_configuration": media_collection_configuration,
+                "path": path,
+                "media_collection_data_list": media_collection_data_list,
+            }
+        )
+
+    context = {
+        "can_change": get_can_change(request.user, group.experiment.research_project),
+        "group": group,
+        "subject": subject,
+        "media_collection_collections": media_collection_collections,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_experiment")
+def subject_media_collection_data_create(
+    request,
+    group_id,
+    subject_id,
+    media_collection_configuration_id,
+    template_name="experiment/subject_media_collection_data_form.html",  #
+):
+    group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in media_collection_configuration_id.split("-")]
+    media_collection_configuration_id = list_of_path[-1]
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    media_collection_configuration_id = get_object_or_404(
+        ComponentConfiguration, id=media_collection_configuration_id
+    )
+
+    redirect_url = None
+    media_collection_data_id = None
+
+    media_collection_data_form = MediaCollectionDataForm(
+        None, initial={"experiment": group.experiment}
+    )
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            media_collection_data_form = MediaCollectionDataForm(
+                request.POST, request.FILES
+            )
+
+            if media_collection_data_form.is_valid():
+                data_configuration_tree_id = list_data_configuration_tree(
+                    media_collection_configuration_id, list_of_path
+                )
+                if not data_configuration_tree_id:
+                    data_configuration_tree_id = create_data_configuration_tree(
+                        list_of_path
+                    )
+
+                subject = get_object_or_404(Subject, pk=subject_id)
+                subject_of_group = get_object_or_404(
+                    SubjectOfGroup, subject=subject, group_id=group_id
+                )
+
+                media_collection_data_added = media_collection_data_form.save(
+                    commit=False
+                )
+                media_collection_data_added.subject_of_group = subject_of_group
+                media_collection_data_added.component_configuration = (
+                    media_collection_configuration_id
+                )
+                media_collection_data_added.data_configuration_tree_id = (
+                    data_configuration_tree_id
+                )
+
+                # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                # the following error 'GenericDataCollectionData' object has no attribute 'group'
+                media_collection_data_added.group = group
+                media_collection_data_added.subject = subject
+
+                media_collection_data_added.save()
+
+                # saving uploaded files
+                files_to_upload_list = request.FILES.getlist("media_collection_files")
+                for file_to_upload in files_to_upload_list:
+                    media_collection_file = MediaCollectionFile(
+                        media_collection_data=media_collection_data_added,
+                        file=file_to_upload,
+                    )
+                    media_collection_file.save()
+
+                messages.success(
+                    request, _("Generic data collection created successfully.")
+                )
+
+                redirect_url = reverse(
+                    "media_collection_data_view",
+                    args=(media_collection_data_added.id,),
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "can_change": True,
+        "creating": True,
+        "editing": True,
+        "group": group,
+        "media_collection_configuration": media_collection_configuration_id,
+        "media_collection_data_form": media_collection_data_form,
+        "media_collection_data_id": media_collection_data_id,
+        "subject": get_object_or_404(Subject, pk=subject_id),
+        "URL": redirect_url,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_experiment")
+def media_collection_data_view(
+    request,
+    media_collection_data_id,
+    template_name="experiment/subject_media_collection_data_form.html",
+):
+    media_collection_data = get_object_or_404(
+        MediaCollectionData, pk=media_collection_data_id
+    )
+
+    media_collection_data_form = MediaCollectionDataForm(
+        request.POST or None, instance=media_collection_data
+    )
+
+    for field in media_collection_data_form.fields:
+        media_collection_data_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+            check_can_change(
+                request.user,
+                media_collection_data.subject_of_group.group.experiment.research_project,
+            )
+
+            subject_of_group = media_collection_data.subject_of_group
+
+            # removing uploaded files
+            for (
+                media_collection_uploaded_file
+            ) in media_collection_data.media_collection_files.all():
+                media_collection_uploaded_file.file.delete()
+
+            media_collection_data.delete()
+            messages.success(request, _("Media collection removed successfully."))
+            return redirect(
+                "media_data_collection_view",
+                group_id=subject_of_group.group_id,
+                subject_id=subject_of_group.subject_id,
+            )
+
+    context = {
+        "can_change": get_can_change(
+            request.user,
+            media_collection_data.subject_of_group.group.experiment.research_project,
+        ),
+        "editing": False,
+        "group": media_collection_data.subject_of_group.group,
+        "subject": media_collection_data.subject_of_group.subject,
+        "media_collection_data_form": media_collection_data_form,
+        "media_collection_data": media_collection_data,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
 @permission_required("experiment.change_experiment")
 def subject_generic_data_collection_data_create(
     request,
@@ -10133,6 +10440,11 @@ def data_collection_manage(
             subject_of_group__group=group,
             data_configuration_tree_id=data_configuration_tree_id,
         ).order_by("subject_of_group__subject__patient")
+    elif data_type == "media_collection":
+        data_collections = MediaCollectionData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id,
+        ).order_by("subject_of_group__subject__patient")
 
     # in case of "transfer", get target candidates
     steps_to_transfer = get_data_collections_from_group(group, data_type)
@@ -10213,6 +10525,11 @@ def data_collection_manage(
                             for (
                                 uploaded_file
                             ) in data_collection.generic_data_collection_files.all():
+                                uploaded_file.file.delete()
+                        elif data_type == "media_collection":
+                            for (
+                                uploaded_file
+                            ) in data_collection.media_collection_files.all():
                                 uploaded_file.file.delete()
 
                         data_collection.delete()
@@ -10722,6 +11039,8 @@ def get_subgraph(tree, node_identifier=""):
                 color_node = "#80ced6"
             elif component.component_type == "generic_data_collection":
                 color_node = "LightPink"
+            elif component.component_type == "media_collection":
+                color_node = "LightPink"
 
             new_node = pydot.Node(
                 "node_"
@@ -10932,6 +11251,8 @@ def get_component_attributes(component, language_code):
     elif component.component_type == "digital_game_phase":
         specific_attributes = []
     elif component.component_type == "generic_data_collection":
+        specific_attributes = []
+    elif component.component_type == "media_collection":
         specific_attributes = []
 
     for attribute in specific_attributes:
@@ -11806,6 +12127,8 @@ def component_create(request, experiment_id, component_type):
         )
     elif component_type == "generic_data_collection":
         specific_form = GenericDataCollectionForm(request.POST or None)
+    elif component_type == "media_collection":
+        specific_form = MediaCollectionForm(request.POST or None)
 
     if request.method == "POST":
         new_specific_component = None
@@ -12394,6 +12717,15 @@ def get_uses_of_step_with_data(experiment):
         .distinct()
     ]
 
+    steps_media_collection = [
+        item["data_configuration_tree__component_configuration"]
+        for item in MediaCollectionData.objects.filter(
+            data_configuration_tree__component_configuration__component__experiment=experiment
+        )
+        .values("data_configuration_tree__component_configuration")
+        .distinct()
+    ]
+
     return (
         steps_questionnaire
         + steps_eeg
@@ -12402,6 +12734,7 @@ def get_uses_of_step_with_data(experiment):
         + steps_goalkeeper_game
         + steps_additional_data
         + steps_generic_data_collection
+        + steps_media_collection
     )
 
 
@@ -12599,6 +12932,34 @@ def clone_generic_data_collection_file(gdc_file, orig_and_clone):
     return gdc_file
 
 
+def clone_media_collection_data(gdc_data, orig_and_clone):
+    old_gdc_data_id = gdc_data.id
+    gdc_data.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone["subject_of_group"][gdc_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone["dct"][gdc_data.data_configuration_tree.id]
+    )
+    gdc_data.subject_of_group = new_subject_of_group
+    gdc_data.data_configuration_tree = new_data_configuration_tree
+    gdc_data.save()
+    orig_and_clone["media_collection_data"][old_gdc_data_id] = gdc_data.id
+
+
+def clone_media_collection_file(gdc_file, orig_and_clone):
+    gdc_file.pk = None
+    new_gdc_data = MediaCollectionData.objects.get(
+        pk=orig_and_clone["media_collection_data"][gdc_file.media_collection_data.id]
+    )
+    gdc_file.media_collection_data = new_gdc_data
+    f = open(os.path.join(MEDIA_ROOT, gdc_file.file.name), "rb")
+    gdc_file.file.save(os.path.basename(f.name), File(f))
+    gdc_file.save()
+
+    return gdc_file
+
+
 def clone_component_additional_file(component_additional_file, orig_and_clone):
     component_additional_file.pk = None
     new_component = Component.objects.get(
@@ -12685,6 +13046,7 @@ def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone["additional_data"] = {}
     orig_and_clone["digital_game_phase_data"] = {}
     orig_and_clone["generic_data_collection_data"] = {}
+    orig_and_clone["media_collection_data"] = {}
     orig_and_clone["eeg_electrode_position_setting"] = {}
 
     experiment_id = experiment.id
@@ -12864,6 +13226,18 @@ def copy_experiment(experiment, copy_data_collection=False):
             clone_generic_data_collection_file(
                 generic_data_collection_file, orig_and_clone
             )
+        # generic_media_data
+        for media_collection_data in MediaCollectionData.objects.filter(
+            data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_media_collection_data(
+                media_collection_data_collection_data, orig_and_clone
+            )
+        # media_collection_file
+        for media_collection_file in MediaCollectionFile.objects.filter(
+            media_collection_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_media_collection_file(media_collection_file, orig_and_clone)
         # component_additional_file
         for component_additional_file in ComponentAdditionalFile.objects.filter(
             component_id__experiment_id=experiment_id
@@ -13129,6 +13503,12 @@ def create_component(component, new_experiment, orig_and_clone):
         )
         clone = GenericDataCollection(
             information_type_id=generic_data_collection.information_type_id
+        )
+
+    elif component_type == "media_collection":
+        media_collection = get_object_or_404(MediaCollection, pk=component.id)
+        clone = MediaCollection(
+            information_type_media_id=media_collection.information_type_media_id
         )
 
     else:
@@ -13533,6 +13913,11 @@ def component_update(request, path_of_the_components):
         specific_form = GenericDataCollectionForm(
             request.POST or None, instance=generic_data_collection
         )
+    elif component_type == "media_collection":
+        media_collection = get_object_or_404(MediaCollection, pk=component.id)
+        specific_form = MediaCollectionForm(
+            request.POST or None, instance=media_collection
+        )
 
     can_change = get_can_change(request.user, experiment.research_project)
 
@@ -13884,6 +14269,9 @@ def component_add_new(request, path_of_the_components, component_type):
     elif component_type == "generic_data_collection":
         specific_form = GenericDataCollectionForm(request.POST or None)
 
+    elif component_type == "media_collection":
+        specific_form = MediaCollectionForm(request.POST or None)
+
     if request.method == "POST":
         new_specific_component = None
         survey = None
@@ -14126,6 +14514,12 @@ def component_reuse(request, path_of_the_components, component_id):
         )
         specific_form = GenericDataCollectionForm(
             request.POST or None, instance=generic_data_collection
+        )
+
+    elif component_type == "media_collection":
+        media_collection = get_object_or_404(MediaCollection, pk=component_to_add.id)
+        specific_form = MediaCollectionForm(
+            request.POST or None, instance=media_collection
         )
 
     if component_type == "questionnaire":

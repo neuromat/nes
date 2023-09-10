@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-08 01:36+0000\n"
+"POT-Creation-Date: 2023-09-08 03:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,13 @@ msgstr ""
 #: quiz/templates/quiz/contato.html:39 quiz/templates/quiz/template.html:14
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociência - NES"
+
+#: quiz/templates/quiz/contato.html:42
+msgid ""
+"Welcome to NES! If you need help you can check the user guide <a "
+"href='https://nes.readthedocs.io/en/latest/userguide/userguide.html'>here</"
+"a>. Please report any bug to the admin."
+msgstr ""
 
 #: quiz/templates/quiz/template.html:107
 msgid "NES"

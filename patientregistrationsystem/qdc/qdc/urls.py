@@ -32,14 +32,15 @@ urlpatterns = [
     re_path(
         r"^logout/$",
         authviews.logout_then_login,
-        {"login_url": "/home"},
+        {"login_url": "/home/"},
         name="logout",
     ),
     re_path(
         r"^password_change/$",
         authviews.PasswordChangeView.as_view(
             template_name="registration/change_password_custom.html",
-            success_url="password_changed_redirected/",
+            success_url="password_change_done/",
+            form_class=PasswordChangeFormCustomized,
         ),
         name="password_change",
     ),
@@ -55,18 +56,16 @@ urlpatterns = [
     ),
     re_path(
         r"^user/password/reset/$",
-        authviews.PasswordResetView.as_view(),
-        {
-            "post_reset_redirect": "/user/password/reset/done/",
-            "password_reset_form": CustomPasswordResetForm,
-        },
+        authviews.PasswordResetView.as_view(
+            success_url="/user/password/reset/done/",
+            form_class=CustomPasswordResetForm,
+        ),
         name="password_reset",
     ),
     re_path(r"^user/password/reset/done/$", authviews.PasswordResetDoneView.as_view()),
     re_path(
         r"^user/password/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$",
-        authviews.PasswordResetConfirmView.as_view(),
-        {"post_reset_redirect": "/user/password/done/"},
+        authviews.PasswordResetConfirmView.as_view(success_url="/user/password/done/"),
     ),
     re_path(r"^user/password/done/$", authviews.PasswordResetCompleteView.as_view()),
     re_path(r"^$", qdcviews.contact, name="contact"),
@@ -77,7 +76,9 @@ urlpatterns = [
     ),
     re_path(r"^i18n/", include("django.conf.urls.i18n")),
     re_path(r"^home/check_upgrade/$", qdcviews.contact, name="check_upgrade"),
-    re_path(r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"),
+    re_path(
+        r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"
+    ),  # FIXME: erro
 ]
 
 

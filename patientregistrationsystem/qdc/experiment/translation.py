@@ -5,6 +5,7 @@ from experiment.models import (
     ElectrodeShape,
     FileFormat,
     InformationType,
+    InformationTypeMedia,
     MeasureSystem,
     StimulusType,
     TetheringSystem,
@@ -73,3 +74,10 @@ class InformationTypeTranslationOptions(TranslationOptions):
 
 
 translator.register(InformationType, InformationTypeTranslationOptions)
+
+
+class InformationTypeMediaTranslationOptions(TranslationOptions):
+    fields = ("name", "description")
+
+
+translator.register(InformationTypeMedia, InformationTypeMediaTranslationOptions)

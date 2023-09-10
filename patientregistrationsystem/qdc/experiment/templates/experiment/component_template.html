@@ -142,11 +142,11 @@
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
 
-                            <label class="control-label">{% trans "Additional files" %}</label>
+                            <label for="additional_files" class="control-label">{% trans "Additional files" %}</label>
                             <br/>
 
                             {% if creating %}
-                                <input type="file" name="additional_files" multiple>
+                                <input type="file" name="additional_files"  multiple>
                                 <br/>
                             {% else %}
                                 {% if updating and not component_configuration%}
@@ -257,20 +257,20 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-3">
-                            <label for="unlimited_number_of_repetitions" class="control-label">{% trans "Quantity of repetitions" %} <b style="color: red;">*</b></label>
-                            <div class="radio" style="margin-top: 0px">
-                                <input {% if not can_change %}disabled{% endif %} id="id_repetitions_0" name="unlimited_number_of_repetitions" type="radio" value="unlimited">
-                                    {% trans "Unlimited" %}
-                            </div>
-                            <label class="radio">
-                                <input {% if not can_change %}disabled{% endif %} id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
-                                    <div class="col-xs-9 col-sm-9" style="padding-left: 0px">
-                                        <div class="form-group" id="div_form_number_of_repetitions">
-                                            {{ configuration_form.number_of_repetitions }}
-                                            <div class="help-block with-errors" id="div_for_errors_in_number_of_repetitions"></div>
-                                        </div>
+                            <div>
+                                <label for="unlimited_number_of_repetitions" class="control-label">{% trans "Quantity of repetitions" %} <b style="color: red;">*</b></label>
+                                <div class="radio-inline" style="margin-top: 0px">
+                                    <input {% if not can_change %}disabled{% endif %} id="id_repetitions_0" name="unlimited_number_of_repetitions" type="radio" value="unlimited">
+                                        {% trans "Unlimited" %}
+                                </div>
+                                <div class="radio-inline"  style="margin-top: 0px; ">
+                                    <input {% if not can_change %}disabled{% endif %} id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
+                                    <div id="div_form_number_of_repetitions">
+                                        {{ configuration_form.number_of_repetitions }}
+                                        <div class="help-block with-errors" id="div_for_errors_in_number_of_repetitions"></div>
                                     </div>
-                            </label>
+                                </div>
+                            </div>
                         </div>
                         <div id="interval_div">
                             <div class="col-xs-12 col-sm-6 col-sm-offset-1">

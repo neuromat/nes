@@ -39,7 +39,9 @@
                 <h3>{% trans "Neuroscience Experiments System - NES" %}</h3>
 
                 <br/>
-
+                <p>
+                    {% trans "Welcome to NES! If you need help you can check the user guide <a href='https://nes.readthedocs.io/en/latest/userguide/userguide.html'>here</a>. Please report any bug to the admin." %} 
+                </p>
                 <div class="container">
                     {% if institution_config.code %}
                         <h4 class="text-left"><span class="fa fa-institution mr-3"></span> {{ institution_config.code }}</h4>
