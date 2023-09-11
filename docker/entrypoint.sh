@@ -1,54 +1,57 @@
 #!/bin/sh
 set -e
 
-PGDATA=${PGDATA:-"/var/lib/postgresql/data"}
+# PGDATA=${PGDATA:-"/var/lib/postgresql/data"}
 
-# LIMESURVEY
-## SYSTEM OPTIONS
-LIMESURVEY_HOST=${LIMESURVEY_HOST:-"127.0.0.1"}
-LIMESURVEY_PORT=${LIMESURVEY_PORT:-"8080"}
-LIMESURVEY_DIR="$LIMESURVEY_DIR"
-APACHE2_CONF_DIR="$LIMESURVEY_DIR/application/config"
-## CONFIG.PHP OPTIONS
-LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-"127.0.0.1"}
-LIMESURVEY_DB_PORT=${LIMESURVEY_DB_PORT:-"5433"}
-LIMESURVEY_DB_NAME=${LIMESURVEY_DB_NAME:-"limesurvey_db"}
-LIMESURVEY_DB_TABLE_PREFIX=${LIMESURVEY_DB_TABLE_PREFIX:-"lime_"}
-LIMESURVEY_DB_USER=${LIMESURVEY_DB_USER:-"limesurvey_user"}
-LIMESURVEY_DB_PASSWORD=${LIMESURVEY_DB_PASSWORD:-"limesurvey_password"}
-LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-"utf8"}
-LIMESURVEY_URL_FORMAT=${LIMESURVEY_URL_FORMAT:-"path"}
-## SUPER USER CREATION OPTION
-LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-"limesurvey_admin"}
-LIMESURVEY_ADMIN_NAME=${LIMESURVEY_ADMIN_NAME:-"limesurvey_admin_name"}
-LIMESURVEY_ADMIN_EMAIL=${LIMESURVEY_ADMIN_EMAIL:-"limesurvey@limemail.false"}
-LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-"limesurvey_admin_password"}
-# NES
-## SYSTEM OPTIONS
-NES_DIR=${NES_DIR:-"/usr/local/nes"}
-## SETTINGS_LOCAL OPTIONS
-### DJANGO
-NES_SECRET_KEY=${NES_SECRET_KEY:-"your_secret_key"}
-NES_IP=${NES_IP:-"0.0.0.0"}
-NES_PORT=${NES_PORT:-"80"}
-NES_ADMIN_USER=${NES_ADMIN_USER:-"nes_admin"}
-NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-"nes_admin@nesmail.false"}
-NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-"nes_admin_password"}
-### DB
-#### External database settings
-NES_DB_TYPE=${NES_DB_TYPE:-"pgsql"}
-NES_DB_HOST=${NES_DB_HOST:-"nes_db"}
-NES_DB_PORT=${NES_DB_PORT:-"5432"}
-NES_DB=${NES_DB:-"nes_db"}
-NES_DB_USER=${NES_DB_USER:-"nes_user"}
-NES_DB_PASSWORD=${NES_DB_PASSWORD:-"nes_password"}
-NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes/setup"}
+# # LIMESURVEY
+# ## SYSTEM OPTIONS
+# LIMESURVEY_HOST=${LIMESURVEY_HOST:-"limesurvey"}
+# LIMESURVEY_PORT=${LIMESURVEY_PORT:-"8080"}
+# LIMESURVEY_DIR="$LIMESURVEY_DIR"
+# APACHE2_CONF_DIR="$LIMESURVEY_DIR/application/config"
+# ## CONFIG.PHP OPTIONS
+# LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-"127.0.0.1"}
+# LIMESURVEY_DB_PORT=${LIMESURVEY_DB_PORT:-"5432"}
+# LIMESURVEY_DB_NAME=${LIMESURVEY_DB_NAME:-"limesurvey_db"}
+# LIMESURVEY_DB_TABLE_PREFIX=${LIMESURVEY_DB_TABLE_PREFIX:-"lime_"}
+# LIMESURVEY_DB_USER=${LIMESURVEY_DB_USER:-"limesurvey_user"}
+# LIMESURVEY_DB_PASSWORD=${LIMESURVEY_DB_PASSWORD:-"limesurvey_password"}
+# LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-"utf8"}
+# LIMESURVEY_URL_FORMAT=${LIMESURVEY_URL_FORMAT:-"path"}
+# ## SUPER USER CREATION OPTION
+# LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-"lime_admin"}
+# LIMESURVEY_ADMIN_NAME=${LIMESURVEY_ADMIN_NAME:-"lime_admin_name"}
+# LIMESURVEY_ADMIN_EMAIL=${LIMESURVEY_ADMIN_EMAIL:-"limesurvey@limemail.false"}
+# LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-"lime_admin_password"}
+# # NES
+# ## SYSTEM OPTIONS
+# #NES_DIR=${NES_DIR:-"/usr/local/nes"}
+# ## SETTINGS_LOCAL OPTIONS
+# ### DJANGO
+# NES_SECRET_KEY=${NES_SECRET_KEY:-"your_secret_key"}
+# NES_IP=${NES_IP:-"0.0.0.0"}
+# NES_PORT=${NES_PORT:-"80"}
+# NES_ADMIN_USER=${NES_ADMIN_USER:-"nes_admin"}
+# NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-"nes_admin@nesmail.false"}
+# NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-"nes_admin_password"}
+# ### DB
+# #### External database settings
+# NES_DB_TYPE=${NES_DB_TYPE:-"pgsql"}
+# NES_DB_HOST=${NES_DB_HOST:-"nes_db"}
+# NES_DB_PORT=${NES_DB_PORT:-"5432"}
+# NES_DB=${NES_DB:-"nes_db"}
+# NES_DB_USER=${NES_DB_USER:-"nes_user"}
+# NES_DB_PASSWORD=${NES_DB_PASSWORD:-"nes_password"}
+# #NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes/setup"}
 
 # SUPERVISOR
-#SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
+SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
 
 # Entrypoint only variable
 NES_PROJECT_PATH="$NES_DIR/patientregistrationsystem/qdc"
+
+
+echo "INFO: Starting entrypoint.sh"
 
 if [ $NES_DB_TYPE != "pgsql" ]; then
     echo "Unfortunately, for the time being, NES only works with PostgreSQL."
@@ -76,6 +79,7 @@ else
 	EOF
     chown -R nobody $NES_PROJECT_PATH/qdc/wsgi.py
     touch $NES_PROJECT_PATH/nes_wsgi.placeholder
+    chown -R nobody $NES_PROJECT_PATH/nes_wsgi.placeholder
 fi
 
 if [ -f $NES_PROJECT_PATH/nes_settings.placeholder ]; then
@@ -87,8 +91,9 @@ else
 		DEBUG = True
 		DEBUG404 = True
 		TEMPLATE_DEBUG = DEBUG
-		IS_TESTING = False
-		ALLOWED_HOSTS = ["localhost","127.0.0.1","$NES_IP"]
+		IS_TESTING = True
+		ALLOWED_HOSTS = ["localhost", "127.0.0.1", "$NES_IP", "$NES_HOSTNAME"]
+CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES_HOSTNAME", ]
 		DATABASES = {
 		    "default": {
 		        "ENGINE": "django.db.backends.postgresql_psycopg2",
@@ -105,10 +110,11 @@ else
 		    "USER": "$LIMESURVEY_ADMIN_USER",
 		    "PASSWORD": "$LIMESURVEY_ADMIN_PASSWORD"
 		}
-		LOGO_INSTITUTION = "logo-institution.png"
+		LOGO_INSTITUTION = "$NES_PROJECT_PATH/logo-institution.png"
 	EOF
     chown -R nobody $NES_PROJECT_PATH/qdc/settings_local.py
     touch $NES_PROJECT_PATH/nes_settings.placeholder
+    chown -R nobody $NES_PROJECT_PATH/nes_settings.placeholder
 fi
 echo "criou arquivos de config"
 while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"; do
@@ -117,70 +123,56 @@ done
 
 # INITIALIZE DATA ####################################################
 
-## PG DB
-# if [ -f "${PGDATA}"/.db_users.placeholder ]; then
-# 	echo "INFO: DB users already provisioned"
-# else
-# 	echo "INFO: Creating users in postgres"
-# 	cd /
-# 	su postgres -c "psql start -w -D $PGDATA"
-# 	cat <<-EOF | su postgres -c "psql"
-# 		CREATE USER $NES_DB_USER WITH PASSWORD "$NES_DB_PASSWORD" ;
-# 		CREATE DATABASE $NES_DB OWNER $NES_DB_USER ;
-# 		GRANT ALL PRIVILEGES ON DATABASE $NES_DB TO $NES_DB_USER ;
-# 		ALTER ROLE $NES_DB_USER WITH CREATEDB;
-# 		CREATE USER $LIMESURVEY_DB_USER WITH PASSWORD "$LIMESURVEY_DB_PASSWORD" ;
-# 		CREATE DATABASE $LIMESURVEY_DB_NAME OWNER $LIMESURVEY_DB_USER ;
-# 		GRANT ALL PRIVILEGES ON DATABASE $LIMESURVEY_DB_NAME TO $LIMESURVEY_DB_USER ;
-# 	EOF
-# 	su postgres -c "psql stop -w -D $PGDATA"
-# 	touch "${PGDATA}"/.db_users.placeholder
-# fi
-
 ## NES
-#if [ -f $NES_DIR/.nes_initialization.placeholder ]; then
-    #echo "INFO: NES data has already been initialized"
-#else
+if [ -f $NES_DIR/.nes_initialization.placeholder ]; then
+    echo "INFO: NES data has already been initialized"
+else
     echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
     cd $NES_DIR/patientregistrationsystem/qdc/
     
 	cat <<-EOF >/tmp/create_superuser.py
-		from django.contrib.auth import get_user_model
-		User = get_user_model()
-		User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
-		User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
+from django.contrib.auth import get_user_model
+User = get_user_model()
+try:
+    User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
+    User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
+except:
+    print("erro criando super usuario.")
 	EOF
     
+    echo "	INFO: makemigrations"
+    python3 -u manage.py makemigrations || true
     echo "	INFO: Migrate"
-    python -u manage.py migrate
+    python3 -u manage.py migrate || true
     # Different versions may have different commands
     echo "	INFO: add_initial_data.py"
-    python -u manage.py shell < add_initial_data.py || true
+    python3 -u manage.py shell < add_initial_data.py || true
     echo "	INFO: load_initial_data.py"
-    python -u manage.py loaddata load_initial_data.json || true
-    echo "INFO create cachetable"
-    python -u manage.py createcachetable || true
+    python3 -u manage.py loaddata load_initial_data.json || true
+    echo "	INFO create cachetable"
+    python3 -u manage.py createcachetable || true
     echo "	INFO: create_super_ser.py"
-    python -u manage.py shell < /tmp/create_superuser.py || true
+    python3 -u manage.py shell < /tmp/create_superuser.py || true
     echo "	INFO: import cid10"
-    #python -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
-    echo "	INFO: createcachetable"
-    python -u manage.py createcachetable || true
+    python -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
+    
+    mkdir static || true
+    echo "	INFO: colectstatic"
+    python3 -u manage.py collectstatic --no-input || true
+    
     
     rm /tmp/create_superuser.py
     
     # If NES was installed from a release it won"t have a .git directory
-    chown -R nobody $NES_DIR/.git || true
-    chown -R nobody $NES_DIR/patientregistrationsystem
+    chown -R vscode $NES_DIR/.git || true
+    chown -R vscode $NES_DIR/patientregistrationsystem
     
     touch $NES_DIR/.nes_initialization.placeholder
-#fi
+    chown -R nobody $NES_DIR/.nes_initialization.placeholder
+fi
 
-echo "Done"
+echo "INFO: Done initializing data"
 
 echo "entrypoint.sh finished"
-python -u $NES_DIR/patientregistrationsystem/qdc/manage.py migrate
-
-python -u $NES_DIR/patientregistrationsystem/qdc/manage.py runserver 0.0.0.0:80
 
 exec "$@"

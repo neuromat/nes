@@ -163,6 +163,7 @@ def build_zip_file(
         "per_eeg_raw_data": False,
         "per_emg_data": False,
         "per_generic_data": False,
+        "per_media_data": False,
         "per_goalkeeper_game_data": False,
         "per_stimulus_data": False,
         "per_tms_data": False,

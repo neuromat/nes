@@ -7,8 +7,9 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8  
 
+
+ARG DEBUG
 ARG NES_BRANCH=dev
-ARG NES_DIR=/usr/local/nes
 
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
@@ -36,7 +37,7 @@ RUN apt-get -y update --no-install-recommends && \
 
 
 RUN mkdir -p $NES_DIR  && \
-    git clone -j $(nproc) -b $NES_BRANCH  https://github.com/mcostat/nes.git $NES_DIR;
+    git clone -j $(nproc) -b $NES_BRANCH  https://github.com/mcostat/nes.git /usr/local/nes;
 
 
 COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/

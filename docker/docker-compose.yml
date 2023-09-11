@@ -13,8 +13,8 @@ services:
       - .env
     environment:
       POSTGRES_DB: limesurvey_db
-      POSTGRES_USER: ${LIMESURVEY_DB_USERNAME}
-      POSTGRES_PASSWORD: ${LIMESURVEY_DB_PASSWORD}
+      POSTGRES_USER: ${LIMESURVEY_DB_USERNAME:-limesurvey_user}
+      POSTGRES_PASSWORD: ${LIMESURVEY_DB_PASSWORD:-lime_password}
 
   limesurvey:
     image: neuromat/nes-compose:limesurvey
@@ -34,10 +34,10 @@ services:
       LIMESURVEY_DB_PORT: 5432
       LIMESURVEY_DB_NAME: limesurvey_db
       LIMESURVEY_DB_TABLE_PREFIX: lime_
-      LIMESURVEY_DB_USERNAME: ${LIMESURVEY_DB_USERNAME}
-      LIMESURVEY_DB_PASSWORD: ${LIMESURVEY_DB_PASSWORD}
-      LIMESURVEY_ADMIN_USER: ${LIMESURVEY_ADMIN_USER}
-      LIMESURVEY_ADMIN_PASSWORD: ${LIMESURVEY_ADMIN_PASSWORD}
+      LIMESURVEY_DB_USERNAME: ${LIMESURVEY_DB_USERNAME:-limesurvey_user}
+      LIMESURVEY_DB_PASSWORD: ${LIMESURVEY_DB_PASSWORD:-lime_password}
+      LIMESURVEY_ADMIN_USER: ${LIMESURVEY_ADMIN_USER:-lime_admin}
+      LIMESURVEY_ADMIN_PASSWORD: ${LIMESURVEY_ADMIN_PASSWORD:-lime_admin_password}
       LIMESURVEY_ADMIN_NAME: Lime Administrator
       LIMESURVEY_ADMIN_EMAIL: limesurvey@limemail.fake
       LIMESURVEY_URL_FORMAT: path
@@ -58,8 +58,8 @@ services:
       - .env
     environment:
       POSTGRES_DB: nes_db
-      POSTGRES_USER: ${NES_DB_USER}
-      POSTGRES_PASSWORD: ${NES_DB_PASSWORD}
+      POSTGRES_USER: ${NES_DB_USER:-nes_user}
+      POSTGRES_PASSWORD: ${NES_DB_PASSWORD:-nes_password}
       PGDATA: /var/lib/postgresql/data
       POSTGRES_HOST_AUTH_METHOD: md5
       POSTGRES_INITDB_ARGS: --auth-host=md5
@@ -85,18 +85,18 @@ services:
       NES_DB_TYPE: pgsql
       NES_DB_HOST: nes_db
       NES_DB: nes_db
-      NES_DB_USER: ${NES_DB_USER}
-      NES_DB_PASSWORD: ${NES_DB_PASSWORD}
+      NES_DB_USER: ${NES_DB_USER:-nes_user}
+      NES_DB_PASSWORD: ${NES_DB_PASSWORD:-nes_password}
       NES_DB_PORT: 5432
-      NES_SECRET_KEY: ${NES_SECRET_KEY}
+      NES_SECRET_KEY: ${NES_SECRET_KEY:-your_secret_key}
       NES_HOSTNAME: cleanly-accurate-pegasus.ngrok-free.app
       NES_IP: 0.0.0.0
       NES_PORT: 80
-      NES_ADMIN_USER: ${NES_ADMIN_USER}
-      NES_ADMIN_EMAIL: ${NES_ADMIN_EMAIL}
-      NES_ADMIN_PASSWORD: ${NES_ADMIN_PASSWORD}
-      LIMESURVEY_ADMIN_USER: ${LIMESURVEY_ADMIN_USER}
-      LIMESURVEY_ADMIN_PASSWORD: ${LIMESURVEY_ADMIN_PASSWORD}
+      NES_ADMIN_USER: ${NES_ADMIN_USER:-nes_admin}
+      NES_ADMIN_EMAIL: ${NES_ADMIN_EMAIL:-nes_admin@nesmail.com}
+      NES_ADMIN_PASSWORD: ${NES_ADMIN_PASSWORD:-nes_admin_password}
+      LIMESURVEY_ADMIN_USER: ${LIMESURVEY_ADMIN_USER:-lime_admin}
+      LIMESURVEY_ADMIN_PASSWORD: ${LIMESURVEY_ADMIN_PASSWORD:-lime_admin_password}
       LIMESURVEY_HOST: limesurvey
       LIMESURVEY_PORT: 8080
     depends_on:

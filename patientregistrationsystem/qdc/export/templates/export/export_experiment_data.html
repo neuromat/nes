@@ -209,6 +209,13 @@
                                                         <div class="help-block with-errors"></div>
                                                     </div>
                                                 {% endif %}
+                                                {% if 'media_data' in component_list %}
+                                                    <div class="checkbox">
+                                                        {{ export_form.per_media_data }}
+                                                        <label for="per_media_data" class="control-label">{% trans "Media Data" %}</label>
+                                                        <div class="help-block with-errors"></div>
+                                                    </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>

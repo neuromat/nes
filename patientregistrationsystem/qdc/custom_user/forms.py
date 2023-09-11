@@ -223,7 +223,6 @@ class InstitutionForm(ModelForm):
                 attrs={
                     "class": "form-control",
                     "required": "",
-                    "pattern": "",
                 }
             ),
             "acronym": TextInput(attrs={"class": "form-control"}),
@@ -244,10 +243,10 @@ class InstitutionForm(ModelForm):
             self.fields["parent"].queryset = parent_list
 
 
-def get_institutions_recursively(institution):
+def get_institutions_recursively(institution) -> list:
     institution_list = [institution]
     children = Institution.objects.filter(parent=institution)
     for child in children:
         if child not in institution_list:
-            institution_list = get_institutions_recursively(child)
+            institution_list.extend(get_institutions_recursively(child))
     return institution_list

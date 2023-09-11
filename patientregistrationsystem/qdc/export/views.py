@@ -679,6 +679,9 @@ def export_view(request, template_name="export/export_data.html"):
                 component_list["per_generic_data"] = export_form.cleaned_data[
                     "per_generic_data"
                 ]
+                component_list["per_media_data"] = export_form.cleaned_data[
+                    "per_media_data"
+                ]
 
                 if questionnaires_selected_list or experiment_questionnaires_list:
                     per_participant = export_form.cleaned_data["per_participant"]

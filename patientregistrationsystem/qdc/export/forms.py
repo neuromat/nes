@@ -50,6 +50,7 @@ class ExportForm(Form):
     per_goalkeeper_game_data = BooleanField(initial=True, required=False)
     per_stimulus_data = BooleanField(initial=True, required=False)
     per_generic_data = BooleanField(initial=True, required=False)
+    per_media_data = BooleanField(initial=True, required=False)
 
     questionnaire_entrance_selected: list = []
 
