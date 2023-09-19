@@ -63,6 +63,7 @@ class PatientForm(ModelForm):
                     "autofocus": "true",
                     "required": "",
                     "data-error": _("Name must be included"),
+                    "oninput": "this.value = this.value.toUpperCase()",
                 }
             ),
             "cpf": TextInput(

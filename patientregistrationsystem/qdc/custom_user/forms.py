@@ -31,6 +31,7 @@ class UserForm(ModelForm):
             attrs={
                 "class": "form-control",
                 "placeholder": _("Type first name"),
+                "oninput": "this.value = this.value.toUpperCase()",
             }
         ),
     )
@@ -40,6 +41,7 @@ class UserForm(ModelForm):
             attrs={
                 "class": "form-control",
                 "placeholder": _("Type last name"),
+                "oninput": "this.value = this.value.toUpperCase()",
             }
         ),
     )
@@ -52,7 +54,6 @@ class UserForm(ModelForm):
                 "id": "id_email",
                 "type": "email",
                 "data-error": _("Invalid e-mail"),
-                # "pattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
             }
         ),
     )
@@ -69,6 +70,7 @@ class UserForm(ModelForm):
                     "required": "",
                     "placeholder": _("Type user name"),
                     "data-minlength": "6",
+                    "data-maxlength": "30",
                     "data-error": _(
                         "Username must start with a letter and contain only alphanumeric characters (6-30)"
                     ),
@@ -83,6 +85,7 @@ class UserForm(ModelForm):
                     "class": "form-control",
                     "placeholder": _("Type password"),
                     "data-minlength": "8",
+                    "data-maxlength": "128",
                     "data-error": _(
                         "Password must contain at least a number, an uppercase letter and a lowercase letter (8-127)"
                     ),
@@ -107,6 +110,14 @@ class UserForm(ModelForm):
             raise ValidationError(_("E-mail already registered"))
         return email
 
+    def clean_first_name(self) -> str:
+        data = self.cleaned_data["first_name"]
+        return data.upper()
+
+    def clean_last_name(self) -> str:
+        data = self.cleaned_data["last_name"]
+        return data.upper()
+
 
 class UserFormUpdate(UserForm):
     password = CharField(
@@ -117,6 +128,7 @@ class UserFormUpdate(UserForm):
                 "class": "form-control",
                 "placeholder": _("Type password"),
                 "data-minlength": "8",
+                "data-maxlength": "128",
                 "data-error": _(
                     "Password must contain at least a number, an uppercase letter and a lowercase letter (8-127)"
                 ),
@@ -182,8 +194,7 @@ class ResearcherForm(ModelForm):
                     "required": "",
                     "placeholder": _("Type first name"),
                     "data-error": _("Only use letters and spaces"),
-                    "pattern": FIRSTNAME_REGEX,
-                    "text-transformation": "uppercase",
+                    "oninput": "this.value = this.value.toUpperCase()",
                 }
             ),
             "last_name": TextInput(
@@ -192,8 +203,7 @@ class ResearcherForm(ModelForm):
                     "required": "",
                     "placeholder": _("Type last name"),
                     "data-error": _("Only use letters and spaces"),
-                    "pattern": LASTNAME_REGEX,
-                    "text-transformation": "uppercase",
+                    "oninput": "this.value = this.value.toUpperCase()",
                 }
             ),
             "email": TextInput(
@@ -211,6 +221,14 @@ class ResearcherForm(ModelForm):
                 attrs={"class": "form-control", "placeholder": _("Type citation name")}
             ),
         }
+
+    def clean_first_name(self) -> str:
+        data = self.cleaned_data["first_name"]
+        return data.upper()
+
+    def clean_last_name(self) -> str:
+        data = self.cleaned_data["last_name"]
+        return data.upper()
 
 
 class InstitutionForm(ModelForm):

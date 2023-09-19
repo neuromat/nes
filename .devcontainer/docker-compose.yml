@@ -68,6 +68,8 @@ services:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
+      args:
+        DEBUG: 1
     volumes:
       - ../..:/workspaces:cached
     # Overrides default command so things don't shut down after the process ends.
@@ -81,8 +83,6 @@ services:
       - "80:80"
     env_file:
       - .env
-    args:
-      DEBUG: 1
     environment:
       NES_DB_TYPE: pgsql
       NES_DB_HOST: nes_db

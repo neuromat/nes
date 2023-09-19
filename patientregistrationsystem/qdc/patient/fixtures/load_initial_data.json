@@ -154,6 +154,15 @@
   },
   {
     "fields": {
+      "name_pt_br": "Intersexo",
+      "name_en": "Intersex",
+      "name": "Intersexo"
+    },
+    "model": "patient.gender",
+    "pk": 3
+  },
+  {
+    "fields": {
       "name_en": "Not informed",
       "name": "N\u00e3o Informado",
       "name_pt_br": "N\u00e3o Informado"
@@ -334,39 +343,48 @@
   },
   {
     "fields": {
-      "name_pt_br": "Analfabeto/ at\u00e9 3\u00aa S\u00e9rie Fundamental",
-      "name_en": "Illiterate/until 3th Year Elementary ",
-      "name": "Analfabeto/ at\u00e9 3\u00aa S\u00e9rie Fundamental"
+      "name_pt_br": "Analfabeto / Ensino Fundamental Incompleto",
+      "name_en": "Illiterate / until 3th Year Elementary ",
+      "name": "Analfabeto / Ensino Fundamental Incompleto"
     },
     "model": "patient.schooling",
     "pk": 1
   },
   {
     "fields": {
-      "name_pt_br": "4\u00aa Fundamental",
+      "name_pt_br": "Fundamental Completo",
       "name_en": "4th Year Elementary",
-      "name": "4\u00aa Fundamental"
+      "name": "Fundamental Completo"
     },
     "model": "patient.schooling",
     "pk": 2
   },
   {
     "fields": {
-      "name_pt_br": "Fundamental Completo",
-      "name_en": "Elementary Complete",
-      "name": "Fundamental Completo"
+      "name_pt_br": "Médio Incompleto",
+      "name_en": "College Incomplete",
+      "name": "Médio Incompleto"
     },
     "model": "patient.schooling",
     "pk": 3
   },
   {
     "fields": {
-      "name_pt_br": "M\u00e9dio Completo",
+      "name_pt_br": "Médio Completo",
       "name_en": "College Complete",
-      "name": "M\u00e9dio Completo"
+      "name": "Médio Completo"
     },
     "model": "patient.schooling",
     "pk": 4
+  },
+  {
+    "fields": {
+      "name_pt_br": "Superior Incompleto",
+      "name_en": "Undergraduation Incomplete",
+      "name": "Superior Incompleto"
+    },
+    "model": "patient.schooling",
+    "pk": 5
   },
   {
     "fields": {
@@ -375,6 +393,6 @@
       "name": "Superior Completo"
     },
     "model": "patient.schooling",
-    "pk": 5
+    "pk": 6
   }
 ]
