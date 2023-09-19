@@ -69,7 +69,7 @@ else
 		import os
 		import sys
 		import site
-		paths = ["$NES_PROJECT_PATH", "$NES_DIR", "/usr/local", "/usr/bin", "/bin",]
+		paths = ["$NES_PROJECT_PATH", "$NES_DIR", "/usr/local", "/usr/bin", "/bin", "/usr/local/nes", ]
 		for path in paths:
 		    if path not in sys.path:
 		        sys.path.append(path)

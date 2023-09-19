@@ -69,7 +69,7 @@ else
 		import os
 		import sys
 		import site
-		paths = ["$NES_PROJECT_PATH", "$NES_DIR", "/usr/local", "/usr/bin", "/bin",]
+		paths = ["$NES_PROJECT_PATH", "$NES_DIR", "/usr/local", "/usr/bin", "/bin", "/usr/local/nes", ]
 		for path in paths:
 		    if path not in sys.path:
 		        sys.path.append(path)
@@ -164,12 +164,51 @@ except:
     rm /tmp/create_superuser.py
     
     # If NES was installed from a release it won"t have a .git directory
-    chown -R vscode $NES_DIR/.git || true
-    chown -R vscode $NES_DIR/patientregistrationsystem
+    chown -R www-data $NES_DIR/.git || true
+    chown -R www-data $NES_DIR/patientregistrationsystem
     
     touch $NES_DIR/.nes_initialization.placeholder
     chown -R nobody $NES_DIR/.nes_initialization.placeholder
 fi
+
+if [ -f $NES_DIR/.apache.placeholder ]; then
+    echo "INFO: Apache data has already been initialized"
+else
+    echo "INFO: Initializing Apache data"
+    cd /etc/apache2/sites-available/
+
+    cat <<-EOF > /nes.conf
+        <VirtualHost *:$NES_PORT>
+            ServerName $NES_HOSTNAME
+            WSGIProcessGroup nes
+
+            DocumentRoot $NES_DIR/patientregistrationsystem/qdc
+
+            <Directory />
+                    Options FollowSymLinks
+                    AllowOverride None
+            </Directory>
+
+            Alias /media/ $NES_DIR/patientregistrationsystem/qdc/media/
+            Alias /static/ $NES_DIR/patientregistrationsystem/qdc/static/
+
+            <Directory "$NES_DIR/patientregistrationsystem/qdc">
+                    Require all granted
+            </Directory>
+
+            WSGIScriptAlias / $NES_DIR/patientregistrationsystem/qdc/qdc/wsgi.py application-group=%{GLOBAL}
+            WSGIDaemonProcess nes lang='en_US.UTF-8' locale='en_US.UTF-8'
+
+            Alias /img/ $NES_DIR/patientregistrationsystem/qdc/img/
+
+            ErrorLog ${APACHE_LOG_DIR}/nes_ssl_error.log
+            LogLevel warn
+            CustomLog ${APACHE_LOG_DIR}/nes_ssl_access.log combined
+        </VirtualHost>
+	EOF
+
+fi
+
 
 echo "INFO: Done initializing data"
 

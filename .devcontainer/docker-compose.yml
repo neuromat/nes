@@ -73,6 +73,7 @@ services:
     volumes:
       - ../..:/workspaces:cached
     # Overrides default command so things don't shut down after the process ends.
+    restart: unless-stopped
     command: sleep infinity
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
     #network_mode: service:nes_db
@@ -91,7 +92,7 @@ services:
       NES_DB_PASSWORD: ${NES_DB_PASSWORD:-nes_password}
       NES_DB_PORT: 5432
       NES_SECRET_KEY: ${NES_SECRET_KEY:-your_secret_key}
-      NES_HOSTNAME: cleanly-accurate-pegasus.ngrok-free.app
+      NES_HOSTNAME: lapisnes.local
       NES_IP: 0.0.0.0
       NES_PORT: 80
       NES_ADMIN_USER: ${NES_ADMIN_USER:-nes_admin}
