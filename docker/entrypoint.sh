@@ -1,50 +1,6 @@
 #!/bin/sh
 set -e
 
-# PGDATA=${PGDATA:-"/var/lib/postgresql/data"}
-
-# # LIMESURVEY
-# ## SYSTEM OPTIONS
-# LIMESURVEY_HOST=${LIMESURVEY_HOST:-"limesurvey"}
-# LIMESURVEY_PORT=${LIMESURVEY_PORT:-"8080"}
-# LIMESURVEY_DIR="$LIMESURVEY_DIR"
-# APACHE2_CONF_DIR="$LIMESURVEY_DIR/application/config"
-# ## CONFIG.PHP OPTIONS
-# LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-"127.0.0.1"}
-# LIMESURVEY_DB_PORT=${LIMESURVEY_DB_PORT:-"5432"}
-# LIMESURVEY_DB_NAME=${LIMESURVEY_DB_NAME:-"limesurvey_db"}
-# LIMESURVEY_DB_TABLE_PREFIX=${LIMESURVEY_DB_TABLE_PREFIX:-"lime_"}
-# LIMESURVEY_DB_USER=${LIMESURVEY_DB_USER:-"limesurvey_user"}
-# LIMESURVEY_DB_PASSWORD=${LIMESURVEY_DB_PASSWORD:-"limesurvey_password"}
-# LIMESURVEY_DB_CHARSET=${LIMESURVEY_DB_CHARSET:-"utf8"}
-# LIMESURVEY_URL_FORMAT=${LIMESURVEY_URL_FORMAT:-"path"}
-# ## SUPER USER CREATION OPTION
-# LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-"lime_admin"}
-# LIMESURVEY_ADMIN_NAME=${LIMESURVEY_ADMIN_NAME:-"lime_admin_name"}
-# LIMESURVEY_ADMIN_EMAIL=${LIMESURVEY_ADMIN_EMAIL:-"limesurvey@limemail.false"}
-# LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-"lime_admin_password"}
-# # NES
-# ## SYSTEM OPTIONS
-# #NES_DIR=${NES_DIR:-"/usr/local/nes"}
-# ## SETTINGS_LOCAL OPTIONS
-# ### DJANGO
-# NES_SECRET_KEY=${NES_SECRET_KEY:-"your_secret_key"}
-# NES_IP=${NES_IP:-"0.0.0.0"}
-# NES_PORT=${NES_PORT:-"80"}
-# NES_ADMIN_USER=${NES_ADMIN_USER:-"nes_admin"}
-# NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-"nes_admin@nesmail.false"}
-# NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-"nes_admin_password"}
-# ### DB
-# #### External database settings
-# NES_DB_TYPE=${NES_DB_TYPE:-"pgsql"}
-# NES_DB_HOST=${NES_DB_HOST:-"nes_db"}
-# NES_DB_PORT=${NES_DB_PORT:-"5432"}
-# NES_DB=${NES_DB:-"nes_db"}
-# NES_DB_USER=${NES_DB_USER:-"nes_user"}
-# NES_DB_PASSWORD=${NES_DB_PASSWORD:-"nes_password"}
-# #NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes/setup"}
-
-
 # Entrypoint only variable
 NES_PROJECT_PATH="$NES_DIR/patientregistrationsystem/qdc"
 
@@ -176,7 +132,7 @@ if [ -f $NES_DIR/.apache.placeholder ]; then
 else
     echo "INFO: Initializing Apache data"
 
-    cat <<-EOF > /etc/apache2/sites-available/nes.conf
+    cat <<-EOF >/etc/apache2/sites-available/nes.conf
         <VirtualHost *:$NES_PORT>
             ServerName $NES_HOSTNAME
             WSGIProcessGroup nes
