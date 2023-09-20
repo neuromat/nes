@@ -133,33 +133,33 @@ else
     echo "INFO: Initializing Apache data"
 
     cat <<-EOF >/etc/apache2/sites-available/nes.conf
-        <VirtualHost *:$NES_PORT>
-            ServerName $NES_IP
-            WSGIProcessGroup nes
+<VirtualHost *:$NES_PORT>
+    ServerName $NES_IP
+    WSGIProcessGroup nes
 
-            DocumentRoot $NES_PROJECT_PATH
+    DocumentRoot $NES_PROJECT_PATH
 
-            <Directory />
-                    Options FollowSymLinks
-                    AllowOverride None
-            </Directory>
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+    </Directory>
 
-            Alias /media/ $NES_PROJECT_PATH/media/
-            Alias /static/ $NES_PROJECT_PATH/static/
+    Alias /media/ $NES_PROJECT_PATH/media/
+    Alias /static/ $NES_PROJECT_PATH/static/
 
-            <Directory "$NES_PROJECT_PATH">
-                    Require all granted
-            </Directory>
+    <Directory "$NES_PROJECT_PATH">
+        Require all granted
+    </Directory>
 
-            WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
-            WSGIDaemonProcess nes lang='en_US.UTF-8' locale='en_US.UTF-8'
+    WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
+    WSGIDaemonProcess nes lang='en_US.UTF-8' locale='en_US.UTF-8'
 
-            Alias /img/ $NES_PROJECT_PATH/img/
+    Alias /img/ $NES_PROJECT_PATH/img/
 
-            ErrorLog ${APACHE_LOG_DIR}/nes_ssl_error.log
-            LogLevel warn
-            CustomLog ${APACHE_LOG_DIR}/nes_ssl_access.log combined
-        </VirtualHost>
+    ErrorLog ${APACHE_LOG_DIR}/nes_ssl_error.log
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/nes_ssl_access.log combined
+</VirtualHost>
 	EOF
 
     touch $NES_DIR/.apache.placeholder

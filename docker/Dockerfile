@@ -67,5 +67,5 @@ RUN chmod +x docker/entrypoint.sh
 
 ENTRYPOINT ["docker/entrypoint.sh"]
 
-CMD ["/bin/bash", "-c", "a2dissite 000-default.conf; a2ensite nes; service apache2 restart"]
+CMD ["/bin/bash", "-c", "service apache2 start; a2dissite 000-default.conf; a2ensite nes; service apache2 reload"]
 
