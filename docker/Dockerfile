@@ -41,6 +41,8 @@ RUN apt-get -y update --no-install-recommends && \
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
 
+RUN sed -i -e 's/Listen 80/Listen 80\nServerName localhost/' /etc/apache2/ports.conf
+
 RUN mkdir -p $NES_DIR  && \
     if [ $NES_BRANCH != "unset" ]; then \
         echo Cloning $NES_BRANCH branch ;\
@@ -67,5 +69,5 @@ RUN chmod +x docker/entrypoint.sh
 
 ENTRYPOINT ["docker/entrypoint.sh"]
 
-CMD ["/bin/bash", "-c", "service apache2 start; a2dissite 000-default.conf; a2ensite nes; service apache2 reload"]
+CMD ["/bin/bash", "-c", "a2dissite 000-default.conf; a2ensite nes; service apache2 restart"]
 

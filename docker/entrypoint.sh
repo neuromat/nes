@@ -127,7 +127,7 @@ except:
     chown -R nobody $NES_DIR/.nes_initialization.placeholder
 fi
 
-if [ -f $NES_DIR/.apache.placeholder ]; then
+if [ -f /etc/apache2/sites-available/nes.conf ]; then
     echo "INFO: Apache data has already been initialized"
 else
     echo "INFO: Initializing Apache data"
