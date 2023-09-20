@@ -175,9 +175,8 @@ if [ -f $NES_DIR/.apache.placeholder ]; then
     echo "INFO: Apache data has already been initialized"
 else
     echo "INFO: Initializing Apache data"
-    cd /etc/apache2/sites-available/
 
-    cat <<-EOF > /nes.conf
+    cat <<-EOF > /etc/apache2/sites-available/nes.conf
         <VirtualHost *:$NES_PORT>
             ServerName $NES_HOSTNAME
             WSGIProcessGroup nes
