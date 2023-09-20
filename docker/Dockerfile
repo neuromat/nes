@@ -59,9 +59,9 @@ RUN pip3 install -U pip setuptools wheel && \
 WORKDIR /usr/local/nes
 
 #RUN cp $NES_DIR/docker/entrypoint.sh / && \
-RUN chmod +x docker/entrypoint.sh
+RUN chmod +x $NES_DIR/docker/entrypoint.sh
 
-ENTRYPOINT ["docker/entrypoint.sh"]
+ENTRYPOINT ["{$NES_DIR}/docker/entrypoint.sh"]
 
 CMD ["/bin/bash", "-c", "a2ensite nes; service apache2 reload"]
 
