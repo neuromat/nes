@@ -10,6 +10,8 @@ ENV LC_ALL en_US.UTF-8
 
 ARG DEBUG
 ARG NES_BRANCH=dev
+ARG NES_DIR=usr/local/nes
+
 
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
@@ -35,25 +37,31 @@ RUN apt-get -y update --no-install-recommends && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
 
-
 RUN mkdir -p $NES_DIR  && \
-    git clone -j $(nproc) -b $NES_BRANCH  https://github.com/mcostat/nes.git /usr/local/nes;
+    if [ $NES_BRANCH != "unset" ]; then \
+        echo Cloning $NES_BRANCH branch ;\
+        git clone -j $(nproc) -b "$NES_BRANCH"  https://github.com/mcostat/nes.git $NES_DIR ;\
+    else \
+        echo Cloning master branch ;\
+        git clone -j $(nproc) https://github.com/mcostat/nes.git $NES_DIR ;\
+    fi
 
 
-COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
-RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
-    && rm -rf /tmp/pip-tmp
+RUN mkdir -p /wheels/requirement && \
+    cp $NES_DIR/patientregistrationsystem/qdc/requirements.txt /wheels/requirement
 
-COPY $NES_DIR/patientregistrationsystem/qdc/src/nwb/dist/nwb-1.0.0-py3-none-any.whl .
-RUN pip3 --disable-pip-version-check install nwb-1.0.0-py3-none-any.whl \
-    && rm nwb-1.0.0-py3-none-any.whl
+WORKDIR /wheels
 
+RUN pip3 install -U pip setuptools wheel && \
+    pip3 install -r requirement/requirements.txt && \
+    pip3 wheel -r requirement/requirements.txt
 
+WORKDIR /usr/local/nes
 
-COPY /entrypoint.sh /
-RUN chmod +x /entrypoint.sh
+#RUN cp $NES_DIR/docker/entrypoint.sh / && \
+RUN chmod +x docker/entrypoint.sh
 
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT ["docker/entrypoint.sh"]
 
 CMD ["/bin/bash", "-c", "a2ensite nes; service apache2 reload"]
 

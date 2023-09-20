@@ -44,8 +44,6 @@ set -e
 # NES_DB_PASSWORD=${NES_DB_PASSWORD:-"nes_password"}
 # #NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes/setup"}
 
-# SUPERVISOR
-SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
 
 # Entrypoint only variable
 NES_PROJECT_PATH="$NES_DIR/patientregistrationsystem/qdc"
@@ -78,6 +76,7 @@ else
 		application = get_wsgi_application()
 	EOF
     chown -R nobody $NES_PROJECT_PATH/qdc/wsgi.py
+
     touch $NES_PROJECT_PATH/nes_wsgi.placeholder
     chown -R nobody $NES_PROJECT_PATH/nes_wsgi.placeholder
 fi
@@ -113,6 +112,7 @@ CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES
 		LOGO_INSTITUTION = "$NES_PROJECT_PATH/logo-institution.png"
 	EOF
     chown -R nobody $NES_PROJECT_PATH/qdc/settings_local.py
+
     touch $NES_PROJECT_PATH/nes_settings.placeholder
     chown -R nobody $NES_PROJECT_PATH/nes_settings.placeholder
 fi
@@ -128,7 +128,7 @@ if [ -f $NES_DIR/.nes_initialization.placeholder ]; then
     echo "INFO: NES data has already been initialized"
 else
     echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
-    cd $NES_DIR/patientregistrationsystem/qdc/
+    cd $NES_PROJECT_PATH
     
 	cat <<-EOF >/tmp/create_superuser.py
 from django.contrib.auth import get_user_model
@@ -182,30 +182,33 @@ else
             ServerName $NES_HOSTNAME
             WSGIProcessGroup nes
 
-            DocumentRoot $NES_DIR/patientregistrationsystem/qdc
+            DocumentRoot $NES_PROJECT_PATH
 
             <Directory />
                     Options FollowSymLinks
                     AllowOverride None
             </Directory>
 
-            Alias /media/ $NES_DIR/patientregistrationsystem/qdc/media/
-            Alias /static/ $NES_DIR/patientregistrationsystem/qdc/static/
+            Alias /media/ $NES_PROJECT_PATH/media/
+            Alias /static/ $NES_PROJECT_PATH/static/
 
-            <Directory "$NES_DIR/patientregistrationsystem/qdc">
+            <Directory "$NES_PROJECT_PATH">
                     Require all granted
             </Directory>
 
-            WSGIScriptAlias / $NES_DIR/patientregistrationsystem/qdc/qdc/wsgi.py application-group=%{GLOBAL}
+            WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
             WSGIDaemonProcess nes lang='en_US.UTF-8' locale='en_US.UTF-8'
 
-            Alias /img/ $NES_DIR/patientregistrationsystem/qdc/img/
+            Alias /img/ $NES_PROJECT_PATH/img/
 
             ErrorLog ${APACHE_LOG_DIR}/nes_ssl_error.log
             LogLevel warn
             CustomLog ${APACHE_LOG_DIR}/nes_ssl_access.log combined
         </VirtualHost>
 	EOF
+
+    touch $NES_DIR/.apache.placeholder
+    chown -R nobody $NES_DIR/.apache.placeholder
 
 fi
 

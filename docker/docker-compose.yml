@@ -67,11 +67,9 @@ services:
   nes:
     build:
       context: ..
-      dockerfile: .devcontainer/Dockerfile
+      dockerfile: docker/Dockerfile
       args:
         DEBUG: 0
-    volumes:
-      - ../..:/workspaces:cached
     # Overrides default command so things don't shut down after the process ends.
     restart: unless-stopped
     command: sleep infinity
@@ -103,6 +101,8 @@ services:
       LIMESURVEY_ADMIN_PASSWORD: ${LIMESURVEY_ADMIN_PASSWORD:-lime_admin_password}
       LIMESURVEY_HOST: limesurvey
       LIMESURVEY_PORT: 8080
+    #volumes:
+    #  - ../..:/usr/local/nes
     depends_on:
       - nes_db
       - limesurvey
