@@ -29,6 +29,7 @@ RUN apt-get -y update --no-install-recommends && \
     #openblas-dev \
     #hdf5-dev && \
     apache2 \
+    locales \
     libapache2-mod-wsgi-py3 \
     netcat-traditional \
     graphviz && \
@@ -36,6 +37,9 @@ RUN apt-get -y update --no-install-recommends && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
+
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen
 
 RUN mkdir -p $NES_DIR  && \
     if [ $NES_BRANCH != "unset" ]; then \
@@ -63,5 +67,5 @@ RUN chmod +x docker/entrypoint.sh
 
 ENTRYPOINT ["docker/entrypoint.sh"]
 
-CMD ["/bin/bash", "-c", "a2ensite nes; service apache2 reload"]
+CMD ["/bin/bash", "-c", "a2dissite 000-default.conf; a2ensite nes; service apache2 restart"]
 

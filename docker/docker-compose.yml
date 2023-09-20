@@ -101,13 +101,14 @@ services:
       LIMESURVEY_ADMIN_PASSWORD: ${LIMESURVEY_ADMIN_PASSWORD:-lime_admin_password}
       LIMESURVEY_HOST: limesurvey
       LIMESURVEY_PORT: 8080
-    #volumes:
-    #  - ../..:/usr/local/nes
+    volumes:
+      - nes_data:/usr/local/nes
     depends_on:
       - nes_db
       - limesurvey
 
 volumes:
+  nes_data: 
   nes_pgdata:
   limesurvey_pgdata:
   limesurvey_data:

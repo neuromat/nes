@@ -134,7 +134,7 @@ else
 
     cat <<-EOF >/etc/apache2/sites-available/nes.conf
         <VirtualHost *:$NES_PORT>
-            ServerName $NES_HOSTNAME
+            ServerName $NES_IP
             WSGIProcessGroup nes
 
             DocumentRoot $NES_PROJECT_PATH
