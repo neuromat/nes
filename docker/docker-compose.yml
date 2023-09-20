@@ -70,6 +70,7 @@ services:
       dockerfile: docker/Dockerfile
       args:
         DEBUG: 0
+    command: sleep infinity
     restart: unless-stopped
     tty: true
     ports:
