@@ -172,6 +172,8 @@ echo "INFO: Done initializing data"
 
 echo "entrypoint.sh finished"
 
-exec a2dissite 000-default.conf; a2ensite nes; service apache2 restart
+a2dissite 000-default.conf
+a2ensite nes
+service apache2 restart
 
 exec "$@"
