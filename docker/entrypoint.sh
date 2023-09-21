@@ -161,10 +161,6 @@ else
     CustomLog ${APACHE_LOG_DIR}/nes_ssl_access.log combined
 </VirtualHost>
 	EOF
-
-    touch $NES_DIR/.apache.placeholder
-    chown -R nobody $NES_DIR/.apache.placeholder
-
 fi
 
 
