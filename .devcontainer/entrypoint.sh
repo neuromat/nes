@@ -135,7 +135,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 try:
     User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
-    User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
 except:
     print("erro criando super usuario.")
 	EOF

@@ -65,6 +65,15 @@ CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES
 		    "USER": "$LIMESURVEY_ADMIN_USER",
 		    "PASSWORD": "$LIMESURVEY_ADMIN_PASSWORD"
 		}
+
+        # Settings to send emails
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.example.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'smtp.user@example.com'
+EMAIL_HOST_PASSWORD = 'smtp.user_pwd'
+DEFAULT_FROM_EMAIL = 'smtp.user@example.com'
+SERVER_EMAIL = EMAIL_HOST_USER
 		LOGO_INSTITUTION = "$NES_PROJECT_PATH/logo-institution.png"
 	EOF
     chown -R nobody $NES_PROJECT_PATH/qdc/settings_local.py
@@ -91,7 +100,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 try:
     User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
-    User.objects.create_superuser("carjulio", "carjulio@peb.ufrj.br", "carlosjulio2023")
 except:
     print("erro criando super usuario.")
 	EOF
