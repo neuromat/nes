@@ -35,8 +35,8 @@ RUN apt-get -y update --no-install-recommends && \
     libapache2-mod-wsgi-py3 \
     netcat-traditional \
     # server dependencies
-    libopenblas-dev \
-    libhdf5-dev \
+    #libopenblas-dev \
+    #libhdf5-dev \
     graphviz && \
     #snapd && \
     apt-get autoremove -y && \
@@ -68,7 +68,7 @@ RUN pip3 install -U pip setuptools wheel && \
     pip3 install -r requirement/requirements.txt && \
     pip3 wheel -r requirement/requirements.txt
 
-
+# Setup certbot for automatic SSL certificates
 # RUN service snap start && \
 #     snap install --classic certbot && \
 #     ln -s /snap/bin/certbot /usr/bin/certbot
