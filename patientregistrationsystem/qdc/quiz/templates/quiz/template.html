@@ -304,6 +304,10 @@
     {% if survey_form.errors %}
         showErrorMessage(gettext('Please, correct the highlighted fields.'))
     {% endif %}
+
+    $(function(){
+        $("[data-toggle=tooltip]").tooltip();
+    });
 </script>
 {% block script %}{% endblock %}
 </body>

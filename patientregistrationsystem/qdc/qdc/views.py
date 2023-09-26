@@ -22,8 +22,8 @@ from packaging.version import Version
 permission_required = partial(permission_required, raise_exception=True)
 
 
-def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
-    context = {}
+def qdc_permission_denied_view(request, exception, template_name="admin/qdc_403.html"):
+    context = {"exception": exception}
 
     return render(request, template_name, context, status=403)
 

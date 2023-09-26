@@ -35,6 +35,11 @@ DEBUG404 = True
 
 # SECURITY WARNING: don't run with "is testing" in production
 IS_TESTING = False
+# AXES_ENABLED = False
+
+AXES_FAILURE_LIMIT = 5
+AXES_RESET_ON_SUCCESS = True
+AXES_COOLOFF_TIME = 1
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 

@@ -87,7 +87,7 @@ class UserForm(ModelForm):
                     "data-minlength": "8",
                     "data-maxlength": "128",
                     "data-error": _(
-                        "Password must contain at least a number, an uppercase letter and a lowercase letter (8-127)"
+                        "Password must contain at least a number and a lowercase letter (8-127)"
                     ),
                     "pattern": PASSWORD_REGEX,
                     "onkeyup": "passwordForce(); if(beginCheckPassword1)checkPassExt();",
@@ -130,7 +130,7 @@ class UserFormUpdate(UserForm):
                 "data-minlength": "8",
                 "data-maxlength": "128",
                 "data-error": _(
-                    "Password must contain at least a number, an uppercase letter and a lowercase letter (8-127)"
+                    "Password must contain at least a number and a lowercase letter (8-127)"
                 ),
                 "pattern": PASSWORD_REGEX,
                 "onkeyup": "passwordForce(); if(beginCheckPassword1)checkPassExt();",

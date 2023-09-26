@@ -29,6 +29,7 @@ $(document).ready(function () {
     anonymous.change(function() {
         if($(this).is(":checked")) {
             $("#id_name").prop('disabled', true);
+            $("#id_name").prop('required', false);
             $("#id_cpf").prop('disabled', true);
             $("#id_origin").prop('disabled', true);
             $("#id_medical_record").prop('disabled', true);
@@ -45,6 +46,7 @@ $(document).ready(function () {
         else
         {
             $("#id_name").prop('disabled', false);
+            $("#id_name").prop('required', true);
             $("#id_cpf").prop('disabled', false);
             $("#id_origin").prop('disabled', false);
             $("#id_medical_record").prop('disabled', false);
@@ -62,6 +64,7 @@ $(document).ready(function () {
     anonymous.each(function() {
         if($(this).is(":checked")) {
             $("#id_name").prop('disabled', true);
+            $("#id_name").prop('required', false);
             $("#id_cpf").prop('disabled', true);
             $("#id_origin").prop('disabled', true);
             $("#id_medical_record").prop('disabled', true);

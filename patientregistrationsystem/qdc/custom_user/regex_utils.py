@@ -1,6 +1,6 @@
 PASSWORD_MIN_LEN = 8
 PASSWORD_MAX_LEN = 127
-PASSWORD_REGEX = r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,127}$"
+PASSWORD_REGEX = r"^(?=.*\d)(?=.*[a-z]).{8,127}$"
 
 FIRSTNAME_REGEX = r"^[a-zA-Z]+((\s|\-)[a-zA-Z]+)?$"
 LASTNAME_REGEX = r"^[a-zA-Z]+((\s|\-)[a-zA-Z]+)?$"
