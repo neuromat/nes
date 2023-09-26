@@ -51,7 +51,7 @@ SESSION_COOKIE_AGE = 3600
 # SECURE_SSL_REDIRECT = True
 
 CSRF_USE_SESSIONS = True
-SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 
 
@@ -270,10 +270,3 @@ warnings.filterwarnings(
     RuntimeWarning,
     r"django\.db\.models\.fields",
 )
-
-
-EMAIL_HOST = "smtp.example.com"
-EMAIL_PORT = 587
-EMAIL_HOST_USER = "smtp.user@example.com"
-EMAIL_HOST_PASSWORD = "smtp.user_pwd"
-DEFAULT_FROM_EMAIL = "smtp.user@example.com"

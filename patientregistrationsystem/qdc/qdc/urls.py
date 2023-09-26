@@ -3,6 +3,7 @@ import os
 from custom_user.forms import CustomPasswordResetForm
 from django.conf import settings
 from django.conf.urls import include
+from django.urls import reverse_lazy
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -39,7 +40,7 @@ urlpatterns = [
         r"^password_change/$",
         authviews.PasswordChangeView.as_view(
             template_name="registration/change_password_custom.html",
-            success_url="password_change_done/",
+            success_url=reverse_lazy("password_changed"),
             form_class=PasswordChangeFormCustomized,
         ),
         name="password_change",
