@@ -68,11 +68,11 @@ CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES
 
         # Settings to send emails
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.example.com'
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'smtp.user@example.com'
-EMAIL_HOST_PASSWORD = 'smtp.user_pwd'
-DEFAULT_FROM_EMAIL = 'smtp.user@example.com'
+EMAIL_HOST_USER = "$EMAIL_HOST_USER"
+EMAIL_HOST_PASSWORD = "$EMAIL_HOST_PASSWORD"
+DEFAULT_FROM_EMAIL = "$EMAIL_HOST_USER"
 SERVER_EMAIL = EMAIL_HOST_USER
 		LOGO_INSTITUTION = "$NES_PROJECT_PATH/logo-institution.png"
 	EOF
@@ -169,6 +169,9 @@ else
     CustomLog ${APACHE_LOG_DIR}/nes_ssl_access.log combined
 </VirtualHost>
 	EOF
+
+    a2dissite 000-default.conf
+    a2ensite nes
 fi
 
 
@@ -176,8 +179,5 @@ echo "INFO: Done initializing data"
 
 echo "entrypoint.sh finished"
 
-a2dissite 000-default.conf
-a2ensite nes
-service apache2 restart
 
 exec "$@"

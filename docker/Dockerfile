@@ -30,6 +30,7 @@ RUN apt-get -y update --no-install-recommends && \
     #hdf5-dev && \
     apache2 \
     locales \
+    openssl \
     libapache2-mod-wsgi-py3 \
     netcat-traditional \
     graphviz && \
@@ -64,10 +65,10 @@ RUN pip3 install -U pip setuptools wheel && \
 
 WORKDIR /usr/local/nes
 
-#RUN cp $NES_DIR/docker/entrypoint.sh / && \
-RUN chmod +x docker/entrypoint.sh
+RUN cp docker/entrypoint.sh / && \
+ chmod +x /entrypoint.sh
 
-ENTRYPOINT ["docker/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["/bin/bash", "-c", "a2dissite 000-default.conf; a2ensite nes; service apache2 restart"]
+CMD ["/bin/bash", "-c", "service apache2 restart"]
 
