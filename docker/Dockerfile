@@ -19,6 +19,8 @@ RUN apt-get -y update --no-install-recommends && \
     python3-dev \
     python-is-python3 \
     python3-pip \
+    python3-venv \
+    libaugeas0 \
     pip \
     libjpeg-dev \
     libpng-dev \
@@ -33,10 +35,10 @@ RUN apt-get -y update --no-install-recommends && \
     libapache2-mod-wsgi-py3 \
     netcat-traditional \
     # server dependencies
-    openblas-dev \
-    hdf5-dev \
-    graphviz \
-    snapd && \
+    libopenblas-dev \
+    libhdf5-dev \
+    graphviz && \
+    #snapd && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists* && \
@@ -67,8 +69,17 @@ RUN pip3 install -U pip setuptools wheel && \
     pip3 wheel -r requirement/requirements.txt
 
 
-RUN snap install --classic certbot && \
-    ln -s /snap/bin/certbot /usr/bin/certbot
+# RUN service snap start && \
+#     snap install --classic certbot && \
+#     ln -s /snap/bin/certbot /usr/bin/certbot
+
+RUN python3 -m venv /opt/certbot/ && \
+    /opt/certbot/bin/pip install --upgrade pip && \
+    /opt/certbot/bin/pip install certbot certbot-apache && \
+    ln -s /opt/certbot/bin/certbot /usr/bin/certbot && \
+    certbot --apache && \
+    echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null && \
+    /opt/certbot/bin/pip install --upgrade certbot certbot-apache
 
 
 WORKDIR /usr/local/nes
