@@ -66,6 +66,15 @@ CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES
 		    "PASSWORD": "$LIMESURVEY_ADMIN_PASSWORD"
 		}
 
+SECURE_SSL_REDIRECT = True
+
+CSRF_USE_SESSIONS = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_SECONDS = 3600
+
         # Settings to send emails
 EMAIL_USE_TLS = True
 EMAIL_HOST = "smtp.gmail.com"
@@ -80,8 +89,10 @@ SERVER_EMAIL = EMAIL_HOST_USER
 
     touch $NES_PROJECT_PATH/nes_settings.placeholder
     chown -R nobody $NES_PROJECT_PATH/nes_settings.placeholder
+
+    echo "criou arquivos de config"
 fi
-echo "criou arquivos de config"
+
 while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"; do
     sleep 0.2
 done

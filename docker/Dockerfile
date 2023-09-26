@@ -1,4 +1,4 @@
-FROM python:3.11-bookworm
+FROM python:3.11-bookworm as wheeler
 
 ENV PYTHONUNBUFFERED 1
 ENV DEBIAN_FRONTEND dialog
@@ -11,6 +11,7 @@ ENV LC_ALL en_US.UTF-8
 ARG DEBUG
 ARG NES_BRANCH=dev
 ARG NES_DIR=usr/local/nes
+ENV NES_DIR=$NES_DIR
 
 
 RUN apt-get -y update --no-install-recommends && \
@@ -26,14 +27,16 @@ RUN apt-get -y update --no-install-recommends && \
     #freetype-dev \
     #build-base \
     git \
-    #openblas-dev \
-    #hdf5-dev && \
     apache2 \
     locales \
     openssl \
     libapache2-mod-wsgi-py3 \
     netcat-traditional \
-    graphviz && \
+    # server dependencies
+    openblas-dev \
+    hdf5-dev \
+    graphviz \
+    snapd && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists* && \
@@ -63,10 +66,17 @@ RUN pip3 install -U pip setuptools wheel && \
     pip3 install -r requirement/requirements.txt && \
     pip3 wheel -r requirement/requirements.txt
 
+
+RUN snap install --classic certbot && \
+    ln -s /snap/bin/certbot /usr/bin/certbot
+
+
 WORKDIR /usr/local/nes
 
 RUN cp docker/entrypoint.sh / && \
- chmod +x /entrypoint.sh
+    chmod +x /entrypoint.sh && \
+    certbot --apache && \
+    certbot renew --dry-run
 
 ENTRYPOINT ["/entrypoint.sh"]
 
