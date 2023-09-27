@@ -227,7 +227,7 @@ else
 </IfModule>
 	EOF
 
-    mkcert -key-file /etc/apache2/ssl-certs/key.pem -cert-file /etc/apache2/ssl-certs/cart.pem $NES_HOSTNAME 
+    mkcert -key-file /etc/apache2/ssl-certs/key.pem -cert-file /etc/apache2/ssl-certs/cert.pem $NES_HOSTNAME 0.0.0.0
 
     a2enmod ssl
     a2dissite 000-default.conf
