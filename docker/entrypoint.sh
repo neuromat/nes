@@ -208,7 +208,7 @@ else
 
     SSLEngine on
  
-    SSLCertificateFile  /etc/apache2/ssl-certs/key.pem
+    SSLCertificateFile  /etc/apache2/ssl-certs/cert.pem
     SSLCertificateKeyFile /etc/apache2/ssl-certs/key.pem
  
     <FilesMatch "\.(cgi|shtml|phtml|php)$">
@@ -227,7 +227,7 @@ else
 </IfModule>
 	EOF
 
-    mkcert -key-file key.pem -cert-file cert.pem example.com *.example.com
+    mkcert -key-file /etc/apache2/ssl-certs/key.pem -cert-file /etc/apache2/ssl-certs/cart.pem $NES_HOSTNAME 
 
     a2enmod ssl
     a2dissite 000-default.conf
