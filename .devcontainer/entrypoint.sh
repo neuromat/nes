@@ -45,7 +45,7 @@ set -e
 # #NES_SETUP_PATH=${NES_SETUP_PATH:-"/usr/local/nes/setup"}
 
 # SUPERVISOR
-SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
+#SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
 
 # Entrypoint only variable
 NES_PROJECT_PATH="$NES_DIR/patientregistrationsystem/qdc"
