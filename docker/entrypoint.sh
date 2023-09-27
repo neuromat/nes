@@ -186,9 +186,7 @@ else
     cat <<-EOF >/etc/apache2/sites-available/nes-ssl.conf
 <IfModule mod_ssl.c>
 <VirtualHost *:443>
-    LoadModule http2_module modules/mod_http2.so
-
-    Protocols h2 http/1.1
+    Protocols h2 h2c http/1.1
 
     ServerName $NES_IP
     WSGIProcessGroup nes
@@ -234,6 +232,7 @@ else
     mkcert -key-file /etc/apache2/ssl-certs/key.pem -cert-file /etc/apache2/ssl-certs/cert.pem $NES_HOSTNAME 0.0.0.0
 
     a2enmod ssl
+    a2enmod http2
     a2dissite 000-default.conf
     a2ensite nes
     a2ensite nes-ssl.conf
