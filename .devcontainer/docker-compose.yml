@@ -80,7 +80,7 @@ services:
     tty: true
     stdin_open: true
     ports:
-      - "8000:80"
+      - "443:443"
       - "80:80"
     env_file:
       - .env

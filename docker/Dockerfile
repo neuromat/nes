@@ -1,4 +1,4 @@
-FROM python:3.11-bookworm as wheeler
+FROM python:3.11-bookworm
 
 ENV PYTHONUNBUFFERED 1
 ENV DEBIAN_FRONTEND dialog
@@ -76,18 +76,15 @@ RUN pip3 install -U pip setuptools wheel && \
 RUN python3 -m venv /opt/certbot/ && \
     /opt/certbot/bin/pip install --upgrade pip && \
     /opt/certbot/bin/pip install certbot certbot-apache && \
-    ln -s /opt/certbot/bin/certbot /usr/bin/certbot && \
-    certbot --apache && \
-    echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null && \
-    /opt/certbot/bin/pip install --upgrade certbot certbot-apache
-
+    ln -s /opt/certbot/bin/certbot /usr/bin/certbot 
+   
 
 WORKDIR /usr/local/nes
 
 RUN cp docker/entrypoint.sh / && \
-    chmod +x /entrypoint.sh && \
-    certbot --apache && \
-    certbot renew --dry-run
+    chmod +x /entrypoint.sh 
+    
+    #certbot renew --dry-run
 
 ENTRYPOINT ["/entrypoint.sh"]
 
