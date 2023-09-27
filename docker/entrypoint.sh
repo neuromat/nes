@@ -186,6 +186,10 @@ else
     cat <<-EOF >/etc/apache2/sites-available/nes-ssl.conf
 <IfModule mod_ssl.c>
 <VirtualHost *:443>
+    LoadModule http2_module modules/mod_http2.so
+
+    Protocols h2 http/1.1
+
     ServerName $NES_IP
     WSGIProcessGroup nes
 
