@@ -85,7 +85,6 @@ RUN curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64" && \
 
 WORKDIR /usr/local/nes
 
-
 RUN cp docker/entrypoint.sh / && \
     chmod +x /entrypoint.sh 
     
