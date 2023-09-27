@@ -183,8 +183,54 @@ else
 </VirtualHost>
 	EOF
 
+    cat <<-EOF >/etc/apache2/sites-available/nes-ssl.conf
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName $NES_IP
+    WSGIProcessGroup nes
+
+    DocumentRoot $NES_PROJECT_PATH
+
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+    </Directory>
+
+    Alias /media/ $NES_PROJECT_PATH/media/
+    Alias /static/ $NES_PROJECT_PATH/static/
+
+    <Directory "$NES_PROJECT_PATH">
+        Require all granted
+    </Directory>
+
+    WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
+    WSGIDaemonProcess nes lang='en_US.UTF-8' locale='en_US.UTF-8'
+
+    SSLEngine on
+ 
+    SSLCertificateFile  /home/jonathan/ssl-certs/localsite.test.pem
+    SSLCertificateKeyFile /home/jonathan/ssl-certs/localsite.test-key.pem
+ 
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+            SSLOptions +StdEnvVars
+    </FilesMatch>
+    <Directory /usr/lib/cgi-bin>
+            SSLOptions +StdEnvVars
+    </Directory>
+
+    Alias /img/ $NES_PROJECT_PATH/img/
+
+    ErrorLog ${APACHE_LOG_DIR}/nes_ssl_error.log
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/nes_ssl_access.log combined
+</VirtualHost>
+</IfModule>
+	EOF
+
+    a2enmod ssl
     a2dissite 000-default.conf
     a2ensite nes
+    a2ensite nes-ssl.conf
 fi
 
 certbot --apache --email $EMAIL_HOST_USER --non-interactive --agree-tos --domains $NES_HOSTNAME

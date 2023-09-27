@@ -20,7 +20,6 @@ RUN apt-get -y update --no-install-recommends && \
     python-is-python3 \
     python3-pip \
     python3-venv \
-    libaugeas0 \
     pip \
     libjpeg-dev \
     libpng-dev \
@@ -28,6 +27,7 @@ RUN apt-get -y update --no-install-recommends && \
     libfreetype6-dev \
     #freetype-dev \
     #build-base \
+    libnss3-tools \
     git \
     apache2 \
     locales \
@@ -73,18 +73,22 @@ RUN pip3 install -U pip setuptools wheel && \
 #     snap install --classic certbot && \
 #     ln -s /snap/bin/certbot /usr/bin/certbot
 
-RUN python3 -m venv /opt/certbot/ && \
-    /opt/certbot/bin/pip install --upgrade pip && \
-    /opt/certbot/bin/pip install certbot certbot-apache && \
-    ln -s /opt/certbot/bin/certbot /usr/bin/certbot 
-   
+# RUN python3 -m venv /opt/certbot/ && \
+#     /opt/certbot/bin/pip install --upgrade pip && \
+#     /opt/certbot/bin/pip install certbot certbot-apache && \
+#     ln -s /opt/certbot/bin/certbot /usr/bin/certbot 
+
+RUN curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64" && \
+    chmod +x mkcert-v*-linux-amd64 && \
+    cp mkcert-v*-linux-amd64 /usr/local/bin/mkcert && \
+    /usr/local/bin/mkcert -install
 
 WORKDIR /usr/local/nes
+
 
 RUN cp docker/entrypoint.sh / && \
     chmod +x /entrypoint.sh 
     
-    #certbot renew --dry-run
 
 ENTRYPOINT ["/entrypoint.sh"]
 
