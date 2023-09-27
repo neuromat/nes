@@ -40,7 +40,7 @@
                 <li><a href="{% url 'research_project_list' %}">{% trans "Studies" %}</a></li>
                 <li class="active">
                     {% if research_project_id %}
-                        {% trans "Import Experiment" %}
+                        {% trans "Import Experiment/Project" %}
                     {% else %}
                         {% trans "Import Study/Experiment" %}
                     {% endif %}
@@ -54,14 +54,14 @@
 
             <div class="container-fluid well">
             {% if research_project_id %}
-                <h3>{% trans "Import Experiment" %}</h3>
+                <h3>{% trans "Import Experiment/Project" %}</h3>
             {% else %}
                 <h3>{% trans "Import Study/Experiment" %}</h3>
             {% endif %}
             <h4><em>{% trans "Choose a .zip file previously exported by NES" %}</em></h4>
             <p>
                 {% if research_project_id %}
-                    {% trans "This will create a whole new Experiment. The extension of objects that will be imported depends upon the stuff inside json file." %}
+                    {% trans "This will create a whole new Experiment/Project. The extension of objects that will be imported depends upon the stuff inside json file." %}
                 {% else %}
                     {% trans "This will create a whole new Study/Experiment. The extension of objects that will be imported depends upon the stuff inside zip file." %}
                 {% endif %}

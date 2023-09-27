@@ -33,7 +33,7 @@
                     <h1 style="text-align: center">NES - Neuroscience Experiments System</h1>
                     <br>
 
-                    <h3>1- {% trans "Basic experiment information" %}</h3>
+                    <h3>1- {% trans "Basic experiment/project information" %}</h3>
                     <p><strong>{% trans "Title" %}:</strong> {{ experiment.title }}</p>
                     <p><strong>{% trans "Description" %}:</strong> {{ experiment.description }}</p>
                     <p><strong>{% trans "Study" %}:</strong> {{ experiment.research_project }}</p>
@@ -84,7 +84,7 @@
                     {% endif %}
 
                 {% else %}
-                    {% trans "No experiment found." %}
+                    {% trans "No experiment/project found." %}
                 {% endif %}
             {% endblock %}
         </div>
