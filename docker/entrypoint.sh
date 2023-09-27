@@ -152,7 +152,7 @@ if [ -f /etc/apache2/sites-available/nes.conf ]; then
     echo "INFO: Apache data has already been initialized"
 else
     echo "INFO: Initializing Apache data"
-
+    mkdir -p /etc/apache2/ssl-certs
     cat <<-EOF >/etc/apache2/sites-available/nes.conf
 <VirtualHost *:$NES_PORT>
     ServerName $NES_IP
@@ -208,8 +208,8 @@ else
 
     SSLEngine on
  
-    SSLCertificateFile  /home/jonathan/ssl-certs/localsite.test.pem
-    SSLCertificateKeyFile /home/jonathan/ssl-certs/localsite.test-key.pem
+    SSLCertificateFile  /etc/apache2/ssl-certs/key.pem
+    SSLCertificateKeyFile /etc/apache2/ssl-certs/key.pem
  
     <FilesMatch "\.(cgi|shtml|phtml|php)$">
             SSLOptions +StdEnvVars
@@ -226,6 +226,8 @@ else
 </VirtualHost>
 </IfModule>
 	EOF
+
+    mkcert -key-file key.pem -cert-file cert.pem example.com *.example.com
 
     a2enmod ssl
     a2dissite 000-default.conf
