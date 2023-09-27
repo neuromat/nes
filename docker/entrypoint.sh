@@ -147,10 +147,6 @@ except:
 fi
 
 
-certbot --apache --email $EMAIL_HOST_USER --non-interactive --agree-tos --domains $NES_HOSTNAME
-echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null 
-/opt/certbot/bin/pip install --upgrade certbot certbot-apache --non-interactive
-
 
 if [ -f /etc/apache2/sites-available/nes.conf ]; then
     echo "INFO: Apache data has already been initialized"
@@ -190,6 +186,10 @@ else
     a2dissite 000-default.conf
     a2ensite nes
 fi
+
+certbot --apache --email $EMAIL_HOST_USER --non-interactive --agree-tos --domains $NES_HOSTNAME
+echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null 
+/opt/certbot/bin/pip install --upgrade certbot certbot-apache --non-interactive
 
 
 echo "INFO: Done initializing data"

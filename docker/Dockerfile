@@ -88,5 +88,5 @@ RUN cp docker/entrypoint.sh / && \
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["/bin/bash", "-c", "service apache2 restart"]
+CMD ["/bin/bash", "-c", "service apache2 start"]
 
