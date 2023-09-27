@@ -9,7 +9,7 @@ TEMPLATE_DEBUG = DEBUG
 # SECURITY WARNING: don't run with "is testing" on in production
 IS_TESTING = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: list[str] = ["*"]
 
 # https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-STATIC_ROOT
 STATIC_ROOT = ""

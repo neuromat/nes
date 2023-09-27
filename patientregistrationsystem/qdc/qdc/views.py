@@ -19,8 +19,6 @@ from django.utils.translation import gettext as _
 from git.repo import Repo
 from packaging.version import Version
 
-permission_required = partial(permission_required, raise_exception=True)
-
 
 def qdc_permission_denied_view(request, exception, template_name="admin/qdc_403.html"):
     context = {"exception": exception}
@@ -136,7 +134,7 @@ def get_pending_migrations():
 
 
 @login_required
-@permission_required("configuration.upgrade_rights")
+@permission_required("configuration.upgrade_rights", raise_exception=True)
 def upgrade_nes(request):
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)

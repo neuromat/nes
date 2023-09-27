@@ -12,7 +12,6 @@
 	"forwardPorts": [
 		80,
 		5432,
-		5433,
 		8080
 	],
 	"portsAttributes": {
@@ -22,10 +21,6 @@
 		},
 		"5432": {
 			"label": "NES-Postgres port",
-			"onAutoForward": "silent"
-		},
-		"5433": {
-			"label": "Limesurvey-Postgres port",
 			"onAutoForward": "silent"
 		},
 		"8080": {
