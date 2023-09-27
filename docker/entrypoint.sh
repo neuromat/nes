@@ -240,5 +240,6 @@ echo "INFO: Done initializing data"
 
 echo "entrypoint.sh finished"
 
+service apache2 start
 
 exec "$@"
