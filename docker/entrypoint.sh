@@ -204,7 +204,7 @@ else
     </Directory>
 
     WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
-    WSGIDaemonProcess nes lang='en_US.UTF-8' locale='en_US.UTF-8'
+    WSGIDaemonProcess nes-ssl lang='en_US.UTF-8' locale='en_US.UTF-8'
 
     SSLEngine on
  
