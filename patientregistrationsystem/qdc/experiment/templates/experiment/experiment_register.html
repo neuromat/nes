@@ -289,7 +289,7 @@
                 </div>
 
                 <div class="container-fluid well">
-                <h4><span class="fa fa-users"></span> {% trans "Groups" %}</h4>
+                    <h4><span class="fa fa-users"></span> {% trans "Groups" %}</h4>
                     {% if group_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -329,7 +329,41 @@
                 </div>
 
                 <div class="container-fluid well">
-                <h4><span class="fa fa-flash"></span> {% trans "EEG Settings" %}</h4>
+                    <h4><span class="fa fa-file-code-o"></span> {% trans "Source Code" %}</h4>
+    
+                    {% if source_code_list %}
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{% trans "Name" %}</th>
+                                    <th>{% trans "Description" %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for source_code in source_code_list %}
+                                    <tr>
+                                        <td>
+                                            <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/source_code/{{ source_code.id }}">
+                                            {{ source_code.name }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ source_code.description }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {% if perms.experiment.add_subject and can_change %}
+                        <a href="/experiment/{{ experiment.id }}/source_code/new" class="btn btn-primary">{% trans "Insert new" %}</a>
+                    {% endif %}
+                </div>
+
+                <div class="container-fluid well">
+                    <h4><span class="fa fa-flash"></span> {% trans "EEG Settings" %}</h4>
 
                     {% if eeg_setting_list %}
                         <div class="form-group">
@@ -359,40 +393,6 @@
                     {% endif %}
                     {% if perms.experiment.add_subject and can_change %}
                         <a href="/experiment/{{ experiment.id }}/eeg_setting/new" class="btn btn-primary">{% trans "Insert new" %}</a>
-                    {% endif %}
-                </div>
-
-                <div class="container-fluid well">
-                    <h4><span class="fa fa-file-code-o"></span> {% trans "Source Code" %}</h4>
-    
-                    {% if experiment_sorce_code %}
-                        <div class="form-group">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>{% trans "Name" %}</th>
-                                    <th>{% trans "Description" %}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for source_code in source_code_list %}
-                                    <tr>
-                                        <td>
-                                            <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/source_code/{{ source_code.id }}">
-                                            {{ source_code.name }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {{ source_code.description }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% endif %}
-                    {% if perms.experiment.add_subject and can_change %}
-                        <a href="/experiment/{{ experiment.id }}/source_code/new" class="btn btn-primary">{% trans "Insert new" %}</a>
                     {% endif %}
                 </div>
 
