@@ -82,6 +82,7 @@ from experiment.models import (
     ScheduleOfSending,
     Software,
     SoftwareVersion,
+    SourceCode,
     StandardizationSystem,
     Stimulus,
     SubjectOfGroup,
@@ -728,6 +729,33 @@ class EEGDataForm(ModelForm):
                     self.fields["eeg_cap_size"].queryset = EEGCapSize.objects.filter(
                         eeg_electrode_cap_id=eeg_electrode_net_id
                     )
+
+
+class SourceCodeForm(ModelForm):
+    class Meta:
+        model = SourceCode
+
+        fields = ["name", "description"]
+
+        widgets = {
+            "name": TextInput(
+                attrs={
+                    "class": "form-control",
+                    "required": "",
+                    "data-error": _("Name must be filled."),
+                    "autofocus": "",
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "class": "form-control",
+                    "style": "resize: vertical;",
+                    "rows": "4",
+                    "required": "",
+                    "data-error": _("Description must be filled."),
+                }
+            ),
+        }
 
 
 class EEGSettingForm(ModelForm):

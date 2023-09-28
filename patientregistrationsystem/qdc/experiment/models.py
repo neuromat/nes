@@ -536,6 +536,25 @@ class TMSDevice(Equipment):
         return self.identification
 
 
+class SourceCode(models.Model):
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+
+    # TODO add file
+
+    copied_from = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, related_name="children"
+    )
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        super(SourceCode, self).save(*args, **kwargs)
+        self.experiment.save()
+
+
 class EEGSetting(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
@@ -1408,7 +1427,21 @@ def get_eeg_dir(instance, filename):
 def get_data_file_dir(instance, filename):
     directory = "data_files"
 
-    if isinstance(instance, EEGFile):
+    if isinstance(instance, SourceCodeFile):
+        directory = path.join(
+            "data_collection_files",
+            str(instance.source_code_data.subject_of_group.group.experiment.id),
+            str(instance.source_code_data.subject_of_group.group.id),
+            str(instance.source_code_data.subject_of_group.subject.id),
+            str(
+                instance.source_code_data.data_configuration_tree.id
+                if instance.source_code_data.data_configuration_tree
+                else 0
+            ),
+            "source_code",
+        )
+
+    elif isinstance(instance, EEGFile):
         directory = path.join(
             "data_collection_files",
             str(instance.eeg_data.subject_of_group.group.experiment.id),
@@ -1636,6 +1669,18 @@ class FileFormat(models.Model):
         return self.name
 
 
+class SourceCodeFileFormat(models.Model):
+    nes_code = models.CharField(null=True, blank=True, max_length=50, unique=True)
+
+    name = models.CharField(max_length=50)
+    extension = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    tags = models.ManyToManyField(Tag)
+
+    def __str__(self):
+        return self.name
+
+
 class DataFile(models.Model):
     description = models.TextField(null=False, blank=False)
     file_format = models.ForeignKey(
@@ -1645,6 +1690,34 @@ class DataFile(models.Model):
 
     class Meta:
         abstract = True
+
+
+class SourceCodeDataFile(models.Model):
+    description = models.TextField(null=False, blank=False)
+    file_format = models.ForeignKey(
+        SourceCodeFileFormat, on_delete=models.CASCADE, null=False, blank=False
+    )
+    file_format_description = models.TextField(null=True, blank=True, default="")
+
+    class Meta:
+        abstract = True
+
+
+class SourceCodeData(SourceCodeDataFile, DataCollection):
+    source_code = models.ForeignKey(SourceCode, on_delete=models.CASCADE)
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
 
 class EEGData(DataFile, DataCollection):
@@ -1819,6 +1892,13 @@ class MediaCollectionData(DataFile, DataCollection):
     @_history_user.setter
     def _history_user(self, value):
         self.changed_by = value
+
+
+class SourceCodeFile(models.Model):
+    source_code_data = models.ForeignKey(
+        SourceCodeData, on_delete=models.CASCADE, related_name="source_code_files"
+    )
+    file = models.FileField(upload_to=get_data_file_dir)
 
 
 class EEGFile(models.Model):

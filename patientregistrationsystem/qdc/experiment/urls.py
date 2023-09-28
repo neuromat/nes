@@ -324,6 +324,22 @@ urlpatterns = [
         views.muscle_side_update,
         name="muscle_side_edit",
     ),
+    # source code setting
+    re_path(
+        r"^(?P<experiment_id>\d+)/source_code/new/$",
+        views.source_code_create,
+        name="source_code_new",
+    ),
+    re_path(
+        r"^source_code/(?P<source_code_id>\d+)/$",
+        views.source_code_view,
+        name="source_code_view",
+    ),
+    re_path(
+        r"^source_code/edit/(?P<source_code_id>\d+)/$",
+        views.source_code_update,
+        name="source_code_edit",
+    ),
     # register software
     re_path(r"^software/list/$", views.software_list, name="software_list"),
     re_path(r"^software/new/$", views.software_create, name="software_new"),

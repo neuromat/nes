@@ -144,6 +144,24 @@
         1,
         2
       ],
+      "name_en": ".peb raw File",
+      "name": ".peb raw File",
+      "description_en": "File format from PEB/UFRJ",
+      "description": null,
+      "name_pt_br": "Dados brutos .peb",
+      "extension": ".peb, .peb2",
+      "nes_code": "PEB-RawFile",
+      "description_pt_br": "Formato de arquivo do PEB/UFRJ"
+    },
+    "pk": 5,
+    "model": "experiment.fileformat"
+  },
+  {
+    "fields": {
+      "tags": [
+        1,
+        2
+      ],
       "name_en": "Media file",
       "name": "Media file",
       "description_en": "File format to store images and video",
@@ -153,7 +171,7 @@
       "nes_code": "media",
       "description_pt_br": "Tipo de arquivo ustilizado para armazenar imagens e vídeos"
     },
-    "pk": 5,
+    "pk": 6,
     "model": "experiment.fileformat"
   },
   {

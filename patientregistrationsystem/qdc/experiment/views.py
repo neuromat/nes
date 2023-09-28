@@ -126,6 +126,7 @@ from .forms import (
     ResendExperimentForm,
     SoftwareRegisterForm,
     SoftwareVersionRegisterForm,
+    SourceCodeForm,
     StandardizationSystemRegisterForm,
     StimulusForm,
     SubjectStepDataForm,
@@ -232,6 +233,7 @@ from .models import (
     TMSDeviceSetting,
     TMSLocalizationSystem,
     TMSSetting,
+    SourceCode,
 )
 from .pdf import render as render_to_pdf
 from .portal import (
@@ -2162,6 +2164,144 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
         "editing": True,
         "experiment": group.experiment,
         "group": group,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.add_subject")
+def source_code_create(
+    request, experiment_id, template_name="experiment/source_code_register.html"
+):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    check_can_change(request.user, experiment.research_project)
+
+    source_code_form = SourceCodeForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if source_code_form.is_valid():
+                source_code_added = source_code_form.save(commit=False)
+                source_code_added.experiment_id = experiment_id
+                source_code_added.save()
+
+                messages.success(request, _("Source Code included successfully."))
+
+                redirect_url = reverse("source_code_view", args=(source_code_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "source_code_form": source_code_form,
+        "creating": True,
+        "editing": True,
+        "experiment": experiment,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def source_code_view(
+    request, source_code_id, template_name="experiment/source_code_register.html"
+):
+    source_code = get_object_or_404(SourceCode, pk=source_code_id)
+    source_code_form = SourceCodeForm(request.POST or None, instance=source_code)
+
+    for field in source_code_form.fields:
+        source_code_form.fields[field].widget.attrs["disabled"] = True
+
+    can_change = get_can_change(request.user, source_code.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST["action"] == "remove":
+                # TODO: checking if there is some EEG Data using it
+
+                # TODO: checking if there is some EEG Step using it
+
+                experiment_id = source_code.experiment_id
+
+                source_code.delete()
+
+                messages.success(request, _("Source Code was removed successfully."))
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            # if request.POST["action"][:7] == "remove-":
+            #     # If action starts with 'remove-' it means that an equipment should be removed from the source_code.
+            #     source_code_type = request.POST["action"][7:]
+
+            #     setting_to_be_deleted = None
+
+            #     if eeg_setting_type == "eeg_amplifier":
+            #         setting_to_be_deleted = get_object_or_404(
+            #             EEGAmplifierSetting, pk=eeg_setting_id
+            #         )
+            #     elif eeg_setting_type == "eeg_solution":
+            #         setting_to_be_deleted = get_object_or_404(
+            #             EEGSolutionSetting, pk=eeg_setting_id
+            #         )
+            #     elif eeg_setting_type == "eeg_filter":
+            #         setting_to_be_deleted = get_object_or_404(
+            #             EEGFilterSetting, pk=eeg_setting_id
+            #         )
+            #     elif eeg_setting_type == "eeg_electrode_net_system":
+            #         setting_to_be_deleted = get_object_or_404(
+            #             EEGElectrodeLayoutSetting, pk=eeg_setting_id
+            #         )
+
+            #     # eeg_setting.eeg_machine_setting.delete()
+            #     if setting_to_be_deleted:
+            #         setting_to_be_deleted.delete()
+
+            #     messages.success(request, _("Setting was removed successfully."))
+
+            #     redirect_url = reverse("eeg_setting_view", args=(eeg_setting.id,))
+            #     return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "can_change": can_change,
+        "source_code_form": source_code_form,
+        "experiment": source_code.experiment,
+        "source_code": source_code,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_experiment")
+def source_code_update(
+    request, source_code_id, template_name="experiment/source_code_register.html"
+):
+    source_code = get_object_or_404(SourceCode, pk=source_code_id)
+
+    check_can_change(request.user, source_code.experiment.research_project)
+
+    source_code_form = EEGSettingForm(request.POST or None, instance=source_code)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if source_code_form.is_valid():
+                if source_code_form.has_changed():
+                    source_code_form.save()
+                    messages.success(request, _("Source Code updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("source_code_view", args=(source_code_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "source_code_form": source_code_form,
+        "editing": True,
+        "experiment": source_code.experiment,
+        "source_code": source_code,
     }
 
     return render(request, template_name, context)
