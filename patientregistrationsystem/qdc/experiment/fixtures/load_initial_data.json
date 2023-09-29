@@ -70,23 +70,6 @@
   {
     "fields": {
       "tags": [
-        1
-      ],
-      "name_en": "EEG raw data - EGI simple binary (MNE)",
-      "name": "EEG raw data - EGI simple binary (MNE)",
-      "description_en": null,
-      "description": null,
-      "name_pt_br": "Dados brutos de EEG - arquivo binário EGI (MNE)",
-      "extension": ".raw, .egi",
-      "nes_code": "MNE-RawFromEGI",
-      "description_pt_br": null
-    },
-    "pk": 1,
-    "model": "experiment.fileformat"
-  },
-  {
-    "fields": {
-      "tags": [
         1,
         2
       ],
@@ -99,7 +82,7 @@
       "nes_code": "other",
       "description_pt_br": null
     },
-    "pk": 2,
+    "pk": 1,
     "model": "experiment.fileformat"
   },
   {
@@ -115,6 +98,23 @@
       "name_pt_br": "Arquivo texto",
       "extension": ".txt",
       "nes_code": "txt",
+      "description_pt_br": null
+    },
+    "pk": 2,
+    "model": "experiment.fileformat"
+  },
+  {
+    "fields": {
+      "tags": [
+        2
+      ],
+      "name_en": "EEG raw data - EGI simple binary (MNE)",
+      "name": "EEG raw data - EGI simple binary (MNE)",
+      "description_en": null,
+      "description": null,
+      "name_pt_br": "Dados brutos de EEG - arquivo binário EGI (MNE)",
+      "extension": ".raw, .egi",
+      "nes_code": "MNE-RawFromEGI",
       "description_pt_br": null
     },
     "pk": 3,
@@ -158,10 +158,7 @@
   },
   {
     "fields": {
-      "tags": [
-        1,
-        2
-      ],
+      "tags": [],
       "name_en": "Media file",
       "name": "Media file",
       "description_en": "File format to store images and video",

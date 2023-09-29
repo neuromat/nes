@@ -3,8 +3,16 @@ from simple_history.admin import SimpleHistoryAdmin
 from modeltranslation.admin import TranslationAdmin
 
 from .models import (
+    Component,
+    DataFile,
+    FileFormat,
+    GenericDataCollection,
     InformationTypeMedia,
     QuestionnaireResponse,
+    SourceCodeData,
+    SourceCodeDataFile,
+    SourceCodeFile,
+    SourceCodeFileFormat,
     StimulusType,
     Tag,
     ADConverter,
@@ -48,5 +56,7 @@ admin.site.register(BrainArea)
 admin.site.register(BrainAreaSystem)
 admin.site.register(InformationType)
 admin.site.register(InformationTypeMedia)
+admin.site.register(FileFormat)
+admin.site.register(SourceCodeFileFormat)
 admin.site.register(GoalkeeperGame)
 admin.site.register(GoalkeeperPhase)
