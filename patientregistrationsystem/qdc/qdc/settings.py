@@ -34,9 +34,10 @@ DEBUG404 = True
 # MAINTENANCE_MODE = True
 
 # SECURITY WARNING: don't run with "is testing" in production
-IS_TESTING = False
+IS_TESTING = True
 # AXES_ENABLED = False
 
+AXES_COOLOFF_MESSAGE = _("Your accouunt has been locked for 1 hour: too many login attempts.")
 AXES_FAILURE_LIMIT = 5
 AXES_RESET_ON_SUCCESS = True
 AXES_COOLOFF_TIME = 1
