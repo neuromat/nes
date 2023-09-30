@@ -6,7 +6,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="user_form" method="post" data-toggle="validator">
+    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -85,6 +85,31 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
+                            {{ source_code_form.source_code_data }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                {% if editing or source_code_form.file.value %}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
+                            {% if editing %}
+                                {{ source_code_form.file }}
+                            {% else %}
+                                {{ source_code_form.file.value }}
+                                <button class="btn btn-default" type="button" onclick="location.href='{{ source_code_form.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                            {% endif %}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
                 
                 <div class="row">
                 </div>

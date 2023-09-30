@@ -735,7 +735,12 @@ class SourceCodeForm(ModelForm):
     class Meta:
         model = SourceCode
 
-        fields = ["name", "description"]
+        fields = [
+            "name",
+            "description",
+            "source_code_data",
+            "file",
+        ]
 
         widgets = {
             "name": TextInput(
@@ -755,6 +760,7 @@ class SourceCodeForm(ModelForm):
                     "data-error": _("Description must be filled."),
                 }
             ),
+            "source_code_data": Select(attrs={"class": "form-control", "required": ""}),
         }
 
 

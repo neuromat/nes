@@ -1,35 +1,33 @@
 from django.contrib import admin
-from simple_history.admin import SimpleHistoryAdmin
 from modeltranslation.admin import TranslationAdmin
+from simple_history.admin import SimpleHistoryAdmin
 
 from .models import (
-    Component,
-    DataFile,
-    FileFormat,
-    GenericDataCollection,
-    InformationTypeMedia,
-    QuestionnaireResponse,
-    SourceCodeData,
-    SourceCodeDataFile,
-    SourceCodeFile,
-    SourceCodeFileFormat,
-    StimulusType,
-    Tag,
     ADConverter,
-    StandardizationSystem,
-    ElectrodeShape,
-    MeasureSystem,
-    MeasureUnit,
-    TetheringSystem,
     AmplifierDetectionType,
-    ElectrodeConfiguration,
-    CoilOrientation,
-    DirectionOfTheInducedCurrent,
     BrainArea,
     BrainAreaSystem,
-    InformationType,
+    CoilOrientation,
+    Component,
+    DataFile,
+    DirectionOfTheInducedCurrent,
+    ElectrodeConfiguration,
+    ElectrodeShape,
+    FileFormat,
+    GenericDataCollection,
     GoalkeeperGame,
     GoalkeeperPhase,
+    InformationType,
+    InformationTypeMedia,
+    MeasureSystem,
+    MeasureUnit,
+    QuestionnaireResponse,
+    SourceCode,
+    SourceCodeFileFormat,
+    StandardizationSystem,
+    StimulusType,
+    Tag,
+    TetheringSystem,
 )
 
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
@@ -58,5 +56,6 @@ admin.site.register(InformationType)
 admin.site.register(InformationTypeMedia)
 admin.site.register(FileFormat)
 admin.site.register(SourceCodeFileFormat)
+# admin.site.register(SourceCode)
 admin.site.register(GoalkeeperGame)
 admin.site.register(GoalkeeperPhase)

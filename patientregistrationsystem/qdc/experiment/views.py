@@ -2180,9 +2180,11 @@ def source_code_create(
 
     check_can_change(request.user, experiment.research_project)
 
-    source_code_form = SourceCodeForm(request.POST or None)
-
     if request.method == "POST":
+        source_code_form = SourceCodeForm(
+            request.POST or None,
+            request.FILES,
+        )
         if request.POST["action"] == "save":
             if source_code_form.is_valid():
                 source_code_added = source_code_form.save(commit=False)
@@ -2193,6 +2195,8 @@ def source_code_create(
 
                 redirect_url = reverse("source_code_view", args=(source_code_added.id,))
                 return HttpResponseRedirect(redirect_url)
+    else:
+        source_code_form = SourceCodeForm(request.POST or None)
 
     context = {
         "source_code_form": source_code_form,
@@ -2285,7 +2289,7 @@ def source_code_update(
 
     check_can_change(request.user, source_code.experiment.research_project)
 
-    source_code_form = EEGSettingForm(request.POST or None, instance=source_code)
+    source_code_form = SourceCodeForm(request.POST or None, instance=source_code)
 
     if request.method == "POST":
         if request.POST["action"] == "save":
