@@ -2289,9 +2289,10 @@ def source_code_update(
 
     check_can_change(request.user, source_code.experiment.research_project)
 
-    source_code_form = SourceCodeForm(request.POST or None, instance=source_code)
-
     if request.method == "POST":
+        source_code_form = SourceCodeForm(
+            request.POST or None, request.FILES, instance=source_code
+        )
         if request.POST["action"] == "save":
             if source_code_form.is_valid():
                 if source_code_form.has_changed():
@@ -2302,6 +2303,8 @@ def source_code_update(
 
                 redirect_url = reverse("source_code_view", args=(source_code_id,))
                 return HttpResponseRedirect(redirect_url)
+    else:
+        source_code_form = SourceCodeForm(request.POST or None, instance=source_code)
 
     context = {
         "source_code_form": source_code_form,
