@@ -2,20 +2,20 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-10 10:54-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2023-10-02 12:48-0300\n"
+"Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Translated-Using: django-rosetta 0.9.9\n"
 
 #: patient/forms.py:26 patient/tests.py:546
 msgid "Name must be included"
@@ -24,7 +24,7 @@ msgstr "Nome deve ser incluído"
 #: patient/forms.py:31 patient/forms.py:135 patient/forms.py:160
 #: patient/views.py:715 patient/views.py:1226
 msgid "%m/%d/%Y"
-msgstr ""
+msgstr "%d/%m/%Y"
 
 #: patient/forms.py:32 patient/forms.py:136 patient/forms.py:161
 msgid "mm/dd/yyyy"
@@ -172,7 +172,7 @@ msgstr "Participante não salvo. Por favor, corrija os campos em destaque."
 
 #: patient/tests.py:284
 msgid " is not valid"
-msgstr ""
+msgstr "não é valido"
 
 #: patient/tests.py:450 patient/tests.py:462 patient/tests.py:473
 msgid "Social class was not calculated"
@@ -220,7 +220,7 @@ msgstr ""
 
 #: patient/views.py:726
 msgid "Incorrect date. Use format: mm/dd/yyyy"
-msgstr ""
+msgstr "Data incorreta. Use o formato: dd/mm/yyyy"
 
 #: patient/views.py:747
 msgid "Medical evaluation successfully deleted."
@@ -256,11 +256,11 @@ msgstr ""
 
 #: patient/views.py:1144 patient/views.py:1332
 msgid "Fill deleted successfully"
-msgstr ""
+msgstr "Arquivo deletado com sucesso"
 
 #: patient/views.py:1146 patient/views.py:1334
 msgid "Error trying to delete"
-msgstr ""
+msgstr "Erro ao deletar "
 
 #: patient/views.py:1200
 msgid "Not available filling - tokens table not started"

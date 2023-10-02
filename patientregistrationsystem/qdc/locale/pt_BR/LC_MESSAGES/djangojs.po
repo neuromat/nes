@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-13 19:28-0300\n"
-"PO-Revision-Date: 2023-09-06 15:22-0300\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2023-10-02 12:25-0300\n"
+"PO-Revision-Date: 2023-10-02 12:35-0300\n"
+"Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.3.2\n"
+"X-Translated-Using: django-rosetta 0.9.9\n"
 
 #: admin/js/SelectFilter2.js:45
 #, javascript-format
@@ -83,8 +84,8 @@ msgstr "Click to remove all chosen %s at once."
 #: admin/js/actions.js:18 admin/js/actions.min.js:1
 msgid "%(sel)s of %(cnt)s selected"
 msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(sel)s de %(cnt)s selecionado"
+msgstr[1] "%(sel)s de %(cnt)s selecionado"
 
 #: admin/js/actions.js:109 admin/js/actions.min.js:5
 msgid ""
@@ -163,8 +164,8 @@ msgstr "Amanhã"
 
 #: admin/js/calendar.js:8
 msgid ""
-"January February March April May June July August September October November "
-"December"
+"January February March April May June July August September October November"
+" December"
 msgstr ""
 "Janeiro Fevereiro Março Abril Maio Junho Julho Agosto Setembro Outubro "
 "Novembro Dezembro"
@@ -181,53 +182,8 @@ msgstr "Mostrar"
 msgid "Hide"
 msgstr "Esconder"
 
-#: src/nwb/ainwb/docs/_static/doctools.js:154
-msgid "Permalink to this headline"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/doctools.js:160
-msgid "Permalink to this definition"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/doctools.js:189
-msgid "Hide Search Matches"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:288
-msgid "Searching"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:293
-msgid "Preparing search..."
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:481
-msgid "Search Results"
-msgstr "Resultados da busca"
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:483
-msgid ""
-"Your search did not match any documents. Please make sure that all words are "
-"spelled correctly and that you've selected enough categories."
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:485
-#, javascript-format
-msgid "Search finished, found %s page(s) matching the search query."
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:525
-msgid ", in "
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/sidebar.js:69
-msgid "Expand sidebar"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/sidebar.js:82
-#: src/nwb/ainwb/docs/_static/sidebar.js:110
-msgid "Collapse sidebar"
-msgstr ""
+#~ msgid "Search Results"
+#~ msgstr "Resultados da busca"
 
 #~ msgid "Password incompatible with defined standard."
 #~ msgstr "Senha incompatível com o padrão definido."

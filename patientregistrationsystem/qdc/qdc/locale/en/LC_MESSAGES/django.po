@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-08 01:36+0000\n"
+"POT-Creation-Date: 2023-10-02 12:21-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,50 +18,54 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: qdc/forms.py:20
+#: qdc/forms.py:21
 msgid "Current password"
 msgstr ""
 
-#: qdc/forms.py:33
+#: qdc/forms.py:37
 msgid "New password"
 msgstr ""
 
-#: qdc/forms.py:42
+#: qdc/forms.py:47
 msgid "Confirm new password"
 msgstr ""
 
-#: qdc/forms.py:43
+#: qdc/forms.py:48
 msgid "Passwords don't match"
 msgstr ""
 
-#: qdc/settings.py:165
+#: qdc/settings.py:40
+msgid "Your accouunt has been locked for 1 hour: too many login attempts."
+msgstr ""
+
+#: qdc/settings.py:175
 msgid "Português"
 msgstr ""
 
-#: qdc/settings.py:169
+#: qdc/settings.py:179
 msgid "English"
 msgstr ""
 
-#: qdc/views.py:50
+#: qdc/views.py:48
 msgid ""
 "There is a new version, please contact your NES administrator to update !"
 msgstr ""
 
-#: qdc/views.py:72
+#: qdc/views.py:70
 msgid "Password changed successfully."
 msgstr ""
 
-#: qdc/views.py:101
+#: qdc/views.py:99
 msgid ""
 "You dont have NES Git installation. Automatic upgrade can be done with git "
 "installation. Please contact your system administrator to upgrade NES to a "
 "new version."
 msgstr ""
 
-#: qdc/views.py:180
+#: qdc/views.py:178
 msgid "Updated!!! Enjoy the new version of NES  :-)"
 msgstr ""
 
-#: qdc/views.py:186
+#: qdc/views.py:184
 msgid "An unknown error ocurred ! Please contact your administrator system."
 msgstr ""

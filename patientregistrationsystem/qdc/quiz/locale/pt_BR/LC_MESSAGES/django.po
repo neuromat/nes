@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-08 03:02+0000\n"
+"POT-Creation-Date: 2023-10-02 12:20-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,11 +20,11 @@ msgstr ""
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociência - NES"
 
-#: quiz/templates/quiz/contato.html:42
+#: quiz/templates/quiz/contato.html:43
 msgid ""
-"Welcome to NES! If you need help you can check the user guide <a "
-"href='https://nes.readthedocs.io/en/latest/userguide/userguide.html'>here</"
-"a>. Please report any bug to the admin."
+"Welcome to NES! If you need help you can check the <a href='https://nes."
+"readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. "
+"<br>Please report any bug to the admin."
 msgstr ""
 
 #: quiz/templates/quiz/template.html:107
@@ -77,6 +77,10 @@ msgstr ""
 
 #: quiz/templates/quiz/template.html:246
 msgid "Plugin"
+msgstr ""
+
+#: quiz/templates/quiz/template.html:256
+msgid "Please enable Javascript"
 msgstr ""
 
 #~ msgid "Users"

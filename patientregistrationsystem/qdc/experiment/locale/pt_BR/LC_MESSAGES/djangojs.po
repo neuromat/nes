@@ -2,20 +2,20 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-10 10:54-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2023-10-02 12:54-0300\n"
+"Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Translated-Using: django-rosetta 0.9.9\n"
 
 #: experiment/forms.py:33 experiment/forms.py:62 experiment/forms.py:292
 #: experiment/forms.py:328
@@ -171,10 +171,11 @@ msgstr "Nome deve ser preenchido."
 
 #: experiment/forms.py:453
 msgid ""
-"Number of channels should be between 0 and the number of channels of the EEG "
-"machine."
+"Number of channels should be between 0 and the number of channels of the EEG"
+" machine."
 msgstr ""
-"O número de canais deve estar entre 0 e o número de canais da máquina de EEG."
+"O número de canais deve estar entre 0 e o número de canais da máquina de "
+"EEG."
 
 #: experiment/forms.py:503 experiment/forms.py:516 experiment/forms.py:531
 msgid "Name field must be filled."
@@ -295,19 +296,19 @@ msgstr "ano(s)"
 
 #: experiment/models.py:30
 msgid "Ohm(s)"
-msgstr ""
+msgstr "Ohm(s)"
 
 #: experiment/models.py:31
 msgid "Kilohm(s)"
-msgstr ""
+msgstr "Kilohm(s)"
 
 #: experiment/models.py:32
 msgid "Megaohm(s)"
-msgstr ""
+msgstr "Megaohm(s)"
 
 #: experiment/models.py:33
 msgid "Gigaohm(s)"
-msgstr ""
+msgstr "Gigaohm(s)"
 
 #: experiment/models.py:39 experiment/tests.py:1594
 msgid "Date cannot be greater than today's date."
@@ -339,7 +340,7 @@ msgstr "Conversor A/D"
 
 #: experiment/models.py:136 experiment/views.py:10727
 msgid "TMS device"
-msgstr ""
+msgstr "Aparelho de TMS"
 
 #: experiment/models.py:149 experiment/models.py:150
 msgid "Equipment"
@@ -395,7 +396,7 @@ msgstr "Único"
 
 #: experiment/models.py:291
 msgid "Multi"
-msgstr ""
+msgstr "Multi"
 
 #: experiment/models.py:395
 msgid "Air core coil"
@@ -455,15 +456,15 @@ msgstr "Tarefa para experimentador"
 
 #: experiment/models.py:741
 msgid "EEG"
-msgstr ""
+msgstr "EEG"
 
 #: experiment/models.py:742
 msgid "EMG"
-msgstr ""
+msgstr "EMG"
 
 #: experiment/models.py:743
 msgid "TMS"
-msgstr ""
+msgstr "TMS"
 
 #: experiment/models.py:744
 msgid "Goalkeeper game phase"
@@ -591,9 +592,10 @@ msgstr "Publicação atualizada com sucesso."
 #: experiment/views.py:8340 experiment/views.py:8350 experiment/views.py:8951
 #: experiment/views.py:9117 experiment/views.py:9250 experiment/views.py:9350
 #: experiment/views.py:9451 experiment/views.py:9823 experiment/views.py:9895
-#: experiment/views.py:9982 experiment/views.py:10055 experiment/views.py:10175
-#: experiment/views.py:10304 experiment/views.py:10421
-#: experiment/views.py:10491 experiment/views.py:10631
+#: experiment/views.py:9982 experiment/views.py:10055
+#: experiment/views.py:10175 experiment/views.py:10304
+#: experiment/views.py:10421 experiment/views.py:10491
+#: experiment/views.py:10631
 msgid "There is no changes to save."
 msgstr "Não há mudanças a salvar."
 
@@ -685,7 +687,8 @@ msgstr "Impossível deletar grupo, porque há dependências."
 
 #: experiment/views.py:729
 msgid ""
-"Impossible to delete group because there is (are) data collection associated."
+"Impossible to delete group because there is (are) data collection "
+"associated."
 msgstr "Impossível remover grupo porque existe coleção de dados associado(s)."
 
 #: experiment/views.py:739 experiment/views.py:7215 experiment/views.py:8112
@@ -1012,14 +1015,14 @@ msgid ""
 "EEG electrode net cannot be removed because it is used in EEG electrode "
 "system."
 msgstr ""
-"Esta rede de eletrodos de EEG não pode ser removida por que esta sendo usada "
-"por algum eletrodo"
+"Esta rede de eletrodos de EEG não pode ser removida por que esta sendo usada"
+" por algum eletrodo"
 
 #: experiment/views.py:3617
 msgid "EEG electrode net cannot be removed because "
 msgstr ""
-"Esta rede de eletrodos de EEG não pode ser removida por que esta sendo usada "
-"por algum eletrodo"
+"Esta rede de eletrodos de EEG não pode ser removida por que esta sendo usada"
+" por algum eletrodo"
 
 #: experiment/views.py:3625
 msgid "EEG electrode net removed successfully."
@@ -1315,7 +1318,7 @@ msgstr "Texto"
 
 #: experiment/views.py:6791
 msgid "LimeSurvey ID"
-msgstr ""
+msgstr "LimeSurvey ID"
 
 #: experiment/views.py:6799
 msgid "Questionnaire title"
@@ -1645,7 +1648,7 @@ msgstr "Árvore de contexto removida com sucesso."
 
 #: experiment/views.py:10652
 msgid "Material"
-msgstr ""
+msgstr "Material"
 
 #: experiment/views.py:10657 experiment/views.py:10670
 msgid "Muscle"
@@ -1685,7 +1688,7 @@ msgstr "Tipo de Filtro"
 
 #: experiment/views.py:10712
 msgid "Software"
-msgstr ""
+msgstr "Software"
 
 #: experiment/views.py:10717
 msgid "A/D converter"
@@ -1720,8 +1723,8 @@ msgstr "Modelo da bobina"
 #~ msgstr "Máquina EEG"
 
 #~ msgid ""
-#~ "EEG electrode net cannot be removed because cap size is associated with "
-#~ "EEG data."
+#~ "EEG electrode net cannot be removed because cap size is associated with EEG "
+#~ "data."
 #~ msgstr ""
 #~ "A rede de eletrodo de EEG não pode ser removida porque o tamanho da touca "
 #~ "esta associada com algum dado de EEG"

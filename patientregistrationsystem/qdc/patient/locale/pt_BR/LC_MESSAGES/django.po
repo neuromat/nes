@@ -7,101 +7,102 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-08 01:36+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2023-10-02 12:56-0300\n"
+"PO-Revision-Date: 2023-10-02 12:56-0300\n"
+"Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Translated-Using: django-rosetta 0.9.9\n"
 
 #: patient/forms.py:32 patient/templates/patient/register_personal_data.html:44
 msgid "Anonymous participant?"
 msgstr "Participante anônimo?"
 
-#: patient/forms.py:65 patient/forms.py:121 patient/tests/tests_orig.py:707
+#: patient/forms.py:65 patient/forms.py:122 patient/tests/tests_orig.py:707
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
-#: patient/forms.py:81 patient/forms.py:279 patient/forms.py:324
+#: patient/forms.py:82 patient/forms.py:280 patient/forms.py:325
 msgid "mm/dd/yyyy"
 msgstr "dd/mm/aaaa"
 
-#: patient/forms.py:82
+#: patient/forms.py:83
 msgid "Date of birth must be completed"
 msgstr "Data de nascimento deve ser preenchida"
 
-#: patient/forms.py:89
+#: patient/forms.py:90
 msgid "Gender must be filled"
 msgstr "Sexo deve ser preenchido"
 
-#: patient/forms.py:108 patient/tests/tests_orig.py:692
+#: patient/forms.py:109 patient/tests/tests_orig.py:692
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
-#: patient/forms.py:147 patient/forms.py:224 patient/forms.py:230
-#: patient/forms.py:236
+#: patient/forms.py:148 patient/forms.py:225 patient/forms.py:231
+#: patient/forms.py:237
 msgid "Yes"
 msgstr "Sim"
 
-#: patient/forms.py:147 patient/forms.py:224 patient/forms.py:230
-#: patient/forms.py:236
+#: patient/forms.py:148 patient/forms.py:225 patient/forms.py:231
+#: patient/forms.py:237
 msgid "No"
 msgstr "Não"
 
-#: patient/forms.py:183
+#: patient/forms.py:184
 msgid "Type in profession"
 msgstr "Entrar profissão"
 
-#: patient/forms.py:186
+#: patient/forms.py:187
 msgid "Inform occupation"
 msgstr "Entrar ocupação"
 
-#: patient/forms.py:190 patient/forms.py:193 patient/forms.py:196
-#: patient/forms.py:199 patient/forms.py:202 patient/forms.py:205
-#: patient/forms.py:208 patient/forms.py:211 patient/forms.py:214
+#: patient/forms.py:191 patient/forms.py:194 patient/forms.py:197
+#: patient/forms.py:200 patient/forms.py:203 patient/forms.py:206
+#: patient/forms.py:209 patient/forms.py:212 patient/forms.py:215
 msgid "4 or +"
 msgstr "4 ou +"
 
-#: patient/forms.py:258
+#: patient/forms.py:259
 msgid "Have already used"
 msgstr "Já fez"
 
-#: patient/forms.py:259
+#: patient/forms.py:260
 msgid "It is using"
 msgstr "Faz"
 
-#: patient/forms.py:260
+#: patient/forms.py:261
 msgid "Have never used"
 msgstr "Nunca fez"
 
-#: patient/forms.py:281
+#: patient/forms.py:282
 msgid "Date must be completed"
 msgstr "Data deve ser preenchida"
 
-#: patient/forms.py:287
+#: patient/forms.py:288
 msgid "Description"
 msgstr "Descrição"
 
-#: patient/forms.py:291
+#: patient/forms.py:292
 msgid "Description must be filled in"
 msgstr "Descrição deve ser preenchida"
 
-#: patient/forms.py:295
+#: patient/forms.py:296
 msgid "Doctor"
 msgstr "Médico"
 
-#: patient/forms.py:298 patient/templates/patient/exams.html:113
+#: patient/forms.py:299 patient/templates/patient/exams.html:113
 msgid "CRM"
-msgstr ""
+msgstr "CRM"
 
-#: patient/forms.py:301
+#: patient/forms.py:302
 msgid "Place of execution"
 msgstr "Local de realização"
 
-#: patient/forms.py:326
+#: patient/forms.py:327
 msgid "Fill date must be filled."
 msgstr "Data de preenchimento deve ser preenchida."
 
@@ -235,7 +236,7 @@ msgstr "Ilhas Virgens Britânicas"
 
 #: patient/models.py:49
 msgid "Brunei Darussalam"
-msgstr ""
+msgstr "Brunei Darussalam"
 
 #: patient/models.py:50
 msgid "Bulgaria"
@@ -394,8 +395,6 @@ msgid "Finland"
 msgstr "Finlândia"
 
 #: patient/models.py:89
-#, fuzzy
-#| msgid "Cancel"
 msgid "France"
 msgstr "França"
 
@@ -676,8 +675,6 @@ msgid "Mongolia"
 msgstr "Mongólia"
 
 #: patient/models.py:159
-#, fuzzy
-#| msgid "Montserrat"
 msgid "Monserrat"
 msgstr "Montserrat"
 
@@ -1104,7 +1101,7 @@ msgstr "Fax residencial"
 
 #: patient/models.py:426
 msgid "Pager"
-msgstr ""
+msgstr "Pager"
 
 #: patient/models.py:427
 msgid "Other"
@@ -1125,7 +1122,7 @@ msgstr "Esta combinação é inválida."
 
 #: patient/models.py:697
 msgid "token id: "
-msgstr ""
+msgstr "token id:"
 
 #: patient/templates/patient/ajax_cid10.html:17
 msgid "No diseases found!"
@@ -1142,8 +1139,6 @@ msgid "Home"
 msgstr "Home"
 
 #: patient/templates/patient/busca.html:35
-#, fuzzy
-#| msgid "Search participant"
 msgid "Search Participants"
 msgstr "Buscar participante"
 
@@ -1158,15 +1153,15 @@ msgstr " %(number_of_patients)s participantes cadastrados"
 
 #: patient/templates/patient/busca.html:47
 msgid "Type participant name, CPF or code"
-msgstr ""
+msgstr "Entre com o nome do participante, CPF ou código"
 
 #: patient/templates/patient/busca.html:55
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 #: patient/templates/patient/busca.html:56
 msgid "Next"
-msgstr ""
+msgstr "Proximo"
 
 #: patient/templates/patient/busca.html:60
 msgid "Insert new"
@@ -1225,7 +1220,7 @@ msgstr "(sem anexos)"
 
 #: patient/templates/patient/exams.html:161
 msgid "Files to upload"
-msgstr ""
+msgstr "Arquivos para upload"
 
 #: patient/templates/patient/exams.html:174
 #: patient/templates/patient/exams.html:205
@@ -1403,7 +1398,7 @@ msgstr ""
 
 #: patient/templates/patient/register.html:167
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: patient/templates/patient/register.html:177
 msgid "Are you sure you want to delete participant?"
@@ -1460,7 +1455,7 @@ msgstr "Sexo"
 
 #: patient/templates/patient/register_personal_data.html:127
 msgid "RG"
-msgstr ""
+msgstr "RG"
 
 #: patient/templates/patient/register_personal_data.html:136
 msgid "Marital status"
@@ -1502,7 +1497,7 @@ msgstr "Estado"
 
 #: patient/templates/patient/register_personal_data.html:232
 msgid "E-mail"
-msgstr ""
+msgstr "E-mail"
 
 #: patient/templates/patient/register_personal_data.html:247
 msgid "Telephones"
@@ -1585,16 +1580,16 @@ msgid "Choose another questionnaire to fill"
 msgstr "Escolha outro questionário para preencher"
 
 #: patient/templates/patient/register_questionnaires.html:135
-msgid "Experiment questionnaires"
-msgstr "Questionários de experimentos"
+msgid "Experiment/Project questionnaires"
+msgstr "Questionários de experimentos/projetos"
 
 #: patient/templates/patient/register_questionnaires.html:143
 msgid "Research project"
 msgstr "Estudo"
 
 #: patient/templates/patient/register_questionnaires.html:144
-msgid "Experiment"
-msgstr "Experimento"
+msgid "Experiment/Project"
+msgstr "Experimento/Projeto"
 
 #: patient/templates/patient/register_questionnaires.html:145
 msgid "Group"
@@ -1721,7 +1716,7 @@ msgstr "Geladeiras"
 
 #: patient/templates/patient/register_socialdemographic_data.html:234
 msgid "Freezer*"
-msgstr ""
+msgstr "Freezer*"
 
 #: patient/templates/patient/register_socialdemographic_data.html:249
 msgid "*Independent unit or part of the fridge-freezer"

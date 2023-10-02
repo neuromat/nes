@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-10 10:54-0300\n"
-"PO-Revision-Date: 2023-09-06 03:34+0000\n"
-"Last-Translator:   <nes_admin@nesmail.com>\n"
+"PO-Revision-Date: 2023-10-02 12:54-0300\n"
+"Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -50,6 +50,8 @@ msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
 msgstr ""
+"Senha deve contar pelo menos 8 caracteres, incluindo ao menos 1 maiúsculo, "
+"digito ou caractere especial."
 
 #: custom_user/templates/custom_user/register_users.html:42
 msgid "You have to choose at least one user profile!"
@@ -66,7 +68,7 @@ msgstr "Por favor, corrija os campos em destaque."
 #: custom_user/tests.py:84
 #, javascript-format
 msgid "Your account for %s"
-msgstr ""
+msgstr "Conta de %s"
 
 #: custom_user/views.py:37
 msgid "User created successfully."

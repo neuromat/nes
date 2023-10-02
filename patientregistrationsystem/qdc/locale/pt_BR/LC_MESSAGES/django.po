@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-06 17:50+0000\n"
-"PO-Revision-Date: 2023-09-06 15:24-0300\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2023-10-02 12:56-0300\n"
+"PO-Revision-Date: 2023-10-02 12:49-0300\n"
+"Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.3.2\n"
+"X-Translated-Using: django-rosetta 0.9.9\n"
 
 #: add_initial_data.py:14
 msgid "Can add alcohol frequency"
@@ -610,7 +611,7 @@ msgid "Can delete user profile"
 msgstr "Pode remover perfil do usuário"
 
 #: add_initial_data.py:168
-msgid "Can view medical record"
+msgid "Can view medical record data"
 msgstr "Pode ver dados de registro médico"
 
 #: add_initial_data.py:169
@@ -630,7 +631,7 @@ msgid "Can view survey"
 msgstr "Pode ver questionário"
 
 #: add_initial_data.py:174
-msgid "Can export medical record"
+msgid "Can export medical record data"
 msgstr "Pode exportar dados de registro médico"
 
 #: add_initial_data.py:175
@@ -706,17 +707,17 @@ msgstr "Administração QDC"
 msgid "Access is not authorized"
 msgstr "Acesso não autorizado"
 
-#: templates/registration/change_password_custom.html:9
-#: templates/registration/login.html:11 templates/registration/login.html:16
+#: templates/registration/change_password_custom.html:11
+#: templates/registration/login.html:12
 #: templates/registration/password_reset_form.html:9
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociência - NES"
 
-#: templates/registration/change_password_custom.html:79
+#: templates/registration/change_password_custom.html:73
 msgid "Password change"
 msgstr "Alterar senha"
 
-#: templates/registration/change_password_custom.html:96
+#: templates/registration/change_password_custom.html:95
 #: templates/registration/password_reset_confirm.html:84
 msgid ""
 "Password must contain at least 8 characters, including at least one "
@@ -741,11 +742,11 @@ msgstr "Obrigado por passar momentos de qualidade com o site hoje."
 msgid "Log in again"
 msgstr "Faça login novamente"
 
-#: templates/registration/login.html:88 templates/registration/login.html:89
+#: templates/registration/login.html:87 templates/registration/login.html:88
 msgid "User"
 msgstr "Usuário"
 
-#: templates/registration/login.html:91 templates/registration/login.html:92
+#: templates/registration/login.html:90 templates/registration/login.html:91
 msgid "Password"
 msgstr "Senha"
 
@@ -805,7 +806,7 @@ msgid "Access"
 msgstr "Acessar"
 
 #: templates/registration/password_reset_confirm.html:81
-#: templates/registration/password_reset_form.html:77
+#: templates/registration/password_reset_form.html:66
 msgid "Reset password"
 msgstr "Redefinir senha"
 
@@ -871,7 +872,7 @@ msgid ""
 "\n"
 "    Thank you for using our site!\n"
 "\n"
-"    Neuromat Team.\n"
+"    NES Team.\n"
 "    "
 msgstr ""
 "\n"
@@ -880,12 +881,12 @@ msgstr ""
 "    Equipe Neuromat.\n"
 "    "
 
-#: templates/registration/password_reset_form.html:61
+#: templates/registration/password_reset_form.html:53
 msgid "Please enter your e-mail to receive instructions for password reset."
 msgstr ""
 "Especifique seu e-mail para receber as instruções para redefinição de senha."
 
-#: templates/registration/password_reset_form.html:72
+#: templates/registration/password_reset_form.html:60
 msgid "E-mail"
 msgstr "E-mail"
 

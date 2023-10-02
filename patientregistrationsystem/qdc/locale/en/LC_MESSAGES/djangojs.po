@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-13 10:06-0300\n"
+"POT-Creation-Date: 2023-10-02 12:25-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -166,52 +166,4 @@ msgstr ""
 
 #: admin/js/collapse.js:16 admin/js/collapse.min.js:1
 msgid "Hide"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/doctools.js:154
-msgid "Permalink to this headline"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/doctools.js:160
-msgid "Permalink to this definition"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/doctools.js:189
-msgid "Hide Search Matches"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:288
-msgid "Searching"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:293
-msgid "Preparing search..."
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:481
-msgid "Search Results"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:483
-msgid ""
-"Your search did not match any documents. Please make sure that all words are "
-"spelled correctly and that you've selected enough categories."
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:485
-#, javascript-format
-msgid "Search finished, found %s page(s) matching the search query."
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/searchtools.js:525
-msgid ", in "
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/sidebar.js:69
-msgid "Expand sidebar"
-msgstr ""
-
-#: src/nwb/ainwb/docs/_static/sidebar.js:82
-#: src/nwb/ainwb/docs/_static/sidebar.js:110
-msgid "Collapse sidebar"
 msgstr ""

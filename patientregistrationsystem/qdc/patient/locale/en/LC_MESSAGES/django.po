@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-08 01:36+0000\n"
+"POT-Creation-Date: 2023-10-02 12:21-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,87 +22,87 @@ msgstr ""
 msgid "Anonymous participant?"
 msgstr ""
 
-#: patient/forms.py:65 patient/forms.py:121 patient/tests/tests_orig.py:707
+#: patient/forms.py:65 patient/forms.py:122 patient/tests/tests_orig.py:707
 msgid "Name must be included"
 msgstr ""
 
-#: patient/forms.py:81 patient/forms.py:279 patient/forms.py:324
+#: patient/forms.py:82 patient/forms.py:280 patient/forms.py:325
 msgid "mm/dd/yyyy"
 msgstr ""
 
-#: patient/forms.py:82
+#: patient/forms.py:83
 msgid "Date of birth must be completed"
 msgstr ""
 
-#: patient/forms.py:89
+#: patient/forms.py:90
 msgid "Gender must be filled"
 msgstr ""
 
-#: patient/forms.py:108 patient/tests/tests_orig.py:692
+#: patient/forms.py:109 patient/tests/tests_orig.py:692
 msgid "Incorrect e-mail"
 msgstr ""
 
-#: patient/forms.py:147 patient/forms.py:224 patient/forms.py:230
-#: patient/forms.py:236
+#: patient/forms.py:148 patient/forms.py:225 patient/forms.py:231
+#: patient/forms.py:237
 msgid "Yes"
 msgstr ""
 
-#: patient/forms.py:147 patient/forms.py:224 patient/forms.py:230
-#: patient/forms.py:236
+#: patient/forms.py:148 patient/forms.py:225 patient/forms.py:231
+#: patient/forms.py:237
 msgid "No"
 msgstr ""
 
-#: patient/forms.py:183
+#: patient/forms.py:184
 msgid "Type in profession"
 msgstr ""
 
-#: patient/forms.py:186
+#: patient/forms.py:187
 msgid "Inform occupation"
 msgstr ""
 
-#: patient/forms.py:190 patient/forms.py:193 patient/forms.py:196
-#: patient/forms.py:199 patient/forms.py:202 patient/forms.py:205
-#: patient/forms.py:208 patient/forms.py:211 patient/forms.py:214
+#: patient/forms.py:191 patient/forms.py:194 patient/forms.py:197
+#: patient/forms.py:200 patient/forms.py:203 patient/forms.py:206
+#: patient/forms.py:209 patient/forms.py:212 patient/forms.py:215
 msgid "4 or +"
 msgstr ""
 
-#: patient/forms.py:258
+#: patient/forms.py:259
 msgid "Have already used"
 msgstr ""
 
-#: patient/forms.py:259
+#: patient/forms.py:260
 msgid "It is using"
 msgstr ""
 
-#: patient/forms.py:260
+#: patient/forms.py:261
 msgid "Have never used"
 msgstr ""
 
-#: patient/forms.py:281
+#: patient/forms.py:282
 msgid "Date must be completed"
 msgstr ""
 
-#: patient/forms.py:287
+#: patient/forms.py:288
 msgid "Description"
 msgstr ""
 
-#: patient/forms.py:291
+#: patient/forms.py:292
 msgid "Description must be filled in"
 msgstr ""
 
-#: patient/forms.py:295
+#: patient/forms.py:296
 msgid "Doctor"
 msgstr ""
 
-#: patient/forms.py:298 patient/templates/patient/exams.html:113
+#: patient/forms.py:299 patient/templates/patient/exams.html:113
 msgid "CRM"
 msgstr ""
 
-#: patient/forms.py:301
+#: patient/forms.py:302
 msgid "Place of execution"
 msgstr ""
 
-#: patient/forms.py:326
+#: patient/forms.py:327
 msgid "Fill date must be filled."
 msgstr ""
 
@@ -1572,7 +1572,7 @@ msgid "Choose another questionnaire to fill"
 msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:135
-msgid "Experiment questionnaires"
+msgid "Experiment/Project questionnaires"
 msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:143
@@ -1580,7 +1580,7 @@ msgid "Research project"
 msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:144
-msgid "Experiment"
+msgid "Experiment/Project"
 msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:145
