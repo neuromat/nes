@@ -85,6 +85,15 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
+                            <label class="control-label">{% trans "Publication Type" %} <b style="color: red;">*</b></label>
+                            {{ publication_form.publication_type }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
                             <label class="control-label">{% trans "Citation" %} <b style="color: red;">*</b></label>
                             {{ publication_form.citation }}
                             <div class="help-block with-errors"></div>
@@ -126,7 +135,15 @@
                             <tbody>
                             {% for experiment in publication.experiments.all %}
                                 <tr>
-                                    <td>{{ experiment.title }}</td>
+                                    <td>
+                                        {% if perms.experiment.view_researchproject %}<a data-toggle="tooltip" data-placement="left" title="{% trans 'Visualize' %}"
+                                            href="/experiment/{{ experiment.id }}">
+                                            {{ experiment.title }}
+                                        </a>
+                                        {% else %}
+                                            {{ experiment.title }}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ experiment.description }}</td>
                                     <td style="text-align: center">{% if experiment.is_public %}<span class="fa fa-check" style="color: royalblue"></span> {% endif %}</td>
                                     <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="fa fa-check" style="color: royalblue"></span> {% endif %}</td>

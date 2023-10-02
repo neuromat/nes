@@ -47,7 +47,7 @@
                         <thead>
                             <tr>
                                 <th>{% trans "Title" %}</th>
-                                <th>{% trans "Citation" %}</th>
+                                <th>{% trans "Type" %}</th>
                                 <th>{% trans "URL" %}</th>
                             </tr>
                         </thead>
@@ -55,7 +55,7 @@
                         {% for publication in publications %}
                             <tr>
                                 <td>{% if perms.experiment.view_researchproject %}
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans 'Visualize' %}"
                                            href="/experiment/publication/{{ publication.id }}">
                                             {{ publication.title }}
                                         </a>
@@ -64,7 +64,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {{ publication.citation }}
+                                    {{ publication.publication_type.name }}
                                 </td>
                                 <td>{{ publication.url }}</td>
                             </tr>

@@ -137,11 +137,19 @@ class ExperimentResearcher(models.Model):
         super(ExperimentResearcher, self).save()
 
 
+class PublicationType(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class Publication(models.Model):
     title = models.CharField(max_length=255)
     citation = models.TextField()
     url = models.URLField(null=True, blank=True)
     experiments = models.ManyToManyField(Experiment)
+    publication_type = models.ForeignKey(PublicationType, on_delete=models.CASCADE)
 
 
 class Manufacturer(models.Model):

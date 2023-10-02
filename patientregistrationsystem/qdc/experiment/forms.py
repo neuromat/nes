@@ -576,7 +576,7 @@ class ResearchProjectForm(ModelForm):
 class PublicationForm(ModelForm):
     class Meta:
         model = Publication
-        fields = ["title", "citation", "url"]
+        fields = ["title", "citation", "url", "publication_type"]
 
         widgets = {
             "title": Textarea(
@@ -599,6 +599,13 @@ class PublicationForm(ModelForm):
                 }
             ),
             "url": URLInput(attrs={"class": "form-control"}),
+            "publication_type": Select(
+                attrs={
+                    "class": "form-control",
+                    "required": "",
+                    "data-error": _("Publication type must be filled."),
+                }
+            ),
         }
 
 

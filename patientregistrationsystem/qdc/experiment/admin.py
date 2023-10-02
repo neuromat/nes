@@ -8,8 +8,6 @@ from .models import (
     BrainArea,
     BrainAreaSystem,
     CoilOrientation,
-    Component,
-    DataFile,
     DirectionOfTheInducedCurrent,
     ElectrodeConfiguration,
     ElectrodeShape,
@@ -21,8 +19,8 @@ from .models import (
     InformationTypeMedia,
     MeasureSystem,
     MeasureUnit,
+    PublicationType,
     QuestionnaireResponse,
-    SourceCode,
     SourceCodeFileFormat,
     StandardizationSystem,
     StimulusType,
@@ -56,6 +54,6 @@ admin.site.register(InformationType)
 admin.site.register(InformationTypeMedia)
 admin.site.register(FileFormat)
 admin.site.register(SourceCodeFileFormat)
-# admin.site.register(SourceCode)
+admin.site.register(PublicationType)
 admin.site.register(GoalkeeperGame)
 admin.site.register(GoalkeeperPhase)
