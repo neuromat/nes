@@ -3,6 +3,7 @@ version: '3.8'
 services:
 
   limesurvey_db:
+    container_name: limesurvey_db
     image: postgres:11-alpine
     volumes:
       - limesurvey_pgdata:/var/lib/postgresql/data:delegated
@@ -17,6 +18,7 @@ services:
       POSTGRES_PASSWORD: ${LIMESURVEY_DB_PASSWORD:-lime_password}
 
   limesurvey:
+    container_name: limesurvey
     image: neuromat/nes-compose:limesurvey
     volumes:
       - "limesurvey_data:/var/www/limesurvey"
@@ -46,6 +48,7 @@ services:
       - limesurvey_db
 
   nes_db:
+    container_name: nes_db
     image: postgres:15-alpine
     restart: unless-stopped
     volumes:
@@ -65,6 +68,7 @@ services:
       POSTGRES_INITDB_ARGS: --auth-host=md5
 
   nes:
+    container_name: nes
     build:
       context: ..
       dockerfile: docker/Dockerfile
