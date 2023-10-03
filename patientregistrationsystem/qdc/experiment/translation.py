@@ -15,11 +15,11 @@ from experiment.models import (
 from modeltranslation.translator import TranslationOptions, translator
 
 
-class PublicationTypeTranslationOptions(PublicationType):
+class PublicationTypeTranslationOptions(TranslationOptions):
     fields = ("name",)
 
 
-translator.register(PublicationType, TranslationOptions)
+translator.register(PublicationType, PublicationTypeTranslationOptions)
 
 
 class StimulusTypeTranslationOptions(TranslationOptions):
