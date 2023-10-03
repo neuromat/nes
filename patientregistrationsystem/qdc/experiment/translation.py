@@ -4,13 +4,22 @@ from experiment.models import (
     ElectrodeConfiguration,
     ElectrodeShape,
     FileFormat,
+    SourceCodeFileFormat,
     InformationType,
     InformationTypeMedia,
     MeasureSystem,
+    PublicationType,
     StimulusType,
     TetheringSystem,
 )
 from modeltranslation.translator import TranslationOptions, translator
+
+
+class PublicationTypeTranslationOptions(PublicationType):
+    fields = ("name",)
+
+
+translator.register(PublicationType, TranslationOptions)
 
 
 class StimulusTypeTranslationOptions(TranslationOptions):
@@ -25,6 +34,13 @@ class FileFormatTranslationOptions(TranslationOptions):
 
 
 translator.register(FileFormat, FileFormatTranslationOptions)
+
+
+class SourceCodeFileFormatTranslationOptions(TranslationOptions):
+    fields = ("name", "description")
+
+
+translator.register(SourceCodeFileFormat, SourceCodeFileFormatTranslationOptions)
 
 
 class ElectrodeShapeTranslationOptions(TranslationOptions):
