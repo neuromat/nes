@@ -1,4 +1,4 @@
-FROM python:3.11-bookworm
+FROM python:3.11-slim-bookworm
 
 ENV PYTHONUNBUFFERED 1
 ENV DEBIAN_FRONTEND dialog
