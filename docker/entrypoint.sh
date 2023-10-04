@@ -72,7 +72,7 @@ DEFAULT_FROM_EMAIL = "$EMAIL_HOST_USER"
 SERVER_EMAIL = EMAIL_HOST_USER
 		LOGO_INSTITUTION = "$NES_PROJECT_PATH/logo-institution.png"
 	EOF
-    chown -R nobody $NES_PROJECT_PATH/qdc/settings_local.py
+    chown -R nobody $NES_PROJECT_PATH/qdc/settings/settings_local.py
 
     touch $NES_PROJECT_PATH/nes_settings.placeholder
     chown -R nobody $NES_PROJECT_PATH/nes_settings.placeholder
