@@ -19,7 +19,6 @@ RUN apt-get -y update --no-install-recommends && \
     python3-dev \
     python-is-python3 \
     python3-pip \
-    python3-venv \
     pip \
     libjpeg-dev \
     libpng-dev \
@@ -30,18 +29,7 @@ RUN apt-get -y update --no-install-recommends && \
     make \
     #freetype-dev \
     #build-base \
-    libnss3-tools \
-    git \
-    apache2 \
-    locales \
-    openssl \
-    libapache2-mod-wsgi-py3 \
-    netcat-traditional \
-    # server dependencies
-    #libopenblas-dev \
-    #libhdf5-dev \
-    graphviz && \
-    #snapd && \
+    git && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists* && \
@@ -76,6 +64,7 @@ ENV NES_DIR=$NES_DIR
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
     curl \
+    python3-psycopg2 \
     python-is-python3 \
     python3-pip \
     pip \
