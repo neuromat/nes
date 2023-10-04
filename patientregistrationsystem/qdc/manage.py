@@ -3,7 +3,14 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "qdc.settings.dev")
+    settings = "qdc.settings.prod"
+
+    if "test" in sys.argv:
+        settings = "qdc.settings.test"
+    elif "runserver" in sys.argv:
+        settings = "qdc.settings.dev"
+
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings)
 
     try:
         from django.core.management import execute_from_command_line
