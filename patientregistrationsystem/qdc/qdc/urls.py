@@ -99,9 +99,6 @@ js_info_dict = {
 urlpatterns += [
     re_path(
         r"^jsi18n/$",
-        # cache_page(86400, key_prefix="jsi18n-%s" % settings.VERSION)(
-        #     JavaScriptCatalog.as_view(domain="djangojs")
-        # ),
         JavaScriptCatalog.as_view(domain="djangojs"),
         name="javascript-catalog",
     ),

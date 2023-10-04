@@ -8,7 +8,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext as _
 
-environ["DJANGO_SETTINGS_MODULE"] = "qdc.settings"
+environ["DJANGO_SETTINGS_MODULE"] = "qdc.settings.base"
 
 PermissionTable = [
     _("Can add alcohol frequency"),

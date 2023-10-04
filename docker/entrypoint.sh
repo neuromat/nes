@@ -122,6 +122,9 @@ except:
     mkdir static || true
     echo "	INFO: colectstatic"
     python3 -u manage.py collectstatic --no-input || true
+
+    echo "	INFO: populate_history"
+    python3 -u manage.py populate_history --auto || true
     
     
     rm /tmp/create_superuser.py
@@ -144,7 +147,8 @@ else
     cat <<-EOF >/etc/apache2/sites-available/nes.conf
 <VirtualHost *:$NES_PORT>
     ServerName $NES_IP
-    WSGIProcessGroup nes
+    ServerAlias $NES_HOSTNAME
+    ServerAdmin lapis@peb.ufrj.br
 
     DocumentRoot $NES_PROJECT_PATH
 
@@ -156,12 +160,27 @@ else
     Alias /media/ $NES_PROJECT_PATH/media/
     Alias /static/ $NES_PROJECT_PATH/static/
 
-    <Directory "$NES_PROJECT_PATH">
+    <Directory $NES_PROJECT_PATH/media>
         Require all granted
     </Directory>
 
+    <Directory $NES_PROJECT_PATH/static>
+        Require all granted
+    </Directory>
+
+    # <Directory "$NES_PROJECT_PATH">
+    #     Require all granted
+    # </Directory>
+
     WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
     WSGIDaemonProcess nes lang='en_US.UTF-8' locale='en_US.UTF-8'
+    WSGIProcessGroup nes
+
+    <Directory $NES_PROJECT_PATH>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
 
     Alias /img/ $NES_PROJECT_PATH/img/
 
@@ -177,7 +196,7 @@ else
     Protocols h2 h2c http/1.1
 
     ServerName $NES_IP
-    WSGIProcessGroup nes
+    ServerAlias $NES_HOSTNAME
 
     DocumentRoot $NES_PROJECT_PATH
 
@@ -189,12 +208,29 @@ else
     Alias /media/ $NES_PROJECT_PATH/media/
     Alias /static/ $NES_PROJECT_PATH/static/
 
-    <Directory "$NES_PROJECT_PATH">
+    <Directory $NES_PROJECT_PATH/media>
         Require all granted
     </Directory>
 
+    <Directory $NES_PROJECT_PATH/static>
+        Require all granted
+    </Directory>
+
+    # <Directory "$NES_PROJECT_PATH">
+    #     Require all granted
+    # </Directory>
+
+    <Directory $NES_PROJECT_PATH>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+
+    Alias /img/ $NES_PROJECT_PATH/img/
+
     WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
     WSGIDaemonProcess nes-ssl lang='en_US.UTF-8' locale='en_US.UTF-8'
+    WSGIProcessGroup nes-ssl
 
     SSLEngine on
  

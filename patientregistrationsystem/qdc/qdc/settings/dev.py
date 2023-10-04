@@ -1,5 +1,7 @@
 from .base import *
 
+import warnings
+
 DEBUG = True
 DEBUG404 = True
 TEMPLATE_DEBUG = DEBUG
