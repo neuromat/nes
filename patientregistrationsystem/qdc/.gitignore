@@ -9,7 +9,7 @@ geckodriver.log
 functional_tests
 .coverage*
 
-qdc/settings/settings_local.py
+settings_local.py
 qdc/wsgi.py
 
 *.placeholder
