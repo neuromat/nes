@@ -563,7 +563,7 @@ class ResearchProjectForm(ModelForm):
         end_date = cleaned_data.get("end_date")
 
         if end_date and end_date < start_date:
-            msg = "Data de início deve ser menor que data de fim."
+            msg = _("Start date must be before end date")
             self._errors["start_date"] = self.error_class([msg])
             self._errors["end_date"] = self.error_class([msg])
 
@@ -611,7 +611,7 @@ class PublicationForm(ModelForm):
 
 class NumberOfUsesToInsertForm(Form):
     number_of_uses_to_insert = IntegerField(
-        label="Number of uses to insert",
+        label=_("Number of uses to insert"),
         min_value=1,
         initial=1,
         widget=NumberInput(

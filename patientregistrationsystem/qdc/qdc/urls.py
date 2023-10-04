@@ -80,6 +80,7 @@ urlpatterns = [
     re_path(
         r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"
     ),  # FIXME: erro
+    path("__debug__/", include("debug_toolbar.urls")),
 ]
 
 

@@ -35,9 +35,11 @@ DEBUG404 = True
 
 # SECURITY WARNING: don't run with "is testing" in production
 IS_TESTING = True
-# AXES_ENABLED = False
 
-AXES_COOLOFF_MESSAGE = _("Your accouunt has been locked for 1 hour: too many login attempts.")
+
+AXES_COOLOFF_MESSAGE = _(
+    "Your accouunt has been locked for 1 hour: too many login attempts."
+)
 AXES_FAILURE_LIMIT = 5
 AXES_RESET_ON_SUCCESS = True
 AXES_COOLOFF_TIME = 1
@@ -48,12 +50,6 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 3600
-
-# SECURE_SSL_REDIRECT = True
-
-CSRF_USE_SESSIONS = True
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -250,24 +246,3 @@ except ImportError:
     pass
 
 VERSION = "1.8.0"
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "WARNING",
-    },
-}
-
-warnings.filterwarnings(
-    "error",
-    r"DateTimeField .* received a naive datetime",
-    RuntimeWarning,
-    r"django\.db\.models\.fields",
-)

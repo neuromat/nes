@@ -112,7 +112,7 @@
 
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
-                        <a href="/experiment/publication/edit/{{ publication.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                        <a href="/experiment/publication/edit/{{ publication.id }}/" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
 
@@ -179,7 +179,7 @@
                     </div>
                 {% else %}
                     <div class="btn-group pull-right">
-                        <a href="/experiment/publication/list" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                        <a href="/experiment/publication/list/" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
             </div>

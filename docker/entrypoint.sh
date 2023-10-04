@@ -43,10 +43,6 @@ else
     echo "INFO: Creating NES settings_local.py file"
 	cat <<-EOF >$NES_PROJECT_PATH/qdc/settings_local.py
 		SECRET_KEY = "$NES_SECRET_KEY"
-		DEBUG = True
-		DEBUG404 = True
-		TEMPLATE_DEBUG = DEBUG
-		IS_TESTING = True
 		ALLOWED_HOSTS = ["localhost", "127.0.0.1", "$NES_IP", "$NES_HOSTNAME"]
 CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES_HOSTNAME", ]
 		DATABASES = {

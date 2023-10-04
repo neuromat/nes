@@ -177,7 +177,7 @@
 
                 {% if perms.patient.view_patient %}
                     <li {% block activePatient %}{% endblock %} >
-                        <a href="/patient/find/">
+                        <a href="/patient/find/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add people that participated in the experiments' %}">
                             <span class="fa fa-users"></span>
                             {% trans "Participants" %}
                         </a>
@@ -186,7 +186,7 @@
 
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
-                        <a href="/experiment/research_project/list/">
+                        <a href="/experiment/research_project/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
                             <span class="fa fa-graduation-cap"></span>
                             {% trans "Studies" %}
                         </a>
@@ -195,7 +195,7 @@
 
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedPublication %}{% endblock %}>
-                        <a href="/experiment/publication/list/">
+                        <a href="/experiment/publication/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
                             <span class="fa fa-book"></span>
                             {% trans "Publications" %}
                         </a>
@@ -204,7 +204,7 @@
 
                 {% if perms.survey.view_survey %}
                     <li {% block activeAdvancedSurvey %}{% endblock %}>
-                        <a href="/survey/list/">
+                        <a href="/survey/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
                             <span class="fa fa-list-alt"></span>
                             {% trans "Questionnaires" %}
                         </a>
@@ -213,7 +213,7 @@
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}>
-                        <a href="/user/list/">
+                        <a href="/user/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
                             <span class="fa fa-user"></span>
                             {% trans "Researchers" %}
                         </a>
@@ -222,7 +222,7 @@
 
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
                     <li {% block activeExport %}{% endblock %}>
-                        <a href="/export/">
+                        <a href="/export/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Export your projects' %}">
                             <span class="fa fa-upload"></span>
                             {% trans "Export" %}
                         </a>
@@ -231,7 +231,7 @@
 
                 {% if perms.experiment.register_equipment %}
                     <li {% block activeSetup %}{% endblock %}>
-                        <a href="/experiment/setup/">
+                        <a href="/experiment/setup/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Here you can setup the equipments used in the projects' %}">
                             <span class="fa fa-cog"></span>
                             {% trans "Set up" %}
                         </a>

@@ -45,7 +45,7 @@ from patient.models import Patient
 from patient.models import QuestionnaireResponse as PatientQuestionnaireResponse
 from patient.models import SocialDemographicData
 from patient.views import update_acquisition_date, update_completed_status
-from qdc.settings import MEDIA_ROOT
+from django.conf import settings
 from survey.abc_search_engine import Questionnaires
 from survey.models import SensitiveQuestion, Survey
 from survey.survey_utils import QuestionnaireUtils, find_questionnaire_name
@@ -12950,7 +12950,7 @@ def clone_eeg_file(eeg_file, orig_and_clone):
         pk=orig_and_clone["eeg_data"][eeg_file.eeg_data.id]
     )
     eeg_file.eeg_data = new_eeg_data
-    f = open(os.path.join(MEDIA_ROOT, eeg_file.file.name), "rb")
+    f = open(os.path.join(settings.MEDIA_ROOT, eeg_file.file.name), "rb")
     eeg_file.file.save(os.path.basename(f.name), File(f))
     eeg_file.save()
 
@@ -12982,7 +12982,7 @@ def clone_emg_file(emg_file, orig_and_clone):
         pk=orig_and_clone["emg_data"][emg_file.emg_data.id]
     )
     emg_file.emg_data = new_emg_data
-    f = open(os.path.join(MEDIA_ROOT, emg_file.file.name), "rb")
+    f = open(os.path.join(settings.MEDIA_ROOT, emg_file.file.name), "rb")
     emg_file.file.save(os.path.basename(f.name), File(f))
 
     emg_file.save()
@@ -13014,7 +13014,7 @@ def clone_additional_data_file(additional_data_file, orig_and_clone):
         pk=orig_and_clone["additional_data"][additional_data_file.additional_data.id]
     )
     additional_data_file.additional_data = new_additional_data
-    f = open(os.path.join(MEDIA_ROOT, additional_data_file.file.name), "rb")
+    f = open(os.path.join(settings.MEDIA_ROOT, additional_data_file.file.name), "rb")
     additional_data_file.file.save(os.path.basename(f.name), File(f))
     additional_data_file.save()
 
@@ -13044,7 +13044,7 @@ def clone_digital_game_phase_file(dgp_file, orig_and_clone):
         ]
     )
     dgp_file.digital_game_phase_data = new_dgp_data
-    f = open(os.path.join(MEDIA_ROOT, dgp_file.file.name), "rb")
+    f = open(os.path.join(settings.MEDIA_ROOT, dgp_file.file.name), "rb")
     dgp_file.file.save(os.path.basename(f.name), File(f))
     dgp_file.save()
 
@@ -13074,7 +13074,7 @@ def clone_generic_data_collection_file(gdc_file, orig_and_clone):
         ]
     )
     gdc_file.generic_data_collection_data = new_gdc_data
-    f = open(os.path.join(MEDIA_ROOT, gdc_file.file.name), "rb")
+    f = open(os.path.join(settings.MEDIA_ROOT, gdc_file.file.name), "rb")
     gdc_file.file.save(os.path.basename(f.name), File(f))
     gdc_file.save()
 
@@ -13102,7 +13102,7 @@ def clone_media_collection_file(gdc_file, orig_and_clone):
         pk=orig_and_clone["media_collection_data"][gdc_file.media_collection_data.id]
     )
     gdc_file.media_collection_data = new_gdc_data
-    f = open(os.path.join(MEDIA_ROOT, gdc_file.file.name), "rb")
+    f = open(os.path.join(settings.MEDIA_ROOT, gdc_file.file.name), "rb")
     gdc_file.file.save(os.path.basename(f.name), File(f))
     gdc_file.save()
 
@@ -13115,7 +13115,7 @@ def clone_component_additional_file(component_additional_file, orig_and_clone):
         pk=orig_and_clone["component"][component_additional_file.component.id]
     )
     component_additional_file.component = new_component
-    f = open(os.path.join(MEDIA_ROOT, component_additional_file.file.name), "rb")
+    f = open(os.path.join(settings.MEDIA_ROOT, component_additional_file.file.name), "rb")
     component_additional_file.file.save(os.path.basename(f.name), File(f))
     component_additional_file.save()
 
