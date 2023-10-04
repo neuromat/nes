@@ -1,3 +1,5 @@
+settings_local.py
+
 *.pyc
 patientregistrationsystem/qdc/.idea
 patientregistrationsystem/qdc/qdc/settings.py
