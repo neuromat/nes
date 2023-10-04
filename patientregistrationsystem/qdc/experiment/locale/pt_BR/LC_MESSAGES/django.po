@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-02 21:35-0300\n"
+"POT-Creation-Date: 2023-10-04 12:41-0300\n"
 "PO-Revision-Date: 2023-10-03 20:11-0300\n"
 "Last-Translator:   <lapis@peb.ufrj.br>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,6 +137,12 @@ msgstr "Quantidade deve ser preenchida."
 msgid "Initial date must be filled."
 msgstr "Data de início deve ser preenchida"
 
+#: experiment/forms.py:566
+#, fuzzy
+#| msgid "Start date must be filled"
+msgid "Start date must be before end date"
+msgstr "Data de início deve ser preenchida"
+
 #: experiment/forms.py:598
 msgid "Citation must be filled."
 msgstr "Citação deve ser preenchida."
@@ -146,6 +152,12 @@ msgstr "Citação deve ser preenchida."
 #| msgid "Information type must be filled."
 msgid "Publication type must be filled."
 msgstr "Tipo de informação deve ser preenchido."
+
+#: experiment/forms.py:614
+#, fuzzy
+#| msgid "Quantity of uses to be inserted"
+msgid "Number of uses to insert"
+msgstr "Quantidade de usos a ser inserida"
 
 #: experiment/forms.py:653
 msgid "Date must be completed"
@@ -180,11 +192,11 @@ msgstr "Nome deve ser preenchido."
 
 #: experiment/forms.py:842
 msgid ""
-"Number of channels should be between 0 and the number of channels of the EEG"
-" machine."
+"Number of channels should be between 0 and the number of channels of the EEG "
+"machine."
 msgstr ""
-"Quantidade de canais deve ser entre 0 e a quantidade de canais da máquina de"
-" EEG"
+"Quantidade de canais deve ser entre 0 e a quantidade de canais da máquina de "
+"EEG"
 
 #: experiment/forms.py:921 experiment/forms.py:939 experiment/forms.py:959
 msgid "Name field must be filled."
@@ -281,8 +293,8 @@ msgid ""
 "Could not export LimeSurvey data. Please try again. If problem persists "
 "please contact the system administator"
 msgstr ""
-"Não foi possível exportar dados do LimeSurvey. Por favor tente novamente. Se"
-" o problema persistir entre em contato com o administrador de sistemas."
+"Não foi possível exportar dados do LimeSurvey. Por favor tente novamente. Se "
+"o problema persistir entre em contato com o administrador de sistemas."
 
 #: experiment/import_export.py:1062 experiment/import_export.py:1073
 #: experiment/import_export.py:1081 experiment/import_export.py:1096
@@ -302,13 +314,13 @@ msgstr "Não foi possível atualizar todas as respostas."
 
 #: experiment/import_export.py:1173 experiment/import_export.py:1192
 msgid ""
-"Could not import survey(s) to LimeSurvey. Only Experiment data was imported."
-" You can remove experiment imported and try again. If problem persists "
-"please contact system administrator"
+"Could not import survey(s) to LimeSurvey. Only Experiment data was imported. "
+"You can remove experiment imported and try again. If problem persists please "
+"contact system administrator"
 msgstr ""
 "Não foi possível importar os questionários do LimeSurvey. Somente os dados "
-"do Experimento foram importados. Você pode remover o experimento importado e"
-" tentar novamente. Se o problemapersistir por favor entre em contato com o "
+"do Experimento foram importados. Você pode remover o experimento importado e "
+"tentar novamente. Se o problemapersistir por favor entre em contato com o "
 "administrador de sistemas."
 
 #: experiment/import_export.py:1225
@@ -1923,8 +1935,8 @@ msgid ""
 "This experiment/project is in use, you can not change it! Do you want to "
 "copy this experiment/project?"
 msgstr ""
-"Este experimento/projeto está em uso e não é possível alterá-lo. Gostaria de"
-" fazer uma cópia deste experimento/projeto?"
+"Este experimento/projeto está em uso e não é possível alterá-lo. Gostaria de "
+"fazer uma cópia deste experimento/projeto?"
 
 #: experiment/templates/experiment/block_component.html:365
 #: experiment/templates/experiment/component_list.html:129
@@ -2129,8 +2141,8 @@ msgstr "Requer configuração de data/hora de início e fim"
 #: experiment/templates/experiment/configuration_line.html:44
 #: experiment/templates/experiment/randon_configuration_line.html:23
 msgid ""
-"There is data collection related to this step. Alternatively, make a copy of"
-" the experiment."
+"There is data collection related to this step. Alternatively, make a copy of "
+"the experiment."
 msgstr ""
 "Há coleta de dados relationada a este passo. Alternativamente, faça uma "
 "cópia do experimento."
@@ -2140,8 +2152,8 @@ msgid ""
 "This experiment/project is in use, you can not change it! Do you want to "
 "copy this experiment?"
 msgstr ""
-"Este experimento/projeto está em uso e não é possível alterá-lo. Gostaria de"
-" fazer uma cópia deste experimento/projeto?"
+"Este experimento/projeto está em uso e não é possível alterá-lo. Gostaria de "
+"fazer uma cópia deste experimento/projeto?"
 
 #: experiment/templates/experiment/configuration_line.html:66
 msgid "Position for random step"
@@ -2321,8 +2333,8 @@ msgid ""
 "Calculated from sub-steps. This set has at least one use that allows "
 "unlimited reptitions. It' been considered only one execution in these cases."
 msgstr ""
-"Calculada a partir dos subpassos. Esse conjunto possui pelo menos um uso que"
-" permite repetições ilimitadas. Está sendo considerado apenas uma execução "
+"Calculada a partir dos subpassos. Esse conjunto possui pelo menos um uso que "
+"permite repetições ilimitadas. Está sendo considerado apenas uma execução "
 "nesses casos."
 
 #: experiment/templates/experiment/duration.html:11
@@ -3243,8 +3255,8 @@ msgstr ""
 
 #: experiment/templates/experiment/experiment_import.html:66
 msgid ""
-"This will create a whole new Study/Experiment. The extension of objects that"
-" will be imported depends upon the stuff inside zip file."
+"This will create a whole new Study/Experiment. The extension of objects that "
+"will be imported depends upon the stuff inside zip file."
 msgstr ""
 "Isto irá criar um Estudo/Experimento completo. A extensão dos objetos que "
 "serão importados depende das coisas que estão dentro do arquivo zip."
@@ -3588,8 +3600,8 @@ msgid ""
 "Quantity of fills needed by pariticipant multiplied by quantity of "
 "participants in this group"
 msgstr ""
-"Quantidade de preenchimentos necessários por participante vezes a quantidade"
-" de participantes deste grupo"
+"Quantidade de preenchimentos necessários por participante vezes a quantidade "
+"de participantes deste grupo"
 
 #: experiment/templates/experiment/group_register.html:173
 #: experiment/templates/experiment/group_register.html:219
@@ -3746,19 +3758,23 @@ msgstr[1] ""
 #, python-format
 msgid ""
 "\n"
-"                            %(count)s <em>%(human_readable)s</em> step imported\n"
+"                            %(count)s <em>%(human_readable)s</em> step "
+"imported\n"
 "                        "
 msgid_plural ""
 "\n"
-"                            %(count)s <em>%(human_readable)s</em> steps imported\n"
+"                            %(count)s <em>%(human_readable)s</em> steps "
+"imported\n"
 "                        "
 msgstr[0] ""
 "\n"
-"                            %(count)s passo de <em>%(human_readable)s</em> importado\n"
+"                            %(count)s passo de <em>%(human_readable)s</em> "
+"importado\n"
 "                        "
 msgstr[1] ""
 "\n"
-"                            %(count)s passos de <em>%(human_readable)s</em> importados\n"
+"                            %(count)s passos de <em>%(human_readable)s</em> "
+"importados\n"
 "                        "
 
 #: experiment/templates/experiment/instruction_component.html:13
@@ -4080,8 +4096,7 @@ msgstr "Tem certeza que deseja excluir este colaborador da equipe?"
 
 #: experiment/templates/experiment/research_project_register.html:278
 msgid ""
-"Are you sure you want to change the coordinator status for this "
-"collaborator?"
+"Are you sure you want to change the coordinator status for this collaborator?"
 msgstr ""
 "Tem certeza que deseja alterar o status de coordenador deste colaborador?"
 
@@ -4388,11 +4403,11 @@ msgstr "Exportar arquivo no formato NWB"
 
 #: experiment/templates/experiment/subject_eeg_collection_list.html:112
 msgid ""
-"Unable to export as nwb file. The uploaded data file is not an EEG file. Its"
-" format is not valid, or the number of channels is not set."
+"Unable to export as nwb file. The uploaded data file is not an EEG file. Its "
+"format is not valid, or the number of channels is not set."
 msgstr ""
-"Não foi possível exportar como arquivo nwb. O arquivo de dados carregado não"
-" é um arquivo EEG. Este formato não é válido ou o número de canais não está "
+"Não foi possível exportar como arquivo nwb. O arquivo de dados carregado não "
+"é um arquivo EEG. Este formato não é válido ou o número de canais não está "
 "definido."
 
 #: experiment/templates/experiment/subject_eeg_collection_list.html:126
@@ -4457,8 +4472,8 @@ msgstr ""
 
 #: experiment/templates/experiment/subject_eeg_data_form.html:390
 msgid ""
-"To mark or unmark any position as 'worked' or 'did not worked' you can click"
-" on the image on the selected position"
+"To mark or unmark any position as 'worked' or 'did not worked' you can click "
+"on the image on the selected position"
 msgstr ""
 "Para marcar ou desmarcar qualquer posição como 'trabalhou' ou 'não "
 "funcionou' você pode clicar na imagem na posição selecionada"
@@ -5037,9 +5052,8 @@ msgstr "Ação não disponível"
 #: experiment/views.py:4508 experiment/views.py:4615 experiment/views.py:4711
 #: experiment/views.py:4843 experiment/views.py:4961 experiment/views.py:5052
 #: experiment/views.py:5148 experiment/views.py:5284 experiment/views.py:5577
-#: experiment/views.py:5702 experiment/views.py:14798
-#: experiment/views.py:15125 experiment/views.py:16698
-#: experiment/views.py:16823
+#: experiment/views.py:5702 experiment/views.py:14798 experiment/views.py:15125
+#: experiment/views.py:16698 experiment/views.py:16823
 msgid "Information not saved."
 msgstr "Informação não salva."
 
@@ -5232,8 +5246,7 @@ msgstr "Não foi possível excluir o grupo, pois há dependências."
 
 #: experiment/views.py:2056
 msgid ""
-"Impossible to delete group because there is (are) data collection "
-"associated."
+"Impossible to delete group because there is (are) data collection associated."
 msgstr "Não foi possível excluir o grupo porque há dados coletados."
 
 #: experiment/views.py:2143
@@ -5268,8 +5281,8 @@ msgstr "Configuração de EEG incluída com sucesso."
 msgid "EEG setting was removed successfully."
 msgstr "Configuração de EEG excluído com sucesso."
 
-#: experiment/views.py:2408 experiment/views.py:15317
-#: experiment/views.py:15876 experiment/views.py:16463
+#: experiment/views.py:2408 experiment/views.py:15317 experiment/views.py:15876
+#: experiment/views.py:16463
 msgid "Setting was removed successfully."
 msgstr "Configuração foi excluída com sucesso."
 
@@ -5295,8 +5308,7 @@ msgstr "Agora você pode configurar cada posição de eletrodo."
 
 #: experiment/views.py:2600
 msgid "EEG electrode net system setting created sucessfully."
-msgstr ""
-"Configuração de sistema de rede de eletrodo de EEG criada com sucesso."
+msgstr "Configuração de sistema de rede de eletrodo de EEG criada com sucesso."
 
 #: experiment/views.py:2809
 msgid "EEG Amplifier setting updated successfully."

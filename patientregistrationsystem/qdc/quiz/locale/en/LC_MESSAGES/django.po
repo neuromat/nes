@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-02 12:21-0300\n"
+"POT-Creation-Date: 2023-10-04 12:41-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,8 +49,16 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
+#: quiz/templates/quiz/template.html:180
+msgid "Add people that participated in the experiments"
+msgstr ""
+
 #: quiz/templates/quiz/template.html:182
 msgid "Participants"
+msgstr ""
+
+#: quiz/templates/quiz/template.html:189 quiz/templates/quiz/template.html:198
+msgid "Add publications"
 msgstr ""
 
 #: quiz/templates/quiz/template.html:191
@@ -61,6 +69,10 @@ msgstr ""
 msgid "Publications"
 msgstr ""
 
+#: quiz/templates/quiz/template.html:207 quiz/templates/quiz/template.html:216
+msgid "Add users and institutions to the database"
+msgstr ""
+
 #: quiz/templates/quiz/template.html:209
 msgid "Questionnaires"
 msgstr ""
@@ -69,8 +81,16 @@ msgstr ""
 msgid "Researchers"
 msgstr ""
 
+#: quiz/templates/quiz/template.html:225
+msgid "Export your projects"
+msgstr ""
+
 #: quiz/templates/quiz/template.html:227
 msgid "Export"
+msgstr ""
+
+#: quiz/templates/quiz/template.html:234
+msgid "Here you can setup the equipments used in the projects"
 msgstr ""
 
 #: quiz/templates/quiz/template.html:236

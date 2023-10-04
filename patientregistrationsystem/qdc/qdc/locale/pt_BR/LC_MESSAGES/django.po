@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-02 12:20-0300\n"
+"POT-Creation-Date: 2023-10-04 12:41-0300\n"
 "PO-Revision-Date: 2023-10-02 12:31-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,16 +33,16 @@ msgstr "Confirmar nova senha"
 msgid "Passwords don't match"
 msgstr "Senhas diferentes"
 
-#: qdc/settings.py:40
+#: qdc/settings/base.py:41
 msgid "Your accouunt has been locked for 1 hour: too many login attempts."
 msgstr ""
 "Sua conta foi bloqueada por 1 hora: muitas tentativas incorretas de login"
 
-#: qdc/settings.py:175
+#: qdc/settings/base.py:171
 msgid "Português"
 msgstr "Português"
 
-#: qdc/settings.py:179
+#: qdc/settings/base.py:175
 msgid "English"
 msgstr "English"
 
@@ -50,8 +50,8 @@ msgstr "English"
 msgid ""
 "There is a new version, please contact your NES administrator to update !"
 msgstr ""
-"Há uma nova versão, por favor contacte o Administrador do NES para atualizar"
-" o sistema."
+"Há uma nova versão, por favor contacte o Administrador do NES para atualizar "
+"o sistema."
 
 #: qdc/views.py:70
 msgid "Password changed successfully."

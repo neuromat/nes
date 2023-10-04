@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-02 21:35-0300\n"
+"POT-Creation-Date: 2023-10-04 12:41-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -136,12 +136,20 @@ msgstr ""
 msgid "Initial date must be filled."
 msgstr ""
 
+#: experiment/forms.py:566
+msgid "Start date must be before end date"
+msgstr ""
+
 #: experiment/forms.py:598
 msgid "Citation must be filled."
 msgstr ""
 
 #: experiment/forms.py:606
 msgid "Publication type must be filled."
+msgstr ""
+
+#: experiment/forms.py:614
+msgid "Number of uses to insert"
 msgstr ""
 
 #: experiment/forms.py:653
