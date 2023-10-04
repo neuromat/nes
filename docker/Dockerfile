@@ -8,7 +8,6 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8  
 
 
-ARG DEBUG
 ARG NES_BRANCH=dev
 ARG NES_DIR=usr/local/nes
 ENV NES_DIR=$NES_DIR
@@ -57,6 +56,10 @@ RUN pip3 install -U pip setuptools wheel && \
 
 FROM python:3.11-slim-bookworm
 ENV DEBIAN_FRONTEND dialog
+
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8  
 
 ARG NES_DIR=usr/local/nes
 ENV NES_DIR=$NES_DIR
