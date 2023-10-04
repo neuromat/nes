@@ -41,7 +41,7 @@ if [ -f $NES_PROJECT_PATH/nes_settings.placeholder ]; then
     echo "INFO: NES settings_local.py file already provisioned"
 else
     echo "INFO: Creating NES settings_local.py file"
-	cat <<-EOF >$NES_PROJECT_PATH/qdc/settings_local.py
+	cat <<-EOF >$NES_PROJECT_PATH/qdc/settings/settings_local.py
 		SECRET_KEY = "$NES_SECRET_KEY"
 		ALLOWED_HOSTS = ["localhost", "127.0.0.1", "$NES_IP", "$NES_HOSTNAME"]
 CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES_HOSTNAME", ]
@@ -61,15 +61,6 @@ CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES
 		    "USER": "$LIMESURVEY_ADMIN_USER",
 		    "PASSWORD": "$LIMESURVEY_ADMIN_PASSWORD"
 		}
-
-SECURE_SSL_REDIRECT = True
-
-CSRF_USE_SESSIONS = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_SECONDS = 3600
 
         # Settings to send emails
 EMAIL_USE_TLS = True
