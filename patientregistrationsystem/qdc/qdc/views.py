@@ -109,7 +109,7 @@ def get_nes_directory_path():
     path_repo = "/"
     if "Windows" in platform.system():
         path_repo = ""
-    base_dir = settings.BASE_DIR.split("/")
+    base_dir = str(settings.BASE_DIR).split("/")
     if "nes" in base_dir:
         path_git_repo = []
         for item in base_dir:

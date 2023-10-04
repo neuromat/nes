@@ -13,9 +13,10 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 import warnings
 
+from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = Path(__file__).parent.parent.parent
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

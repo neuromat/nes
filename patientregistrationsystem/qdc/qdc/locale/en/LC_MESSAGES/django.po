@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-04 12:41-0300\n"
+"POT-Creation-Date: 2023-10-04 17:48-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,15 +34,15 @@ msgstr ""
 msgid "Passwords don't match"
 msgstr ""
 
-#: qdc/settings/base.py:41
+#: qdc/settings/base.py:42
 msgid "Your accouunt has been locked for 1 hour: too many login attempts."
 msgstr ""
 
-#: qdc/settings/base.py:171
+#: qdc/settings/base.py:172
 msgid "Português"
 msgstr ""
 
-#: qdc/settings/base.py:175
+#: qdc/settings/base.py:176
 msgid "English"
 msgstr ""
 
