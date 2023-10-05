@@ -62,8 +62,6 @@
 				"ms-python.mypy-type-checker",
 				"donjayamanne.python-extension-pack",
 				"mrmlnc.vscode-apache",
-				"mtxr.sqltools",
-				"mtxr.sqltools-driver-pg",
 				"shakram02.bash-beautify",
 				"bibhasdn.django-html",
 				"matangover.mypy"
