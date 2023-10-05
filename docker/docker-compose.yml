@@ -49,7 +49,7 @@ services:
 
   nes_db:
     container_name: nes_db
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     restart: unless-stopped
     volumes:
       - nes_pgdata:/var/lib/postgresql/data:delegated

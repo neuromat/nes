@@ -184,9 +184,9 @@ else
 
     Alias /img/ $NES_PROJECT_PATH/img/
 
-    ErrorLog ${APACHE_LOG_DIR}/nes_ssl_error.log
+    ErrorLog ${APACHE_LOG_DIR}/nes_error.log
     LogLevel warn
-    CustomLog ${APACHE_LOG_DIR}/nes_ssl_access.log combined
+    CustomLog ${APACHE_LOG_DIR}/nes_access.log combined
 </VirtualHost>
 	EOF
 
@@ -243,8 +243,6 @@ else
     <Directory /usr/lib/cgi-bin>
             SSLOptions +StdEnvVars
     </Directory>
-
-    Alias /img/ $NES_PROJECT_PATH/img/
 
     ErrorLog ${APACHE_LOG_DIR}/nes_ssl_error.log
     LogLevel warn
