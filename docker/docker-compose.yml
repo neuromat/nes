@@ -4,7 +4,7 @@ services:
 
   limesurvey_db:
     container_name: limesurvey_db
-    image: postgres:11-alpine
+    image: postgres:11-bookworm
     volumes:
       - limesurvey_pgdata:/var/lib/postgresql/data:delegated
     restart: unless-stopped
@@ -49,7 +49,7 @@ services:
 
   nes_db:
     container_name: nes_db
-    image: postgres:16-alpine
+    image: postgres:16-bookworm
     restart: unless-stopped
     volumes:
       - nes_pgdata:/var/lib/postgresql/data:delegated
