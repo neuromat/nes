@@ -11,3 +11,6 @@ docker-compose.yml
 **/.DS_Store
 **/venv
 **/env
+
+nes_settings.placeholder
+nes_wsgi.placeholder
