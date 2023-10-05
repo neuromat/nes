@@ -92,7 +92,7 @@ services:
       NES_DB_PORT: 5432
       NES_SECRET_KEY: ${NES_SECRET_KEY:-your_secret_key}
       NES_HOSTNAME: lapisnes.local
-      NES_IP: 0.0.0.0
+      NES_IP: localhost
       NES_PORT: 80
       NES_ADMIN_USER: ${NES_ADMIN_USER:-nes_admin}
       NES_ADMIN_EMAIL: ${NES_ADMIN_EMAIL:-nes_admin@nesmail.com}
