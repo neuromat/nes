@@ -168,21 +168,15 @@ else
         Require all granted
     </Directory>
 
-    # <Directory "$NES_PROJECT_PATH">
-    #     Require all granted
-    # </Directory>
-
-    WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
-    WSGIDaemonProcess nes lang='en_US.UTF-8' locale='en_US.UTF-8'
-    WSGIProcessGroup nes
-
     <Directory $NES_PROJECT_PATH>
         <Files wsgi.py>
             Require all granted
         </Files>
     </Directory>
 
-    Alias /img/ $NES_PROJECT_PATH/img/
+    WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
+    WSGIDaemonProcess nes lang='en_US.UTF-8' locale='en_US.UTF-8'
+    WSGIProcessGroup nes
 
     ErrorLog ${APACHE_LOG_DIR}/nes_error.log
     LogLevel warn
@@ -197,6 +191,7 @@ else
 
     ServerName $NES_IP
     ServerAlias $NES_HOSTNAME
+    ServerAdmin lapis@peb.ufrj.br
 
     DocumentRoot $NES_PROJECT_PATH
 
@@ -216,17 +211,13 @@ else
         Require all granted
     </Directory>
 
-    # <Directory "$NES_PROJECT_PATH">
-    #     Require all granted
-    # </Directory>
-
     <Directory $NES_PROJECT_PATH>
         <Files wsgi.py>
             Require all granted
         </Files>
     </Directory>
 
-    Alias /img/ $NES_PROJECT_PATH/img/
+    #Alias /img/ $NES_PROJECT_PATH/img/
 
     WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
     WSGIDaemonProcess nes-ssl lang='en_US.UTF-8' locale='en_US.UTF-8'
