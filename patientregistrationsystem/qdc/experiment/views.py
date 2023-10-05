@@ -253,6 +253,7 @@ from .portal import (
     send_file_to_portal,
     send_generic_data_collection_data_to_portal,
     send_group_to_portal,
+    send_media_collection_data_to_portal,
     send_participant_to_portal,
     send_publication_to_portal,
     send_questionnaire_response_to_portal,
@@ -13129,7 +13130,7 @@ def clone_context_tree(context_tree, new_experiment, orig_and_clone):
     context_tree.save()
     old_context_tree = ContextTree.objects.get(pk=old_context_tree_id)
     if old_context_tree.setting_file:
-        f = open(os.path.join(MEDIA_ROOT, old_context_tree.setting_file.name), "rb")
+        f = open(os.path.join(settings.MEDIA_ROOT, old_context_tree.setting_file.name), "rb")
         context_tree.setting_file.save(os.path.basename(f.name), File(f))
     orig_and_clone["context_tree"][old_context_tree_id] = context_tree.id
 
@@ -13140,7 +13141,7 @@ def clone_hotspot(hotspot, new_tms_data):
     hotspot.tms_data = new_tms_data
     hotspot.save()
     if old_hotspot.hot_spot_map:
-        f = open(os.path.join(MEDIA_ROOT, old_hotspot.hot_spot_map.name), "rb")
+        f = open(os.path.join(settings.MEDIA_ROOT, old_hotspot.hot_spot_map.name), "rb")
         hotspot.hot_spot_map.save(os.path.basename(f.name), File(f))
 
 
@@ -13206,7 +13207,7 @@ def copy_experiment(experiment, copy_data_collection=False):
     new_experiment.save()
     if experiment.ethics_committee_project_file:
         f = open(
-            os.path.join(MEDIA_ROOT, experiment.ethics_committee_project_file.name),
+            os.path.join(settings.MEDIA_ROOT, experiment.ethics_committee_project_file.name),
             "rb",
         )
         new_experiment.ethics_committee_project_file.save(
@@ -13291,7 +13292,7 @@ def copy_experiment(experiment, copy_data_collection=False):
                 if old_subject_of_group.consent_form:
                     f = open(
                         os.path.join(
-                            MEDIA_ROOT, old_subject_of_group.consent_form.name
+                            settings.MEDIA_ROOT, old_subject_of_group.consent_form.name
                         ),
                         "rb",
                     )
@@ -13375,12 +13376,12 @@ def copy_experiment(experiment, copy_data_collection=False):
             clone_generic_data_collection_file(
                 generic_data_collection_file, orig_and_clone
             )
-        # generic_media_data
+        # media_collection_data
         for media_collection_data in MediaCollectionData.objects.filter(
             data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
         ):
             clone_media_collection_data(
-                media_collection_data_collection_data, orig_and_clone
+                media_collection_data, orig_and_clone
             )
         # media_collection_file
         for media_collection_file in MediaCollectionFile.objects.filter(
@@ -13629,7 +13630,7 @@ def create_component(component, new_experiment, orig_and_clone):
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         clone = Stimulus(stimulus_type_id=stimulus.stimulus_type_id)
         if stimulus.media_file:
-            file = open(os.path.join(MEDIA_ROOT, stimulus.media_file.name), "rb")
+            file = open(os.path.join(settings.MEDIA_ROOT, stimulus.media_file.name), "rb")
 
     elif component_type == "task":
         clone = Task()

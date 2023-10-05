@@ -10,13 +10,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.db.models import Q
 from experiment.models import Questionnaire
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse
 from experiment.models import Subject, SubjectOfGroup
@@ -498,6 +498,7 @@ def patient_view_medical_record(request, patient, context):
 
 
 def patient_view_questionnaires(request, patient, context, is_update):
+    from django.db.models import BaseManager
     if is_update and request.method == "POST":
         return finish_handling_post(request, patient.id, 4)
 

@@ -54,6 +54,7 @@ from .models import (
     Instruction,
     IntramuscularElectrode,
     MediaCollection,
+    MediaCollectionData,
     NeedleElectrode,
     Questionnaire,
     QuestionnaireResponse,
@@ -69,7 +70,7 @@ from .models import (
 
 
 class RestApiClient(object):
-    client = None
+    client: coreapi.Client = None
     schema = None
     active = False
 
@@ -1951,6 +1952,41 @@ def send_additional_data_to_portal(
     portal_additional_data = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_additional_data
+
+
+def send_media_collection_data_to_portal(
+    portal_participant_id,
+    portal_step_id,
+    portal_file_id_list,
+    media_collection_data: MediaCollectionData,
+):
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {
+        "participant": portal_participant_id,
+        "step": portal_step_id,
+        "date": media_collection_data.date.strftime("%Y-%m-%d"),
+        "time": media_collection_data.time.strftime("%H:%M:%S")
+        if media_collection_data.time
+        else None,
+        "description": media_collection_data.description,
+        "file_format": media_collection_data.file_format.name,
+        "files": [],
+    }
+
+    for portal_file_id in portal_file_id_list:
+        params["files"].append({"id": portal_file_id})
+
+    action_keys = ["media_collection_data", "create"]
+
+    portal_media_collection_data = rest.client.action(
+        rest.schema, action_keys, params=params
+    )
+
+    return portal_media_collection_data
 
 
 def send_generic_data_collection_data_to_portal(

@@ -3,7 +3,7 @@ import re
 from importlib.util import resolve_name
 
 from custom_user.models import Institution, User, UserProfile
-from custom_user.tests_helper import create_user
+from custom_user.tests.tests_helper import create_user
 from custom_user.views import (
     institution_create,
     institution_update,
