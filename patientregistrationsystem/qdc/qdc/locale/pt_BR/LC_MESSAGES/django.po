@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-04 17:48-0300\n"
+"POT-Creation-Date: 2023-10-05 12:30-0300\n"
 "PO-Revision-Date: 2023-10-02 12:31-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,16 +33,16 @@ msgstr "Confirmar nova senha"
 msgid "Passwords don't match"
 msgstr "Senhas diferentes"
 
-#: qdc/settings/base.py:42
+#: qdc/settings/base.py:41
 msgid "Your accouunt has been locked for 1 hour: too many login attempts."
 msgstr ""
 "Sua conta foi bloqueada por 1 hora: muitas tentativas incorretas de login"
 
-#: qdc/settings/base.py:172
+#: qdc/settings/base.py:171
 msgid "Português"
 msgstr "Português"
 
-#: qdc/settings/base.py:176
+#: qdc/settings/base.py:175
 msgid "English"
 msgstr "English"
 

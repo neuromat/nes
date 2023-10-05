@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-02 12:56-0300\n"
+"POT-Creation-Date: 2023-10-05 12:30-0300\n"
 "PO-Revision-Date: 2023-10-02 12:49-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: \n"
@@ -678,7 +678,7 @@ msgstr "Pesquisador sênior"
 msgid "Administrator"
 msgstr "Administrador"
 
-#: templates/404.html:14 templates/registration/change_password_custom.html:124
+#: templates/404.html:14 templates/registration/change_password_custom.html:70
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr "Home"
@@ -707,17 +707,11 @@ msgstr "Administração QDC"
 msgid "Access is not authorized"
 msgstr "Acesso não autorizado"
 
-#: templates/registration/change_password_custom.html:11
-#: templates/registration/login.html:12
-#: templates/registration/password_reset_form.html:9
-msgid "Neuroscience Experiments System - NES"
-msgstr "Sistema de Experimentos de Neurociência - NES"
-
-#: templates/registration/change_password_custom.html:73
+#: templates/registration/change_password_custom.html:19
 msgid "Password change"
 msgstr "Alterar senha"
 
-#: templates/registration/change_password_custom.html:95
+#: templates/registration/change_password_custom.html:41
 #: templates/registration/password_reset_confirm.html:84
 msgid ""
 "Password must contain at least 8 characters, including at least one "
@@ -726,11 +720,11 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: templates/registration/change_password_custom.html:119
+#: templates/registration/change_password_custom.html:65
 msgid "Save"
 msgstr "Salvar"
 
-#: templates/registration/change_password_custom.html:126
+#: templates/registration/change_password_custom.html:72
 msgid "Logout"
 msgstr "Logout"
 
@@ -742,19 +736,19 @@ msgstr "Obrigado por passar momentos de qualidade com o site hoje."
 msgid "Log in again"
 msgstr "Faça login novamente"
 
-#: templates/registration/login.html:87 templates/registration/login.html:88
+#: templates/registration/login.html:24 templates/registration/login.html:25
 msgid "User"
 msgstr "Usuário"
 
-#: templates/registration/login.html:90 templates/registration/login.html:91
+#: templates/registration/login.html:27 templates/registration/login.html:28
 msgid "Password"
 msgstr "Senha"
 
-#: templates/registration/login.html:95
+#: templates/registration/login.html:32
 msgid "Login"
 msgstr "Fazer login"
 
-#: templates/registration/login.html:101
+#: templates/registration/login.html:38
 msgid "I forgot my password"
 msgstr "Esqueci minha senha"
 
@@ -880,6 +874,10 @@ msgstr ""
 "\n"
 "    Equipe Neuromat.\n"
 "    "
+
+#: templates/registration/password_reset_form.html:9
+msgid "Neuroscience Experiments System - NES"
+msgstr "Sistema de Experimentos de Neurociência - NES"
 
 #: templates/registration/password_reset_form.html:53
 msgid "Please enter your e-mail to receive instructions for password reset."

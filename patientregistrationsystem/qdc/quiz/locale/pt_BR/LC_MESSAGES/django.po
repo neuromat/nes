@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-04 12:41-0300\n"
+"POT-Creation-Date: 2023-10-05 12:30-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: quiz/templates/quiz/contato.html:39 quiz/templates/quiz/template.html:14
+#: quiz/templates/quiz/template_login.html:13
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociência - NES"
 
@@ -27,81 +28,81 @@ msgid ""
 "<br>Please report any bug to the admin."
 msgstr ""
 
-#: quiz/templates/quiz/template.html:107
+#: quiz/templates/quiz/template.html:108
 msgid "NES"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:150
+#: quiz/templates/quiz/template.html:151
 msgid "Admin"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:152
+#: quiz/templates/quiz/template.html:153
 msgid "Change password"
 msgstr "Alterar senha"
 
-#: quiz/templates/quiz/template.html:153
+#: quiz/templates/quiz/template.html:154
 msgid "Logout"
 msgstr "Sair"
 
-#: quiz/templates/quiz/template.html:174
+#: quiz/templates/quiz/template.html:175
 msgid "Home"
 msgstr "Inicio"
 
-#: quiz/templates/quiz/template.html:180
+#: quiz/templates/quiz/template.html:181
 msgid "Add people that participated in the experiments"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:182
+#: quiz/templates/quiz/template.html:183
 msgid "Participants"
 msgstr "Participantes"
 
-#: quiz/templates/quiz/template.html:189 quiz/templates/quiz/template.html:198
+#: quiz/templates/quiz/template.html:190 quiz/templates/quiz/template.html:199
 #, fuzzy
 #| msgid "Publications"
 msgid "Add publications"
 msgstr "Publicações"
 
-#: quiz/templates/quiz/template.html:191
+#: quiz/templates/quiz/template.html:192
 msgid "Studies"
 msgstr "Estudos"
 
-#: quiz/templates/quiz/template.html:200
+#: quiz/templates/quiz/template.html:201
 msgid "Publications"
 msgstr "Publicações"
 
-#: quiz/templates/quiz/template.html:207 quiz/templates/quiz/template.html:216
+#: quiz/templates/quiz/template.html:208 quiz/templates/quiz/template.html:217
 msgid "Add users and institutions to the database"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:209
+#: quiz/templates/quiz/template.html:210
 msgid "Questionnaires"
 msgstr "Questionários"
 
-#: quiz/templates/quiz/template.html:218
+#: quiz/templates/quiz/template.html:219
 msgid "Researchers"
 msgstr "Pesquisadores"
 
-#: quiz/templates/quiz/template.html:225
+#: quiz/templates/quiz/template.html:226
 msgid "Export your projects"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:227
+#: quiz/templates/quiz/template.html:228
 msgid "Export"
 msgstr "Exportar"
 
-#: quiz/templates/quiz/template.html:234
+#: quiz/templates/quiz/template.html:235
 msgid "Here you can setup the equipments used in the projects"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:236
+#: quiz/templates/quiz/template.html:237
 msgid "Set up"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:246
+#: quiz/templates/quiz/template.html:247
 msgid "Plugin"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:256
+#: quiz/templates/quiz/template.html:257
 msgid "Please enable Javascript"
 msgstr ""
 
