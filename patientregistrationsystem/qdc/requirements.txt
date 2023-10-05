@@ -52,5 +52,6 @@ goodtables==2.5.4
 Faker==2.0.4
 
 # Development
+django-stubs-ext 
 django-stubs[compatible-mypy]
 mypy

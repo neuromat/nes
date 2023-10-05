@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
+
 BASE_DIR = Path(__file__).parent.parent.parent
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

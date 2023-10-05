@@ -2,6 +2,10 @@ from .base import *
 
 import warnings
 
+import django_stubs_ext
+
+django_stubs_ext.monkeypatch()
+
 DEBUG = True
 DEBUG404 = True
 TEMPLATE_DEBUG = DEBUG
