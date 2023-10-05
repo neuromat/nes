@@ -61,8 +61,8 @@ services:
       POSTGRES_USER: ${NES_DB_USER:-nes_user}
       POSTGRES_PASSWORD: ${NES_DB_PASSWORD:-nes_password}
       PGDATA: /var/lib/postgresql/data
-      #POSTGRES_HOST_AUTH_METHOD: md5
-      #POSTGRES_INITDB_ARGS: --auth-host=md5
+      POSTGRES_HOST_AUTH_METHOD: md5
+      POSTGRES_INITDB_ARGS: --auth-host=md5
 
   nes:
     build:

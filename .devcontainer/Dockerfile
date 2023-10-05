@@ -39,9 +39,9 @@ COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/
 RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
-COPY $NES_DIR/patientregistrationsystem/qdc/src/nwb/dist/nwb-1.0.0-py3-none-any.whl .
-RUN pip3 --disable-pip-version-check install nwb-1.0.0-py3-none-any.whl \
-    && rm nwb-1.0.0-py3-none-any.whl
+# COPY $NES_DIR/patientregistrationsystem/qdc/src/nwb/dist/nwb-1.0.0-py3-none-any.whl .
+# RUN pip3 --disable-pip-version-check install nwb-1.0.0-py3-none-any.whl \
+#     && rm nwb-1.0.0-py3-none-any.whl
 
 COPY .devcontainer/entrypoint.sh /
 RUN chmod +x /entrypoint.sh
