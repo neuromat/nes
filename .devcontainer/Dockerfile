@@ -16,7 +16,7 @@ ENV LC_ALL en_US.UTF-8
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
     python-is-python3 \
-    pip \
+    python3-pip \
     libjpeg-dev \
     libpng-dev \
     libpq-dev \

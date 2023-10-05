@@ -16,9 +16,7 @@ ENV NES_DIR=$NES_DIR
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
     python3-dev \
-    python-is-python3 \
     python3-pip \
-    pip \
     libjpeg-dev \
     libpng-dev \
     libpq-dev \
@@ -27,12 +25,12 @@ RUN apt-get -y update --no-install-recommends && \
     g++ \
     make \
     #freetype-dev \
-    #build-base \
     git && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
+
 
 RUN mkdir -p $NES_DIR  && \
     if [ $NES_BRANCH != "unset" ]; then \
@@ -64,13 +62,13 @@ ENV LC_ALL en_US.UTF-8
 ARG NES_DIR=/usr/local/nes
 ENV NES_DIR=$NES_DIR
 
+
 RUN apt-get -y update --no-install-recommends && \
     apt-get -y install --no-install-recommends \
     curl \
     python3-psycopg2 \
     python-is-python3 \
     python3-pip \
-    pip \
     libnss3-tools \
     git \
     apache2 \
@@ -88,9 +86,10 @@ RUN apt-get -y update --no-install-recommends && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
 
-COPY --from=wheeler /wheels /wheels
 
 COPY --from=wheeler $NES_DIR $NES_DIR
+
+COPY --from=wheeler /wheels /wheels
 
 RUN pip3 install -U pip setuptools wheel && \
 	pip3 install -r /wheels/requirement/requirements.txt -f /wheels && \
@@ -117,7 +116,7 @@ RUN curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64" && \
     cp mkcert-v*-linux-amd64 /usr/local/bin/mkcert && \
     /usr/local/bin/mkcert -install
 
-WORKDIR /usr/local/nes
+WORKDIR $NES_DIR
 
 RUN cp docker/entrypoint.sh / && \
     chmod +x /entrypoint.sh 
