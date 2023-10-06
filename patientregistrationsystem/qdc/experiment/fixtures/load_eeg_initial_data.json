@@ -288,7 +288,7 @@
     {
         "fields": {
             "description": "HydroCel Geodesic Sensor Net (HCGSN). Developed specifically for the head shape and sensitive skin of preterm infants. -no face straps, simplifying application, minimizing stress for infants, and making it less likely to interfere with other medical devices -Available in 32, 64, and 128 channel counts -Available in medium (30\u201332 cm) and large (32\u201334 cm) sizes",
-            "map_image_file": "eeg_electrode_system_files/1/128 channel HCGSN v.1.0.png",
+            "map_image_file": "eeg_electrode_system_files/1/128_channel_HCGSN_v.1.0.png",
             "name": "128 channels HCGSN"
         },
         "model": "experiment.eegelectrodelocalizationsystem",

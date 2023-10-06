@@ -4,7 +4,6 @@ future>= 0.18.3
 
 django>=4.2.4,<5
 django-axes[ipware]==6.1.1
-django-jenkins==0.110.0
 django-modeltranslation>=0.18.11
 django-simple-history==3.4.0
 django-maintenance-mode>=0.16.3
