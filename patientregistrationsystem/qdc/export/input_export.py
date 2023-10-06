@@ -27,7 +27,7 @@ OUTPUT_FILENAME_DIAGNOSIS = "Diagnosis"
 
 class InputExport:
     def __init__(self):
-        self.data = {}
+        self.data: dict[str, Any] = {}
 
     def read(self, input_filename, update_input_data=True):
         with open(input_filename.encode('utf-8'), 'r') as input_file:

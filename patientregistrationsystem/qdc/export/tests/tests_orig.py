@@ -101,7 +101,7 @@ class UtilTests:
 
 class DirectoryTest(TestCase):
     user = ""
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         """Cria um participante para ser utilizado durante os testes"""
@@ -165,7 +165,7 @@ class PatientActiveTest(TestCase):
     """Cria um participante para ser utilizado durante os testes"""
 
     user = ""
-    data = {}
+    data: dict[str, Any] = {}
     util = UtilTests()
 
     def setUp(self):
@@ -258,7 +258,7 @@ class JsonTest(TestCase):
     """Cria um participante para ser utilizado durante os testes"""
 
     user = ""
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -283,7 +283,7 @@ class InputExportTest(TestCase):
     """Cria um participante para ser utilizado durante os testes"""
 
     user = ""
-    data = {}
+    data: dict[str, Any] = {}
     util = UtilTests()
 
     def setUp(self):
@@ -405,7 +405,7 @@ class AdvancedSearchTest(TestCase):
     """Cria um participante para ser utilizado durante os testes"""
 
     user = ""
-    data = {}
+    data: dict[str, Any] = {}
     util = UtilTests()
 
     def setUp(self):
@@ -420,7 +420,7 @@ class AdvancedSearchTest(TestCase):
 
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
-        self.data = {}
+        self.data: dict[str, Any] = {}
 
     def create_initial_patients_data(self):
         female_list = [1, 2, 4]

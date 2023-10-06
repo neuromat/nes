@@ -320,7 +320,7 @@ class CpfValidationTest(TestCase):
 
 class PatientFormValidation(TestCase):
     user = ""
-    data = {}
+    data: dict[str, Any] = {}
     util = UtilTests()
 
     def setUp(self):
@@ -971,7 +971,7 @@ class PatientFormValidation(TestCase):
 
 class MedicalRecordFormValidation(TestCase):
     user = ""
-    data = {}
+    data: dict[str, Any] = {}
     util = UtilTests()
 
     def setUp(self):
@@ -1524,7 +1524,7 @@ class QuestionnaireFormValidation(TestCase):
     """
 
     user = ""
-    data = {}
+    data: dict[str, Any] = {}
     util = UtilTests()
 
     def setUp(self):
@@ -2497,7 +2497,7 @@ class TranslationValidation(TestCase):
     """
 
     user = ""
-    data = {}
+    data: dict[str, Any] = {}
     util = UtilTests()
 
     xml_data = """<ClaML version="2.0.0">

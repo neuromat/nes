@@ -28,7 +28,8 @@ from django.urls import resolve, reverse
 from django.utils.http import int_to_base36
 from django.utils.translation import gettext as _
 from qdc import settings
-from requests import Request
+
+# from requests import Request
 from sqlalchemy import false
 
 USER_USERNAME = "myadmin"
@@ -41,7 +42,7 @@ PATTERN = r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})"
 
 class FormUserValidation(TestCase):
     user: User
-    debug = False
+    debug: bool = False
 
     def setUp(self):
         self.user = User.objects.create_superuser(
@@ -96,8 +97,8 @@ class FormUserValidation(TestCase):
 
         if not domain_override:
             current_site: Site | RequestSite = get_current_site(request)
-            site_name = current_site.name
-            domain = current_site.domain
+            site_name: str = current_site.name
+            domain: str = current_site.domain
         else:
             site_name = domain = domain_override
 
@@ -114,7 +115,7 @@ class FormUserValidation(TestCase):
         }
 
         subject_template_name = "registration/password_reset_subject.txt"
-        subject = loader.render_to_string(subject_template_name, context)
+        subject: str = loader.render_to_string(subject_template_name, context)
 
         # Email subject *must not* contain newlines
         subject = "".join(subject.splitlines())
