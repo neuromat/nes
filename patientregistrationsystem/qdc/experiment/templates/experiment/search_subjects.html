@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 
 {% load i18n static %}
 
@@ -219,6 +219,6 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'data/js/subjects.js' %}"></script>
-    <script src="{% static 'data/js/participant_selection.js' %}"></script>
+    <script src="{% static 'site/js/subjects.js' %}"></script>
+    <script src="{% static 'site/js/participant_selection.js' %}"></script>
 {% endblock %}

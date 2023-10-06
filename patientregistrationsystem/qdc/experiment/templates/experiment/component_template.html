@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% load i18n static %}
@@ -382,5 +382,5 @@
 {% endblock %}
 
 {% block script %}
-        <script src="{% static 'data/js/component.js' %}"></script>
+        <script src="{% static 'site/js/component.js' %}"></script>
 {% endblock %}

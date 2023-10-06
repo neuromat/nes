@@ -1,4 +1,4 @@
-{% extends "quiz/template_login.html" %}
+{% extends "base/template_registration.html" %}
 
 {% load static %}
 {% load i18n %}
@@ -73,10 +73,10 @@
 
     </div>
 
-    <script src="{% static 'data/jquery/jquery-2.2.4.min.js' %}"></script>
-    <script src="{% static 'data/jquery/jquery-migrate-1.4.1.js' %}"></script>
-    <script src="{% static 'data/toastr/toastr.min.js' %}"></script>
-    <script src="{% static 'data/js/quiz.js' %}"></script>
+    <script src="{% static 'site/jquery/jquery-2.2.4.min.js' %}"></script>
+    <script src="{% static 'site/jquery/jquery-migrate-1.4.1.js' %}"></script>
+    <script src="{% static 'site/toastr/toastr.min.js' %}"></script>
+    <script src="{% static 'site/js/quiz.js' %}"></script>
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
     {% if form.non_field_errors %}

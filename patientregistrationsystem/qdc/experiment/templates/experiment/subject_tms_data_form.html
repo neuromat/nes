@@ -295,7 +295,7 @@
 
                                 <div class="row">
                                     <div class="panel-body">
-                                        <img src="{% static 'data/imgs/coil_orientation2.svg' %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
+                                        <img src="{% static 'imgs/coil_orientation2.svg' %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
                                     </div>
                                 </div>
 
@@ -385,7 +385,7 @@
 
 {% block script %}
 {{ block.super }}
-    <script src="{% static 'data/js/research_project.js' %}"></script>
+    <script src="{% static 'site/js/research_project.js' %}"></script>
     <script>
         $(document).ready(function () {
             var select_tms_setting = $("#id_tms_setting");

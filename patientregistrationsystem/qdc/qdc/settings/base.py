@@ -38,7 +38,7 @@ DEBUG404 = True
 IS_TESTING = True
 
 
-AXES_COOLOFF_MESSAGE: str = _(
+AXES_COOLOFF_MESSAGE = _(
     "Your accouunt has been locked for 1 hour: too many login attempts."
 )
 AXES_FAILURE_LIMIT = 5
@@ -76,7 +76,6 @@ INSTALLED_APPS: list[str] = [
 ]
 
 PROJECT_APPS: list[str] = [
-    "quiz",
     "patient",
     "custom_user",
     "experiment",
@@ -188,6 +187,7 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, "data/locale"),
     os.path.join(BASE_DIR, "export/locale"),
     os.path.join(BASE_DIR, "qdc/locale"),
+    # os.path.join(BASE_DIR, "site_static/locale"),
 )
 
 USE_TZ = True
@@ -234,6 +234,10 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
+
+STATICFILES_DIRS: list[str] = [
+    os.path.join(BASE_DIR, "site_static"),
+]
 
 STATIC_ROOT: str = os.path.join(BASE_DIR, "static")
 STATIC_URL = "static/"

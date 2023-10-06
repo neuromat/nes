@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 
 {% load i18n static %}
 
@@ -320,8 +320,8 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'data/js/custom_user.js' %}"></script>
-    <script src="{% static 'data/js/password.js' %}"></script>
-    <script src="{% static 'data/js/password_register.js' %}"></script>
-    <script src="{% static 'data/js/custom_user_validation.js' %}"></script>
+    <script src="{% static 'site/js/custom_user.js' %}"></script>
+    <script src="{% static 'site/js/password.js' %}"></script>
+    <script src="{% static 'site/js/password_register.js' %}"></script>
+    <script src="{% static 'site/js/custom_user_validation.js' %}"></script>
 {% endblock %}

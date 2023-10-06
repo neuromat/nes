@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 
 {% load i18n static %}
 
@@ -192,6 +192,6 @@
 {% endblock %}
 
 {% block script %}
-    <script type="text/javascript" src="{% static 'data/js/register.js' %}"></script>
+    <script type="text/javascript" src="{% static 'site/js/register.js' %}"></script>
     <script type="text/javascript">$(function(){$("[data-toggle=tooltip]").tooltip();})</script>
 {% endblock %}

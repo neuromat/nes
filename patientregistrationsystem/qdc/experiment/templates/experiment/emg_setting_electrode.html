@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% load i18n static %}
@@ -341,5 +341,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'data/js/emg_electrode_setting_register.js' %}"></script>
+    <script src="{% static 'site/js/emg_electrode_setting_register.js' %}"></script>
 {% endblock %}

@@ -54,7 +54,7 @@ def contact(request):
         "if_upgrade": if_upgrade,
     }
 
-    return render(request, "quiz/contato.html", context)
+    return render(request, "base/contato.html", context)
 
 
 @login_required

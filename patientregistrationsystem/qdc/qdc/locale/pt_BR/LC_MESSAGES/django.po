@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-05 23:34-0300\n"
+"POT-Creation-Date: 2023-10-06 08:33-0300\n"
 "PO-Revision-Date: 2023-10-02 12:31-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,6 +45,96 @@ msgstr "Português"
 #: qdc/settings/base.py:178
 msgid "English"
 msgstr "English"
+
+#: qdc/templates/base/contato.html:39 qdc/templates/base/template.html:14
+#: qdc/templates/base/template_registration.html:13
+msgid "Neuroscience Experiments System - NES"
+msgstr ""
+
+#: qdc/templates/base/contato.html:43
+msgid ""
+"Welcome to NES! If you need help you can check the <a href='https://nes."
+"readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. "
+"<br>Please report any bug to the admin."
+msgstr ""
+
+#: qdc/templates/base/template.html:108
+msgid "NES"
+msgstr ""
+
+#: qdc/templates/base/template.html:151
+msgid "Admin"
+msgstr ""
+
+#: qdc/templates/base/template.html:153
+#, fuzzy
+#| msgid "New password"
+msgid "Change password"
+msgstr "Nova senha"
+
+#: qdc/templates/base/template.html:154
+msgid "Logout"
+msgstr ""
+
+#: qdc/templates/base/template.html:175
+msgid "Home"
+msgstr ""
+
+#: qdc/templates/base/template.html:181
+msgid "Add people that participated in the experiments"
+msgstr ""
+
+#: qdc/templates/base/template.html:183
+msgid "Participants"
+msgstr ""
+
+#: qdc/templates/base/template.html:190 qdc/templates/base/template.html:199
+msgid "Add publications"
+msgstr ""
+
+#: qdc/templates/base/template.html:192
+msgid "Studies"
+msgstr ""
+
+#: qdc/templates/base/template.html:201
+msgid "Publications"
+msgstr ""
+
+#: qdc/templates/base/template.html:208 qdc/templates/base/template.html:217
+msgid "Add users and institutions to the database"
+msgstr ""
+
+#: qdc/templates/base/template.html:210
+msgid "Questionnaires"
+msgstr ""
+
+#: qdc/templates/base/template.html:219
+msgid "Researchers"
+msgstr ""
+
+#: qdc/templates/base/template.html:226
+msgid "Export your projects"
+msgstr ""
+
+#: qdc/templates/base/template.html:228
+msgid "Export"
+msgstr ""
+
+#: qdc/templates/base/template.html:235
+msgid "Here you can setup the equipments used in the projects"
+msgstr ""
+
+#: qdc/templates/base/template.html:237
+msgid "Set up"
+msgstr ""
+
+#: qdc/templates/base/template.html:247
+msgid "Plugin"
+msgstr ""
+
+#: qdc/templates/base/template.html:257
+msgid "Please enable Javascript"
+msgstr ""
 
 #: qdc/views.py:48
 msgid ""

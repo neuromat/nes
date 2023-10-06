@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% load i18n static %}
@@ -215,7 +215,7 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'data/js/research_project.js' %}"></script>
+    <script src="{% static 'site/js/research_project.js' %}"></script>
     <script>
         $(document).ready(function () {
             var $id_file_format = $("#id_file_format");

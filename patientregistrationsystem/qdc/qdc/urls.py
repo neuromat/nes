@@ -91,8 +91,9 @@ js_info_dict = {
         "experiment",
         "survey",
         "custom_user",
-        "quiz",
         "export",
+        "plugin",
+        "site_static",
     ),
 }
 

@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 
 {% load i18n static %}
 
@@ -449,8 +449,8 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'data/js/subjects.js' %}"></script>
-    <script src="{% static 'data/js/search_and_table.js' %}"></script>
+    <script src="{% static 'site/js/subjects.js' %}"></script>
+    <script src="{% static 'site/js/search_and_table.js' %}"></script>
     <script>
         $(document).ready(function () {
             searchAndTable("/experiment/subject/search/", {"group_id": $("#group_id").val()});

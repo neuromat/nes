@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 
 {% block activePatient %}{% if origin == 'subject' %}class="active"{% endif %}{% endblock %}
 {% block activeAdvancedResearchProject %}{% if origin != 'subject' %}class="active"{% endif %}{% endblock %}
@@ -340,7 +340,7 @@
             $("[data-toggle=tooltip]").tooltip();
         });
     </script>
-    <script src="{% static 'data/js/subject_questionnaire_response_form.js' %}"></script>
+    <script src="{% static 'site/js/subject_questionnaire_response_form.js' %}"></script>
     {% if FAIL == False %}
         <script>
             $(document).ready(function () {

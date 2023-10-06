@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 
 {% load i18n static %}
 
@@ -179,5 +179,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'data/js/eeg_electrode_localization_system.js' %}"></script>
+    <script src="{% static 'site/js/eeg_electrode_localization_system.js' %}"></script>
 {% endblock %}

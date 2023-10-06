@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 
 {% load i18n static %}
 
@@ -175,8 +175,8 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'data/multiselect/multiselect.min.js' %}"></script>
-    <script src="{% static 'data/js/questionnaire_export.js' %}"></script>
+    <script src="{% static 'site/multiselect/multiselect.min.js' %}"></script>
+    <script src="{% static 'site/js/questionnaire_export.js' %}"></script>
     <script>
         $(function(){
             $("[data-toggle=tooltip]").tooltip();

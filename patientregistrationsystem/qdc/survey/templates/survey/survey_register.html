@@ -1,4 +1,4 @@
-{% extends "quiz/template.html" %}
+{% extends "base/template.html" %}
 
 {% load i18n static %}
 {% load subjects_tags_survey %}
@@ -311,5 +311,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'data/js/survey.js' %}"></script>
+    <script src="{% static 'site/js/survey.js' %}"></script>
 {% endblock %}

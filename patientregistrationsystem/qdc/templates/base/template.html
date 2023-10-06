@@ -12,14 +12,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{% trans "Neuroscience Experiments System - NES" %}</title>
-    <link rel="icon" type="image/x-icon" href="/static/data/imgs/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="{% static 'imgs/favicon.ico' %}">
     <meta name="description" content="Database system for storing data related to EEG and EMG">
     <meta name="author" content="">
 
-    <link rel="stylesheet" href="{% static 'data/jquery-ui-1.13.2/jquery-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'data/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'data/toastr/toastr.min.css' %}">
-    <link rel="stylesheet" href="{% static 'data/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'site/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'site/font-awesome-4.7.0/css/font-awesome.min.css' %}">
 
     <style type="text/css">
         html {
@@ -266,7 +266,7 @@
 <footer class="footer">
     <div class="container">
         <a href="http://ccsl.ime.usp.br">
-            <img src="{% static 'data/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" height="34px" width="96px">
+            <img src="{% static 'imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" height="34px" width="96px">
         </a>
 
         <span class="version_number">v{% settings_value "VERSION" %}</span>
@@ -274,14 +274,14 @@
 </footer>
 
 
-<script type="text/javascript" src="{% static 'data/jquery/jquery-2.2.4.js' %}"></script>
-<script type="text/javascript" src="{% static 'data/jquery/jquery-migrate-1.4.1.js' %}"></script>
-<script type="text/javascript" src="{% static 'data/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'data/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'data/masked_input/jquery.maskedinput.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'data/Bootstrap-Validator-Master/validator.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'data/toastr/toastr.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'data/js/quiz.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/jquery/jquery-2.2.4.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/jquery/jquery-migrate-1.4.1.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/masked_input/jquery.maskedinput.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/Bootstrap-Validator-Master/validator.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/toastr/toastr.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/js/quiz.js' %}"></script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
 <script type="text/javascript">
