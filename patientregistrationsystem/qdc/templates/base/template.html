@@ -112,7 +112,7 @@
                 <ol class="nav navbar-nav navbar-right">
                     {% if perms.configuration.upgrade_rights and if_upgrade %}
                         <li>
-                            <a href="/home/upgrade_nes/"><span class="fa fa-download"></span>Upgrade_nes</a>
+                            <a href="/home/upgrade_nes/"><span class="fa fa-download fa-fw"></span>Upgrade_nes</a>
                         </li>
                     {% endif %}
                     <li>
@@ -122,7 +122,7 @@
 
                         <input id="language" name="language" type="hidden">
                         <a class="btn-default dropdown-toggle navbar-inverse" data-toggle="dropdown" href="#">
-                            <span  class="fa fa-globe"></span>
+                            <span  class="fa fa-globe fa-fw"></span>
                             {{ LANGUAGE_CODE|language_name_local }}
                             <span class="caret"></span>
                         </a> 
@@ -132,7 +132,7 @@
                                 {% if language.code != LANGUAGE_CODE %}
                                     <li>
                                         <a href="javascript:{}" onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit();">
-                                            <span  class="fa fa-globe"></span>
+                                            <span  class="fa fa-globe fa-fw"></span>
                                             {{ language.name_local }}
                                         </a>
                                     </li>
@@ -143,15 +143,16 @@
                     <li>
                         <a class="btn-default dropdown-toggle navbar-inverse"
                         data-toggle="dropdown" href="#">
-                            <span  class="fa fa-user-circle"></span> {{ request.user.username }}
+                            <span  class="fa fa-user-circle fa-fw"></span> {{ request.user.username }}
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown dropdown-user dropdown-menu" role="menu">
                             {% if request.user.is_superuser %}
-                                <li><a href="/admin"><span class="fa fa-star"></span> {% trans "Admin" %}</a></li>
+                                <li><a href="/admin"><span class="fa fa-star fa-fw"></span> {% trans "Admin" %}</a></li>
                             {% endif %}
-                            <li><a href="/password_change"><span class="fa fa-key"></span> {% trans "Change password" %}</a></li>
-                            <li><a href="{% url 'logout' %}"><span class="fa fa-power-off"></span> {% trans "Logout" %}</a></li>
+                            <li><a href="/password_change"><span class="fa fa-key fa-fw"></span> {% trans "Change password" %}</a></li>
+                            <li><a href="https://nes.readthedocs.io/en/latest/userguide/userguide.html"><span class="fa fa-question-circle fa-fw"></span> {% trans "Help" %}</a></li>
+                            <li><a href="{% url 'logout' %}"><span class="fa fa-power-off fa-fw"></span> {% trans "Logout" %}</a></li>
                         </ul>
 
                     </li>
@@ -171,7 +172,7 @@
 
                 <li {% block activeContact %}{% endblock %}>
                     <a href="/home/">
-                        <span class="fa fa-home"></span>
+                        <span class="fa fa-home fa-fw fa-lg"></span>
                         {% trans "Home" %}
                     </a>
                 </li>
@@ -179,7 +180,7 @@
                 {% if perms.patient.view_patient %}
                     <li {% block activePatient %}{% endblock %} >
                         <a href="/patient/find/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add people that participated in the experiments' %}">
-                            <span class="fa fa-users"></span>
+                            <span class="fa fa-users fa-fw fa-lg"></span>
                             {% trans "Participants" %}
                         </a>
                     </li>
@@ -188,7 +189,7 @@
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
                         <a href="/experiment/research_project/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
-                            <span class="fa fa-graduation-cap"></span>
+                            <span class="fa fa-graduation-cap fa-fw fa-lg"></span>
                             {% trans "Studies" %}
                         </a>
                     </li>
@@ -197,7 +198,7 @@
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedPublication %}{% endblock %}>
                         <a href="/experiment/publication/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
-                            <span class="fa fa-book"></span>
+                            <span class="fa fa-book fa-fw fa-lg"></span>
                             {% trans "Publications" %}
                         </a>
                     </li>
@@ -206,7 +207,7 @@
                 {% if perms.survey.view_survey %}
                     <li {% block activeAdvancedSurvey %}{% endblock %}>
                         <a href="/survey/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
-                            <span class="fa fa-list-alt"></span>
+                            <span class="fa fa-list-alt fa-fw fa-lg"></span>
                             {% trans "Questionnaires" %}
                         </a>
                     </li>
@@ -215,7 +216,7 @@
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}>
                         <a href="/user/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
-                            <span class="fa fa-user"></span>
+                            <span class="fa fa-user fa-fw fa-lg"></span>
                             {% trans "Researchers" %}
                         </a>
                     </li>
@@ -224,7 +225,7 @@
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
                     <li {% block activeExport %}{% endblock %}>
                         <a href="/export/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Export your projects' %}">
-                            <span class="fa fa-upload"></span>
+                            <span class="fa fa-upload fa-fw fa-lg"></span>
                             {% trans "Export" %}
                         </a>
                     </li>
@@ -233,7 +234,7 @@
                 {% if perms.experiment.register_equipment %}
                     <li {% block activeSetup %}{% endblock %}>
                         <a href="/experiment/setup/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Here you can setup the equipments used in the projects' %}">
-                            <span class="fa fa-cog"></span>
+                            <span class="fa fa-pencil fa-fw fa-lg"></span>
                             {% trans "Set up" %}
                         </a>
                     </li>
@@ -243,7 +244,7 @@
                 {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
                     <li {% block activePlugin %}{% endblock %}>
                         <a href="/plugin/">
-                            <span class="fa fa-cloud-upload"></span>
+                            <span class="fa fa-cloud-upload fa-fw fa-lg"></span>
                             {% trans "Plugin" %}
                         </a>
                     </li>
