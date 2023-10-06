@@ -1,3 +1,4 @@
+from typing import Any
 from django.test import TestCase
 from survey.forms import SurveyForm
 from django.contrib.auth.models import User
