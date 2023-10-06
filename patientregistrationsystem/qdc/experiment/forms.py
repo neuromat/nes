@@ -911,7 +911,7 @@ class EEGFilterSettingForm(ModelForm):
 class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
     class Meta:
         model = EEGElectrodeLocalizationSystem
-        fields = ["name", "description", "map_image_file"]
+        fields: list[str] = ["name", "description", "map_image_file"]
 
         widgets = {
             "name": TextInput(

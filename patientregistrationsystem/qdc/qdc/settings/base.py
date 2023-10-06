@@ -52,7 +52,7 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 3600
 
-SITE_ID = 1
+# SITE_ID = 1
 
 # Application definition
 
@@ -64,8 +64,6 @@ INSTALLED_APPS: list[str] = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.sites",
-    "django_jenkins",
     "simple_history",
     "jsonrpclib",
     "solo",

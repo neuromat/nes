@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-05 12:30-0300\n"
+"POT-Creation-Date: 2023-10-06 14:08-0300\n"
 "PO-Revision-Date: 2023-10-02 12:49-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: \n"
@@ -678,7 +678,8 @@ msgstr "Pesquisador sênior"
 msgid "Administrator"
 msgstr "Administrador"
 
-#: templates/404.html:14 templates/registration/change_password_custom.html:70
+#: templates/404.html:14 templates/base/template.html:176
+#: templates/registration/change_password_custom.html:70
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr "Home"
@@ -707,6 +708,100 @@ msgstr "Administração QDC"
 msgid "Access is not authorized"
 msgstr "Acesso não autorizado"
 
+#: templates/base/contato.html:39 templates/base/template.html:14
+#: templates/base/template_registration.html:13
+#: templates/registration/password_reset_form.html:9
+msgid "Neuroscience Experiments System - NES"
+msgstr "Sistema de Experimentos de Neurociência - NES"
+
+#: templates/base/contato.html:43
+msgid ""
+"Welcome to NES! If you need help you can check the <a href='https://nes."
+"readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. "
+"<br>Please report any bug to the admin."
+msgstr ""
+
+#: templates/base/template.html:108
+msgid "NES"
+msgstr ""
+
+#: templates/base/template.html:151
+msgid "Admin"
+msgstr ""
+
+#: templates/base/template.html:153
+msgid "Change password"
+msgstr "Alterar senha"
+
+#: templates/base/template.html:154
+msgid "Help"
+msgstr ""
+
+#: templates/base/template.html:155
+#: templates/registration/change_password_custom.html:72
+msgid "Logout"
+msgstr "Logout"
+
+#: templates/base/template.html:182
+msgid "Add people that participated in the experiments"
+msgstr ""
+
+#: templates/base/template.html:184
+msgid "Participants"
+msgstr ""
+
+#: templates/base/template.html:191 templates/base/template.html:200
+msgid "Add publications"
+msgstr ""
+
+#: templates/base/template.html:193
+msgid "Studies"
+msgstr ""
+
+#: templates/base/template.html:202
+msgid "Publications"
+msgstr ""
+
+#: templates/base/template.html:209 templates/base/template.html:218
+msgid "Add users and institutions to the database"
+msgstr ""
+
+#: templates/base/template.html:211
+#, fuzzy
+#| msgid "Can add questionnaire"
+msgid "Questionnaires"
+msgstr "Pode adicionar questinário"
+
+#: templates/base/template.html:220
+#, fuzzy
+#| msgid "Junior researcher"
+msgid "Researchers"
+msgstr "Pesquisador júnior"
+
+#: templates/base/template.html:227
+msgid "Export your projects"
+msgstr ""
+
+#: templates/base/template.html:229
+msgid "Export"
+msgstr ""
+
+#: templates/base/template.html:236
+msgid "Here you can setup the equipments used in the projects"
+msgstr ""
+
+#: templates/base/template.html:238
+msgid "Set up"
+msgstr ""
+
+#: templates/base/template.html:248
+msgid "Plugin"
+msgstr ""
+
+#: templates/base/template.html:258
+msgid "Please enable Javascript"
+msgstr ""
+
 #: templates/registration/change_password_custom.html:19
 msgid "Password change"
 msgstr "Alterar senha"
@@ -723,10 +818,6 @@ msgstr ""
 #: templates/registration/change_password_custom.html:65
 msgid "Save"
 msgstr "Salvar"
-
-#: templates/registration/change_password_custom.html:72
-msgid "Logout"
-msgstr "Logout"
 
 #: templates/registration/logged_out.html:8
 msgid "Thanks for spending some quality time with the Web site today."
@@ -874,10 +965,6 @@ msgstr ""
 "\n"
 "    Equipe Neuromat.\n"
 "    "
-
-#: templates/registration/password_reset_form.html:9
-msgid "Neuroscience Experiments System - NES"
-msgstr "Sistema de Experimentos de Neurociência - NES"
 
 #: templates/registration/password_reset_form.html:53
 msgid "Please enter your e-mail to receive instructions for password reset."
@@ -1140,9 +1227,6 @@ msgstr "Alterar senha em %(site_name)s"
 
 #~ msgid "Last Name"
 #~ msgstr "Sobrenome"
-
-#~ msgid "Change password"
-#~ msgstr "Alterar senha"
 
 #~ msgid "Export was finished correctly"
 #~ msgstr "Exportação foi finalizada com sucesso"
