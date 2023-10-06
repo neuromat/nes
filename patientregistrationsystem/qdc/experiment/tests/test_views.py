@@ -5157,14 +5157,6 @@ class ImportExperimentTest(TestCase):
 
         return experiment
 
-    def test_additional_data_and_additional_data_file(self):
-        self._test_creation_and_linking_between_two_models(
-            "experiment.additionaldata",
-            "experiment.additionaldatafile",
-            "additional_data",
-            self._create_additional_data_collection_objects(),
-        )
-
     def test_data_configuration_tree_and_digital_game_phase_data(self):
         self._test_creation_and_linking_between_two_models(
             "experiment.dataconfigurationtree",

@@ -41,7 +41,7 @@ PATTERN = r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})"
 
 class FormUserValidation(TestCase):
     user: User
-    debug: bool
+    debug = False
 
     def setUp(self):
         self.user = User.objects.create_superuser(

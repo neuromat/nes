@@ -2,6 +2,7 @@
 import datetime
 import shutil
 import tempfile
+from typing import Any
 
 from unittest.mock import patch
 
@@ -99,7 +100,7 @@ SUBJECT_SEARCH = "subject_search"
 
 
 class ExperimentalProtocolTest(TestCase):
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -648,7 +649,7 @@ class ExperimentalProtocolTest(TestCase):
 
 
 class GroupTest(TestCase):
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -795,7 +796,7 @@ class ClassificationOfDiseasesTest(TestCase):
 
 
 class ExperimentTest(TestCase):
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -1093,7 +1094,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 
 class SubjectTest(TestCase):
     util = UtilTests()
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -4039,7 +4040,7 @@ class SubjectTest(TestCase):
 
 
 class ResearchProjectTest(TestCase):
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -4260,7 +4261,7 @@ class ResearchProjectTest(TestCase):
 
 
 class EEGSettingTest(TestCase):
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -4667,7 +4668,7 @@ class EEGSettingTest(TestCase):
 
 
 class EEGEquipmentRegisterTest(TestCase):
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -6777,7 +6778,7 @@ class EEGEquipmentRegisterTest(TestCase):
 
 
 class EMGSettingTest(TestCase):
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -7179,7 +7180,7 @@ class EMGSettingTest(TestCase):
 
 
 class PublicationTest(TestCase):
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -7381,7 +7382,7 @@ class PublicationTest(TestCase):
 
 
 class ContextTreeTest(TestCase):
-    data = {}
+    data: dict[str, Any] = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
