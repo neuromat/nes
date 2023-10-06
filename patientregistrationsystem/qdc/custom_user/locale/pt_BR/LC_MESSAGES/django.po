@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-02 12:20-0300\n"
+"POT-Creation-Date: 2023-10-05 23:34-0300\n"
 "PO-Revision-Date: 2023-10-02 12:30-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.9.9\n"
 
-#: custom_user/forms.py:33 custom_user/forms.py:195
+#: custom_user/forms.py:34 custom_user/forms.py:196
 msgid "Type first name"
 msgstr "Entrar primeiro nome"
 
-#: custom_user/forms.py:43 custom_user/forms.py:204
+#: custom_user/forms.py:44 custom_user/forms.py:205
 msgid "Type last name"
 msgstr "Entrar último nome"
 
-#: custom_user/forms.py:53 custom_user/forms.py:214
+#: custom_user/forms.py:54 custom_user/forms.py:215
 msgid "Type e-mail"
 msgstr "Entra e-mail"
 
-#: custom_user/forms.py:56 custom_user/forms.py:217
+#: custom_user/forms.py:57 custom_user/forms.py:218
 msgid "Invalid e-mail"
 msgstr "E-mail inválido"
 
-#: custom_user/forms.py:71
+#: custom_user/forms.py:72
 msgid "Type user name"
 msgstr "Entrar nome do usuário"
 
-#: custom_user/forms.py:75
+#: custom_user/forms.py:76
 msgid ""
 "Username must start with a letter and contain only alphanumeric characters "
 "(6-30)"
@@ -45,28 +45,28 @@ msgstr ""
 "Nome de usuário deve começar com uma letra e ter apenas caracteres "
 "alfanuméricos"
 
-#: custom_user/forms.py:86 custom_user/forms.py:129
+#: custom_user/forms.py:87 custom_user/forms.py:130
 #: custom_user/templates/custom_user/register_users.html:206
 msgid "Type password"
 msgstr "Entrar senha"
 
-#: custom_user/forms.py:90 custom_user/forms.py:133
+#: custom_user/forms.py:91 custom_user/forms.py:134
 msgid "Password must contain at least a number and a lowercase letter (8-127)"
 msgstr "A senha deve conter pelo menos um número e uma letra minúscula"
 
-#: custom_user/forms.py:110 custom_user/views.py:195
+#: custom_user/forms.py:111 custom_user/views.py:195
 msgid "E-mail already registered"
 msgstr "E-mail já cadastrado"
 
-#: custom_user/forms.py:161 custom_user/forms.py:162
+#: custom_user/forms.py:162 custom_user/forms.py:163
 msgid "E-mail is not registered"
 msgstr "E-mail não cadastrado"
 
-#: custom_user/forms.py:175 custom_user/forms.py:221
+#: custom_user/forms.py:176 custom_user/forms.py:222
 msgid "Type citation name"
 msgstr "Entrar nome para citação"
 
-#: custom_user/forms.py:196 custom_user/forms.py:205
+#: custom_user/forms.py:197 custom_user/forms.py:206
 msgid "Only use letters and spaces"
 msgstr "Use apenas letras e espaços"
 
@@ -264,7 +264,8 @@ msgstr ""
 msgid "Deactivate"
 msgstr "Desativar"
 
-#: custom_user/tests.py:171 custom_user/views.py:70 custom_user/views.py:97
+#: custom_user/tests/tests.py:172 custom_user/views.py:70
+#: custom_user/views.py:97
 msgid ""
 "A researcher with this email address has already been registered before. "
 "Please contact your system administrator if you want to reactivate this "
@@ -323,8 +324,8 @@ msgid ""
 "This institution cannot be removed because there is (are) other "
 "institution(s) associated with it."
 msgstr ""
-"Esta instituição não pode ser removida porque há outra instituição associada"
-" a ela."
+"Esta instituição não pode ser removida porque há outra instituição associada "
+"a ela."
 
 #: custom_user/views.py:300
 msgid "Institution removed successfully."

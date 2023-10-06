@@ -651,7 +651,7 @@ class ObjectsFactory(object):
             questionnaire_responsible=responsible,
             token_id=token_id,
             subject_of_group=subject_of_group,
-            is_completed=datetime.datetime.now(),
+            is_completed=datetime.datetime.now().strftime("%c"),
         )
 
     @staticmethod

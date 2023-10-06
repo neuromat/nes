@@ -7,7 +7,7 @@ from django.template import Context
 from django.template.loader import get_template
 from io import BytesIO
 
-from qdc import settings
+from django.conf import settings
 
 
 def fetch_resources(uri, rel):
