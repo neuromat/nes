@@ -4,7 +4,7 @@ import zipfile
 from datetime import date, datetime, timedelta
 from json import load
 
-from custom_user.tests_helper import create_user
+from custom_user.tests.tests_helper import create_user
 from django.contrib.auth.models import Group
 from django.test import TestCase
 from experiment.tests.tests_helper import ExperimentTestCase, ObjectsFactory

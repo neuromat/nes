@@ -22,7 +22,7 @@ from django.utils.html import strip_tags
 from django.conf import settings
 from faker import Factory
 
-from custom_user.tests_helper import create_user
+from custom_user.tests.tests_helper import create_user
 from experiment.import_export import ExportExperiment
 from experiment.models import (
     Keyword,

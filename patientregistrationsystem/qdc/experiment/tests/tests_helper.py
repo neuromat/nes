@@ -11,7 +11,7 @@ from django.db import IntegrityError
 from django.test import RequestFactory, TestCase
 from faker import Factory
 
-from custom_user.tests_helper import create_user
+from custom_user.tests.tests_helper import create_user
 from experiment.models import (
     ResearchProject,
     Experiment,
