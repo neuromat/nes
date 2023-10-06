@@ -30,7 +30,7 @@ QUESTIONNAIRE_ID = 957421
 TEST_QUESTIONNAIRE = 271192
 
 
-marital_status_list = ["Single", "Married", "Widow"]
+marital_status_list: list[str] = ["Single", "Married", "Widow"]
 
 
 class UtilTests:
@@ -40,7 +40,7 @@ class UtilTests:
         user=None,
         gender_name="Masculino",
         date_birth="2001-01-15",
-    ):
+    ) -> Patient:
         """Cria um participante para ser utilizado durante os testes"""
 
         gender = self.create_gender_mock(gender_name)
@@ -49,14 +49,14 @@ class UtilTests:
         )
 
     @staticmethod
-    def create_marital_status_mock(marital_status_name="Single"):
+    def create_marital_status_mock(marital_status_name="Single") -> MaritalStatus:
         marital_status = MaritalStatus.objects.create(name=marital_status_name)
         marital_status.save()
 
         return marital_status
 
     @staticmethod
-    def create_gender_mock(gender_name="Masculino"):
+    def create_gender_mock(gender_name="Masculino") -> Gender:
         gender_exists = Gender.objects.filter(name=gender_name).exists()
         if gender_exists:
             gender = Gender.objects.get(name=gender_name)
@@ -67,7 +67,7 @@ class UtilTests:
         return gender
 
     @staticmethod
-    def create_survey_mock(survey_id, is_initial_evaluation):
+    def create_survey_mock(survey_id, is_initial_evaluation) -> Survey:
         survey = Survey(
             lime_survey_id=survey_id, is_initial_evaluation=is_initial_evaluation
         )
@@ -83,7 +83,9 @@ class UtilTests:
 
         return result["tid"]
 
-    def create_response_survey_mock(self, user, patient, survey, token_id=None):
+    def create_response_survey_mock(
+        self, user, patient, survey, token_id=None
+    ) -> QuestionnaireResponse:
         if not token_id:
             # TODO (NES-981): maybe this is not necessary. We want just the token id.
             #  It's not necessary to really create participant in LimeSurvey
