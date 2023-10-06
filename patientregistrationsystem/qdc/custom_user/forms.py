@@ -1,4 +1,5 @@
 # coding=utf-8
+from typing import Any, Iterator
 from custom_user.models import Institution, UserProfile
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.hashers import make_password
@@ -151,7 +152,7 @@ class CustomPasswordResetForm(PasswordResetForm):
             return False
 
         # get_users returns a generator object
-        users = self.get_users(self.cleaned_data["email"])
+        users: Iterator[Any] = self.get_users(self.cleaned_data["email"])
 
         try:
             # trying to get the first element from the generator object using __next__() once

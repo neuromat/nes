@@ -12,6 +12,7 @@ CSRF_USE_SESSIONS = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 DATABASES["default"] = {"ENGINE": "django.db.backends.sqlite3"}
 

@@ -52,7 +52,6 @@ Faker==2.0.4
 
 # Development
 types-python-dateutil
-#types-requests
 django-stubs-ext 
 django-stubs[compatible-mypy]
 mypy

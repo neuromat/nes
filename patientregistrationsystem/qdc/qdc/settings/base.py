@@ -16,7 +16,7 @@ from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
 
-BASE_DIR = Path(__file__).parent.parent.parent
+BASE_DIR: Path = Path(__file__).parent.parent.parent
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -24,7 +24,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ""
+SECRET_KEY: str = ""
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -38,24 +38,25 @@ DEBUG404 = True
 IS_TESTING = True
 
 
-AXES_COOLOFF_MESSAGE = _(
+AXES_COOLOFF_MESSAGE: str = _(
     "Your accouunt has been locked for 1 hour: too many login attempts."
 )
 AXES_FAILURE_LIMIT = 5
 AXES_RESET_ON_SUCCESS = True
 AXES_COOLOFF_TIME = 1
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 3600
 
+SITE_ID = 1
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS: list[str] = [
     "modeltranslation",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -63,6 +64,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "django_jenkins",
     "simple_history",
     "jsonrpclib",
@@ -73,7 +75,7 @@ INSTALLED_APPS = [
     "axes",
 ]
 
-PROJECT_APPS = [
+PROJECT_APPS: list[str] = [
     "quiz",
     "patient",
     "custom_user",
@@ -86,7 +88,7 @@ PROJECT_APPS = [
 
 INSTALLED_APPS += PROJECT_APPS
 
-MIDDLEWARE = [
+MIDDLEWARE: list[str] = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -124,7 +126,7 @@ TEMPLATES = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = [
+AUTHENTICATION_BACKENDS: list[str] = [
     # AxesStandaloneBackend should be the first backend in the AUTHENTICATION_BACKENDS list.
     "axes.backends.AxesStandaloneBackend",
     # Django ModelBackend is the default authentication backend.
@@ -145,7 +147,7 @@ ROOT_URLCONF = "qdc.urls"
 WSGI_APPLICATION = "qdc.wsgi.application"
 
 # LimeSurvey configuration
-LIMESURVEY = {
+LIMESURVEY: dict[str, str] = {
     "URL_API": "",
     "URL_WEB": "",
     "USER": "",
@@ -153,7 +155,7 @@ LIMESURVEY = {
 }
 
 # Portal API configuration
-PORTAL_API = {"URL": "", "PORT": "", "USER": "", "PASSWORD": ""}
+PORTAL_API: dict[str, str] = {"URL": "", "PORT": "", "USER": "", "PASSWORD": ""}
 
 # Show button to send experiments to Portal
 SHOW_SEND_TO_PORTAL_BUTTON = False

@@ -27,7 +27,7 @@ from django.test.client import RequestFactory
 from django.urls import resolve, reverse
 from django.utils.http import int_to_base36
 from django.utils.translation import gettext as _
-from qdc import settings
+from django.conf import settings
 
 # from requests import Request
 from sqlalchemy import false
@@ -97,8 +97,8 @@ class FormUserValidation(TestCase):
 
         if not domain_override:
             current_site: Site | RequestSite = get_current_site(request)
-            site_name: str = current_site.name
-            domain: str = current_site.domain
+            site_name = current_site.name
+            domain = current_site.domain
         else:
             site_name = domain = domain_override
 
@@ -276,7 +276,7 @@ class FormUserValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.filter(id=self.user.pk).count(), 1)
 
-        user_first_name = User.objects.filter(id=self.user.pk).first()
+        user_first_name: User = User.objects.filter(id=self.user.pk).first()
 
         self.assertEqual(user_first_name.first_name, first_name)
 
@@ -298,7 +298,7 @@ class FormUserValidation(TestCase):
         self.data = {"action": "deactivate"}
 
         self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
-        user = User.objects.first()
+        user: User = User.objects.first()
         self.assertTrue(user.is_active)
         self.assertFalse(user.has_usable_password())
 
