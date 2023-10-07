@@ -16,7 +16,6 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.db.models import Q
 from experiment.models import Questionnaire
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse
 from experiment.models import Subject, SubjectOfGroup
@@ -499,6 +498,7 @@ def patient_view_medical_record(request, patient, context):
 
 def patient_view_questionnaires(request, patient, context, is_update):
     from django.db.models import BaseManager
+
     if is_update and request.method == "POST":
         return finish_handling_post(request, patient.id, 4)
 
@@ -805,6 +805,8 @@ def search_cid10_ajax(request):
         patient_id = request.POST["patient_id"]
 
         if search_text:
+            from django.db.models import Q
+
             cid_10_list = ClassificationOfDiseases.objects.filter(
                 Q(abbreviated_description__icontains=search_text)
                 | Q(description__icontains=search_text)

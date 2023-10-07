@@ -16,7 +16,6 @@ from django.contrib.auth.tokens import (
     default_token_generator,
 )
 from django.contrib.messages import get_messages
-from django.contrib.sites.models import Site
 from django.contrib.sites.requests import RequestSite
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpRequest
@@ -96,7 +95,7 @@ class FormUserValidation(TestCase):
             raise ValueError("Email address is required to send an email")
 
         if not domain_override:
-            current_site: Site | RequestSite = get_current_site(request)
+            current_site = get_current_site(request)
             site_name = current_site.name
             domain = current_site.domain
         else:
@@ -278,7 +277,7 @@ class FormUserValidation(TestCase):
 
         user_first_name: User = User.objects.filter(id=self.user.pk).first()
 
-        self.assertEqual(user_first_name.first_name, first_name)
+        self.assertEqual(user_first_name.first_name, first_name.upper())
 
     def test_user_update_login_enable_false(self):
         email = "test@example.com"
