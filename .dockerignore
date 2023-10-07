@@ -1,5 +1,6 @@
 **/.git
 **/.gitignore
+**/.gitattributes
 **/.vscode
 **/coverage
 **/.env
@@ -12,5 +13,5 @@ docker-compose.yml
 **/venv
 **/env
 
-nes_settings.placeholder
-nes_wsgi.placeholder
+**/nes_settings.placeholder
+**/nes_wsgi.placeholder
