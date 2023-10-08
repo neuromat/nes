@@ -190,7 +190,6 @@ LOCALE_PATHS = (
 
 USE_TZ = True
 TIME_ZONE = "America/Sao_Paulo"
-# TIME_ZONE = "UTC"
 
 USE_I18N = True
 

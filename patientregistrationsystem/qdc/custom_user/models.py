@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django_stubs_ext.db.models import TypedModelMeta
 
 from patient.models import COUNTRIES
 
@@ -23,8 +24,14 @@ class Institution(models.Model):
     def __str__(self):
         return "%s" % self.name
 
-    class Meta:
+    class Meta(TypedModelMeta):
         ordering = ["name"]
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "acronym", "country", "parent"], name="unique_name"
+            ),
+        ]
 
 
 class UserProfile(models.Model):

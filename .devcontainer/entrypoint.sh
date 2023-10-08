@@ -130,6 +130,6 @@ fi
 
 echo "INFO: Done initializing data"
 
-echo "entrypoint.sh finished"
+echo "INFO: entrypoint.sh finished"
 
 exec "$@"

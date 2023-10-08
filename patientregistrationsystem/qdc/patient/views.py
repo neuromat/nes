@@ -497,17 +497,13 @@ def patient_view_medical_record(request, patient, context):
 
 
 def patient_view_questionnaires(request, patient, context, is_update):
-    from django.db.models import BaseManager
-
     if is_update and request.method == "POST":
         return finish_handling_post(request, patient.id, 4)
 
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
     patient_questionnaires_data_dictionary = {}
-    initial_evaluation_list: BaseManager[Survey] = Survey.objects.filter(
-        is_initial_evaluation=True
-    )
+    initial_evaluation_list = Survey.objects.filter(is_initial_evaluation=True)
     language_code = request.LANGUAGE_CODE
 
     # First, add initial evaluation...
@@ -805,12 +801,13 @@ def search_cid10_ajax(request):
         patient_id = request.POST["patient_id"]
 
         if search_text:
-            from django.db.models import Q
+            # to solve circular import error
+            from django.db.models import Q as importedQ
 
             cid_10_list = ClassificationOfDiseases.objects.filter(
-                Q(abbreviated_description__icontains=search_text)
-                | Q(description__icontains=search_text)
-                | Q(code__icontains=search_text)
+                importedQ(abbreviated_description__icontains=search_text)
+                | importedQ(description__icontains=search_text)
+                | importedQ(code__icontains=search_text)
             ).order_by("code")
 
         return render(
