@@ -50,7 +50,7 @@ RUN pip3 install -U pip setuptools wheel && \
     pip3 wheel -r requirement/requirements.txt
 
 
-FROM python:3.11-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
