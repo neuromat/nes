@@ -104,7 +104,7 @@ except:
     echo "	INFO: create_super_user.py"
     python3 -u manage.py shell < /tmp/create_superuser.py || true
     echo "	INFO: import cid10"
-    python -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
+    python3 -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
     
     mkdir static || true
     echo "	INFO: colectstatic"
