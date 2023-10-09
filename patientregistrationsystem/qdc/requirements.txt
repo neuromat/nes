@@ -28,7 +28,8 @@ scipy>=1.11.1
 h5py>=2.6.0
 # Keeps mpl to a version before the dependency bump:
 # https://github.com/matplotlib/matplotlib/blob/f6e0ee49c598f59c6e6cf4eefe473e4dc634a58a/doc/api/prev_api_changes/api_changes_3.4.0/development.rst
-matplotlib>=1.5.3,<3.4
+#matplotlib>=1.5.3,<3.4
+matplotlib==3.8
 
 pydot==1.4.2
 coreapi==2.3.3

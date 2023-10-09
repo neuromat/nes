@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:3.11-bookworm
+FROM mcr.microsoft.com/devcontainers/python:3.12-bookworm
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -13,10 +13,9 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 
-RUN apt-get -y update --no-install-recommends && \
+RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y install --no-install-recommends \
     python-is-python3 \
-    python3-pip \
     libjpeg-dev \
     libpng-dev \
     libpq-dev \
@@ -31,6 +30,8 @@ RUN apt-get -y update --no-install-recommends && \
     graphviz && \
     apt-get autoremove -y && \
     apt-get clean -y && \
+    # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
+    apt-get purge -y imagemagick imagemagick-6-common && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
 

@@ -1,7 +1,6 @@
-FROM python:3.11-slim-bookworm as wheeler
+FROM python:3.12-slim-bookworm as wheeler
 
 ENV PYTHONUNBUFFERED 1
-ENV DEBIAN_FRONTEND dialog
 
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
@@ -13,10 +12,9 @@ ARG NES_DIR=/usr/local/nes
 ENV NES_DIR=$NES_DIR
 
 
-RUN apt-get -y update --no-install-recommends && \
+RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y install --no-install-recommends \
     python3-dev \
-    python3-pip \
     libjpeg-dev \
     libpng-dev \
     libpq-dev \
@@ -53,7 +51,6 @@ RUN pip3 install -U pip setuptools wheel && \
 
 
 FROM python:3.11-slim-bookworm
-ENV DEBIAN_FRONTEND dialog
 
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
@@ -63,7 +60,7 @@ ARG NES_DIR=/usr/local/nes
 ENV NES_DIR=$NES_DIR
 
 
-RUN apt-get -y update --no-install-recommends && \
+RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y install --no-install-recommends \
     curl \
     python3-psycopg2 \
@@ -81,6 +78,8 @@ RUN apt-get -y update --no-install-recommends && \
     #libhdf5-dev \
     graphviz && \
     #snapd && \
+    # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
+    apt-get purge -y imagemagick imagemagick-6-common && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists* && \

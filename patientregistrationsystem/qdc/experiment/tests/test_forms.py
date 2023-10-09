@@ -785,7 +785,7 @@ class Experiment_FormTest(TestCase):
         self.assertTrue(experiment.is_valid())
         s = experiment.data["source_code_url"]
         s.upper()
-        self.assertNotEquals(s[:7], "HTTP://", "Informe uma url válida.")
+        self.assertNotEqual(s[:7], "HTTP://", "Informe uma url válida.")
 
     def test_ExperimentForm_is_not_valid_ethics_committee_project_url(self):
         experiment = ExperimentForm(
@@ -807,7 +807,7 @@ class Experiment_FormTest(TestCase):
         self.assertTrue(experiment.is_valid())
         s = experiment.data["ethics_committee_project_url"]
         s.upper()
-        self.assertNotEquals(s[:7], "HTTP://", "Informe uma url válida.")
+        self.assertNotEqual(s[:7], "HTTP://", "Informe uma url válida.")
 
     def test_ExperimentForm_is_not_valid_ethics_committee_project_file(self):
         experiment = ExperimentForm(

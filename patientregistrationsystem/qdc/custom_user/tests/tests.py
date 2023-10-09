@@ -417,7 +417,7 @@ class PasswordPattern(TestCase):
     Test of the defined pattern
 
     (	    		#   Start
-    (?=.*\d)		#   must contains one digit from 0-9
+    (?=.*\\d)		#   must contains one digit from 0-9
     (?=.*[a-z])		#   must contains one lowercase characters
     (?=.*[A-Z])		#   must contains one uppercase characters
     (?=.*[@#$%])	#   must contains one special symbols in the list "@#$%"
