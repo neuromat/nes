@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-05 23:34-0300\n"
+"POT-Creation-Date: 2023-10-09 11:46-0300\n"
 "PO-Revision-Date: 2023-10-02 12:30-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,11 +70,11 @@ msgstr "Entrar nome para citação"
 msgid "Only use letters and spaces"
 msgstr "Use apenas letras e espaços"
 
-#: custom_user/models.py:10
+#: custom_user/models.py:11
 msgid "No"
 msgstr "Não"
 
-#: custom_user/models.py:11
+#: custom_user/models.py:12
 msgid "Yes, a username and password must be configured"
 msgstr "Sim, um nome de usuário e uma senha devem ser configurados"
 

@@ -2,8 +2,8 @@
 import re
 from importlib.util import resolve_name
 
-from custom_user.models import Institution, User, UserProfile
-from custom_user.tests.tests_helper import create_user
+from custom_user.models import Institution, UserProfile
+from .tests_helper import create_user
 from custom_user.views import (
     institution_create,
     institution_update,
@@ -15,6 +15,7 @@ from django.contrib.auth.tokens import (
     PasswordResetTokenGenerator,
     default_token_generator,
 )
+from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from django.contrib.sites.requests import RequestSite
 from django.contrib.sites.shortcuts import get_current_site
@@ -275,22 +276,22 @@ class FormUserValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.filter(id=self.user.pk).count(), 1)
 
-        user_first_name: User = User.objects.filter(id=self.user.pk).first()
+        user_first_name: User = User.objects.filter(id=self.user.pk).get(id=1)
 
         self.assertEqual(user_first_name.first_name, first_name.upper())
 
     def test_user_update_login_enable_false(self):
         email = "test@example.com"
         self.data = {
-            "first_name": "Fulano",
-            "last_name": "de Tal",
+            "first_name": "FULANO",
+            "last_name": "DE TAL",
             "email": email,
             "login_enabled": False,
             "action": "save",
         }
 
         self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
-        user_updated = User.objects.filter(first_name="Fulano")
+        user_updated = User.objects.filter(first_name="FULANO")
         self.assertEqual(user_updated.count(), 1)
 
     def test_user_update_deactivate_user(self):
@@ -304,8 +305,8 @@ class FormUserValidation(TestCase):
     def test_user_update_with_password_flag_checked(self):
         email = "jenkins.neuromat@gmail.com"
         self.data = {
-            "first_name": "Fulano",
-            "last_name": "de Tal",
+            "first_name": "FULANO",
+            "last_name": "DE TAL",
             "username": USER_USERNAME,
             "email": email,
             "login_enabled": True,
@@ -315,7 +316,7 @@ class FormUserValidation(TestCase):
         }
 
         self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
-        user_updated = User.objects.filter(first_name="Fulano")
+        user_updated = User.objects.filter(first_name="FULANO")
         self.assertEqual(user_updated.count(), 1)
 
     def test_user_update_failed_because_email_already_registered(self):

@@ -3,6 +3,7 @@ from csv import reader
 from datetime import date, timedelta
 from io import StringIO
 from os import path
+from typing import Any
 
 import coreapi
 from django.conf import settings
@@ -535,7 +536,7 @@ def send_electrode_model_to_portal(experiment_nes_id, electrode_model: Electrode
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment_nes_id),
         "name": electrode_model.name,
         "description": electrode_model.description,
@@ -553,9 +554,11 @@ def send_electrode_model_to_portal(experiment_nes_id, electrode_model: Electrode
 
     if electrode_model.electrode_type == "surface":
         action_keys = ["experiments", "surface_electrode", "create"]
-        electrode_instance = SurfaceElectrode.objects.filter(id=electrode_model.id)
+        electrode_instance: SurfaceElectrode = SurfaceElectrode.objects.filter(
+            id=electrode_model.id
+        ).get(id=1)
         if electrode_instance:
-            electrode_instance = electrode_instance[0]
+            # electrode_instance = electrode_instance
             params["conduction_type"] = electrode_instance.conduction_type
             params["electrode_mode"] = electrode_instance.electrode_mode
             params["electrode_shape_name"] = electrode_instance.electrode_shape.name
@@ -571,7 +574,9 @@ def send_electrode_model_to_portal(experiment_nes_id, electrode_model: Electrode
 
     elif electrode_model.electrode_type == "needle":
         action_keys = ["experiments", "needle_electrode", "create"]
-        electrode_instance = NeedleElectrode.objects.get(pk=electrode_model.id)
+        electrode_instance: NeedleElectrode = NeedleElectrode.objects.get(
+            pk=electrode_model.id
+        )
         params["size"] = electrode_instance.size
         params["size_unit"] = electrode_instance.size_unit
         params[

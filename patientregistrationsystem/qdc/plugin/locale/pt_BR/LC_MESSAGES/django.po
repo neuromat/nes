@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-02 12:20-0300\n"
+"POT-Creation-Date: 2023-10-09 11:46-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,26 +90,26 @@ msgstr "Por Participante"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: plugin/tests/test_views.py:429 plugin/views.py:304 plugin/views.py:365
+#: plugin/tests/test_views.py:429 plugin/views.py:305 plugin/views.py:366
 msgid "Could not open zip file to send to Forest Plugin"
 msgstr ""
 "Não foi possível abrir o arquivo zip para enviar para o plugin Floresta"
 
-#: plugin/tests/test_views.py:450 plugin/views.py:518
+#: plugin/tests/test_views.py:450 plugin/views.py:519
 msgid "Data from questionnaires was sent to Forest Plugin"
 msgstr "Os dados dos questionários foram enviados para o plugin Floresta"
 
-#: plugin/tests/test_views.py:471 plugin/views.py:318
+#: plugin/tests/test_views.py:471 plugin/views.py:319
 msgid "Please select at least Gender participant attribute"
 msgstr "Selecione ao menos o atributo Gênero do participante"
 
-#: plugin/tests/test_views.py:491 plugin/views.py:311
+#: plugin/tests/test_views.py:491 plugin/views.py:312
 #, fuzzy
 #| msgid "Please, select a patient field from the list."
 msgid "Please select at least one patient"
 msgstr "Por favor, selecione uma opção da lista."
 
-#: plugin/tests/test_views.py:512 plugin/views.py:324
+#: plugin/tests/test_views.py:512 plugin/views.py:325
 msgid "The Floresta Plugin needs to send at least Gender attribute"
 msgstr ""
 "O plugin floresta precisa enviar ao menos o atributo gênero do participante"
@@ -118,8 +118,8 @@ msgstr ""
 #: plugin/tests/test_views.py:762 plugin/tests/test_views.py:791
 #: plugin/tests/test_views.py:820 plugin/tests/test_views.py:849
 #: plugin/tests/test_views.py:878 plugin/tests/test_views.py:907
-#: plugin/tests/test_views.py:935 plugin/views.py:267 plugin/views.py:279
-#: plugin/views.py:338 plugin/views.py:350
+#: plugin/tests/test_views.py:935 plugin/views.py:268 plugin/views.py:280
+#: plugin/views.py:339 plugin/views.py:351
 msgid ""
 "Error: some thing went wrong consuming LimeSurvey API. Please try again. If "
 "problem persists please contact System Administrator."

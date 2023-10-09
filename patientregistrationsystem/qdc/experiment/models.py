@@ -2,6 +2,7 @@
 import datetime
 
 from os import path
+from typing import LiteralString
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -149,7 +150,9 @@ class Publication(models.Model):
     citation = models.TextField()
     url = models.URLField(null=True, blank=True)
     experiments = models.ManyToManyField(Experiment)
-    publication_type = models.ForeignKey(PublicationType, on_delete=models.CASCADE)
+    publication_type = models.ForeignKey(
+        PublicationType, null=True, blank=True, on_delete=models.CASCADE
+    )
 
 
 class Manufacturer(models.Model):
@@ -348,7 +351,7 @@ class SurfaceElectrode(ElectrodeModel):
     electrode_mode = models.CharField(max_length=20, choices=MODE_OPTIONS)
     electrode_shape = models.ForeignKey(ElectrodeShape, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(ElectrodeModel, self).save(*args, **kwargs)
 
 
@@ -371,7 +374,7 @@ class IntramuscularElectrode(ElectrodeModel):
         null=True, blank=True, validators=[MinValueValidator(0)]
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(ElectrodeModel, self).save(*args, **kwargs)
 
 
@@ -1088,14 +1091,14 @@ class TMSLocalizationSystem(models.Model):
 class CoilOrientation(models.Model):
     name = models.CharField(max_length=150)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class DirectionOfTheInducedCurrent(models.Model):
     name = models.CharField(max_length=150)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -1142,12 +1145,12 @@ class Component(models.Model):
     )
     component_type = models.CharField(max_length=30, choices=COMPONENT_TYPES)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
         self.experiment.save()
 
 
-def get_step_file_dir(instance, filename):
+def get_step_file_dir(instance, filename) -> LiteralString:
     return "step/%s/%s" % (instance.component.id, filename)
 
 
@@ -1159,28 +1162,28 @@ class ComponentAdditionalFile(models.Model):
 
 
 class Task(Component):
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
 class TaskForTheExperimenter(Component):
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
 class Instruction(Component):
     text = models.TextField(null=False, blank=False)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
 class Pause(Component):
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
-def get_stimulus_media_file_dir(instance, filename):
+def get_stimulus_media_file_dir(instance, filename) -> LiteralString:
     return "stimulus_step/%s/%s" % (instance.id, filename)
 
 
@@ -1192,7 +1195,7 @@ class Stimulus(Component):
         upload_to=get_stimulus_media_file_dir, null=True, blank=True
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
@@ -1201,7 +1204,7 @@ class Questionnaire(Component):
         Survey, null=False, blank=False, on_delete=models.PROTECT
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
@@ -1214,28 +1217,28 @@ class Block(Component):
     )
     type = models.CharField(null=False, max_length=20, choices=BLOCK_TYPES)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
 class EEG(Component):
     eeg_setting = models.ForeignKey(EEGSetting, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
 class EMG(Component):
     emg_setting = models.ForeignKey(EMGSetting, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
 class TMS(Component):
     tms_setting = models.ForeignKey(TMSSetting, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
@@ -1243,7 +1246,7 @@ class InformationType(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 

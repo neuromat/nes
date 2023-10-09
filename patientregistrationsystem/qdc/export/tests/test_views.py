@@ -1047,6 +1047,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         self._asserts_elements_in_zipfile(zipped_file, self.group, group2)
 
+    @override_settings(LANGUAGE_CODE="en-US", LANGUAGES=(("en", "English"),))
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("survey.abc_search_engine.Server")
     def test_export_has_correct_header_fields_in_questionnaire_responses_file(
@@ -4968,6 +4969,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             shutil.rmtree(temp_dir)
 
+    @override_settings(LANGUAGE_CODE="en-US", LANGUAGES=(("en", "English"),))
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("survey.abc_search_engine.Server")
     def test_export_per_experiment_adds_questionnaire_responses_table_schema_info_to_datapackage_json_file1(
@@ -5040,6 +5042,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             shutil.rmtree(temp_dir)
 
+    @override_settings(LANGUAGE_CODE="en-US", LANGUAGES=(("en", "English"),))
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("survey.abc_search_engine.Server")
     def test_export_per_experiment_adds_questionnaire_responses_table_schema_info_to_datapackage_json_file2(
@@ -5433,6 +5436,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             shutil.rmtree(temp_dir)
 
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("survey.abc_search_engine.Server")
     def test_export_per_experiment_adds_entrance_questionnaire_responses_table_schema_info_to_datapackage1(
@@ -5504,6 +5508,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             shutil.rmtree(temp_dir)
 
+    @override_settings(LANGUAGE_CODE="en-US", LANGUAGES=(("en", "English"),))
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("survey.abc_search_engine.Server")
     def test_export_per_experiment_adds_entrance_questionnaire_responses_table_schema_info_to_datapackage2(
@@ -6478,6 +6483,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             shutil.rmtree(temp_dir)
 
+    @override_settings(LANGUAGE_CODE="en-US", LANGUAGES=(("en", "English"),))
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("survey.abc_search_engine.Server")
     def test_export_per_participant_adds_questionnaire_responses_table_schema_info_to_datapackage1(
@@ -6671,6 +6677,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             shutil.rmtree(temp_dir)
 
+    @override_settings(LANGUAGE_CODE="en-US", LANGUAGES=(("en", "English"),))
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("survey.abc_search_engine.Server")
     def test_export_per_participant_adds_questionnaire_responses_table_schema_info_to_datapackage2(

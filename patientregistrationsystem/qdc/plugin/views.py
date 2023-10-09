@@ -1,5 +1,5 @@
 import json
-import os
+import pathlib
 from operator import itemgetter
 from os import path
 
@@ -173,7 +173,8 @@ def build_zip_file(
     export_dir = path.join(
         settings.MEDIA_ROOT, "export", str(request.user.id), str(export.id)
     )
-    os.makedirs(export_dir)
+    pathlib.Path(export_dir).mkdir(parents=True, exist_ok=True)
+    # os.makedirs(export_dir)
     input_filename = path.join(export_dir, "json_export.json")
     build_complete_export_structure(
         True,

@@ -436,7 +436,7 @@ msgstr "Anterior"
 #: export/tests/test_views.py:1143 export/tests/test_views.py:2959
 #: export/tests/test_views.py:2960
 msgid "Acquisition date:"
-msgstr "Data de aquisição:"
+msgstr ""
 
 #: export/tests/test_views.py:173 export/tests/test_views.py:174
 #: export/tests/test_views.py:2969 export/tests/test_views.py:2970
@@ -735,7 +735,7 @@ msgstr ""
 
 #: export/tests/test_views.py:1144
 msgid "First Question"
-msgstr "Primeira pergunta"
+msgstr ""
 
 #: export/tests/test_views.py:1145
 msgid "Second Question"

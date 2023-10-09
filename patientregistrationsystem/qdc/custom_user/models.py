@@ -21,7 +21,7 @@ class Institution(models.Model):
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s" % self.name
 
     class Meta(TypedModelMeta):
@@ -29,7 +29,7 @@ class Institution(models.Model):
 
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "acronym", "country", "parent"], name="unique_name"
+                fields=["name", "acronym", "country"], name="unique_institution"
             ),
         ]
 

@@ -1,7 +1,7 @@
 from .base import *
 
-DEBUG = True
-DEBUG404 = True
+DEBUG = False
+DEBUG404 = False
 TEMPLATE_DEBUG = DEBUG
 IS_TESTING = True
 
@@ -14,6 +14,13 @@ CSRF_COOKIE_SECURE = False
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-# DATABASES["default"] = {"ENGINE": "django.db.backends.sqlite3"}
+DATABASES["default"] = {
+    "ENGINE": "django.db.backends.sqlite3",
+    "NAME": "test_database",
+}
 
-PASSWORD_HASHERS = ("django.contrib.auth.hashers.MD5PasswordHasher",)
+PASSWORD_HASHERS: list[str] = [
+    "django.contrib.auth.hashers.MD5PasswordHasher",
+]
+
+DJANGO_LOG_LEVEL = "CRITICAL"

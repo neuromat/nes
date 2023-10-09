@@ -249,7 +249,7 @@ class InstitutionForm(ModelForm):
             "parent": Select(attrs={"class": "form-control"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(InstitutionForm, self).__init__(*args, **kwargs)
         self.fields["country"].initial = "BR"
         instance = kwargs.get("instance") or self.instance

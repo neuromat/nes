@@ -55,11 +55,11 @@ class ExportExperiment:
     FILE_NAME_ZIP = "experiment.zip"
     LIMESURVEY_ERROR = 1
 
-    def __init__(self, experiment):
+    def __init__(self, experiment) -> None:
         self.experiment = experiment
         self.temp_dir = tempfile.mkdtemp()
 
-    def __del__(self):
+    def __del__(self) -> None:
         shutil.rmtree(self.temp_dir)
 
     def _generate_fixture(self, filename, elements, app="experiment."):
@@ -343,7 +343,7 @@ class ImportExperiment:
     LIMESURVEY_ERROR = 2
     FIXTURE_FILE_NAME = "experiment.json"
 
-    def __init__(self, file_path):
+    def __init__(self, file_path) -> None:
         self.file_path = file_path
         self.temp_dir = tempfile.mkdtemp()
         self.data = []
@@ -351,7 +351,7 @@ class ImportExperiment:
         self.new_objects = dict()
         self.limesurvey_relations = dict()
 
-    def __del__(self):
+    def __del__(self) -> None:
         shutil.rmtree(self.temp_dir)
 
     def _set_last_objects_before_import(self, research_project_id):
