@@ -125,6 +125,8 @@ except:
 
     echo "	INFO: populate_history"
     python3 -u manage.py populate_history --auto || true
+
+    mkdir -p media
     
     cp -r $NES_PROJECT_PATH/site_static/imgs/International_10-10_system_for_EEG.png $NES_PROJECT_PATH/media/eeg_electrode_system_files/2/International_10-10_system_for_EEG.png
     cp -r $NES_PROJECT_PATH/site_static/imgs/International_10-20_system_for_EEG.jpg $NES_PROJECT_PATH/media/eeg_electrode_system_files/3/International_10-20_system_for_EEG.jpg
