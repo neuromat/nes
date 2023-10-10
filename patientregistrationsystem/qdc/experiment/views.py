@@ -41,7 +41,7 @@ from export.directory_utils import create_directory
 from export.forms import AgeIntervalForm, ParticipantsSelectionForm
 
 # from pynwb.nwbco import *
-from patient.models import Patient
+from patient.models import ClassificationOfDiseases, Patient
 from patient.models import QuestionnaireResponse as PatientQuestionnaireResponse
 from patient.models import SocialDemographicData
 from patient.views import update_acquisition_date, update_completed_status
@@ -146,7 +146,6 @@ from .models import (
     AdditionalDataFile,
     Amplifier,
     Block,
-    ClassificationOfDiseases,
     CoilModel,
     Component,
     ComponentAdditionalFile,
@@ -267,21 +266,21 @@ from .portal import (
 permission_required = partial(permission_required, raise_exception=True)
 
 icon_class = {
-    "block": "fa fa-th-large",
-    "instruction": "fa fa-comment",
-    "pause": "fa fa-clock-o",
-    "questionnaire": "fa fa-list-alt",
-    "stimulus": "fa fa-headphones",
-    "task": "fa fa-check",
-    "task_experiment": "fa fa-wrench",
-    "eeg": "fa fa-flash",
-    "emg": "fa fa-line-chart",
-    "tms": "fa fa-magnet",
-    "experimental_protocol": "fa fa-tasks",
-    "digital_game_phase": "fa fa-play-circle",
-    "generic_data_collection": "fa fa-file",
-    "additional_data": "fa fa-puzzle-piece",
-    "media_collection": "fa fa-camera",
+    "block": "fa fa-th-large fa-fw",
+    "instruction": "fa fa-comment fa-fw",
+    "pause": "fa fa-clock-o fa-fw",
+    "questionnaire": "fa fa-list-alt fa-fw",
+    "stimulus": "fa fa-headphones fa-fw",
+    "task": "fa fa-check fa-fw",
+    "task_experiment": "fa fa-wrench fa-fw",
+    "eeg": "fa fa-flash fa-fw",
+    "emg": "fa fa-line-chart fa-fw",
+    "tms": "fa fa-magnet fa-fw",
+    "experimental_protocol": "fa fa-tasks fa-fw",
+    "digital_game_phase": "fa fa-play-circle fa-fw",
+    "generic_data_collection": "fa fa-file fa-fw",
+    "additional_data": "fa fa-puzzle-piece fa-fw",
+    "media_collection": "fa fa-camera fa-fw",
 }
 
 data_type_name = {
@@ -13116,7 +13115,9 @@ def clone_component_additional_file(component_additional_file, orig_and_clone):
         pk=orig_and_clone["component"][component_additional_file.component.id]
     )
     component_additional_file.component = new_component
-    f = open(os.path.join(settings.MEDIA_ROOT, component_additional_file.file.name), "rb")
+    f = open(
+        os.path.join(settings.MEDIA_ROOT, component_additional_file.file.name), "rb"
+    )
     component_additional_file.file.save(os.path.basename(f.name), File(f))
     component_additional_file.save()
 
@@ -13130,7 +13131,9 @@ def clone_context_tree(context_tree, new_experiment, orig_and_clone):
     context_tree.save()
     old_context_tree = ContextTree.objects.get(pk=old_context_tree_id)
     if old_context_tree.setting_file:
-        f = open(os.path.join(settings.MEDIA_ROOT, old_context_tree.setting_file.name), "rb")
+        f = open(
+            os.path.join(settings.MEDIA_ROOT, old_context_tree.setting_file.name), "rb"
+        )
         context_tree.setting_file.save(os.path.basename(f.name), File(f))
     orig_and_clone["context_tree"][old_context_tree_id] = context_tree.id
 
@@ -13207,7 +13210,9 @@ def copy_experiment(experiment, copy_data_collection=False):
     new_experiment.save()
     if experiment.ethics_committee_project_file:
         f = open(
-            os.path.join(settings.MEDIA_ROOT, experiment.ethics_committee_project_file.name),
+            os.path.join(
+                settings.MEDIA_ROOT, experiment.ethics_committee_project_file.name
+            ),
             "rb",
         )
         new_experiment.ethics_committee_project_file.save(
@@ -13380,9 +13385,7 @@ def copy_experiment(experiment, copy_data_collection=False):
         for media_collection_data in MediaCollectionData.objects.filter(
             data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
         ):
-            clone_media_collection_data(
-                media_collection_data, orig_and_clone
-            )
+            clone_media_collection_data(media_collection_data, orig_and_clone)
         # media_collection_file
         for media_collection_file in MediaCollectionFile.objects.filter(
             media_collection_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
@@ -13496,7 +13499,7 @@ def copy_emg_setting(emg_setting, new_experiment):
     for emg_electrode_setting in EMGElectrodeSetting.objects.filter(
         emg_setting_id=emg_setting_id
     ):
-        emg_electrode_setting_id = emg_electrode_setting.id
+        emg_electrode_setting_id: int = emg_electrode_setting.id
 
         new_emg_electrode_setting = emg_electrode_setting
         new_emg_electrode_setting.pk = None
@@ -13630,7 +13633,9 @@ def create_component(component, new_experiment, orig_and_clone):
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         clone = Stimulus(stimulus_type_id=stimulus.stimulus_type_id)
         if stimulus.media_file:
-            file = open(os.path.join(settings.MEDIA_ROOT, stimulus.media_file.name), "rb")
+            file = open(
+                os.path.join(settings.MEDIA_ROOT, stimulus.media_file.name), "rb"
+            )
 
     elif component_type == "task":
         clone = Task()

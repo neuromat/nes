@@ -30,9 +30,11 @@ function cap_container_refresh() {
 
     if (cap_flag.prop("checked")) {
         material_field.prop( "disabled", false );
+        material_field.prop( "required", true );
         div_cap.show();
     } else {
         material_field.prop( "disabled", true );
+        material_field.prop( "required", false );
         div_cap.prop( "disabled", true );
         div_cap.hide();
     }

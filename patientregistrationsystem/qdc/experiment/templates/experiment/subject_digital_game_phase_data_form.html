@@ -326,9 +326,11 @@
                         $id_file.removeAttr("accept");
                         {% if editing %}
                             $id_file_format_description.prop( "disabled", false );
+                            $id_file_format_description.prop( "required", true );
                             $div_file_format_description.show();
                         {% else %}
                             $id_file_format_description.prop( "disabled", true );
+                            $id_file_format_description.prop( "required", false );
                             $div_file_format_description.show();
                         {% endif %}
                     }
@@ -336,18 +338,21 @@
                     {
                         $id_file.attr("accept", $txt_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                     }
                     else if ($id_file_format.val() == $raw_code)
                     {
                         $id_file.attr("accept", $raw_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                     }
                     else
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                     }
                 }));
@@ -357,29 +362,34 @@
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", false );
+                        $id_file_format_description.prop( "required", true );
                         $div_file_format_description.show();
                     }
                     else if ($id_file_format.val() == $txt_code)
                     {
                         $id_file.attr("accept", $txt_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                     }
                     else if ($id_file_format.val() == $raw_code)
                     {
                         $id_file.attr("accept", $raw_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                     }
                     else
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                     }
                 }));
             {% else %}
                 $id_file_format_description.prop( "disabled", true );
+                $id_file_format_description.prop( "required", false );
                 $div_file_format_description.hide();
             {% endif %}
 

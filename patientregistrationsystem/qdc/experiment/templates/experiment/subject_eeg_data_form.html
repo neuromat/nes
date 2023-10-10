@@ -508,9 +508,11 @@
                         $id_file.removeAttr("accept");
                         {% if editing %}
                             $id_file_format_description.prop( "disabled", false );
+                            $id_file_format_description.prop( "required", true );
                             $div_file_format_description.show();
                         {% else %}
                             $id_file_format_description.prop( "disabled", true );
+                            $id_file_format_description.prop( "required", false );
                             $div_file_format_description.show();
                         {% endif %}
                     }
@@ -518,18 +520,21 @@
                     {
                         $id_file.attr("accept", $txt_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                     }
                     else if ($id_file_format.val() == $raw_code)
                     {
                         $id_file.attr("accept", $raw_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                     }
                     else
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                     }
                 }));
@@ -539,6 +544,7 @@
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", false );
+                        $id_file_format_description.prop( "required", true );
                         $div_info_raw_data.hide();
                         $div_file_format_description.show();
                     }
@@ -546,6 +552,7 @@
                     {
                         $id_file.attr("accept", $txt_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                         $div_info_raw_data.hide();
                     }
@@ -553,6 +560,7 @@
                     {
                         $id_file.attr("accept", $raw_extension);
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                         $div_info_raw_data.show();
                         $div_info_raw_data.html("Upload the three files(.avg, .vhdr, .vmrk) to visualize the raw data" +
@@ -563,12 +571,14 @@
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", true );
+                        $id_file_format_description.prop( "required", false );
                         $div_file_format_description.hide();
                         $div_info_raw_data.hide();
                     }
                 }));
             {% else %}
                 $id_file_format_description.prop( "disabled", true );
+                $id_file_format_description.prop( "required", false );
                 $div_file_format_description.hide();
             {% endif %}
 

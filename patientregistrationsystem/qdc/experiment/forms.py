@@ -212,7 +212,7 @@ class ComponentForm(ModelForm):
             # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
             # respect that information.
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
-            "duration_value": TextInput(
+            "duration_value": NumberInput(
                 attrs={"class": "form-control", "placeholder": _("Time")}
             ),
             "duration_unit": Select(attrs={"class": "form-control"}),
@@ -655,6 +655,7 @@ class EEGDataForm(ModelForm):
             ),
             "time": TimeInput(
                 attrs={
+                    "type": "Time",
                     "class": "form-control",
                     "placeholder": "HH:mm",
                     "pattern": r"\d{2}:\d{2}",
@@ -1530,7 +1531,12 @@ class EMGDataForm(ModelForm):
                 },
             ),
             "time": TimeInput(
-                attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
+                attrs={
+                    "type": "Time",
+                    "class": "form-control",
+                    "placeholder": "HH:mm",
+                    "pattern": r"\d{2}:\d{2}",
+                }
             ),
             "emg_setting": Select(
                 attrs={
@@ -1664,7 +1670,12 @@ class SubjectStepDataForm(ModelForm):
                 },
             ),
             "start_time": TimeInput(
-                attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
+                attrs={
+                    "type": "Time",
+                    "class": "form-control",
+                    "placeholder": "HH:mm",
+                    "pattern": r"\d{2}:\d{2}",
+                }
             ),
             "end_date": TextInput(
                 # format=_("%m/%d/%Y"),
@@ -1679,7 +1690,12 @@ class SubjectStepDataForm(ModelForm):
                 },
             ),
             "end_time": TimeInput(
-                attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
+                attrs={
+                    "type": "Time",
+                    "class": "form-control",
+                    "placeholder": "HH:mm",
+                    "pattern": r"\d{2}:\d{2}",
+                }
             ),
         }
 
@@ -2059,7 +2075,12 @@ class TMSDataForm(ModelForm):
                 },
             ),
             "time": TimeInput(
-                attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
+                attrs={
+                    "type": "Time",
+                    "class": "form-control",
+                    "placeholder": "HH:mm",
+                    "pattern": r"\d{2}:\d{2}",
+                }
             ),
             "tms_setting": Select(
                 attrs={
@@ -2261,7 +2282,12 @@ class DigitalGamePhaseDataForm(ModelForm):
                 },
             ),
             "time": TimeInput(
-                attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
+                attrs={
+                    "type": "Time",
+                    "class": "form-control",
+                    "placeholder": "HH:mm",
+                    "pattern": r"\d{2}:\d{2}",
+                }
             ),
             "file_format": Select(
                 attrs={
@@ -2326,7 +2352,12 @@ class GenericDataCollectionDataForm(ModelForm):
                 },
             ),
             "time": TimeInput(
-                attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
+                attrs={
+                    "type": "Time",
+                    "class": "form-control",
+                    "placeholder": "HH:mm",
+                    "pattern": r"\d{2}:\d{2}",
+                }
             ),
             "file_format": Select(
                 attrs={
@@ -2387,7 +2418,12 @@ class MediaCollectionDataForm(ModelForm):
                 },
             ),
             "time": TimeInput(
-                attrs={"class": "form-control", "placeholder": "HH:mm:ss"}
+                attrs={
+                    "type": "Time",
+                    "class": "form-control",
+                    "placeholder": "HH:mm",
+                    "pattern": r"\d{2}:\d{2}",
+                }
             ),
             "description": Textarea(
                 attrs={

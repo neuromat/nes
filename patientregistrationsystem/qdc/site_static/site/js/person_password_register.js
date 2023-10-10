@@ -36,13 +36,17 @@ function checkPassExt(){
 
             if (password_flag.prop("checked")) {
                 password_field.prop( "disabled", false );
+                password_field.prop( "required", true );
                 password2_field.prop( "disabled", false );
+                password2_field.prop( "required", true );
                 div_password.show();
             } else {
                 password_field.val("");
                 password2_field.val("");
                 password_field.prop( "disabled", true );
+                password_field.prop( "required", false );
                 password2_field.prop( "disabled", true );
+                password2_field.prop( "required", false );
                 // div_password.prop( "disabled", true );
                 // div_password.hide();
             }
