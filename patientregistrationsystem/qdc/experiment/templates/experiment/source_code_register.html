@@ -103,8 +103,9 @@
                                 {{ source_code_form.file }}
                             {% else %}
                                 {{ source_code_form.file.value }}
-                                <button class="btn btn-default" type="button" onclick="location.href='{{ source_code_form.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
-                            {% endif %}
+                                <button class="btn btn-default" type="button" onclick="location.href='{{ source_code.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                {% comment %} <a href="{{source_code_form.file.value}}" download="{{source_code_form.file.path}}"> Download File</a> {% endcomment %}
+                                {% endif %}
                             <div class="help-block with-errors"></div>
                         </div>
                     </div>
