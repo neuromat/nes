@@ -8,7 +8,6 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
-from django.db.models.manager import RelatedManager
 from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
 from django.conf import settings
@@ -1668,7 +1667,7 @@ class FileFormat(models.Model):
     name = models.CharField(max_length=50)
     extension = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    tags = models.ManyToManyField(Tag, null=True, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     objects: MultilingualManager
 

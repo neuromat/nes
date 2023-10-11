@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import re
 from importlib.util import resolve_name
+from typing import Any
 
 from custom_user.models import Institution, UserProfile
 from .tests_helper import create_user
@@ -29,8 +30,6 @@ from django.utils.http import int_to_base36
 from django.utils.translation import gettext as _
 from django.conf import settings
 
-# from requests import Request
-from sqlalchemy import false
 
 USER_USERNAME = "myadmin"
 USER_PWD = "mypassword"
@@ -86,7 +85,7 @@ class FormUserValidation(TestCase):
     def reset(
         user_added: User | None = None,
         request: HttpRequest | None = None,
-        domain_override: RequestSite | None = None,
+        domain_override: Any = None,
         email_template_name: str = "registration/password_reset_email.html",
         use_https: bool = False,
         token_generator: PasswordResetTokenGenerator = default_token_generator,

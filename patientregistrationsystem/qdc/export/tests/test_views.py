@@ -1494,9 +1494,8 @@ class ExportQuestionnaireTest(ExportTestCase):
                 self.survey.code + "_test-questionnaire_en.csv",
             )
         ) as file:
-            dialect = csv.Sniffer().sniff(file.readline(), [",", "\t"])
-            file.seek(0)
-            self.assertEqual(dialect.delimiter, ",")
+            delimiter = csv.Sniffer().sniff(file.read(5000)).delimiter
+            self.assertEqual(delimiter, ",")
 
         shutil.rmtree(temp_dir)
 
@@ -4051,28 +4050,33 @@ class ExportFrictionlessDataTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_adds_eeg_data_collection_nwb_file_resource(self):
+    def test_export_per_experiment_adds_eeg_data_collection_nwb_file_resource(
+        self,
+    ) -> None:
         self._create_eeg_export_data()
 
         # The file saved below is associated with a file format that is considered
         # to generate sensor_postion.png file
         eegdata = EEGData.objects.first()
-        eegdata.file_format.nes_code = "MNE-RawFromEGI"
-        eegdata.file_format.save()
-        # Create history user for eegdata as nwb creation needs that
-        history = eegdata.history.last()
-        history.history_user = self.user
-        history.save()
-        # Get the file uploaded and substitute it by a real EEG raw file
-        eegfile = EEGFile.objects.first()
-        with File(
-            open(
-                "export/tests/example.raw",
-                "rb",
-            )
-        ) as f:
-            eegfile.file.save("example.raw", f)
-        eegfile.save()
+
+        self.assertIsInstance(eegdata, EEGData)
+        if isinstance(eegdata, EEGData):
+            eegdata.file_format.nes_code = "MNE-RawFromEGI"
+            eegdata.file_format.save()
+            # Create history user for eegdata as nwb creation needs that
+            history = eegdata.history.last()
+            history.history_user = self.user
+            history.save()
+            # Get the file uploaded and substitute it by a real EEG raw file
+            eegfile = EEGFile.objects.first()
+            with File(
+                open(
+                    "export/tests/example.raw",
+                    "rb",
+                )
+            ) as f:
+                eegfile.file.save("example.raw", f)
+            eegfile.save()
 
         # Create components needed to be able to export raw file to nwb format
         manufacturer = ObjectsFactory.create_manufacturer()
@@ -5436,7 +5440,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             shutil.rmtree(temp_dir)
 
-    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
+    @override_settings(LANGUAGE_CODE="en-US", LANGUAGES=(("en", "English"),))
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("survey.abc_search_engine.Server")
     def test_export_per_experiment_adds_entrance_questionnaire_responses_table_schema_info_to_datapackage1(
