@@ -1,3 +1,4 @@
+from os import name
 from typing import LiteralString
 from custom_user.models import Institution
 from django.db import models
@@ -27,6 +28,9 @@ class LocalInstitution(SingletonModel):
 class Contact(SingletonModel):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return "%s" % self.name
 
 
 class RightsSupport(models.Model):

@@ -20,7 +20,7 @@ from experiment.models import (
 )
 from experiment.tests.tests_helper import ObjectsFactory
 from patient.models import QuestionnaireResponse as PatientQuestionnaireResponse
-from patient.tests.tests_orig import UtilTests
+from patient.tests.test_orig import UtilTests
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 from survey.tests.tests_helper import create_survey

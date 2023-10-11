@@ -84,7 +84,7 @@ from export.views import (
     PATIENT_FIELDS,
     DIAGNOSIS_FIELDS,
 )
-from patient.tests.tests_orig import UtilTests
+from patient.tests.test_orig import UtilTests
 from survey.tests.tests_helper import create_survey
 from survey.survey_utils import HEADER_EXPLANATION_FIELDS
 

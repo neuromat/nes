@@ -4,20 +4,21 @@ import zipfile
 from datetime import date, datetime, timedelta
 from json import load
 
+from django.contrib.sessions.backends.base import SessionBase
+
 from custom_user.tests.tests_helper import create_user
 from django.contrib.auth.models import Group
 from django.test import TestCase
 from experiment.tests.tests_helper import ExperimentTestCase, ObjectsFactory
-from patient.tests.tests_orig import UtilTests
 
 
 class ExportTestCase(ExperimentTestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         super(ExportTestCase, self).setUp()
 
         self.client.login(username=self.user.username, password=self.user_passwd)
 
-    def append_session_variable(self, key, value):
+    def append_session_variable(self, key, value) -> None:
         """See:
         https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
         for the form that it is done
@@ -26,11 +27,11 @@ class ExportTestCase(ExperimentTestCase):
         :param value: list of group ids (strings) as the value of the
         session variable
         """
-        session = self.client.session
+        session: SessionBase = self.client.session
         session[key] = value
         session.save()
 
-    def get_zipped_file(self, response):
+    def get_zipped_file(self, response) -> zipfile.ZipFile:
         file = io.BytesIO(response.content)
         zipped_file = zipfile.ZipFile(file, "r")
         self.assertIsNone(zipped_file.testzip())
@@ -38,7 +39,7 @@ class ExportTestCase(ExperimentTestCase):
         return zipped_file
 
     def get_datapackage_json_data(self, dir_, response):
-        zipped_file = self.get_zipped_file(response)
+        zipped_file: zipfile.ZipFile = self.get_zipped_file(response)
         zipped_file.extractall(dir_)
         with open(os.path.join(dir_, "datapackage.json")) as file:
             json_data = load(file)
@@ -47,7 +48,7 @@ class ExportTestCase(ExperimentTestCase):
 
     def assert_per_participant_step_file_exists(
         self, step_number, component_step, data_collection_folder, filename, zipped_file
-    ):
+    ) -> None:
         self.assertTrue(
             any(
                 os.path.join(
@@ -79,7 +80,7 @@ class ExportTestCase(ExperimentTestCase):
 
     def assert_step_data_files_exists(
         self, step_number, component_step, data_collection_folder, filename, zipped_file
-    ):
+    ) -> None:
         self.assertTrue(
             any(
                 os.path.join(
@@ -108,7 +109,7 @@ class ExportTestCase(ExperimentTestCase):
         )
 
     @staticmethod
-    def subject_age(birth_date, data_collection=None):
+    def subject_age(birth_date, data_collection=None) -> str:
         date_ = data_collection.date if data_collection else date.today()
         return format(
             (date_ - datetime.strptime(birth_date, "%Y-%m-%d").date())

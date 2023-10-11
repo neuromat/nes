@@ -320,7 +320,7 @@ class CpfValidationTest(TestCase):
 
 
 class PatientFormValidation(TestCase):
-    user = ""
+    user: User = None
     data: dict[str, Any] = {}
     util = UtilTests()
 
@@ -339,7 +339,7 @@ class PatientFormValidation(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-        self.gender = Gender.objects.create(name="Masculino")
+        self.gender: Gender = Gender.objects.create(name="Masculino")
         self.gender.save()
 
         self.data = {

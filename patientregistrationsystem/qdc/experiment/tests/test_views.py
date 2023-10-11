@@ -108,7 +108,7 @@ from experiment.models import (
 # GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, GoalkeeperGameConfig, \
 
 from experiment.models import Group as ExperimentGroup
-from experiment.tests.tests_helper import ObjectsFactory, ExperimentTestCase
+from .tests_helper import ObjectsFactory, ExperimentTestCase
 from patient.models import (
     Patient,
     Telephone,
@@ -127,7 +127,7 @@ from patient.models import (
     ExamFile,
 )
 
-from patient.tests.tests_orig import UtilTests
+from patient.tests.test_orig import UtilTests
 from survey.models import Survey
 from survey.tests.tests_helper import create_survey
 

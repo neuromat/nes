@@ -75,7 +75,7 @@ from experiment.views import (
 )
 
 from patient.models import ClassificationOfDiseases
-from patient.tests.tests_orig import UtilTests
+from patient.tests.test_orig import UtilTests
 
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires

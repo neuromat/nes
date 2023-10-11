@@ -93,7 +93,7 @@ from patient.models import (
     ComplementaryExam,
     ExamFile,
 )
-from patient.tests.tests_orig import UtilTests
+from patient.tests.test_orig import UtilTests
 from survey.tests.tests_helper import create_survey
 import os
 

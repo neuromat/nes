@@ -23,7 +23,7 @@ from plugin.tests.LimeSurveyAPI_mocks import (
     set_limesurvey_api_mocks2,
 )
 from plugin.views import send_to_plugin
-from patient.tests.tests_orig import UtilTests
+from patient.tests.test_orig import UtilTests
 from survey.models import Survey
 from survey.tests.tests_helper import create_survey
 
