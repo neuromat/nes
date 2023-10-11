@@ -42,7 +42,7 @@ PATTERN = r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})"
 
 class FormUserValidation(TestCase):
     user: User
-    debug: bool = False
+    debug_old = False
 
     def setUp(self):
         self.user = User.objects.create_superuser(
@@ -60,7 +60,7 @@ class FormUserValidation(TestCase):
         self.group: Group = Group.objects.create(name="group")
         self.group.save()
 
-        self.debug = settings.DEBUG
+        self.debug_old = settings.DEBUG
         settings.DEBUG = False
 
         self.factory = RequestFactory()
@@ -80,7 +80,7 @@ class FormUserValidation(TestCase):
         self.assertEqual(logged, True)
 
     def tearDown(self) -> None:
-        settings.DEBUG = self.debug
+        settings.DEBUG = self.debug_old
 
     @staticmethod
     def reset(
@@ -298,9 +298,12 @@ class FormUserValidation(TestCase):
         self.data = {"action": "deactivate"}
 
         self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
-        user: User = User.objects.first()
-        self.assertTrue(user.is_active)
-        self.assertFalse(user.has_usable_password())
+        user = User.objects.first()
+        if isinstance(user, User):
+            self.assertTrue(user.is_active)
+            self.assertFalse(user.has_usable_password())
+        else:
+            self.assertIsInstance(user, User)
 
     def test_user_update_with_password_flag_checked(self):
         email = "jenkins.neuromat@gmail.com"
@@ -457,6 +460,8 @@ class PasswordPattern(TestCase):
 
 
 class InstitutionTests(TestCase):
+    debug_old = False
+
     def setUp(self):
         self.user = User.objects.create_user(
             username=USER_USERNAME,
@@ -470,7 +475,7 @@ class InstitutionTests(TestCase):
         profile.force_password_change = False
         profile.save()
 
-        self.debug: bool = settings.DEBUG
+        self.debug_old = settings.DEBUG
         settings.DEBUG = False
 
         self.factory = RequestFactory()
@@ -490,7 +495,7 @@ class InstitutionTests(TestCase):
         )
 
     def tearDown(self) -> None:
-        settings.DEBUG = self.debug
+        settings.DEBUG = self.debug_old
 
     def test_institution_new_status_code(self) -> None:
         url = reverse("institution_new")
@@ -528,10 +533,13 @@ class InstitutionTests(TestCase):
 
     def test_institution_view_status_code(self) -> None:
         institution = Institution.objects.first()
-        url = reverse("institution_view", args=(institution.id,))
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "custom_user/institution_register.html")
+        self.assertIsInstance(institution, Institution)
+
+        if isinstance(institution, Institution):
+            url = reverse("institution_view", args=(institution.id,))
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, "custom_user/institution_register.html")
 
     def test_institution_view_url_resolves_institution_view_view(self):
         view = resolve("/user/institution/1/")
@@ -539,24 +547,32 @@ class InstitutionTests(TestCase):
 
     def test_institution_view_and_action_remove(self) -> None:
         institution = Institution.objects.first()
-        self.data["action"] = "remove"
-        self.client.post(reverse("institution_view", args=(institution.pk,)), self.data)
-        self.assertEqual(Institution.objects.count(), 0)
+
+        self.assertIsInstance(institution, Institution)
+        if isinstance(institution, Institution):
+            self.data["action"] = "remove"
+            self.client.post(
+                reverse("institution_view", args=(institution.pk,)), self.data
+            )
+            self.assertEqual(Institution.objects.count(), 0)
 
     def test_institution_view_and_action_remove_denied_because_there_are_people_associated(
         self,
     ):
         institution = Institution.objects.first()
-        profile, created = UserProfile.objects.get_or_create(user=self.user)
-        profile.institution = institution
-        profile.save()
-        self.data["action"] = "remove"
-        response = self.client.post(
-            reverse("institution_view", args=(institution.pk,)), self.data
-        )
-        self.assertEqual(Institution.objects.count(), 1)
-        message = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(message), 1)
+
+        self.assertIsInstance(institution, Institution)
+        if isinstance(institution, Institution):
+            profile, created = UserProfile.objects.get_or_create(user=self.user)
+            profile.institution = institution
+            profile.save()
+            self.data["action"] = "remove"
+            response = self.client.post(
+                reverse("institution_view", args=(institution.pk,)), self.data
+            )
+            self.assertEqual(Institution.objects.count(), 1)
+            message = list(get_messages(response.wsgi_request))
+            self.assertEqual(len(message), 1)
 
     def test_institution_view_and_action_remove_denied_because_there_is_institution_associated(
         self,
@@ -565,22 +581,28 @@ class InstitutionTests(TestCase):
             name="Example", acronym="example", country="BR"
         )
         institution = Institution.objects.first()
-        institution.parent = parent
-        institution.save()
-        self.data["action"] = "remove"
-        response = self.client.post(
-            reverse("institution_view", args=(parent.pk,)), self.data
-        )
-        self.assertEqual(Institution.objects.count(), 2)
-        message = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(message), 1)
+
+        self.assertIsInstance(institution, Institution)
+        if isinstance(institution, Institution):
+            institution.parent = parent
+            institution.save()
+            self.data["action"] = "remove"
+            response = self.client.post(
+                reverse("institution_view", args=(parent.pk,)), self.data
+            )
+            self.assertEqual(Institution.objects.count(), 2)
+            message = list(get_messages(response.wsgi_request))
+            self.assertEqual(len(message), 1)
 
     def test_institution_update_status_code(self):
         institution = Institution.objects.first()
-        url = reverse("institution_edit", args=(institution.id,))
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "custom_user/institution_register.html")
+
+        self.assertIsInstance(institution, Institution)
+        if isinstance(institution, Institution):
+            url = reverse("institution_edit", args=(institution.id,))
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, "custom_user/institution_register.html")
 
     def test_institution_update_url_resolves_institution_update_view(self):
         view = resolve("/user/institution/edit/1/")
@@ -588,28 +610,35 @@ class InstitutionTests(TestCase):
 
     def test_institution_update(self) -> None:
         institution = Institution.objects.first()
-        self.data = {
-            "name": "RIDC NeuroMat",
-            "acronym": "NeuroMat",
-            "country": "BR",
-            "action": "save",
-        }
-        response = self.client.post(
-            reverse("institution_edit", args=(institution.id,)), self.data
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(Institution.objects.filter(name="RIDC NeuroMat").count(), 1)
+
+        self.assertIsInstance(institution, Institution)
+        if isinstance(institution, Institution):
+            self.data = {
+                "name": "RIDC NeuroMat",
+                "acronym": "NeuroMat",
+                "country": "BR",
+                "action": "save",
+            }
+            response = self.client.post(
+                reverse("institution_edit", args=(institution.id,)), self.data
+            )
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(
+                Institution.objects.filter(name="RIDC NeuroMat").count(), 1
+            )
 
 
 class PasswordResetTests(TestCase):
+    debug_old = False
+
     def setUp(self) -> None:
         url = reverse("password_reset")
         self.response = self.client.get(url)
-        self.debug: bool = settings.DEBUG
+        self.debug_old = settings.DEBUG
         settings.DEBUG = False
 
     def tearDown(self) -> None:
-        settings.DEBUG = self.debug
+        settings.DEBUG = self.debug_old
 
     def test_status_code(self) -> None:
         self.assertEqual(self.response.status_code, 200)

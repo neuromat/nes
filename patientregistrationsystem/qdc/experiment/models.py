@@ -8,6 +8,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
+from django.db.models.manager import RelatedManager
 from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
 from django.conf import settings
@@ -175,8 +176,6 @@ class Manufacturer(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False)
 
-    # fileformat: MultilingualManager
-
     def __str__(self) -> str:
         return self.name
 
@@ -337,7 +336,6 @@ class MeasureSystem(models.Model):
     name = models.CharField(max_length=150)
 
     objects: MultilingualManager
-    # electrodeshape: MultilingualManager
 
     def __str__(self) -> str:
         return self.name
