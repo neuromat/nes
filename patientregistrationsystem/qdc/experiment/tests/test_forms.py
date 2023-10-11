@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from typing import Any
 from django.contrib.auth.models import User
 from django.test import TestCase
 from experiment.forms import *
@@ -646,7 +647,7 @@ class ResearchProjectFormTest(TestCase):
 
 class Experiment_FormTest(TestCase):
     @classmethod
-    def setUp(cls):
+    def setUp(cls) -> None:
         cls.data = {
             "title": "Experimento TOC",
             "description": "Experimento TOC",
@@ -1009,6 +1010,56 @@ class GroupAdd_FormTest(TestCase):
 #     def test_SubjectFormPorPart_is_valid(self):
 #         pass
 #
+
+
+class SourceCode_FormTest(TestCase):
+    @classmethod
+    def setUp(cls) -> None:
+        cls.data: dict[str, Any] = {
+            "name": "Experimento TOC",
+            "description": "Experimento TOC",
+        }
+        cls.research_project: ResearchProject = ResearchProject.objects.create(
+            title="Research project title",
+            start_date=datetime.date.today(),
+            description="Research project description",
+        )
+
+        cls.experiment: Experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=True,
+            data_acquisition_is_concluded=True,
+        )
+
+    def test_EEGsettings_is_valid(self):
+        name = self.data["name"]
+        description = self.data["description"]
+
+        settingsEEG_form = EEGSettingForm(
+            data={"name": name, "description": description}
+        )
+        self.assertTrue(settingsEEG_form.is_valid())
+
+    def test_EEGsettings_is_not_valid_name(self):
+        settingsEEG_form = EEGSettingForm(
+            data={"name": "", "description": self.data["description"]}
+        )
+        self.assertFalse(settingsEEG_form.is_valid())
+        self.assertEqual(settingsEEG_form.errors["name"], ["Este campo é obrigatório."])
+
+    def test_EEGsettings_is_not_valid_description(self):
+        settingsEEG_form = EEGSettingForm(
+            data={"name": self.data["name"], "description": ""}
+        )
+        self.assertFalse(settingsEEG_form.is_valid())
+        self.assertEqual(
+            settingsEEG_form.errors["description"], ["Este campo é obrigatório."]
+        )
 
 
 class EEGsettings_FormTest(TestCase):

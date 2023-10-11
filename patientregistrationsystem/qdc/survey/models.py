@@ -12,7 +12,7 @@ class Survey(models.Model):
     en_title = models.CharField(null=True, max_length=255, default=None)
     is_active = models.BooleanField(null=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.en_title:
             return self.en_title
         elif self.pt_title:
@@ -25,7 +25,7 @@ class Survey(models.Model):
             # ("view_survey", "Can view survey"),
         )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         if not self.pk:
             self.code = self.create_random_survey_code()
         super(Survey, self).save(*args, **kwargs)

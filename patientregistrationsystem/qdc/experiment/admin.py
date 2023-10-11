@@ -12,7 +12,6 @@ from .models import (
     ElectrodeConfiguration,
     ElectrodeShape,
     FileFormat,
-    GenericDataCollection,
     GoalkeeperGame,
     GoalkeeperPhase,
     InformationType,

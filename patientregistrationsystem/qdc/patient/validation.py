@@ -85,7 +85,7 @@ class CPF(object):
 
         return isinstance(other, CPF) and self.cpf == other.cpf
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Retorna uma representação do CPF na forma:
 
         123.456.789-10

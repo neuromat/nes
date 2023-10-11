@@ -2,7 +2,7 @@
 import datetime
 
 from os import path
-from typing import LiteralString
+from typing import Any, LiteralString
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -11,6 +11,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
 from django.conf import settings
+
+from modeltranslation.manager import MultilingualManager
 
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
@@ -42,14 +44,16 @@ def validate_date_questionnaire_response(value):
 class StimulusType(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
 class Keyword(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -61,7 +65,7 @@ class ResearchProject(models.Model):
     keywords = models.ManyToManyField(Keyword)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
     class Meta:
@@ -104,9 +108,9 @@ class Experiment(models.Model):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    changed_by = None
+    changed_by: Any = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
     @property
@@ -114,7 +118,7 @@ class Experiment(models.Model):
         return self.changed_by
 
     @_history_user.setter
-    def _history_user(self, value):
+    def _history_user(self, value) -> None:
         self.changed_by = value
 
 
@@ -127,21 +131,27 @@ class ExperimentResearcher(models.Model):
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    ) -> None:
         if not self.pk and not self.channel_index:
             top = (
                 ExperimentResearcher.objects.filter(experiment=self.experiment)
                 .order_by("-channel_index")
                 .first()
             )
-            self.channel_index = top.channel_index + 1 if top else 1
+            if isinstance(top, models.IntegerField):
+                self.channel_index = top.channel_index + 1
+            else:
+                self.channel_index = 1
+
         super(ExperimentResearcher, self).save()
 
 
 class PublicationType(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -158,14 +168,16 @@ class Publication(models.Model):
 class Manufacturer(models.Model):
     name = models.CharField(max_length=50)  # TODO: possibly make unique
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False)
 
-    def __str__(self):
+    # fileformat: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -190,7 +202,7 @@ class Equipment(models.Model):
     serial_number = models.CharField(max_length=50, null=True, blank=True)
     tags = models.ManyToManyField(Tag)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.identification
 
     class Meta:
@@ -203,14 +215,18 @@ class Equipment(models.Model):
 class AmplifierDetectionType(models.Model):
     name = models.CharField(max_length=150)
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
 class TetheringSystem(models.Model):
     name = models.CharField(max_length=150)
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -252,7 +268,7 @@ class FilterType(models.Model):
     description = models.TextField(null=True, blank=True)
     tags = models.ManyToManyField(Tag)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -260,14 +276,16 @@ class Material(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class ElectrodeConfiguration(models.Model):
     name = models.CharField(max_length=150)
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -311,14 +329,17 @@ class ElectrodeModel(models.Model):
     )
     electrode_type = models.CharField(max_length=50, choices=ELECTRODE_TYPES)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class MeasureSystem(models.Model):
     name = models.CharField(max_length=150)
 
-    def __str__(self):
+    objects: MultilingualManager
+    # electrodeshape: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -326,7 +347,7 @@ class MeasureUnit(models.Model):
     name = models.CharField(max_length=150)
     measure_system = models.ForeignKey(MeasureSystem, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -334,7 +355,9 @@ class ElectrodeShape(models.Model):
     name = models.CharField(max_length=150)
     measure_systems = models.ManyToManyField(MeasureSystem)
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -394,7 +417,7 @@ class NeedleElectrode(ElectrodeModel):
         null=True, blank=True, validators=[MinValueValidator(0)]
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(ElectrodeModel, self).save(*args, **kwargs)
 
 
@@ -403,7 +426,7 @@ class EEGElectrodeNet(Equipment):
         ElectrodeModel, on_delete=models.CASCADE
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.identification
 
 
@@ -420,7 +443,7 @@ class EEGCapSize(models.Model):
         null=True, blank=True, validators=[MinValueValidator(0)]
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.size
 
 
@@ -435,14 +458,14 @@ class EEGElectrodeLocalizationSystem(models.Model):
         upload_to=get_eeg_electrode_system_dir, null=True, blank=True
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     def delete(self, *args, **kwargs):
         self.map_image_file.delete()
         super(EEGElectrodeLocalizationSystem, self).delete(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         if self.pk is None:
             saved_file = self.map_image_file
             self.map_image_file = None
@@ -476,7 +499,7 @@ class EEGElectrodePosition(models.Model):
             "channel_default_index",
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.eeg_electrode_localization_system.name + " - " + self.name
 
     def save(
@@ -510,7 +533,9 @@ class EEGElectrodeNetSystem(models.Model):
 class CoilShape(models.Model):
     name = models.CharField(max_length=150)
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -529,7 +554,7 @@ class CoilModel(models.Model):
         null=True, blank=True, max_length=50, choices=COIL_DESIGN_OPTIONS
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -543,7 +568,7 @@ class TMSDevice(Equipment):
         null=True, blank=True, max_length=50, choices=PULSE_TYPES
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.identification
 
 
@@ -555,10 +580,10 @@ class EEGSetting(models.Model):
         "self", on_delete=models.CASCADE, null=True, related_name="children"
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EEGSetting, self).save(*args, **kwargs)
         self.experiment.save()
 
@@ -579,7 +604,7 @@ class EEGAmplifierSetting(models.Model):
         null=True, validators=[MinValueValidator(0)]
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EEGAmplifierSetting, self).save(*args, **kwargs)
         self.eeg_setting.experiment.save()
 
@@ -593,7 +618,7 @@ class EEGSolutionSetting(models.Model):
     )
     eeg_solution = models.ForeignKey(EEGSolution, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EEGSolutionSetting, self).save(*args, **kwargs)
         self.eeg_setting.experiment.save()
 
@@ -628,7 +653,7 @@ class EEGFilterSetting(models.Model):
         null=True, blank=True, validators=[MinValueValidator(0)]
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EEGFilterSetting, self).save(*args, **kwargs)
         self.eeg_setting.experiment.save()
 
@@ -644,7 +669,7 @@ class EEGElectrodeLayoutSetting(models.Model):
         EEGElectrodeNetSystem, on_delete=models.CASCADE
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EEGElectrodeLayoutSetting, self).save(*args, **kwargs)
         self.eeg_setting.experiment.save()
 
@@ -668,7 +693,7 @@ class EEGElectrodePositionSetting(models.Model):
             "channel_index",
         )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EEGElectrodePositionSetting, self).save(*args, **kwargs)
         self.eeg_electrode_layout_setting.eeg_setting.experiment.save()
 
@@ -678,7 +703,7 @@ class Software(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -688,7 +713,7 @@ class SoftwareVersion(models.Model):
     )
     name = models.CharField(max_length=150)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.software.name + " - " + self.name
 
 
@@ -708,14 +733,14 @@ class StandardizationSystem(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Muscle(models.Model):
     name = models.CharField(max_length=150)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -726,7 +751,7 @@ class MuscleSubdivision(models.Model):
     anatomy_insertion = models.TextField(null=True, blank=True)
     anatomy_function = models.TextField(null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.muscle.name + " - " + self.name
 
 
@@ -734,11 +759,11 @@ class MuscleSide(models.Model):
     name = models.CharField(max_length=150)
     muscle = models.ForeignKey(Muscle, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
-def get_emg_placement_dir(instance, filename):
+def get_emg_placement_dir(instance, filename) -> str:
     return "emg_placement_files/%s/%s" % (instance.standardization_system.id, filename)
 
 
@@ -761,7 +786,7 @@ class EMGElectrodePlacement(models.Model):
     location = models.TextField(null=True, blank=True)
     placement_type = models.CharField(max_length=50, choices=PLACEMENT_TYPES)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             self.standardization_system.name
             + " - "
@@ -770,7 +795,7 @@ class EMGElectrodePlacement(models.Model):
             + self.muscle_subdivision.name
         )
 
-    def delete(self, *args, **kwargs):
+    def delete(self, *args, **kwargs) -> Any:
         self.photo.delete()
         super(EMGElectrodePlacement, self).delete(*args, **kwargs)
 
@@ -803,10 +828,10 @@ class EMGSetting(models.Model):
         SoftwareVersion, on_delete=models.CASCADE
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EMGSetting, self).save(*args, **kwargs)
         self.experiment.save()
 
@@ -841,7 +866,7 @@ class EMGDigitalFilterSetting(models.Model):
         null=True, blank=True, validators=[MinValueValidator(0)]
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EMGDigitalFilterSetting, self).save(*args, **kwargs)
         self.emg_setting.experiment.save()
 
@@ -858,7 +883,7 @@ class EMGADConverterSetting(models.Model):
         null=True, blank=True, validators=[MinValueValidator(0)]
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EMGADConverterSetting, self).save(*args, **kwargs)
         self.emg_setting.experiment.save()
 
@@ -869,7 +894,7 @@ class EMGElectrodeSetting(models.Model):
     )
     electrode = models.ForeignKey(ElectrodeModel, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EMGElectrodeSetting, self).save(*args, **kwargs)
         self.emg_setting.experiment.save()
 
@@ -884,7 +909,7 @@ class EMGPreamplifierSetting(models.Model):
     amplifier = models.ForeignKey(Amplifier, on_delete=models.CASCADE)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EMGPreamplifierSetting, self).save(*args, **kwargs)
         self.emg_electrode_setting.emg_setting.experiment.save()
 
@@ -918,7 +943,7 @@ class EMGPreamplifierFilterSetting(models.Model):
         null=True, blank=True, validators=[MinValueValidator(0)]
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EMGPreamplifierFilterSetting, self).save(*args, **kwargs)
         self.emg_preamplifier_filter_setting.emg_electrode_setting.emg_setting.experiment.save()
 
@@ -933,7 +958,7 @@ class EMGAmplifierSetting(models.Model):
     amplifier = models.ForeignKey(Amplifier, on_delete=models.CASCADE)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EMGAmplifierSetting, self).save(*args, **kwargs)
         self.emg_electrode_setting.emg_setting.experiment.save()
 
@@ -967,7 +992,7 @@ class EMGAnalogFilterSetting(models.Model):
         null=True, blank=True, validators=[MinValueValidator(0)]
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EMGAnalogFilterSetting, self).save(*args, **kwargs)
         self.emg_electrode_setting.emg_electrode_setting.emg_setting.experiment.save()
 
@@ -987,7 +1012,7 @@ class EMGElectrodePlacementSetting(models.Model):
         MuscleSide, on_delete=models.CASCADE, null=True, blank=True
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(EMGElectrodePlacementSetting, self).save(*args, **kwargs)
         self.emg_electrode_setting.emg_setting.experiment.save()
 
@@ -1000,10 +1025,10 @@ class TMSSetting(models.Model):
         "self", on_delete=models.CASCADE, null=True, related_name="children"
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(TMSSetting, self).save(*args, **kwargs)
         self.experiment.save()
 
@@ -1026,7 +1051,7 @@ class TMSDeviceSetting(models.Model):
     )
     coil_model = models.ForeignKey(CoilModel, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(TMSDeviceSetting, self).save(*args, **kwargs)
         self.tms_setting.experiment.save()
 
@@ -1039,7 +1064,7 @@ class BrainAreaSystem(models.Model):
     name = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -1059,7 +1084,7 @@ class BrainArea(models.Model):
     description = models.TextField(null=True, blank=True)
     brain_area_system = models.ForeignKey(BrainAreaSystem, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -1071,14 +1096,14 @@ class TMSLocalizationSystem(models.Model):
     )
     brain_area = models.ForeignKey(BrainArea, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     def delete(self, *args, **kwargs):
         self.tms_localization_system_image.delete()
         super(TMSLocalizationSystem, self).delete(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         if self.pk is None:
             saved_file = self.tms_localization_system_image
             self.tms_localization_system_image = None
@@ -1246,6 +1271,8 @@ class InformationType(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField()
 
+    objects: MultilingualManager
+
     def __str__(self) -> str:
         return self.name
 
@@ -1254,7 +1281,9 @@ class InformationTypeMedia(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField()
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -1263,7 +1292,7 @@ class GenericDataCollection(Component):
         InformationType, on_delete=models.CASCADE, null=False, blank=False
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
@@ -1272,7 +1301,7 @@ class MediaCollection(Component):
         InformationTypeMedia, on_delete=models.CASCADE, null=False, blank=False
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
@@ -1289,14 +1318,14 @@ class ContextTree(models.Model):
         upload_to=get_context_tree_dir, null=True, blank=True
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     def delete(self, *args, **kwargs):
         self.setting_file.delete()
         super(ContextTree, self).delete(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         if self.pk is None:
             saved_file = self.setting_file
             self.setting_file = None
@@ -1312,7 +1341,7 @@ class DigitalGamePhase(Component):
     software_version = models.ForeignKey(SoftwareVersion, on_delete=models.CASCADE)
     context_tree = models.ForeignKey(ContextTree, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
 
@@ -1393,7 +1422,7 @@ class Group(models.Model):
     class Meta:
         verbose_name = _("Group")
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Group, self).save(*args, **kwargs)
         self.experiment.save()
 
@@ -1536,7 +1565,7 @@ class SubjectOfGroup(models.Model):
             "group",
         )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(SubjectOfGroup, self).save(*args, **kwargs)
         self.group.experiment.save()
 
@@ -1550,7 +1579,7 @@ class DataConfigurationTree(models.Model):
     )
     code = models.IntegerField(null=True, blank=True)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(DataConfigurationTree, self).save(*args, **kwargs)
         self.component_configuration.component.experiment.save()
 
@@ -1580,7 +1609,7 @@ class SubjectStepData(models.Model):
     )
     end_time = models.TimeField(null=True, blank=True)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(SubjectStepData, self).save(*args, **kwargs)
         self.subject_of_group.group.experiment.save()
 
@@ -1603,7 +1632,7 @@ class DataCollection(models.Model):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(DataCollection, self).save(*args, **kwargs)
         self.subject_of_group.group.experiment.save()
 
@@ -1629,7 +1658,7 @@ class QuestionnaireResponse(DataCollection):
     def _history_user(self, value):
         self.changed_by = value
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "token id: " + str(self.token_id)
 
 
@@ -1641,9 +1670,11 @@ class FileFormat(models.Model):
     name = models.CharField(max_length=50)
     extension = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, null=True, blank=True)
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -1655,7 +1686,9 @@ class SourceCodeFileFormat(models.Model):
     description = models.TextField(null=True, blank=True)
     # tags = models.ManyToManyField(Tag)
 
-    def __str__(self):
+    objects: MultilingualManager
+
+    def __str__(self) -> str:
         return self.name
 
 
@@ -1687,10 +1720,10 @@ class SourceCode(models.Model):
         "self", on_delete=models.CASCADE, null=True, related_name="children"
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    # def save(self, *args, **kwargs):
+    # def save(self, *args, **kwargs) -> None:
     #     super(SourceCode, self).save(*args, **kwargs)
     #     self.experiment.save()
 
@@ -1712,7 +1745,7 @@ class EEGData(DataFile, DataCollection):
 
     history = HistoricalRecords()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.description
 
     @property
@@ -1764,7 +1797,7 @@ class TMSData(DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.description
 
     @property
@@ -1790,7 +1823,7 @@ class HotSpot(models.Model):
         TMSLocalizationSystem, on_delete=models.CASCADE, related_name="hotspots"
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -1798,7 +1831,7 @@ class AdditionalData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.description
 
     @property
@@ -1817,7 +1850,7 @@ class EMGData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.description
 
     @property
@@ -1835,7 +1868,7 @@ class DigitalGamePhaseData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.description
 
     @property
@@ -1850,7 +1883,7 @@ class DigitalGamePhaseData(DataFile, DataCollection):
 class GenericDataCollectionData(DataFile, DataCollection):
     history = HistoricalRecords()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.description
 
     @property
@@ -1865,7 +1898,7 @@ class GenericDataCollectionData(DataFile, DataCollection):
 class MediaCollectionData(DataFile, DataCollection):
     history = HistoricalRecords()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.description
 
     @property
@@ -1938,7 +1971,7 @@ class EEGElectrodePositionCollectionStatus(models.Model):
     class Meta:
         unique_together = ("eeg_data", "channel_index")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.eeg_electrode_position_setting.eeg_electrode_position.name
 
 
@@ -1946,7 +1979,7 @@ class GoalkeeperGame(models.Model):
     code = models.CharField(_("Code"), max_length=2, unique=True)
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -1963,7 +1996,7 @@ class GoalkeeperPhase(models.Model):
         ):
             raise ValidationError(_("Phase already registered"))
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.phase:
             return _("{game} - phase {phase}").format(
                 game=self.game.name, phase=self.phase

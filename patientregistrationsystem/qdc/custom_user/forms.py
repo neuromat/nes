@@ -16,6 +16,7 @@ from django.forms import (
 )
 from django.utils.translation import gettext_lazy as _
 
+
 from custom_user.regex_utils import (
     EMAIL_REGEX,
     FIRSTNAME_REGEX,

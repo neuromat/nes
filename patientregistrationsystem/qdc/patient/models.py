@@ -279,63 +279,63 @@ def validate_date_birth(value):
 class Payment(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Gender(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class FleshTone(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class MaritalStatus(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Religion(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Schooling(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class AmountCigarettes(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class AlcoholFrequency(models.Model):
     name = models.CharField(max_length=100)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class AlcoholPeriod(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -388,10 +388,10 @@ class Patient(models.Model):
     def get_absolute_url(self):
         return "/patient/%i/" % self.pk
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         if not self.pk:
             self.code = self.create_random_patient_code()
         super(Patient, self).save(*args, **kwargs)
@@ -442,7 +442,7 @@ class Telephone(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.number + "(" + self.type + ") - " + self.note
 
 
@@ -494,7 +494,7 @@ class SocialDemographicData(models.Model):
     history = HistoricalRecords()
     changed_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.patient)
 
     @property
@@ -573,7 +573,7 @@ class SocialHistoryData(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.patient)
 
     def clean(self):
@@ -596,7 +596,7 @@ class MedicalRecordData(models.Model):
             ("export_medicalrecorddata", "Can export medical record"),
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.patient, self.record_date, self.record_responsible
 
 
@@ -615,7 +615,7 @@ class ClassificationOfDiseases(models.Model):
 
     objects = ClassificationOfDiseasesManager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.abbreviated_description
 
     def natural_key(self):
@@ -638,7 +638,7 @@ class Diagnosis(models.Model):
             "classification_of_diseases",
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.classification_of_diseases), self.date, self.description
 
 
@@ -652,7 +652,7 @@ class ComplementaryExam(models.Model):
     doctor_register = models.CharField(max_length=10, null=True, blank=True)
     exam_site = models.CharField(max_length=100, null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.description)
 
 
@@ -693,5 +693,5 @@ class QuestionnaireResponse(models.Model):
             ("export_questionnaireresponse", "Can export questionnaire response"),
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return _("token id: ") + str(self.token_id)
