@@ -403,7 +403,7 @@ msgstr "Amplificador"
 #: experiment/models.py:176
 #: experiment/templates/experiment/eegsolution_list.html:36
 msgid "EEG Solution"
-msgstr "Solução de EEG"
+msgstr "Solução (Gel) de EEG"
 
 #: experiment/models.py:177
 #: experiment/templates/experiment/eeg_setting_register.html:162
@@ -2693,7 +2693,7 @@ msgstr "Remover configuração da lista"
 #: experiment/templates/experiment/eeg_setting_register.html:140
 #: experiment/views.py:16960
 msgid "Solution"
-msgstr "Solução"
+msgstr "Solução (Gel)"
 
 #: experiment/templates/experiment/eeg_setting_register.html:171
 #: experiment/templates/experiment/emg_setting_digital_filter.html:110

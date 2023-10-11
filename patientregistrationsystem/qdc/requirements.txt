@@ -2,7 +2,7 @@ pip>=23.2.1
 setuptools>=68.0.0
 future>= 0.18.3
 
-django>=4.2.4,<5
+django>=4.2.6,<5
 django-axes[ipware]==6.1.1
 django-modeltranslation>=0.18.11
 django-simple-history==3.4.0

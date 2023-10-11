@@ -21,12 +21,13 @@
             }
         },
         {
-            "name": "Python: Django Test experiment",
+            "name": "Python: Django Test",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
             "args": [
                 "test",
+                "export"
             ],
             "django": true,
             "justMyCode": false,

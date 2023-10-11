@@ -324,7 +324,7 @@ msgstr "Amplificador"
 
 #: experiment/models.py:132
 msgid "EEG Solution"
-msgstr "Solução EEG"
+msgstr "Solução (Gel) EEG"
 
 #: experiment/models.py:133
 msgid "Filter"
@@ -1680,7 +1680,7 @@ msgstr "Rede de eletrodos de EEG / touca"
 
 #: experiment/views.py:10697
 msgid "Solution"
-msgstr "Solução"
+msgstr "Solução (Gel)"
 
 #: experiment/views.py:10707
 msgid "Filter type"
