@@ -128,6 +128,7 @@ from .forms import (
     SoftwareVersionRegisterForm,
     SourceCodeForm,
     StandardizationSystemRegisterForm,
+    StimuliEqRegisterForm,
     StimulusForm,
     SubjectStepDataForm,
     TMSDataForm,
@@ -220,6 +221,7 @@ from .models import (
     Software,
     SoftwareVersion,
     StandardizationSystem,
+    StimuliEq,
     Stimulus,
     Subject,
     SubjectOfGroup,
@@ -5024,6 +5026,104 @@ def coil_update(request, coil_id, template_name="experiment/coil_register.html")
     }
 
     return render(request, template_name, context)
+
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def stimuli_eq_list(request, template_name="experiment/stimuli_eq_list.html") -> HttpResponse:
+    return render(request, template_name, {"equipments": StimuliEq.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def stimuli_eq_create(request, template_name="experiment/stimuli_eq_register.html"):
+    stimuli_eq_form = StimuliEqRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if stimuli_eq_form.is_valid():
+                stimuli_eq_added = stimuli_eq_form.save(commit=False)
+                stimuli_eq_added.equipment_type = "tms_device"
+                stimuli_eq_added.save()
+
+                messages.success(request, _("TMS device created successfully."))
+                redirect_url = reverse("stimuli_eq_view", args=(stimuli_eq_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _("Information not saved."))
+
+        else:
+            messages.warning(request, _("Action not available."))
+
+    context = {"equipment_form": stimuli_eq_form, "creating": True, "editing": True}
+
+    return render(request, template_name, context)
+
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def stimuli_eq_view(
+    request, stimuli_eq_id, template_name="experiment/stimuli_eq_register.html"
+):
+    stimuli_eq = get_object_or_404(StimuliEq, pk=stimuli_eq_id)
+
+    stimuli_eq_form = StimuliEqRegisterForm(request.POST or None, instance=stimuli_eq)
+
+    for field in stimuli_eq_form.fields:
+        stimuli_eq_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+            try:
+                stimuli_eq.delete()
+                messages.success(request, _("Stimuli Equipment removed successfully."))
+                return redirect("stimuli_eq_list")
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete Stimuli Equipment."))
+                redirect_url = reverse("stimuli_eq_view", args=(stimuli_eq_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "can_change": True,
+        "equipment": stimuli_eq,
+        "equipment_form": stimuli_eq_form,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def stimuli_eq_update(
+    request, stimuli_eq_id, template_name="experiment/stimuli_eq_register.html"
+):
+    stimuli_eq = get_object_or_404(StimuliEq, pk=stimuli_eq_id)
+
+    stimuli_eq_form = StimuliEqRegisterForm(request.POST or None, instance=stimuli_eq)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if stimuli_eq_form.is_valid():
+                if stimuli_eq_form.has_changed():
+                    stimuli_eq_form.save()
+                    messages.success(request, _("TMS device updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("stimuli_eq_view", args=(stimuli_eq.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "equipment": stimuli_eq,
+        "equipment_form": stimuli_eq_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
 
 
 @login_required
@@ -16998,6 +17098,11 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
             "item": _("TMS device"),
             "href": reverse("tmsdevice_list", args=()),
             "quantity": TMSDevice.objects.all().count(),
+        },
+        {
+            "item": _("Stimuli Equipment"),
+            "href": reverse("stimuli_eq_list", args=()),
+            "quantity": StimuliEq.objects.all().count(),
         },
     ]
 

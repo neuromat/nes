@@ -78,4 +78,13 @@
     "[dockerfile]": {
         "editor.defaultFormatter": "ms-azuretools.vscode-docker"
     },
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./patientregistrationsystem/qdc",
+        "-p",
+        "tests_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
 }

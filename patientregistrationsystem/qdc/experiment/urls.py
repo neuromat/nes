@@ -366,6 +366,18 @@ urlpatterns = [
         views.software_version_update,
         name="software_version_edit",
     ),
+    re_path(r"^stimuli_eq/list/$", views.stimuli_eq_list, name="stimuli_eq_list"),
+    re_path(r"^stimuli_eq/new/$", views.stimuli_eq_create, name="stimuli_eq_new"),
+    re_path(
+        r"^stimuli_eq/(?P<stimuli_eq_id>\d+)/$",
+        views.stimuli_eq_view,
+        name="stimuli_eq_view",
+    ),
+    re_path(
+        r"^stimuli_eq/edit/(?P<stimuli_eq_id>\d+)/$",
+        views.stimuli_eq_update,
+        name="stimuli_eq_edit",
+    ),
     # register EMG electrode placement
     # register coil model
     re_path(r"^coil/list/$", views.coil_list, name="coil_list"),

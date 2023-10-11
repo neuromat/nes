@@ -188,6 +188,7 @@ class Equipment(models.Model):
         ("eeg_electrode_net", _("EEG Electrode Net")),
         ("ad_converter", _("A/D Converter")),
         ("tms_device", _("TMS device")),
+        ("stimuli_eq", _("Stimuli Equipment")),
     )
     manufacturer = models.ForeignKey(
         Manufacturer, on_delete=models.CASCADE, related_name="set_of_equipment"
@@ -564,6 +565,12 @@ class TMSDevice(Equipment):
     pulse_type = models.CharField(
         null=True, blank=True, max_length=50, choices=PULSE_TYPES
     )
+
+    def __str__(self) -> str:
+        return self.identification
+    
+    
+class StimuliEq(Equipment):
 
     def __str__(self) -> str:
         return self.identification

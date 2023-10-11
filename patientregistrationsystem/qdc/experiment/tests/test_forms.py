@@ -498,6 +498,36 @@ class CoilModelRegisterFormValidation(TestCase):
         self.assertFalse(coilmodel.is_valid())
 
 
+class StimuliEqRegisterFormValidation(TestCase):
+    def setUp(self) -> None:
+        self.user: User = User.objects.create_user(
+            username=USER_USERNAME, email="test@dummy.com", password=USER_PWD
+        )
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        manufacturer: Manufacturer = Manufacturer.objects.create(name="Manufacturer")
+
+        self.data: dict[str, Any] = {
+            "identification": "StimuliEq",
+            "manufacturer": manufacturer.id,
+        }
+
+    def test_StimuliEqRegisterForm_is_valid(self) -> None:
+        stimuli_eq = StimuliEqRegisterForm(data=self.data)
+        self.assertTrue(stimuli_eq.is_valid())
+
+    def test_StimuliEqRegisterForm_is_not_valid_without_identification(self) -> None:
+        self.data["identification"] = ""
+        stimuli_eq = StimuliEqRegisterForm(data=self.data)
+        self.assertFalse(stimuli_eq.is_valid())
+
+    def test_StimuliEqRegisterForm_is_not_valid_without_manufacturer(self) -> None:
+        self.data["manufacturer"] = ""
+        stimuli_eq = StimuliEqRegisterForm(data=self.data)
+        self.assertFalse(stimuli_eq.is_valid())
+
+
 class TMSDeviceRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(

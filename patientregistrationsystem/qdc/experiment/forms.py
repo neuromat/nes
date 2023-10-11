@@ -84,6 +84,7 @@ from experiment.models import (
     SoftwareVersion,
     SourceCode,
     StandardizationSystem,
+    StimuliEq,
     Stimulus,
     SubjectOfGroup,
     SubjectStepData,
@@ -1149,6 +1150,37 @@ class CoilModelRegisterForm(ModelForm):
                 }
             ),
             "coil_design": Select(attrs={"class": "form-control"}),
+        }
+
+
+class StimuliEqRegisterForm(ModelForm):
+    class Meta:
+        model = StimuliEq
+
+        fields = [
+            "manufacturer",
+            "identification",
+            "description",
+            "serial_number",
+        ]
+
+        widgets = {
+            "manufacturer": Select(
+                attrs={
+                    "class": "form-control",
+                    "required": "",
+                    "data-error": _("Manufacturer must be filled."),
+                }
+            ),
+            "identification": TextInput(
+                attrs={
+                    "class": "form-control",
+                    "required": "",
+                    "data-error": _("Identification must be filled."),
+                }
+            ),
+            "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
+            "serial_number": TextInput(attrs={"class": "form-control"}),
         }
 
 
