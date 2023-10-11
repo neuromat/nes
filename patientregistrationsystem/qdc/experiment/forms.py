@@ -2445,6 +2445,9 @@ class MediaCollectionDataForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(MediaCollectionDataForm, self).__init__(*args, **kwargs)
 
+        self.fields["file_format"].queryset = FileFormat.objects.filter(
+            tags__name="media"
+        )
 
 class ResendExperimentForm(ModelForm):
     class Meta:
