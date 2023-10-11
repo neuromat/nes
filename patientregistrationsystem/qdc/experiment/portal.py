@@ -5,6 +5,8 @@ from io import StringIO
 from os import path
 from typing import Any
 
+from django.contrib.auth.models import User
+
 import coreapi
 from django.conf import settings
 from django.utils import translation
@@ -66,13 +68,12 @@ from .models import (
     TMSDevice,
     TMSDeviceSetting,
     TMSSetting,
-    User,
 )
 
 
 class RestApiClient(object):
     client: coreapi.Client = None
-    schema = None
+    schema: Any = None
     active = False
 
     def __init__(self):
@@ -114,7 +115,7 @@ def send_experiment_to_portal(experiment: Experiment):
         return None
 
     # general params
-    params = {
+    params: dict[str, Any] = {
         "nes_id": str(experiment.id),
         "title": experiment.title,
         "description": experiment.description,
@@ -157,7 +158,7 @@ def send_experiment_end_message_to_portal(experiment: Experiment):
         return None
 
     # general params
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment.id),
         "nes_id": str(experiment.id),
         "status": "to_be_analysed",
@@ -179,7 +180,7 @@ def send_group_to_portal(group: Group):
         return None
 
     # general params
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(group.experiment.id),
         "title": group.title,
         "description": group.description,
@@ -206,7 +207,7 @@ def send_publication_to_portal(publication, experiment_id):
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment_id),
         "title": publication.title,
         "citation": publication.citation,
@@ -226,7 +227,7 @@ def send_experimental_protocol_to_portal(
     if not rest.active:
         return None
 
-    params = {"id": portal_group_id}
+    params: dict[str, Any] = {"id": portal_group_id}
 
     if textual_description:
         params["textual_description"] = textual_description
@@ -257,7 +258,7 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
         return None
 
     # general params
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(eeg_setting.experiment_id),
         "name": eeg_setting.name,
         "description": eeg_setting.description,
@@ -339,7 +340,7 @@ def send_amplifier_to_portal(experiment_nes_id, amplifier: Amplifier):
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment_nes_id),
         "manufacturer_name": amplifier.manufacturer.name,
         "equipment_type": amplifier.equipment_type,
@@ -376,7 +377,7 @@ def send_eeg_amplifier_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_eeg_setting_id,
         "eeg_amplifier": portal_amplifier_id,
         "gain": eeg_amplifier_setting.gain,
@@ -401,7 +402,7 @@ def send_eeg_solution_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_eeg_setting_id,
         "manufacturer_name": eeg_solution_setting.eeg_solution.manufacturer.name,
         "name": eeg_solution_setting.eeg_solution.name,
@@ -423,7 +424,7 @@ def send_eeg_filter_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_eeg_setting_id,
         "eeg_filter_type_name": eeg_filter_setting.eeg_filter_type.name,
         "eeg_filter_type_description": eeg_filter_setting.eeg_filter_type.description,
@@ -451,7 +452,7 @@ def send_eeg_electrode_net_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_eeg_setting_id,
         "manufacturer_name": eeg_electrode_net.manufacturer.name,
         "equipment_type": eeg_electrode_net.equipment_type,
@@ -476,7 +477,7 @@ def send_eeg_electrode_localization_system_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_eeg_setting_id,
         "name": eeg_electrode_localization_system.name,
         "description": eeg_electrode_localization_system.description,
@@ -514,7 +515,7 @@ def send_eeg_electrode_position_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_eeg_setting_id,
         "electrode_model": portal_electrode_model_id,
         "name": eeg_electrode_position_setting.eeg_electrode_position.name,
@@ -615,7 +616,7 @@ def send_emg_digital_filter_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_emg_setting_id,
         "filter_type_name": emg_digital_filter_setting.filter_type.name,
         "filter_type_description": emg_digital_filter_setting.filter_type.description,
@@ -641,7 +642,7 @@ def send_ad_converter_to_portal(experiment_nes_id, ad_converter: ADConverter):
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment_nes_id),
         "manufacturer_name": ad_converter.manufacturer.name,
         "equipment_type": ad_converter.equipment_type,
@@ -670,7 +671,7 @@ def send_emg_ad_converter_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_emg_setting_id,
         "ad_converter": portal_ad_converter_id,
         "sampling_rate": emg_ad_converter_setting.sampling_rate,
@@ -695,7 +696,10 @@ def send_emg_electrode_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {"id": portal_emg_setting_id, "electrode_model": portal_electrode_model_id}
+    params: dict[str, Any] = {
+        "id": portal_emg_setting_id,
+        "electrode_model": portal_electrode_model_id,
+    }
 
     action_keys = ["emg_setting", "emg_electrode_setting", "create"]
 
@@ -716,7 +720,7 @@ def send_emg_preamplifier_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_emg_electrode_setting_id,
         "amplifier": portal_preamplifier_id,
         "gain": emg_preamplifier_setting.gain,
@@ -741,7 +745,7 @@ def send_emg_amplifier_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_emg_electrode_setting_id,
         "amplifier": portal_amplifier_id,
         "gain": emg_amplifier_setting.gain,
@@ -765,7 +769,7 @@ def send_emg_preamplifier_filter_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_emg_electrode_setting_id,
         "low_pass": emg_preamplifier_filter_setting.low_pass,
         "high_pass": emg_preamplifier_filter_setting.high_pass,
@@ -793,7 +797,7 @@ def send_emg_analog_filter_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_emg_electrode_setting_id,
         "low_pass": emg_analog_filter_setting.low_pass,
         "high_pass": emg_analog_filter_setting.high_pass,
@@ -821,7 +825,7 @@ def send_emg_surface_placement_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment_nes_id),
         "standardization_system_name": emg_surface_placement.standardization_system.name,
         "standardization_system_description": emg_surface_placement.standardization_system.description,
@@ -862,7 +866,7 @@ def send_emg_intramuscular_placement_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment_nes_id),
         "standardization_system_name": emg_intramuscular_placement.standardization_system.name,
         "standardization_system_description": emg_intramuscular_placement.standardization_system.description,
@@ -900,7 +904,7 @@ def send_emg_needle_placement_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment_nes_id),
         "standardization_system_name": emg_needle_placement.standardization_system.name,
         "standardization_system_description": emg_needle_placement.standardization_system.description,
@@ -939,7 +943,7 @@ def send_emg_electrode_placement_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_emg_electrode_setting_id,
         "emg_electrode_placement": portal_electrode_placement_id,
         "muscle_side": emg_electrode_placement_setting.muscle_side.name
@@ -967,7 +971,7 @@ def send_emg_setting_to_portal(emg_setting: EMGSetting):
         return None
 
     # general params
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(emg_setting.experiment_id),
         "name": emg_setting.name,
         "description": emg_setting.description,
@@ -1127,7 +1131,7 @@ def send_tms_device_to_portal(experiment_nes_id, tms_device: TMSDevice):
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment_nes_id),
         "manufacturer_name": tms_device.manufacturer.name,
         "equipment_type": tms_device.equipment_type,
@@ -1150,7 +1154,7 @@ def send_coil_model_to_portal(experiment_nes_id, coil_model: CoilModel):
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment_nes_id),
         "name": coil_model.name,
         "description": coil_model.description,
@@ -1178,7 +1182,7 @@ def send_tms_device_setting_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_tms_setting_id,
         "tms_device": portal_tms_device_id,
         "pulse_stimulus_type": tms_device_setting.pulse_stimulus_type,
@@ -1199,7 +1203,7 @@ def send_tms_setting_to_portal(tms_setting: TMSSetting):
         return None
 
     # general params
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(tms_setting.experiment_id),
         "name": tms_setting.name,
         "description": tms_setting.description,
@@ -1239,7 +1243,7 @@ def send_context_tree_to_portal(context_tree: ContextTree):
         return None
 
     # general params
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(context_tree.experiment_id),
         "name": context_tree.name,
         "description": context_tree.description,
@@ -1286,7 +1290,7 @@ def send_participant_to_portal(
         )
     else:
         age = None
-    params = {
+    params: dict[str, Any] = {
         "id": portal_group_id,
         "code": subject.patient.code,
         "gender": gender_name,
@@ -1307,7 +1311,7 @@ def send_research_project_to_portal(experiment: Experiment):
         return None
 
     # general params
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(experiment.id),
         "title": experiment.research_project.title,
         "description": experiment.research_project.description,
@@ -1336,7 +1340,7 @@ def send_researcher_to_portal(research_project_id, researcher: User):
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "id": research_project_id,
         "first_name": researcher.first_name,
         "last_name": researcher.last_name,
@@ -1377,7 +1381,7 @@ def send_experiment_researcher_to_portal(researcher: ExperimentResearcher):
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "experiment_nes_id": str(researcher.experiment.id),
         "first_name": researcher.researcher.first_name,
         "last_name": researcher.researcher.last_name,
@@ -1450,7 +1454,7 @@ def send_steps_to_portal(
     if component_tree["component_type"] == "digital_game_phase":
         step_type = "goalkeeper_game"
 
-    params = {
+    params: dict[str, Any] = {
         "id": portal_group_id,
         "identification": component.identification
         + (
@@ -1483,17 +1487,17 @@ def send_steps_to_portal(
 
     if step_type == "eeg":
         api_step_method = "eeg_step"
-        step_specialization = EEG.objects.get(pk=component.id)
+        step_specialization: EEG = EEG.objects.get(pk=component.id)
         params["eeg_setting"] = list_of_eeg_setting[step_specialization.eeg_setting_id]
 
     elif step_type == "emg":
         api_step_method = "emg_step"
-        step_specialization = EMG.objects.get(pk=component.id)
+        step_specialization: EMG = EMG.objects.get(pk=component.id)
         params["emg_setting"] = list_of_emg_setting[step_specialization.emg_setting_id]
 
     elif step_type == "tms":
         api_step_method = "tms_step"
-        step_specialization = TMS.objects.get(pk=component.id)
+        step_specialization: TMS = TMS.objects.get(pk=component.id)
         params["tms_setting"] = list_of_tms_setting[step_specialization.tms_setting_id]
 
     elif step_type == "instruction":
@@ -1706,7 +1710,7 @@ def send_file_to_portal(file):
     if not rest.active:
         return None
 
-    params = {}
+    params: dict[str, Any] = {}
 
     action_keys = ["files", "create"]
 
@@ -1731,7 +1735,7 @@ def send_eeg_data_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "participant": portal_participant_id,
         "step": portal_step_id,
         "date": eeg_data.date.strftime("%Y-%m-%d"),
@@ -1766,7 +1770,7 @@ def send_emg_data_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "participant": portal_participant_id,
         "step": portal_step_id,
         "date": emg_data.date.strftime("%Y-%m-%d"),
@@ -1796,7 +1800,7 @@ def send_tms_data_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "participant": portal_participant_id,
         "step": portal_step_id,
         "date": tms_data.date.strftime("%Y-%m-%d"),
@@ -1875,7 +1879,7 @@ def send_digital_game_phase_data_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "participant": portal_participant_id,
         "step": portal_step_id,
         "date": digital_game_phase_data.date.strftime("%Y-%m-%d"),
@@ -1909,7 +1913,7 @@ def send_questionnaire_response_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "participant": portal_participant_id,
         "step": portal_step_id,
         "date": questionnaire_response.date.strftime("%Y-%m-%d"),
@@ -1937,7 +1941,7 @@ def send_additional_data_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "participant": portal_participant_id,
         "step": portal_step_id,
         "date": additional_data.date.strftime("%Y-%m-%d"),
@@ -1970,7 +1974,7 @@ def send_media_collection_data_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "participant": portal_participant_id,
         "step": portal_step_id,
         "date": media_collection_data.date.strftime("%Y-%m-%d"),
@@ -2005,7 +2009,7 @@ def send_generic_data_collection_data_to_portal(
     if not rest.active:
         return None
 
-    params = {
+    params: dict[str, Any] = {
         "participant": portal_participant_id,
         "step": portal_step_id,
         "date": generic_data_collection_data.date.strftime("%Y-%m-%d"),

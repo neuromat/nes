@@ -10208,6 +10208,7 @@ def subject_generic_data_collection_data_create(
         "creating": True,
         "editing": True,
         "group": group,
+        "file_format_list": file_format_code("generic"),
         "generic_data_collection_configuration": generic_data_collection_configuration,
         "generic_data_collection_data_form": generic_data_collection_data_form,
         "generic_data_collection_data_id": generic_data_collection_data_id,
@@ -10267,6 +10268,7 @@ def generic_data_collection_data_view(
             generic_data_collection_data.subject_of_group.group.experiment.research_project,
         ),
         "editing": False,
+        "file_format_list": file_format_code("generic"),
         "group": generic_data_collection_data.subject_of_group.group,
         "subject": generic_data_collection_data.subject_of_group.subject,
         "generic_data_collection_data_form": generic_data_collection_data_form,
@@ -10357,6 +10359,7 @@ def generic_data_collection_data_edit(request, generic_data_collection_data_id):
         )
 
     context = {
+        "file_format_list": file_format_code("generic"),
         "group": generic_data_collection_data.subject_of_group.group,
         "subject": generic_data_collection_data.subject_of_group.subject,
         "generic_data_collection_data_form": generic_data_collection_data_form,
@@ -11530,8 +11533,8 @@ def subject_additional_data_create(
 
     additional_data_form = AdditionalDataForm(None)
 
-    file_format_list = file_format_code()
-
+    file_format_list = file_format_code("")
+    print(file_format_list)
     if request.method == "POST":
         if request.POST["action"] == "save":
             additional_data_form = AdditionalDataForm(request.POST, request.FILES)
@@ -11617,7 +11620,7 @@ def additional_data_view(
     for field in additional_data_form.fields:
         additional_data_form.fields[field].widget.attrs["disabled"] = True
 
-    file_format_list = file_format_code()
+    file_format_list = file_format_code("")
 
     if request.method == "POST":
         if request.POST["action"] == "remove":
@@ -11667,7 +11670,7 @@ def additional_data_edit(
 ):
     additional_data = get_object_or_404(AdditionalData, pk=additional_data_id)
 
-    file_format_list = file_format_code()
+    file_format_list = file_format_code("")
 
     check_can_change(
         request.user, additional_data.subject_of_group.group.experiment.research_project

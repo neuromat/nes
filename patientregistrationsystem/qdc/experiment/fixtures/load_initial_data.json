@@ -68,10 +68,26 @@
     }
   },
   {
+    "model": "experiment.tag",
+    "pk": 3,
+    "fields": {
+      "name": "generic"
+    }
+  },
+  {
+    "model": "experiment.tag",
+    "pk": 4,
+    "fields": {
+      "name": "media"
+    }
+  },
+  {
     "fields": {
       "tags": [
         1,
-        2
+        2,
+        3,
+        4
       ],
       "name_en": "Other",
       "name": "Outro",
@@ -89,7 +105,8 @@
     "fields": {
       "tags": [
         1,
-        2
+        2,
+        3
       ],
       "name_en": "Text file",
       "name": "Text file",
@@ -158,7 +175,10 @@
   },
   {
     "fields": {
-      "tags": [],
+      "tags": [
+        3,
+        4
+      ],
       "name_en": "Media file",
       "name": "Media file",
       "description_en": "File format to store images and video",

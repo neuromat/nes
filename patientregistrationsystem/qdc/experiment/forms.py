@@ -2387,9 +2387,14 @@ class GenericDataCollectionDataForm(ModelForm):
             # 'file': FileInput(attrs={'required': ""})
         }
 
+
+
     def __init__(self, *args, **kwargs):
         super(GenericDataCollectionDataForm, self).__init__(*args, **kwargs)
 
+        self.fields["file_format"].queryset = FileFormat.objects.filter(
+            tags__name="generic"
+        )
 
 class MediaCollectionDataForm(ModelForm):
     class Meta:
