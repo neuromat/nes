@@ -1,11 +1,10 @@
-from typing import LiteralString
 from custom_user.models import Institution
 from django.db import models
-from solo.models import SingletonModel
 from django_stubs_ext.db.models import TypedModelMeta
+from solo.models import SingletonModel
 
 
-def get_institution_logo_dir(instance, filename) -> LiteralString:
+def get_institution_logo_dir(instance, filename) -> str:
     return "institution_logo/%s/%s" % (instance.id, filename)
 
 

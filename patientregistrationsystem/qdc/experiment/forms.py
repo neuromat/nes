@@ -1,8 +1,11 @@
 # coding=utf-8
 
+from typing import Any
+
 from django.contrib.auth.models import User
 from django.forms import (
     DateInput,
+    Field,
     Form,
     IntegerField,
     ModelChoiceField,
@@ -328,9 +331,11 @@ class StimulusForm(ModelForm):
 
 
 class EEGForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = EEG
-        fields = ["eeg_setting"]
+        fields: list[str] = ["eeg_setting"]
 
         widgets = {
             "eeg_setting": Select(
@@ -352,6 +357,8 @@ class EEGForm(ModelForm):
 
 
 class EMGForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = EMG
         fields = ["emg_setting"]
@@ -376,6 +383,8 @@ class EMGForm(ModelForm):
 
 
 class TMSForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = TMS
         fields = ["tms_setting"]
@@ -400,6 +409,8 @@ class TMSForm(ModelForm):
 
 
 class DigitalGamePhaseForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = DigitalGamePhase
         fields = ["software_version", "context_tree"]
@@ -508,6 +519,8 @@ class ResearchProjectOwnerForm(ModelForm):
 
 
 class ResearchProjectForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = ResearchProject
         fields = ["start_date", "end_date", "title", "description"]
@@ -626,6 +639,8 @@ class NumberOfUsesToInsertForm(Form):
 
 
 class EEGDataForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = EEGData
 
@@ -1220,6 +1235,8 @@ class TMSDeviceRegisterForm(ModelForm):
 
 
 class EEGElectrodeNETRegisterForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = EEGElectrodeNet
         fields = [
@@ -1535,6 +1552,8 @@ class SoftwareVersionRegisterForm(ModelForm):
 
 
 class EMGDataForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = EMGData
 
@@ -1818,6 +1837,8 @@ class EMGADConverterSettingForm(ModelForm):
 
 
 class EMGElectrodeSettingForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = EMGElectrodeSetting
 
@@ -1867,6 +1888,8 @@ class EMGElectrodePlacementSettingForm(ModelForm):
 
 
 class EMGPreamplifierSettingForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = EMGPreamplifierSetting
         localized_fields = ("gain",)
@@ -1923,6 +1946,8 @@ class EMGPreamplifierFilterSettingForm(ModelForm):
 
 
 class EMGAmplifierSettingForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = EMGAmplifierSetting
 
@@ -2072,6 +2097,8 @@ class EMGNeedlePlacementForm(ModelForm):
 
 
 class TMSDataForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = TMSData
 
@@ -2358,6 +2385,8 @@ class DigitalGamePhaseDataForm(ModelForm):
 
 
 class GenericDataCollectionDataForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = GenericDataCollectionData
 
@@ -2428,6 +2457,8 @@ class GenericDataCollectionDataForm(ModelForm):
 
 
 class MediaCollectionDataForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = MediaCollectionData
 
@@ -2475,6 +2506,10 @@ class MediaCollectionDataForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MediaCollectionDataForm, self).__init__(*args, **kwargs)
+
+        self.fields["file_format"].queryset = FileFormat.objects.filter(
+            tags__name="media"
+        )
 
 
 class ResendExperimentForm(ModelForm):

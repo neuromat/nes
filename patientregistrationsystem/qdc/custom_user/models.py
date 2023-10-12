@@ -1,12 +1,9 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Manager, signals
-from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django_stubs_ext.db.models import TypedModelMeta
-from configuration.models import LocalInstitution
-
 from patient.models import COUNTRIES
-
 
 LOGIN = (
     (False, _("No")),
@@ -14,7 +11,7 @@ LOGIN = (
 )
 
 
-class Institution(models.Model):
+class Institution(models.Model):  # type: ignore [django-manager-missing]
     name = models.CharField(max_length=150)
     acronym = models.CharField(max_length=30, unique=True)
     country = models.CharField(max_length=30, choices=COUNTRIES)

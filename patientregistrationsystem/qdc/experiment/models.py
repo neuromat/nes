@@ -1,20 +1,17 @@
 # -*- coding: UTF-8 -*-
 import datetime
-
 from os import path
 from typing import Any, LiteralString
 
-from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
-from django.contrib.auth.models import User
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-from simple_history.models import HistoricalRecords
-from django.conf import settings
-
 from modeltranslation.manager import MultilingualManager
-
-from patient.models import Patient, ClassificationOfDiseases
+from patient.models import ClassificationOfDiseases, Patient
+from simple_history.models import HistoricalRecords
 from survey.models import Survey
 
 TIME_UNITS = (
@@ -568,10 +565,9 @@ class TMSDevice(Equipment):
 
     def __str__(self) -> str:
         return self.identification
-    
-    
-class StimuliEq(Equipment):
 
+
+class StimuliEq(Equipment):
     def __str__(self) -> str:
         return self.identification
 

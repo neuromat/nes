@@ -1,8 +1,7 @@
-from calendar import TextCalendar
+from configuration.models import Contact, LocalInstitution, get_institution_logo_dir
+from custom_user.models import Institution
 from django.db.utils import IntegrityError
 from django.test import TestCase
-from custom_user.models import Institution
-from configuration.models import Contact, LocalInstitution, get_institution_logo_dir
 
 
 class LocalInstiutionTest(TestCase):

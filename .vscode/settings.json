@@ -4,7 +4,6 @@
         "editor.formatOnSave": true
     },
 
-    
     "[django-html]": {},
     "python.analysis.autoImportCompletions": true,
     "python.analysis.inlayHints.functionReturnTypes": true,
@@ -36,9 +35,7 @@
         // "pylint_django",
         //"--django-settings-module=patientregistrationsystem.qdc.qdc.settings"
     ],
-    "pylint.path": [
-        
-    ],
+    "pylint.path": [],
     "python.analysis.include": [],
     "python.analysis.exclude": [
         "../docs/",

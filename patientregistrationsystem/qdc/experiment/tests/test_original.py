@@ -3,84 +3,39 @@ import datetime
 import shutil
 import tempfile
 from typing import Any
-
 from unittest.mock import patch
-from django.http import HttpResponse
 
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
-
-from experiment.models import (
-    Experiment,
-    Group,
-    StimuliEq,
-    Subject,
-    QuestionnaireResponse,
-    SubjectOfGroup,
-    ComponentConfiguration,
-    ResearchProject,
-    Keyword,
-    StimulusType,
-    Component,
-    Task,
-    TaskForTheExperimenter,
-    Stimulus,
-    Instruction,
-    Pause,
-    Questionnaire,
-    Block,
-    EEG,
-    FileFormat,
-    EEGData,
-    EEGSetting,
-    DataConfigurationTree,
-    EMG,
-    Manufacturer,
-    Tag,
-    Amplifier,
-    EEGSolution,
-    FilterType,
-    ElectrodeModel,
-    EEGElectrodeNet,
-    EEGElectrodeLocalizationSystem,
-    EEGElectrodePosition,
-    Material,
-    EMGSetting,
-    Software,
-    SoftwareVersion,
-    ADConverter,
-    EMGElectrodeSetting,
-    StandardizationSystem,
-    MuscleSubdivision,
-    Muscle,
-    MuscleSide,
-    EMGElectrodePlacement,
-    EEGElectrodeCap,
-    EEGCapSize,
-    TMSDevice,
-    CoilModel,
-    Publication,
-    ContextTree,
-)
+from experiment.models import (EEG, EMG, ADConverter, Amplifier, Block,
+                               CoilModel, Component, ComponentConfiguration,
+                               ContextTree, DataConfigurationTree, EEGCapSize,
+                               EEGData, EEGElectrodeCap,
+                               EEGElectrodeLocalizationSystem, EEGElectrodeNet,
+                               EEGElectrodePosition, EEGSetting, EEGSolution,
+                               ElectrodeModel, EMGElectrodePlacement,
+                               EMGElectrodeSetting, EMGSetting, Experiment,
+                               FileFormat, FilterType, Group, Instruction,
+                               Keyword, Manufacturer, Material, Muscle,
+                               MuscleSide, MuscleSubdivision, Pause,
+                               Publication, Questionnaire,
+                               QuestionnaireResponse, ResearchProject,
+                               Software, SoftwareVersion,
+                               StandardizationSystem, StimuliEq, Stimulus,
+                               StimulusType, Subject, SubjectOfGroup, Tag,
+                               Task, TaskForTheExperimenter, TMSDevice)
 from experiment.tests.tests_helper import ObjectsFactory
-
-from experiment.views import (
-    experiment_update,
-    upload_file,
-    research_project_update,
-    publication_update,
-    context_tree_update,
-    publication_add_experiment,
-)
-
+from experiment.views import (context_tree_update, experiment_update,
+                              publication_add_experiment, publication_update,
+                              research_project_update, upload_file)
 from patient.models import ClassificationOfDiseases
 from patient.tests.test_orig import UtilTests
-
-from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
+from survey.models import Survey
 
 # TODO (NES-995): it is creating one more here TEMP_MEDIA_ROOT
 TEMP_MEDIA_ROOT = tempfile.mkdtemp()
