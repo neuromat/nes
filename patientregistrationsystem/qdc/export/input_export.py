@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from json import dump, load
 from typing import Any
+
 from survey.abc_search_engine import Questionnaires
 from survey.views import get_questionnaire_language
-
 
 BASE_DIRECTORY = "data"
 PER_PARTICIPANT_DIRECTORY = "Per_participant"
@@ -27,10 +27,10 @@ OUTPUT_FILENAME_DIAGNOSIS = "Diagnosis"
 
 
 class InputExport:
-    def __init__(self):
+    def __init__(self) -> None:
         self.data: dict[str, Any] = {}
 
-    def read(self, input_filename, update_input_data=True):
+    def read(self, input_filename, update_input_data=True) -> dict[str, Any]:
         with open(input_filename.encode("utf-8"), "r") as input_file:
             input_data_temp = load(self.data, input_file)
 
@@ -39,11 +39,11 @@ class InputExport:
 
         return self.data
 
-    def write(self, output_filename):
+    def write(self, output_filename) -> None:
         with open(output_filename.encode("utf-8"), "w", encoding="UTF-8") as outfile:
             dump(self.data, outfile)
 
-    def build_header(self, export_per_experiment):
+    def build_header(self, export_per_experiment) -> None:
         # /data
         self.data["base_directory"] = BASE_DIRECTORY
         self.data["per_participant_directory"] = PER_PARTICIPANT_DIRECTORY
@@ -55,12 +55,12 @@ class InputExport:
             self.data["participant_data_directory"] = PARTICIPANT_DATA_DIRECTORY
             self.data["goalkeeper_game_data_directory"] = GOALKEEPER_GAME_DATA_DIRECTORY
 
-    def build_dynamic_header(self, variable_name, variable_data):
+    def build_dynamic_header(self, variable_name, variable_data) -> None:
         self.data[variable_name] = variable_data
 
     def build_diagnosis_participant(
         self, strut_name, output_filename, field_header_list
-    ):
+    ) -> None:
         self.data[strut_name] = {
             "output_filename": output_filename,
             "output_list": [],
@@ -70,7 +70,9 @@ class InputExport:
             output_data = {"header": header, "field": field}
             self.data[strut_name]["output_list"].append(output_data)
 
-    def build_questionnaire(self, questionnaire_list, language, entrance_questionnaire):
+    def build_questionnaire(
+        self, questionnaire_list, language, entrance_questionnaire
+    ) -> None:
         questionnaire_lime_survey = Questionnaires()
         if "questionnaire_language" not in self.data:
             self.data["questionnaire_language"] = {}
@@ -161,7 +163,7 @@ class InputExport:
 
 def build_partial_export_structure(
     export_per_participant, participant_field_header_list, output_filename
-):
+) -> None:
     json_data = InputExport()
 
     json_data.build_header()
@@ -186,7 +188,7 @@ def build_complete_export_structure(
     component_list,
     language,
     filesformat_type,
-):
+) -> None:
     json_data = InputExport()
 
     json_data.build_header(export_per_experiment)

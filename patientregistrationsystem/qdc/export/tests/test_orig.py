@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
+import os
+from datetime import datetime
+from os import mkdir, path, remove
+from shutil import rmtree
 from typing import Any
 from unittest.mock import patch
 
+from custom_user.models import User
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.utils.translation import gettext as _
 from django.urls import reverse
-from dateutil.relativedelta import relativedelta
-from datetime import datetime
-from os import mkdir, remove, path
-from shutil import rmtree
-
-
-from custom_user.models import User
-
+from django.utils.translation import gettext as _
 from export.export import is_patient_active
 from export.input_export import InputExport, build_complete_export_structure
-from export.views import Survey, Questionnaires, QuestionnaireResponse, create_directory
-
+from export.views import QuestionnaireResponse, Questionnaires, Survey, create_directory
 from patient.models import Gender, MaritalStatus, Patient
 
 USER_EDIT = "user_edit"
@@ -103,7 +100,7 @@ class UtilTests:
 
 
 class DirectoryTest(TestCase):
-    user = ""
+    user: User
     data: dict[str, Any] = {}
 
     def setUp(self):
@@ -167,7 +164,7 @@ class DirectoryTest(TestCase):
 class PatientActiveTest(TestCase):
     """Cria um participante para ser utilizado durante os testes"""
 
-    user = ""
+    user: User
     data: dict[str, Any] = {}
     util = UtilTests()
 
@@ -362,6 +359,8 @@ class InputExportTest(TestCase):
             remove(output_filename)
 
         self.assertTrue(not path.isfile(output_filename))
+
+        os.makedirs(path.join(settings.MEDIA_ROOT, "export"), exist_ok=True)
         experiment_questionnaires_list = []
         component_list = []
         build_complete_export_structure(
