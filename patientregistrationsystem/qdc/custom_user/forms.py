@@ -234,6 +234,8 @@ class ResearcherForm(ModelForm):
 
 
 class InstitutionForm(ModelForm):
+    fields: dict[str, Any]
+
     class Meta:
         model = Institution
         fields = ["name", "acronym", "country", "parent"]
