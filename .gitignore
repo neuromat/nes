@@ -1,3 +1,11 @@
+
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+
 *.pyc
 patientregistrationsystem/qdc/.idea
 *.placeholder
