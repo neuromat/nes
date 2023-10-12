@@ -4,6 +4,7 @@ import datetime
 import re
 from functools import partial
 from operator import itemgetter
+from typing import Any
 
 from django.conf import settings
 from django.contrib import messages
@@ -692,20 +693,20 @@ def update_acquisition_date(limesurvey_id, token, questionnaire_response, langua
 
 @login_required
 @permission_required("patient.view_patient")
-def search_patient(request):
+def search_patient(request) -> HttpResponse:
     context = {"number_of_patients": Patient.objects.exclude(removed=True).count()}
 
     return render(request, "patient/busca.html", context)
 
 
 @login_required
-def advanced_search(request):
+def advanced_search(request) -> HttpResponse:
     return render(request, "patient/busca_avancada.html")
 
 
 @login_required
-def restore_patient(request, patient_id):
-    patient_restored = Patient.objects.get(id=patient_id)
+def restore_patient(request, patient_id) -> HttpResponseRedirect:
+    patient_restored: Patient = Patient.objects.get(id=patient_id)
     patient_restored.removed = False
     patient_restored.save()
 
@@ -715,31 +716,42 @@ def restore_patient(request, patient_id):
 
 @login_required
 @permission_required("patient.view_patient")
-def search_patients_ajax(request):
-    patient_list = ""
+def search_patients_ajax(request) -> HttpResponse:
+    patient_list: list[Patient] = []
     if request.method == "POST":
         search_text = request.POST["search_text"]
         if search_text:
-            if re.match("P{1}[0-9]", search_text):
+            if re.match(r"P{1}[0-9]", search_text):
                 patient_list = (
                     Patient.objects.filter(code__icontains=search_text)
                     .exclude(removed=True)
                     .order_by("code")
                 )
-            elif re.match("[a-zA-Z ]+", search_text):
+            elif re.match(r"[a-zA-Z ]+", search_text):
                 patient_list = (
                     Patient.objects.filter(name__icontains=search_text)
                     .exclude(removed=True)
                     .order_by("name")
                 )
-            else:
+            elif re.match(r"^[0-9]{1}[0-9-.]{0,}$", search_text):
                 patient_list = (
                     Patient.objects.filter(cpf__icontains=search_text)
                     .exclude(removed=True)
                     .order_by("name")
                 )
+            else:
+                patient_list = (
+                    Patient.objects.all().exclude(removed=True).order_by("name")
+                )
 
-    return render(None, "patient/ajax_search.html", {"patients": patient_list})
+    return render(
+        None,
+        "patient/ajax_search.html",
+        {
+            "patients": patient_list,
+            "sensitive_perm": request.user.has_perm("patient.sensitive_data_patient"),
+        },
+    )
 
 
 @login_required

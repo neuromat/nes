@@ -38,7 +38,7 @@ function searchRequest(url, query, ajaxExtras=null){
     });
 }
 
-function searchAndTable(url, ajaxExtras=null) {
+function searchAndTable(url, ajaxExtras=null, canSeeNames=false) {
     let page = 1;
 
     // Handle search requests

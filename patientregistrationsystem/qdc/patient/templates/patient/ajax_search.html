@@ -1,9 +1,13 @@
 {% load i18n %}
 {% if patients.count > 0 %}
-
+    {{perms}}
     {% for patient in patients %}
-        <li><a href="/patient/{{ patient.id }}">
-            {% if patient.cpf %} {{ patient.cpf }} - {% endif %} {% if patient.name %} {{ patient.name }} {% else %} {{ patient.code }} {% endif %}</a></li>
+    <li><a href="/patient/{{ patient.id }}">
+        {% if sensitive_perm %}
+                {% if patient.cpf %} {{ patient.cpf }} - {% endif %} {% if patient.name %} {{ patient.name }} {% else %} {{ patient.code }} {% endif %}</a></li>
+        {% else %}
+                {{ patient.code }} </a></li>
+        {% endif %}
     {% endfor %}
 
 {% else %}

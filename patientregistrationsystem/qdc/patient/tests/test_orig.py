@@ -12,7 +12,7 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import XML
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission, User
 from django.contrib.messages.api import MessageFailure
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.cache import cache
@@ -715,6 +715,10 @@ class PatientFormValidation(TestCase):
         Teste de visualizacao de participante apos cadastro na base de dados
         """
 
+        self.user.user_permissions.add(
+            Permission.objects.get(codename="sensitive_data_patient")
+        )
+
         patient = self.util.create_patient(changed_by=self.user)
         patient.cpf = "374.276.738-08"  # to test search for cpf
         patient.save()
@@ -742,7 +746,7 @@ class PatientFormValidation(TestCase):
         self.data[SEARCH_TEXT] = ""
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["patients"], "")
+        self.assertEqual(response.context["patients"], [])
 
     def test_patient_list(self):
         """
