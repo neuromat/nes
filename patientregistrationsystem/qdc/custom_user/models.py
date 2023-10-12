@@ -1,8 +1,9 @@
 from django.db import models
-from django.db.models import signals
+from django.db.models import Manager, signals
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django_stubs_ext.db.models import TypedModelMeta
+from configuration.models import LocalInstitution
 
 from patient.models import COUNTRIES
 
@@ -18,7 +19,11 @@ class Institution(models.Model):
     acronym = models.CharField(max_length=30, unique=True)
     country = models.CharField(max_length=30, choices=COUNTRIES)
     parent = models.ForeignKey(
-        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="children+",
     )
 
     def __str__(self) -> str:

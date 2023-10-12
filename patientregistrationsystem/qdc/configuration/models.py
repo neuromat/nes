@@ -1,4 +1,3 @@
-from os import name
 from typing import LiteralString
 from custom_user.models import Institution
 from django.db import models
@@ -15,6 +14,7 @@ class LocalInstitution(SingletonModel):
     institution = models.ForeignKey(
         Institution, on_delete=models.CASCADE, null=True, blank=True
     )
+
     url = models.URLField(null=True, blank=True)
     logo = models.FileField(upload_to=get_institution_logo_dir, null=True, blank=True)
 

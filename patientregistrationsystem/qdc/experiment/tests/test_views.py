@@ -2490,7 +2490,7 @@ class ImportExperimentTest(TestCase):
                 follow=True,
             )
         self.assertNotIn(
-            "1 Estudo importado: " + ResearchProject.objects.last().title,
+            "1 Estudo importado: " + str(ResearchProject.objects.last().title),
             strip_tags(response.content.decode("utf-8")),
         )
         self.assertIn(

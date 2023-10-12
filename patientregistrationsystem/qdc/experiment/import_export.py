@@ -460,7 +460,7 @@ class ImportExperiment:
             for (index, dict_) in enumerate(self.data)
             if dict_["model"] == "experiment.keyword"
         ]
-        next_keyword_id = (
+        next_keyword_id: int = (
             Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
         )
         indexes_of_keywords_already_updated = []

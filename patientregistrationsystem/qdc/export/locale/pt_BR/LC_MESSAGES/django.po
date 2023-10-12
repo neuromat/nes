@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-06 08:33-0300\n"
+"POT-Creation-Date: 2023-10-12 11:35-0300\n"
 "PO-Revision-Date: 2023-10-02 12:58-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,8 +21,8 @@ msgstr ""
 msgid "Participant code"
 msgstr "Código de Participante"
 
-#: export/export.py:243 export/tests/test_views.py:2443
-#: export/tests/tests_orig.py:164
+#: export/export.py:243 export/tests/test_orig.py:164
+#: export/tests/test_views.py:2443
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
@@ -127,7 +127,7 @@ msgstr ""
 "Mac)"
 
 #: export/templates/export/experiment_selection.html:91
-#: export/templates/export/export_data.html:136 export/tests/test_views.py:5757
+#: export/templates/export/export_data.html:136 export/tests/test_views.py:5766
 msgid "License"
 msgstr "Licença"
 
@@ -389,7 +389,7 @@ msgstr "Entre com um diagnóstico"
 
 #: export/templates/export/participant_selection.html:137
 #: export/templates/export/show_selected_participants.html:41
-#: export/tests/test_views.py:1142 export/views.py:69
+#: export/tests/test_views.py:1143 export/views.py:69
 msgid "Age"
 msgstr "Idade"
 
@@ -433,7 +433,7 @@ msgid "Previous"
 msgstr "Anterior"
 
 #: export/tests/test_views.py:163 export/tests/test_views.py:164
-#: export/tests/test_views.py:1143 export/tests/test_views.py:2959
+#: export/tests/test_views.py:1144 export/tests/test_views.py:2959
 #: export/tests/test_views.py:2960
 msgid "Acquisition date:"
 msgstr ""
@@ -733,15 +733,15 @@ msgstr ""
 msgid "Mehrfachauswahl..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1144
+#: export/tests/test_views.py:1145
 msgid "First Question"
 msgstr ""
 
-#: export/tests/test_views.py:1145
+#: export/tests/test_views.py:1146
 msgid "Second Question"
 msgstr ""
 
-#: export/tests/test_views.py:1146
+#: export/tests/test_views.py:1147
 msgid "File Upload"
 msgstr ""
 
