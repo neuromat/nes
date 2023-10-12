@@ -49,9 +49,11 @@ mne==1.3.1
 # For testing
 goodtables==2.5.4
 Faker==2.0.4
+coverage
 
 # Development
 types-python-dateutil
 django-stubs-ext 
 django-stubs[compatible-mypy]
 mypy
+

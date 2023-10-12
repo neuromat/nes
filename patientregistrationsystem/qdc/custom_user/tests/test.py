@@ -518,6 +518,10 @@ class InstitutionTests(TestCase):
         self.assertEqual(
             Institution.objects.filter(name="Faculdade de Medicina").count(), 1
         )
+        self.assertEqual(
+            str(Institution.objects.filter(name="Faculdade de Medicina").first()),
+            self.data["name"],
+        )
 
     def test_institution_create_wrong_action(self) -> None:
         self.data = {

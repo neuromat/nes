@@ -98,7 +98,7 @@ class UserForm(ModelForm):
             "groups": CheckboxSelectMultiple(),
         }
 
-    def clean_password(self):
+    def clean_password(self) -> str:
         return make_password(self.cleaned_data["password"])
 
     def clean_email(self):
@@ -157,7 +157,7 @@ class CustomPasswordResetForm(PasswordResetForm):
 
         try:
             # trying to get the first element from the generator object using __next__() once
-            users.__next__()
+            iter(users).__next__()
             return True
         except StopIteration:
             self.add_error("email", _("E-mail is not registered"))

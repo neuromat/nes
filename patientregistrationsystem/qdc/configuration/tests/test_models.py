@@ -2,7 +2,7 @@ from calendar import TextCalendar
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from custom_user.models import Institution
-from configuration.models import Contact, LocalInstitution
+from configuration.models import Contact, LocalInstitution, get_institution_logo_dir
 
 
 class LocalInstiutionTest(TestCase):
@@ -33,6 +33,16 @@ class LocalInstiutionTest(TestCase):
                 institution=Institution.objects.first(),
                 url="https://ufrj.br/",
             ),
+
+    def test_get_institution_logo_dir(self) -> None:
+        institution = LocalInstitution.objects.create(
+            code="1234", institution=Institution.objects.first(), url="https://ufrj.br/"
+        )
+
+        self.assertEqual(
+            "institution_logo/1/test.png",
+            get_institution_logo_dir(institution, "test.png"),
+        )
 
 
 class ContactTest(TestCase):

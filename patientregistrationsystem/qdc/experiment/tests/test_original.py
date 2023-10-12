@@ -5,6 +5,7 @@ import tempfile
 from typing import Any
 
 from unittest.mock import patch
+from django.http import HttpResponse
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -15,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 from experiment.models import (
     Experiment,
     Group,
+    StimuliEq,
     Subject,
     QuestionnaireResponse,
     SubjectOfGroup,
@@ -6665,13 +6667,111 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(EEGElectrodeLocalizationSystem.objects.all().count(), 0)
 
+    def test_stimuli_eq_register(self):
+        manufacturer: Manufacturer = ObjectsFactory.create_manufacturer()
+
+        # list
+        response: HttpResponse = self.client.get(reverse("stimuli_eq_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("stimuli_eq_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        identification = "Identification"
+        self.data = {
+            "action": "save",
+            "manufacturer": str(manufacturer.id),
+            "identification": identification,
+        }
+
+        response = self.client.post(reverse("stimuli_eq_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(StimuliEq.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {"action": "save"}
+
+        response = self.client.post(reverse("stimuli_eq_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(StimuliEq.objects.all().count(), 1)
+        self.assertEqual(
+            str(list(response.context["messages"])[-1]), _("Information not saved.")
+        )
+
+        # create with wrong action
+        self.data = {"action": "wrong"}
+
+        response = self.client.post(reverse("stimuli_eq_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(StimuliEq.objects.all().count(), 1)
+        self.assertEqual(
+            str(list(response.context["messages"])[-1]), _("Action not available.")
+        )
+
+        # view
+        stimuli_eq: StimuliEq | None = StimuliEq.objects.all().first()
+
+        self.assertIsInstance(stimuli_eq, StimuliEq)
+        if isinstance(stimuli_eq, StimuliEq):
+            response = self.client.get(
+                reverse("stimuli_eq_view", args=(stimuli_eq.id,))
+            )
+            self.assertEqual(response.status_code, 200)
+
+            # update
+            response = self.client.get(
+                reverse("stimuli_eq_edit", args=(stimuli_eq.id,))
+            )
+            self.assertEqual(response.status_code, 200)
+
+            self.data = {
+                "action": "save",
+                "manufacturer": str(manufacturer.id),
+                "identification": identification,
+            }
+            response = self.client.post(
+                reverse("stimuli_eq_edit", args=(stimuli_eq.id,)), self.data
+            )
+            self.assertEqual(response.status_code, 302)
+
+            identification = "Identification changed"
+            self.data = {
+                "action": "save",
+                "manufacturer": str(manufacturer.id),
+                "identification": identification,
+            }
+            response = self.client.post(
+                reverse("stimuli_eq_edit", args=(stimuli_eq.id,)), self.data
+            )
+            self.assertEqual(response.status_code, 302)
+
+            # update (trying) but missing information
+            self.data = {"action": "save"}
+            response = self.client.post(
+                reverse("stimuli_eq_edit", args=(stimuli_eq.id,)), self.data
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(
+                get_object_or_404(StimuliEq, pk=stimuli_eq.id).identification,
+                identification,
+            )
+
+            # remove
+            self.data = {"action": "remove"}
+            response = self.client.post(
+                reverse("stimuli_eq_view", args=(stimuli_eq.id,)), self.data
+            )
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(StimuliEq.objects.all().count(), 0)
+
     def test_eeg_electrode_position_register(self):
         eeg_electrode_localization_system = (
             ObjectsFactory.create_eeg_electrode_localization_system()
         )
 
         # create
-        response = self.client.get(
+        response: HttpResponse = self.client.get(
             reverse(
                 "eeg_electrode_position_create",
                 args=(eeg_electrode_localization_system.id,),
@@ -6993,46 +7093,48 @@ class EMGSettingTest(TestCase):
             "muscle_side": muscle_side.id,
         }
 
-        response = self.client.post(
+        response: HttpResponse = self.client.post(
             reverse("emg_setting_electrode_add", args=(emg_setting.id,)), self.data
         )
         self.assertEqual(response.status_code, 302)
 
         emg_electrode_setting = EMGElectrodeSetting.objects.all().first()
 
-        # screen to view the emg electrode  setting
-        response = self.client.get(
-            reverse("emg_electrode_setting_view", args=(emg_electrode_setting.id,))
-        )
-        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(emg_electrode_setting, EMGElectrodeSetting)
+        if isinstance(emg_electrode_setting, EMGElectrodeSetting):
+            # screen to view the emg electrode  setting
+            response = self.client.get(
+                reverse("emg_electrode_setting_view", args=(emg_electrode_setting.id,))
+            )
+            self.assertEqual(response.status_code, 200)
 
-        # update the emg electrode setting
-        response = self.client.get(
-            reverse("emg_electrode_setting_edit", args=(emg_electrode_setting.id,))
-        )
-        self.assertEqual(response.status_code, 200)
+            # update the emg electrode setting
+            response = self.client.get(
+                reverse("emg_electrode_setting_edit", args=(emg_electrode_setting.id,))
+            )
+            self.assertEqual(response.status_code, 200)
 
-        self.data = {
-            "action": "save",
-            "electrode": electrode_model.id,
-            "emg_electrode_placement": electrode_placement.id,
-            "remarks": "Remarks",
-            "muscle_side": muscle_side.id,
-        }
+            self.data = {
+                "action": "save",
+                "electrode": electrode_model.id,
+                "emg_electrode_placement": electrode_placement.id,
+                "remarks": "Remarks",
+                "muscle_side": muscle_side.id,
+            }
 
-        response = self.client.post(
-            reverse("emg_electrode_setting_edit", args=(emg_electrode_setting.id,)),
-            self.data,
-        )
-        self.assertEqual(response.status_code, 302)
+            response = self.client.post(
+                reverse("emg_electrode_setting_edit", args=(emg_electrode_setting.id,)),
+                self.data,
+            )
+            self.assertEqual(response.status_code, 302)
 
-        # remove an emg electrode setting
-        self.data = {"action": "remove-electrode-" + str(emg_electrode_setting.id)}
+            # remove an emg electrode setting
+            self.data = {"action": "remove-electrode-" + str(emg_electrode_setting.id)}
 
-        response = self.client.post(
-            reverse("emg_setting_view", args=(emg_setting.id,)), self.data
-        )
-        self.assertEqual(response.status_code, 302)
+            response = self.client.post(
+                reverse("emg_setting_view", args=(emg_setting.id,)), self.data
+            )
+            self.assertEqual(response.status_code, 302)
 
     def test_emg_setting_preamplifier(self):
         emg_setting = ObjectsFactory.create_emg_setting(

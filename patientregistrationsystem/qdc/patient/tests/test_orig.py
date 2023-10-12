@@ -69,7 +69,10 @@ from patient.views import (
 )
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
-from update_english_data import translate_fixtures_into_english, update_translated_data
+from patient.tests.update_english_data import (
+    translate_fixtures_into_english,
+    update_translated_data,
+)
 
 # Constants para testes de User
 USER_EDIT = "user_edit"
@@ -2637,7 +2640,7 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         self.assertIsNotNone(classification_of_disease.first().description_en)
         self.assertEqual(num_records_updated, classification_of_disease.count())
 
-    def test_check_filename(self):
+    def test_check_filename(self) -> None:
         """Test to see if file is open correctly"""
 
         self.assertRaises(
@@ -2716,6 +2719,12 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
 
         self.create_file_with_incorrect_data(filename)
         self.assertRaises(CommandError, call_command, "import_icd", en=filename)
+        self.assertRaises(
+            CommandError,
+            call_command,
+            "import_icd",
+            en="incorrect_file_name",
+        )
         os.remove(filename)
 
     def test_translate_icd_cid_with_command(self):

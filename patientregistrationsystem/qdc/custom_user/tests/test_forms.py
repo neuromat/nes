@@ -1,8 +1,14 @@
 # -*- coding: UTF-8 -*-
+from typing import Any
 from custom_user.views import *
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
-from custom_user.forms import InstitutionForm, UserForm, ResearcherForm
+from custom_user.forms import (
+    CustomPasswordResetForm,
+    InstitutionForm,
+    UserForm,
+    ResearcherForm,
+)
 
 USER_USERNAME = "myadmin"
 USER_PWD = "mypassword"
@@ -177,3 +183,26 @@ class ResearcherFormValidation(TestCase):
         self.data["email"] = ""
         researcher = ResearcherForm(data=self.data)
         self.assertFalse(researcher.is_valid())
+
+
+class CustomPasswordResetFormTest(TestCase):
+    data: dict[str, str] = {}
+
+    def setUp(self) -> None:
+        self.user: User = User.objects.create_user(
+            username=USER_USERNAME, email="test@dummy.com", password=USER_PWD
+        )
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.is_active = True
+        self.user.save()
+
+    def test_CustomPasswordResetForm_invalid_email(self) -> None:
+        self.data["email"] = "wrong@email.com"
+        resetform = CustomPasswordResetForm(data=self.data)
+        self.assertFalse(resetform.is_valid())
+
+    def test_CustomPasswordResetForm_valid_email(self) -> None:
+        self.data["email"] = "test@dummy.com"
+        resetform = CustomPasswordResetForm(data=self.data)
+        self.assertTrue(resetform.is_valid())

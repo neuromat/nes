@@ -1,12 +1,10 @@
 FROM mcr.microsoft.com/devcontainers/python:3.12-bookworm
 
 # Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE=1
+#ENV PYTHONDONTWRITEBYTECODE=1
 
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
-
-ENV DEBIAN_FRONTEND=dialog
 
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
@@ -43,6 +41,8 @@ RUN pip3 --disable-pip-version-check install -r /tmp/pip-tmp/requirements.txt \
 # COPY $NES_DIR/patientregistrationsystem/qdc/src/nwb/dist/nwb-1.0.0-py3-none-any.whl .
 # RUN pip3 --disable-pip-version-check install nwb-1.0.0-py3-none-any.whl \
 #     && rm nwb-1.0.0-py3-none-any.whl
+
+ENV DEBIAN_FRONTEND=dialog
 
 COPY .devcontainer/entrypoint.sh /
 RUN chmod +x /entrypoint.sh
