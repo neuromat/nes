@@ -8194,9 +8194,7 @@ def eeg_data_reading(eeg_file: EEGFile, preload=False) -> EEGReading:
 
         try:
             # Trying to read the segments
-            reading = mne.io.read_raw_brainvision(
-                eeg_file.file.path, preload=preload, stim_channel=False
-            )
+            reading = mne.io.read_raw_brainvision(eeg_file.file.path, preload=preload)
         except:
             reading = None
 
@@ -8210,9 +8208,9 @@ def eeg_data_reading(eeg_file: EEGFile, preload=False) -> EEGReading:
 def eeg_data_view(
     request, eeg_data_id, tab, template_name="experiment/subject_eeg_data_form.html"
 ):
-    eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+    eeg_data: EEGData = get_object_or_404(EEGData, pk=eeg_data_id)
     eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
-    eeg_step = get_object_or_404(
+    eeg_step: EEG = get_object_or_404(
         EEG, id=eeg_data.data_configuration_tree.component_configuration.component.id
     )
 

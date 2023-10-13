@@ -106,10 +106,8 @@ class Experiment(models.Model):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
-
-    # def __str__(self) -> str:
-    #     return self.title
+    def __str__(self) -> str:
+        return self.title
 
     # @property
     # def _history_user(self):
@@ -1728,13 +1726,13 @@ class SourceCode(models.Model):
     #     super(SourceCode, self).save(*args, **kwargs)
     #     self.experiment.save()
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value):
+    #     self.changed_by = value
 
 
 class EEGData(DataFile, DataCollection):
@@ -1802,13 +1800,13 @@ class TMSData(DataCollection):
     def __str__(self) -> str:
         return self.description
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value):
+    #     self.changed_by = value
 
 
 class HotSpot(models.Model):
@@ -1836,13 +1834,13 @@ class AdditionalData(DataFile, DataCollection):
     def __str__(self) -> str:
         return self.description
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value):
+    #     self.changed_by = value
 
 
 class EMGData(DataFile, DataCollection):
@@ -1855,13 +1853,13 @@ class EMGData(DataFile, DataCollection):
     def __str__(self) -> str:
         return self.description
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value):
+    #     self.changed_by = value
 
 
 class DigitalGamePhaseData(DataFile, DataCollection):
@@ -1873,13 +1871,13 @@ class DigitalGamePhaseData(DataFile, DataCollection):
     def __str__(self) -> str:
         return self.description
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value):
+    #     self.changed_by = value
 
 
 class GenericDataCollectionData(DataFile, DataCollection):
@@ -1888,13 +1886,13 @@ class GenericDataCollectionData(DataFile, DataCollection):
     def __str__(self) -> str:
         return self.description
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value):
+    #     self.changed_by = value
 
 
 class MediaCollectionData(DataFile, DataCollection):
@@ -1903,13 +1901,13 @@ class MediaCollectionData(DataFile, DataCollection):
     def __str__(self) -> str:
         return self.description
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value):
+    #     self.changed_by = value
 
 
 class EEGFile(models.Model):

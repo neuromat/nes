@@ -156,9 +156,9 @@ TMS_DEFAULT_SETTING_FILENAME = "tms_default_setting.json"
 CONTEXT_TREE_DEFAULT = "context_tree_default.json"
 
 
-def is_number(s) -> bool:
+def is_number(string: str) -> bool:
     try:
-        float(s)
+        float(string)
         return True
     except ValueError:
         return False

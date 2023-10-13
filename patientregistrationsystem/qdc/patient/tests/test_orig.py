@@ -111,14 +111,10 @@ LIME_SURVEY_TOKEN_ID_1 = 1
 class UtilTests:
     @staticmethod
     # TODO: changed_by can't be None, changed_by is required!
-    def create_patient(changed_by):
+    def create_patient(changed_by) -> Patient:
         fake = Factory.create()
 
-        # TODO: create gender before create patient in other helper method
-        try:
-            gender = Gender.objects.get(name="Masculino")
-        except ObjectDoesNotExist:
-            gender = Gender.objects.create(name="Masculino")
+        gender: tuple[Gender, bool] = Gender.objects.get_or_create(name="Masculino")
 
         while True:
             try:
@@ -126,7 +122,7 @@ class UtilTests:
                     name=fake.name(),
                     date_birth=fake.date(),
                     cpf=fake.ssn(),
-                    gender=gender,
+                    gender=gender[0],
                     changed_by=changed_by,
                     email="lenin@example.com",
                     marital_status=MaritalStatus.objects.create(name=fake.word()),
@@ -135,7 +131,7 @@ class UtilTests:
                 pass
 
     @staticmethod
-    def create_telephone(patient, changed_by):
+    def create_telephone(patient, changed_by) -> Telephone:
         return Telephone.objects.create(
             patient=patient,
             number="9 9999 9999",
