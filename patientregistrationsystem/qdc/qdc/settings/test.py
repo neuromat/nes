@@ -2,7 +2,6 @@ from .base import *
 
 DEBUG = False
 DEBUG404 = False
-TEMPLATE_DEBUG = DEBUG
 IS_TESTING = True
 
 AXES_ENABLED = False

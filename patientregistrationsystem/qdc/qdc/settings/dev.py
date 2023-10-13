@@ -8,7 +8,6 @@ django_stubs_ext.monkeypatch()
 
 DEBUG = True
 DEBUG404 = True
-TEMPLATE_DEBUG = DEBUG
 IS_TESTING = True
 
 AXES_ENABLED = True

@@ -3,7 +3,6 @@ from .base import *
 
 DEBUG = True
 DEBUG404 = True
-TEMPLATE_DEBUG = DEBUG
 IS_TESTING = False
 
 AXES_ENABLED = True
