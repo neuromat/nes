@@ -9,6 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
+            "cwd":"${workspaceFolder}/patientregistrationsystem/qdc",
             "args": [
                 "runserver",
                 "0.0.0.0:80"
@@ -28,6 +29,7 @@
                 "test",
                 "export"
             ],
+            "cwd":"${workspaceFolder}/patientregistrationsystem/qdc",
             "django": true,
             "justMyCode": true,
             "env": {

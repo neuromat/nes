@@ -49,6 +49,7 @@ class ExportTestCase(ExperimentTestCase):
     def assert_per_participant_step_file_exists(
         self, step_number, component_step, data_collection_folder, filename, zipped_file
     ) -> None:
+        """Only checks self.patient"""
         self.assertTrue(
             any(
                 os.path.join(

@@ -156,7 +156,7 @@ TMS_DEFAULT_SETTING_FILENAME = "tms_default_setting.json"
 CONTEXT_TREE_DEFAULT = "context_tree_default.json"
 
 
-def is_number(s):
+def is_number(s) -> bool:
     try:
         float(s)
         return True
@@ -164,7 +164,7 @@ def is_number(s):
         return False
 
 
-def to_number(value):
+def to_number(value) -> int:
     return int(float(value))
 
 
@@ -249,7 +249,7 @@ def create_directory(basedir, path_to_create):
     return "", complete_path
 
 
-def is_patient_active(subject_id):
+def is_patient_active(subject_id) -> bool:
     response = False
 
     if is_number(subject_id):

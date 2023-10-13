@@ -101,7 +101,6 @@ MIDDLEWARE: list[str] = [
 
 CONTEXT_PROCESSORS = {
     "maintenance_mode.context_processors.maintenance_mode",
-    "django.contrib.auth.context_processors.auth",
 }
 
 TEMPLATES = [

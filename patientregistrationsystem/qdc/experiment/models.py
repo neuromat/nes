@@ -6,6 +6,7 @@ from typing import Any, LiteralString
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.files.storage.filesystem import FileSystemStorage
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -105,18 +106,18 @@ class Experiment(models.Model):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    changed_by: Any = None
+    # changed_by = models.ForeignKey('auth.User')
 
-    def __str__(self) -> str:
-        return self.title
+    # def __str__(self) -> str:
+    #     return self.title
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value) -> None:
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value) -> None:
+    #     self.changed_by = value
 
 
 class ExperimentResearcher(models.Model):
@@ -1650,13 +1651,13 @@ class QuestionnaireResponse(DataCollection):
             # ('view_questionnaireresponse', 'Can view questionnaire response'),
         )
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value):
+    #     self.changed_by = value
 
     def __str__(self) -> str:
         return "token id: " + str(self.token_id)
@@ -1743,18 +1744,19 @@ class EEGData(DataFile, DataCollection):
         EEGCapSize, on_delete=models.CASCADE, null=True, blank=True
     )
 
+    # changed_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)
     history = HistoricalRecords()
 
     def __str__(self) -> str:
         return self.description
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self) -> models.ForeignKey:
+    #     return self.changed_by
 
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+    # @_history_user.setter
+    # def _history_user(self, value) -> None:
+    #     self.changed_by = value
 
 
 class TMSData(DataCollection):

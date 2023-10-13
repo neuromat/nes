@@ -3,7 +3,10 @@ from faker import Factory, Generator
 
 
 def create_user(
-    groups=Group.objects.none(), username=None, force_password_change=False
+    groups=Group.objects.none(),
+    username=None,
+    force_password_change=False,
+    superuser=False,
 ):
     """
     Create user to login in NES
@@ -20,13 +23,22 @@ def create_user(
             username = fake.profile()["username"]
             if not User.objects.filter(username=username):
                 break
-    user: User = User.objects.create_user(
-        username=username,
-        password=password,
-        email=fake.profile()["mail"],
-        first_name=fake.first_name(),
-        last_name=fake.last_name(),
-    )
+    if superuser:
+        user: User = User.objects.create_superuser(
+            username=username,
+            password=password,
+            email=fake.profile()["mail"],
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+        )
+    else:
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            email=fake.profile()["mail"],
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+        )
     user.user_profile.login_enabled = True
     # Disable force_password_change to avoid this step by now
     user.user_profile.force_password_change = force_password_change

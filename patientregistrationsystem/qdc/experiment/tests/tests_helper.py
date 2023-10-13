@@ -1,4 +1,5 @@
 import datetime
+from io import BufferedWriter
 import os
 import random
 import tempfile
@@ -850,10 +851,12 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_additional_data_file(ad_data):
+    def create_additional_data_file(ad_data) -> AdditionalDataFile:
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-            adf = AdditionalDataFile.objects.create(additional_data=ad_data)
+            bin_file: BufferedWriter = ObjectsFactory.create_binary_file(tmpdirname)
+            adf: AdditionalDataFile = AdditionalDataFile.objects.create(
+                additional_data=ad_data
+            )
             with File(open(bin_file.name, "rb")) as f:
                 adf.file.save("file.bin", f)
             adf.save()
