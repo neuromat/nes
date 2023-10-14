@@ -2,7 +2,7 @@ import os
 import platform
 import sys
 from functools import partial
-from django.db.migrations import Migration
+from pathlib import Path
 
 import pip
 from django.conf import settings
@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS, connections
+from django.db.migrations import Migration
 from django.db.migrations.executor import MigrationExecutor
 from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import render
@@ -141,7 +142,7 @@ def upgrade_nes(request):
     list_dir = os.listdir(path_git_repo_local)
 
     # criate a log file in path_git_repo_local + 'patientregistrationsystem'
-    log_file = settings.BASE_DIR + "/upgrade.log"
+    log_file = os.path.join(settings.BASE_DIR, "upgrade.log")
     log = open(log_file, "w", encoding="utf-8")
     sys.stdout = log
 

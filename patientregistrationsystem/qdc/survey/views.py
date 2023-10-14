@@ -47,9 +47,9 @@ questionnaire_evaluation_fields_excluded = [
 
 
 class GroupOfQuestions:
-    id = None
-    name = None
-    questionnaire_responses = []
+    id: int = None
+    name: str = None
+    questionnaire_responses: list = []
 
 
 def get_survey_title_based_on_the_user_language(survey, language_code, update=False):
@@ -605,7 +605,7 @@ def create_patients_questionnaire_data_list(survey, surveys):
     data base. Uses a dictionary because it is useful for filtering out
     duplicate patients from the list.
     """
-    patients_questionnaire_data_dictionary = {}
+    patients_questionnaire_data_dictionary: dict[int, dict[str, object]] = {}
 
     # Continue (NES-1032): get token list and responses list from LS and use
     # the two lists to get de acquisitiondate field for each patient.

@@ -1,5 +1,4 @@
 # coding=utf-8
-from django.http.response import HttpResponseBase
 from custom_user.forms import (
     InstitutionForm,
     ResearcherForm,
@@ -12,11 +11,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Group, User
 from django.http import (
-    Http404,
     HttpRequest,
     HttpResponse,
     HttpResponseGone,
-    HttpResponseNotFound,
     HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404, redirect, render
@@ -51,10 +48,12 @@ def user_list(
 
 @login_required
 @permission_required("auth.add_user")
-def user_create(request, template_name="custom_user/register_users.html"):
+def user_create(
+    request: HttpRequest, template_name: str = "custom_user/register_users.html"
+) -> HttpResponse:
     form = UserForm(request.POST or None)
     profile_form = UserProfileForm(request.POST or None)
-    group_permissions = []
+    group_permissions: list = []
     groups = Group.objects.all()
 
     for group in groups:
@@ -122,7 +121,11 @@ def user_create(request, template_name="custom_user/register_users.html"):
 
 @login_required
 @permission_required("auth.change_user")
-def user_view(request, user_id, template_name="custom_user/register_users.html"):
+def user_view(
+    request: HttpRequest,
+    user_id: int,
+    template_name: str = "custom_user/register_users.html",
+) -> HttpResponse:
     user: User = get_object_or_404(User, pk=user_id)
     form = UserFormUpdate(request.POST or None, instance=user)
     profile_form = UserProfileForm(request.POST or None, instance=user.user_profile)
@@ -279,9 +282,11 @@ def institution_create(
 
 @login_required
 def institution_view(
-    request, institution_id, template_name="custom_user/institution_register.html"
-):
-    institution = get_object_or_404(Institution, pk=institution_id)
+    request: HttpRequest,
+    institution_id: int,
+    template_name: str = "custom_user/institution_register.html",
+) -> HttpResponse:
+    institution: Institution = get_object_or_404(Institution, pk=institution_id)
 
     institution_form = InstitutionForm(request.POST or None, instance=institution)
 
@@ -331,9 +336,11 @@ def institution_view(
 
 @login_required
 def institution_update(
-    request, institution_id, template_name="custom_user/institution_register.html"
-):
-    institution = get_object_or_404(Institution, pk=institution_id)
+    request: HttpRequest,
+    institution_id: int,
+    template_name: str = "custom_user/institution_register.html",
+) -> HttpResponse:
+    institution: Institution = get_object_or_404(Institution, pk=institution_id)
 
     institution_form = InstitutionForm(request.POST or None, instance=institution)
 

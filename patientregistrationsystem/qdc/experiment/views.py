@@ -31,7 +31,7 @@ from django.core.files.base import ContentFile
 from django.core.mail import send_mail
 from django.db.models import Min, Q
 from django.db.models.deletion import ProtectedError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.encoding import smart_str
@@ -39,232 +39,111 @@ from django.utils.translation import gettext as _
 from experiment.import_export import ExportExperiment, ImportExperiment
 from export.directory_utils import create_directory
 from export.forms import AgeIntervalForm, ParticipantsSelectionForm
-
+from mne.channels import DigMontage
 # from pynwb.nwbco import *
 from patient.models import ClassificationOfDiseases, Patient
-from patient.models import QuestionnaireResponse as PatientQuestionnaireResponse
+from patient.models import \
+    QuestionnaireResponse as PatientQuestionnaireResponse
 from patient.models import SocialDemographicData
 from patient.views import update_acquisition_date, update_completed_status
 from survey.abc_search_engine import Questionnaires
 from survey.models import SensitiveQuestion, Survey
 from survey.survey_utils import QuestionnaireUtils, find_questionnaire_name
-from survey.views import (
-    check_limesurvey_access,
-    create_list_of_trees,
-    get_questionnaire_language,
-    get_questionnaire_responses,
-    get_survey_header,
-    questionnaire_evaluation_fields_excluded,
-)
+from survey.views import (check_limesurvey_access, create_list_of_trees,
+                          get_questionnaire_language,
+                          get_questionnaire_responses, get_survey_header,
+                          questionnaire_evaluation_fields_excluded)
 
-from mne.channels import DigMontage
-
-from .forms import (
-    ADConverterRegisterForm,
-    AdditionalDataForm,
-    AmplifierRegisterForm,
-    BlockForm,
-    CoilModelForm,
-    CoilModelRegisterForm,
-    ComponentConfigurationForm,
-    ComponentForm,
-    ContextTreeForm,
-    DigitalGamePhaseDataForm,
-    DigitalGamePhaseForm,
-    EEGAmplifierForm,
-    EEGAmplifierSettingForm,
-    EEGCapSizeRegisterForm,
-    EEGDataForm,
-    EEGElectrodeCapRegisterForm,
-    EEGElectrodeLocalizationSystemRegisterForm,
-    EEGElectrodeNETRegisterForm,
-    EEGElectrodePositionForm,
-    EEGFilterForm,
-    EEGFilterSettingForm,
-    EEGForm,
-    EEGSettingForm,
-    EEGSolutionForm,
-    EEGSolutionRegisterForm,
-    ElectrodeModelForm,
-    ElectrodeModelRegisterForm,
-    EMGADConverterSettingForm,
-    EMGAmplifierSettingForm,
-    EMGAnalogFilterSettingForm,
-    EMGDataForm,
-    EMGDigitalFilterSettingForm,
-    EMGElectrodePlacementSettingForm,
-    EMGElectrodeSettingForm,
-    EMGForm,
-    EMGIntramuscularPlacementForm,
-    EMGIntramuscularPlacementRegisterForm,
-    EMGNeedlePlacementRegisterForm,
-    EMGPreamplifierFilterSettingForm,
-    EMGPreamplifierSettingForm,
-    EMGSettingForm,
-    EMGSurfacePlacementForm,
-    EMGSurfacePlacementRegisterForm,
-    EquipmentForm,
-    ExperimentForm,
-    FileForm,
-    FilterTypeRegisterForm,
-    GenericDataCollectionDataForm,
-    GenericDataCollectionForm,
-    GroupForm,
-    HotSpotForm,
-    InstructionForm,
-    ManufacturerRegisterForm,
-    MaterialRegisterForm,
-    MediaCollectionDataForm,
-    MediaCollectionForm,
-    MuscleRegisterForm,
-    MuscleSideRegisterForm,
-    MuscleSubdivisionRegisterForm,
-    NumberOfUsesToInsertForm,
-    PublicationForm,
-    QuestionnaireResponseForm,
-    ResearchProjectForm,
-    ResearchProjectOwnerForm,
-    ResendExperimentForm,
-    SoftwareRegisterForm,
-    SoftwareVersionRegisterForm,
-    SourceCodeForm,
-    StandardizationSystemRegisterForm,
-    StimuliEqRegisterForm,
-    StimulusForm,
-    SubjectStepDataForm,
-    TMSDataForm,
-    TMSDeviceRegisterForm,
-    TMSDeviceSettingForm,
-    TMSForm,
-    TMSLocalizationSystemForm,
-    TMSSettingForm,
-)
-from .models import (
-    EEG,
-    EMG,
-    TMS,
-    ADConverter,
-    AdditionalData,
-    AdditionalDataFile,
-    Amplifier,
-    Block,
-    CoilModel,
-    Component,
-    ComponentAdditionalFile,
-    ComponentConfiguration,
-    ContextTree,
-    DataConfigurationTree,
-    DigitalGamePhase,
-    DigitalGamePhaseData,
-    DigitalGamePhaseFile,
-    EEGAmplifierSetting,
-    EEGCapSize,
-    EEGData,
-    EEGElectrodeCap,
-    EEGElectrodeLayoutSetting,
-    EEGElectrodeLocalizationSystem,
-    EEGElectrodeNet,
-    EEGElectrodeNetSystem,
-    EEGElectrodePosition,
-    EEGElectrodePositionCollectionStatus,
-    EEGElectrodePositionSetting,
-    EEGFile,
-    EEGFilterSetting,
-    EEGSetting,
-    EEGSolution,
-    EEGSolutionSetting,
-    ElectrodeModel,
-    EMGADConverterSetting,
-    EMGAmplifierSetting,
-    EMGAnalogFilterSetting,
-    EMGData,
-    EMGDigitalFilterSetting,
-    EMGElectrodePlacement,
-    EMGElectrodePlacementSetting,
-    EMGElectrodeSetting,
-    EMGFile,
-    EMGIntramuscularPlacement,
-    EMGNeedlePlacement,
-    EMGPreamplifierFilterSetting,
-    EMGPreamplifierSetting,
-    EMGSetting,
-    EMGSurfacePlacement,
-    Equipment,
-    Experiment,
-    ExperimentResearcher,
-    FileFormat,
-    FilterType,
-    GenericDataCollection,
-    GenericDataCollectionData,
-    GenericDataCollectionFile,
-    GoalkeeperGameConfig,
-    GoalkeeperGameLog,
-    GoalkeeperGameResults,
-    GoalkeeperPhase,
-    Group,
-    Instruction,
-    Keyword,
-    Manufacturer,
-    Material,
-    MediaCollection,
-    MediaCollectionData,
-    MediaCollectionFile,
-    Muscle,
-    MuscleSide,
-    MuscleSubdivision,
-    Pause,
-    PortalSelectedQuestion,
-    Publication,
-    Questionnaire,
-    QuestionnaireResponse,
-    ResearchProject,
-    ScheduleOfSending,
-    Software,
-    SoftwareVersion,
-    SourceCode,
-    StandardizationSystem,
-    StimuliEq,
-    Stimulus,
-    Subject,
-    SubjectOfGroup,
-    SubjectStepData,
-    Tag,
-    Task,
-    TaskForTheExperimenter,
-    TMSData,
-    TMSDevice,
-    TMSDeviceSetting,
-    TMSLocalizationSystem,
-    TMSSetting,
-)
+from .forms import (ADConverterRegisterForm, AdditionalDataForm,
+                    AmplifierRegisterForm, BlockForm, CoilModelForm,
+                    CoilModelRegisterForm, ComponentConfigurationForm,
+                    ComponentForm, ContextTreeForm, DigitalGamePhaseDataForm,
+                    DigitalGamePhaseForm, EEGAmplifierForm,
+                    EEGAmplifierSettingForm, EEGCapSizeRegisterForm,
+                    EEGDataForm, EEGElectrodeCapRegisterForm,
+                    EEGElectrodeLocalizationSystemRegisterForm,
+                    EEGElectrodeNETRegisterForm, EEGElectrodePositionForm,
+                    EEGFilterForm, EEGFilterSettingForm, EEGForm,
+                    EEGSettingForm, EEGSolutionForm, EEGSolutionRegisterForm,
+                    ElectrodeModelForm, ElectrodeModelRegisterForm,
+                    EMGADConverterSettingForm, EMGAmplifierSettingForm,
+                    EMGAnalogFilterSettingForm, EMGDataForm,
+                    EMGDigitalFilterSettingForm,
+                    EMGElectrodePlacementSettingForm, EMGElectrodeSettingForm,
+                    EMGForm, EMGIntramuscularPlacementForm,
+                    EMGIntramuscularPlacementRegisterForm,
+                    EMGNeedlePlacementRegisterForm,
+                    EMGPreamplifierFilterSettingForm,
+                    EMGPreamplifierSettingForm, EMGSettingForm,
+                    EMGSurfacePlacementForm, EMGSurfacePlacementRegisterForm,
+                    EquipmentForm, ExperimentForm, FileForm,
+                    FilterTypeRegisterForm, GenericDataCollectionDataForm,
+                    GenericDataCollectionForm, GroupForm, HotSpotForm,
+                    InstructionForm, ManufacturerRegisterForm,
+                    MaterialRegisterForm, MediaCollectionDataForm,
+                    MediaCollectionForm, MuscleRegisterForm,
+                    MuscleSideRegisterForm, MuscleSubdivisionRegisterForm,
+                    NumberOfUsesToInsertForm, PublicationForm,
+                    QuestionnaireResponseForm, ResearchProjectForm,
+                    ResearchProjectOwnerForm, ResendExperimentForm,
+                    SoftwareRegisterForm, SoftwareVersionRegisterForm,
+                    SourceCodeForm, StandardizationSystemRegisterForm,
+                    StimuliEqRegisterForm, StimulusForm, SubjectStepDataForm,
+                    TMSDataForm, TMSDeviceRegisterForm, TMSDeviceSettingForm,
+                    TMSForm, TMSLocalizationSystemForm, TMSSettingForm)
+from .models import (EEG, EMG, TMS, ADConverter, AdditionalData,
+                     AdditionalDataFile, Amplifier, Block, CoilModel,
+                     Component, ComponentAdditionalFile,
+                     ComponentConfiguration, ContextTree,
+                     DataConfigurationTree, DigitalGamePhase,
+                     DigitalGamePhaseData, DigitalGamePhaseFile,
+                     EEGAmplifierSetting, EEGCapSize, EEGData, EEGElectrodeCap,
+                     EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem,
+                     EEGElectrodeNet, EEGElectrodeNetSystem,
+                     EEGElectrodePosition,
+                     EEGElectrodePositionCollectionStatus,
+                     EEGElectrodePositionSetting, EEGFile, EEGFilterSetting,
+                     EEGSetting, EEGSolution, EEGSolutionSetting,
+                     ElectrodeModel, EMGADConverterSetting,
+                     EMGAmplifierSetting, EMGAnalogFilterSetting, EMGData,
+                     EMGDigitalFilterSetting, EMGElectrodePlacement,
+                     EMGElectrodePlacementSetting, EMGElectrodeSetting,
+                     EMGFile, EMGIntramuscularPlacement, EMGNeedlePlacement,
+                     EMGPreamplifierFilterSetting, EMGPreamplifierSetting,
+                     EMGSetting, EMGSurfacePlacement, Equipment, Experiment,
+                     ExperimentResearcher, FileFormat, FilterType,
+                     GenericDataCollection, GenericDataCollectionData,
+                     GenericDataCollectionFile, GoalkeeperGameConfig,
+                     GoalkeeperGameLog, GoalkeeperGameResults, GoalkeeperPhase,
+                     Group, Instruction, Keyword, Manufacturer, Material,
+                     MediaCollection, MediaCollectionData, MediaCollectionFile,
+                     Muscle, MuscleSide, MuscleSubdivision, Pause,
+                     PortalSelectedQuestion, Publication, Questionnaire,
+                     QuestionnaireResponse, ResearchProject, ScheduleOfSending,
+                     Software, SoftwareVersion, SourceCode,
+                     StandardizationSystem, StimuliEq, Stimulus, Subject,
+                     SubjectOfGroup, SubjectStepData, Tag, Task,
+                     TaskForTheExperimenter, TMSData, TMSDevice,
+                     TMSDeviceSetting, TMSLocalizationSystem, TMSSetting)
 from .pdf import render as render_to_pdf
-from .portal import (
-    get_experiment_status_portal,
-    get_portal_status,
-    send_additional_data_to_portal,
-    send_context_tree_to_portal,
-    send_digital_game_phase_data_to_portal,
-    send_eeg_data_to_portal,
-    send_eeg_setting_to_portal,
-    send_emg_data_to_portal,
-    send_emg_setting_to_portal,
-    send_experiment_end_message_to_portal,
-    send_experiment_researcher_to_portal,
-    send_experiment_to_portal,
-    send_experimental_protocol_to_portal,
-    send_file_to_portal,
-    send_generic_data_collection_data_to_portal,
-    send_group_to_portal,
-    send_media_collection_data_to_portal,
-    send_participant_to_portal,
-    send_publication_to_portal,
-    send_questionnaire_response_to_portal,
-    send_research_project_to_portal,
-    send_researcher_to_portal,
-    send_steps_to_portal,
-    send_tms_data_to_portal,
-    send_tms_setting_to_portal,
-)
+from .portal import (get_experiment_status_portal, get_portal_status,
+                     send_additional_data_to_portal,
+                     send_context_tree_to_portal,
+                     send_digital_game_phase_data_to_portal,
+                     send_eeg_data_to_portal, send_eeg_setting_to_portal,
+                     send_emg_data_to_portal, send_emg_setting_to_portal,
+                     send_experiment_end_message_to_portal,
+                     send_experiment_researcher_to_portal,
+                     send_experiment_to_portal,
+                     send_experimental_protocol_to_portal, send_file_to_portal,
+                     send_generic_data_collection_data_to_portal,
+                     send_group_to_portal,
+                     send_media_collection_data_to_portal,
+                     send_participant_to_portal, send_publication_to_portal,
+                     send_questionnaire_response_to_portal,
+                     send_research_project_to_portal,
+                     send_researcher_to_portal, send_steps_to_portal,
+                     send_tms_data_to_portal, send_tms_setting_to_portal)
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -301,7 +180,7 @@ delimiter = "-"
 
 
 class EEGReading:
-    file_format = None
+    file_format: FileFormat = None
     reading = None
 
 
@@ -575,7 +454,7 @@ def research_project_update(
 
 @login_required
 @permission_required("experiment.view_researchproject")
-def keyword_search_ajax(request):
+def keyword_search_ajax(request: HttpRequest) -> HttpResponse:
     keywords_name_list = []
     keywords_list_filtered = []
     search_text = None
@@ -610,7 +489,7 @@ def keyword_search_ajax(request):
 
 @login_required
 @permission_required("experiment.change_researchproject")
-def keyword_create_ajax(request, research_project_id, keyword_name):
+def keyword_create_ajax(request, research_project_id, keyword_name) -> HttpResponseRedirect:
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
     check_can_change(request.user, research_project)
@@ -626,7 +505,7 @@ def keyword_create_ajax(request, research_project_id, keyword_name):
 
 @login_required
 @permission_required("experiment.change_researchproject")
-def keyword_add_ajax(request, research_project_id, keyword_id):
+def keyword_add_ajax(request, research_project_id, keyword_id) -> HttpResponseRedirect:
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
     check_can_change(request.user, research_project)
@@ -666,7 +545,7 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
 @login_required
 @permission_required("experiment.view_researchproject")
-def publication_list(request, template_name="experiment/publication_list.html"):
+def publication_list(request, template_name="experiment/publication_list.html") -> HttpResponse:
     publications = Publication.objects.all().order_by("title")
     context = {
         "publications": publications,
@@ -704,7 +583,7 @@ def publication_create(request, template_name="experiment/publication_register.h
 def publication_view(
     request, publication_id, template_name="experiment/publication_register.html"
 ):
-    publication = get_object_or_404(Publication, pk=publication_id)
+    publication: Publication = get_object_or_404(Publication, pk=publication_id)
 
     publication_form = PublicationForm(request.POST or None, instance=publication)
 
@@ -1422,7 +1301,7 @@ def date_of_first_data_collection(subject_of_group):
     return result
 
 
-def send_all_experiments_to_portal():
+def send_all_experiments_to_portal() -> None:
     language_code = "en"
     for schedule_of_sending in ScheduleOfSending.objects.filter(
         status="scheduled"
@@ -1741,9 +1620,8 @@ def send_all_experiments_to_portal():
                                     # TODO: see answer in:
                                     # https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
                                     # TODO: for other solutions
-                                    from export.export import (
-                                        replace_multiple_choice_question_answers,
-                                    )
+                                    from export.export import \
+                                        replace_multiple_choice_question_answers
 
                                     replace_multiple_choice_question_answers(
                                         responses_list, question_list
@@ -6215,7 +6093,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
             if len(list_of_questionnaires_configuration) > 0:
                 percentage_of_questionnaires = (
-                    100
+                    100.0
                     * number_of_questionnaires_filled
                     / len(list_of_questionnaires_configuration)
                 )
@@ -6232,7 +6110,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     subject_of_group=subject_of_group,
                     data_configuration_tree_id=data_configuration_tree_id,
                 )
-                if len(eeg_data_files):
+                if eeg_data_files.count():
                     number_of_eeg_data_files_uploaded += 1
 
             percentage_of_eeg_data_files_uploaded = 0
@@ -6255,13 +6133,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     subject_of_group=subject_of_group,
                     data_configuration_tree_id=data_configuration_tree_id,
                 )
-                if len(emg_data_files):
+                if emg_data_files.count():
                     number_of_emg_data_files_uploaded += 1
 
             percentage_of_emg_data_files_uploaded = 0
             if len(list_of_emg_configuration) > 0:
                 percentage_of_emg_data_files_uploaded = (
-                    100
+                    100.0
                     * number_of_emg_data_files_uploaded
                     / len(list_of_emg_configuration)
                 )
@@ -6278,13 +6156,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     subject_of_group=subject_of_group,
                     data_configuration_tree_id=data_configuration_tree_id,
                 )
-                if len(tms_data_files):
+                if tms_data_files.count():
                     number_of_tms_data_files_uploaded += 1
 
             percentage_of_tms_data_files_uploaded = 0
             if len(list_of_tms_configuration) > 0:
                 percentage_of_tms_data_files_uploaded = (
-                    100
+                    100.0
                     * number_of_tms_data_files_uploaded
                     / len(list_of_tms_configuration)
                 )
@@ -6303,13 +6181,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     subject_of_group=subject_of_group,
                     data_configuration_tree_id=data_configuration_tree_id,
                 )
-                if len(digital_game_phase_data_files):
+                if digital_game_phase_data_files.count():
                     number_of_digital_game_phase_data_files_uploaded += 1
 
             percentage_of_digital_game_phase_data_files_uploaded = 0
             if len(list_of_digital_game_phase_configuration) > 0:
                 percentage_of_digital_game_phase_data_files_uploaded = (
-                    100
+                    100.0
                     * number_of_digital_game_phase_data_files_uploaded
                     / len(list_of_digital_game_phase_configuration)
                 )
@@ -6330,13 +6208,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                         data_configuration_tree_id=data_configuration_tree_id,
                     )
                 )
-                if len(generic_data_collection_data_files):
+                if generic_data_collection_data_files.count():
                     number_of_generic_data_collection_data_files_uploaded += 1
 
             percentage_of_generic_data_collection_data_files_uploaded = 0
             if len(list_of_generic_data_collection_configuration) > 0:
                 percentage_of_generic_data_collection_data_files_uploaded = (
-                    100
+                    100.0
                     * number_of_generic_data_collection_data_files_uploaded
                     / len(list_of_generic_data_collection_configuration)
                 )
@@ -6355,13 +6233,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     subject_of_group=subject_of_group,
                     data_configuration_tree_id=data_configuration_tree_id,
                 )
-                if len(media_collection_data_files):
+                if media_collection_data_files.count():
                     number_of_media_collection_data_files_uploaded += 1
 
             percentage_of_media_collection_data_files_uploaded = 0
             if len(list_of_media_collection_configuration) > 0:
                 percentage_of_media_collection_data_files_uploaded = (
-                    100
+                    100.0
                     * number_of_media_collection_data_files_uploaded
                     / len(list_of_media_collection_configuration)
                 )
@@ -7753,7 +7631,7 @@ def load_questionnaire_data(request, group_id):
                 # when configured with 1 repetition, check if there is just one response
                 if (
                     questionnaire_configuration.number_of_repetitions == 1
-                    and len(patient_questionnaire_responses) == 1
+                    and patient_questionnaire_responses.count() == 1
                 ):
                     # check if there is no response for this "subject + step"
                     if not QuestionnaireResponse.objects.filter(
@@ -14228,7 +14106,7 @@ def component_update(request, path_of_the_components):
                         # Stimulus has media files to read
                         if component_type == "stimulus":
                             stimulus = get_object_or_404(Stimulus, pk=component.id)
-                            specific_form = StimulusForm(
+                            specific_form: StimulusForm = StimulusForm(
                                 request.POST or None, request.FILES, instance=stimulus
                             )
 

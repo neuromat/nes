@@ -51,7 +51,7 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
         )
 
     def clean_new_password1(self) -> str:
-        password1: str = self.cleaned_data.get("new_password1")
+        password1: str = self.cleaned_data["new_password1"]
 
         # At least MIN_LENGTH long
         if len(password1) < PASSWORD_MIN_LEN:

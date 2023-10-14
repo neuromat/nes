@@ -79,7 +79,7 @@ def build_questionnaires_list(language_code, groups=None):
     :param language_code: str - questionnaire language code
     :return: list - questionnaires
     """
-    random_forests = get_object_or_404(RandomForests)
+    random_forests: RandomForests = get_object_or_404(RandomForests)
     surveys = [
         random_forests.admission_assessment.lime_survey_id,
         random_forests.surgical_evaluation.lime_survey_id,

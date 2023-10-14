@@ -48,7 +48,7 @@ class CPF(object):
     _gen = staticmethod(_gen)
     _translate = staticmethod(_translate)
 
-    def __init__(self, cpf):
+    def __init__(self, cpf) -> None:
         """O argumento cpf pode ser uma string nas formas:
 
         12345678910
@@ -64,14 +64,14 @@ class CPF(object):
             if not cpf.isdigit():
                 cpf = self._translate(cpf)
 
-        self.cpf = [int(x) for x in cpf]
+        self.cpf: list[int] = [int(x) for x in cpf]
 
     def __getitem__(self, index):
         """Retorna o dígito em index como string"""
 
         return self.cpf[index]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Retorna uma representação 'real', ou seja:
 
         eval(repr(cpf)) == cpf
@@ -80,7 +80,7 @@ class CPF(object):
 
         return "CPF('%s')" % "".join(str(x) for x in self.cpf)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Provê teste de igualdade para números de CPF"""
 
         return isinstance(other, CPF) and self.cpf == other.cpf
@@ -92,14 +92,15 @@ class CPF(object):
 
         """
 
-        # d = iter("..-")
-        # s = map(str, self.cpf)
-        # for i in xrange(3, 12, 4):
-        #     s.insert(i, d.next())
-        # r = ''.join(s)
-        # return r
+        d = iter("..-")
+        s = [
+            x + (next(d) if i + 1 in range(3, 12, 3) else "")
+            for (i, x) in enumerate(self.cpf)
+        ]
+        r = "".join(s)
+        return r
 
-    def isValid(self):
+    def isValid(self) -> bool:
         """Valida o número de cpf"""
 
         if _exceptions(self.cpf):

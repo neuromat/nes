@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Manager, signals
+from django.db.models import signals
 from django.utils.translation import gettext_lazy as _
 from django_stubs_ext.db.models import TypedModelMeta
 from patient.models import COUNTRIES
@@ -48,17 +48,17 @@ class UserProfile(models.Model):
     citation_name = models.CharField(max_length=150, blank=True, default="")
 
 
-def create_user_profile_signal(sender, instance, created, **kwargs):
+def create_user_profile_signal(sender, instance, created, **kwargs) -> None:
     if created:
         UserProfile.objects.create(user=instance)
 
 
-def password_change_signal(sender, instance, **kwargs):
+def password_change_signal(sender, instance, **kwargs) -> None:
     try:
         if User.objects.all().count() == 0:
             return
 
-        user = User.objects.get(username=instance.username)
+        user: User = User.objects.get(username=instance.username)
 
         if user.is_superuser:
             return

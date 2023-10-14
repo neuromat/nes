@@ -141,17 +141,17 @@ class ObjectsFactory(object):
         return research_project
 
     @staticmethod
-    def create_experiment(research_project):
+    def create_experiment(research_project) -> Experiment:
         """Create an experiment to be used in the test
         :param research_project: research project
         :return: experiment
         """
-        experiment = Experiment.objects.create(
+        experiment: Experiment = Experiment.objects.create(
             research_project_id=research_project.id,
             title="Experimento-Update",
             description="Descricao do Experimento-Update",
         )
-        experiment.changed_by = None
+
         experiment.save()
         return experiment
 

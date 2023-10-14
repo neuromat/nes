@@ -3,12 +3,11 @@
 import datetime
 import random
 
-from django.db import models
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
-
 from survey.models import Survey
 
 from .validation import CPF
@@ -597,7 +596,13 @@ class MedicalRecordData(models.Model):
         )
 
     def __str__(self) -> str:
-        return self.patient, self.record_date, self.record_responsible
+        return (
+            str(self.patient)
+            + " "
+            + str(self.record_date)
+            + " "
+            + str(self.record_responsible)
+        )
 
 
 class ClassificationOfDiseasesManager(models.Manager):
@@ -613,7 +618,7 @@ class ClassificationOfDiseases(models.Model):
         "self", on_delete=models.CASCADE, null=True, related_name="children"
     )
 
-    objects = ClassificationOfDiseasesManager()
+    objects: ClassificationOfDiseasesManager = ClassificationOfDiseasesManager()
 
     def __str__(self) -> str:
         return self.abbreviated_description
@@ -639,7 +644,13 @@ class Diagnosis(models.Model):
         )
 
     def __str__(self) -> str:
-        return str(self.classification_of_diseases), self.date, self.description
+        return (
+            str(self.classification_of_diseases)
+            + " "
+            + str(self.date)
+            + " "
+            + str(self.description)
+        )
 
 
 class ComplementaryExam(models.Model):

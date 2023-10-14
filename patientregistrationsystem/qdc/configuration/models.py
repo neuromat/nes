@@ -1,4 +1,5 @@
 from typing import Any
+from django.db.models.base import ModelBase
 from custom_user.models import Institution
 from django.db import models
 from django_stubs_ext.db.models import TypedModelMeta

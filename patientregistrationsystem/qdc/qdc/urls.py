@@ -71,15 +71,13 @@ urlpatterns = [
     re_path(r"^user/password/done/$", authviews.PasswordResetCompleteView.as_view()),
     re_path(r"^$", qdcviews.contact, name="contact"),
     re_path(
-        r"^language/change/(?P<language_code>(?:(?:\w{2})|(?:\w{2}\-\w{2})))$",
+        r"^language/change/(?P<language_code>(?:(?:\w{2})|(?:\w{2}\-\w{2})))/$",
         qdcviews.language_change,
         name="language_change",
     ),
     re_path(r"^i18n/", include("django.conf.urls.i18n")),
     re_path(r"^home/check_upgrade/$", qdcviews.contact, name="check_upgrade"),
-    re_path(
-        r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"
-    ),  # FIXME: erro
+    re_path(r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"),
     path("__debug__/", include("debug_toolbar.urls")),
 ]
 

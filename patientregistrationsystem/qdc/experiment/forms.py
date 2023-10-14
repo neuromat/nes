@@ -26,6 +26,7 @@ from django.utils.translation import gettext as _
 from experiment.models import (
     EEG,
     EMG,
+    TIME_UNITS,
     TMS,
     ADConverter,
     AdditionalData,
@@ -191,14 +192,6 @@ class FileForm(ModelForm):
 
 
 class ComponentForm(ModelForm):
-    # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
-    #  queryset.
-    #  This is needed because we want an empty_label different from "--------".
-    #  duration_unit = ModelChoiceField(
-    #      required=False,
-    #      empty_label="Escolha unidade",
-    #      widget=Select(attrs={'class': 'form-control'}))
-
     class Meta:
         model = Component
         fields = ["identification", "description", "duration_value", "duration_unit"]
@@ -247,15 +240,6 @@ class ComponentConfigurationForm(ModelForm):
         choices=((False, _("Fixed")), (True, _("Random"))),
         widget=RadioSelect(attrs={"id": "id_random_position"}),
     )
-
-    # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
-    #  queryset.
-    # This is needed because we want an empty_label different from "--------".
-    # interval_between_repetitions_unit = ModelChoiceField(
-    #     required=False,
-    #     empty_label="Escolha unidade",
-    #     widget=Select(attrs={'class': 'form-control', 'required': "",
-    #                          'data-error': "Unidade do intervalo deve ser preenchida"}))
 
     class Meta:
         model = ComponentConfiguration
@@ -571,8 +555,8 @@ class ResearchProjectForm(ModelForm):
             ),
         }
 
-    def clean(self):
-        cleaned_data = super(ResearchProjectForm, self).clean()
+    def clean(self) -> dict[str, Any]:
+        cleaned_data: dict[str, Any] = super(ResearchProjectForm, self).clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
 

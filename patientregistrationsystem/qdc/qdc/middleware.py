@@ -1,5 +1,7 @@
 import re
 
+from django.http import HttpRequest
+
 from custom_user.models import UserProfile
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -9,7 +11,7 @@ from django.utils.deprecation import MiddlewareMixin
 # TODO: This is not very efficient, checks de database every non-auth request
 class PasswordChangeMiddleware(MiddlewareMixin):
     @staticmethod
-    def process_request(request):
+    def process_request(request: HttpRequest):
         if (
             request.user.is_authenticated
             and not re.search(r"/password_change/?", request.path)

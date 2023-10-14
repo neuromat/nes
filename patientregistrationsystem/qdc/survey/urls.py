@@ -12,7 +12,7 @@ urlpatterns = [
         name="survey_edit_sensitive_questions",
     ),
     re_path(
-        r"^update_acquisitiondate/(?P<survey_id>\d+)",
+        r"^update_acquisitiondate/(?P<survey_id>\d+)/",
         views.update_survey_acquisitiondate_view,
         name="update_survey_acquisitiondate",
     ),

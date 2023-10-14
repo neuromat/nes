@@ -205,9 +205,9 @@ class ExportExperiment:
                     for (index, dict_) in enumerate(serialized)
                     if dict_["model"] == "patient.classificationofdiseases"
                 ),
-                None,
+                -1,
             )
-            if index is None:
+            if index == -1:
                 break
             del serialized[index]
 

@@ -1,10 +1,13 @@
 import subprocess
 
 from experiment import models
+from django.contrib.auth.models import User
+
+from patient.models import Patient
 
 # Collect and send User's (nep: Researcher's) -> ResearchProject's
 # (nep: Study's), Experiment's and Experiment releated objects
-users = models.User.objects.all()
+users = User.objects.all()
 
 portal_server = "http://192.168.59.61:8000"
 
@@ -137,7 +140,7 @@ for user in users:
 
 # Send Patient's
 for subject in models.Subject.objects.all():
-    patient = models.Patient.objects.filter(id=subject.patient_id).get()
+    patient: Patient = Patient.objects.filter(id=subject.patient_id).get()
     subprocess.call(
         [
             "http",
