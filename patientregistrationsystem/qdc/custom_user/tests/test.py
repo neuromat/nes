@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
+from http import HTTPStatus
 import re
-from importlib.util import resolve_name
 from typing import Any
 
 from custom_user.models import Institution, UserProfile
@@ -344,7 +344,7 @@ class FormUserValidation(TestCase):
         message = list(get_messages(response.wsgi_request))
         self.assertEqual(len(message), 1)
 
-    def test_user_remove(self):
+    def test_user_remove(self) -> None:
         user_str = "user_remove"
         user_to_delete = User.objects.create_user(
             username=user_str, email="test@delete.com", password="Del!123"
@@ -377,7 +377,7 @@ class FormUserValidation(TestCase):
         request.user = self.user
 
         response = user_update(request, user_id=user_to_delete.pk)
-        self.assertEqual(response, None)
+        self.assertEqual(response.status_code, HTTPStatus.GONE)
 
     def test_create_researcher_without_system_access(self):
         username = "fulano@detal.com"
@@ -411,7 +411,7 @@ class FormUserValidation(TestCase):
         response = self.client.post(
             reverse(USER_VIEW, args=(resercher.pk,)), self.data, follow=True
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
 class PasswordPattern(TestCase):
@@ -429,30 +429,30 @@ class PasswordPattern(TestCase):
     """
 
     @staticmethod
-    def confirm_password(pattern, password):
+    def confirm_password(pattern: str, password: str) -> re.Match[str] | None:
         return re.compile(pattern).match(password)
 
-    def test_user_password_check_valid_pattern(self):
+    def test_user_password_check_valid_pattern(self) -> None:
         password = "abcC2@!$"
 
         self.assertTrue(self.confirm_password(PATTERN, password), True)
 
-    def test_user_password_check_invalid_pattern_only_letters(self):
+    def test_user_password_check_invalid_pattern_only_letters(self) -> None:
         password = "abcdefgh"
 
         self.assertFalse(self.confirm_password(pattern=PATTERN, password=password))
 
-    def test_user_password_check_invalid_pattern_only_numbers(self):
+    def test_user_password_check_invalid_pattern_only_numbers(self) -> None:
         password = "12345678"
 
         self.assertFalse(self.confirm_password(pattern=PATTERN, password=password))
 
-    def test_user_password_check_invalid_pattern_without_special_symbols(self):
+    def test_user_password_check_invalid_pattern_without_special_symbols(self) -> None:
         password = "123abcDEF"
 
         self.assertFalse(self.confirm_password(pattern=PATTERN, password=password))
 
-    def test_user_password_check_invalid_pattern_less_than_six_chars(self):
+    def test_user_password_check_invalid_pattern_less_than_six_chars(self) -> None:
         password = "1aB!"
 
         self.assertFalse(self.confirm_password(pattern=PATTERN, password=password))
@@ -461,8 +461,8 @@ class PasswordPattern(TestCase):
 class InstitutionTests(TestCase):
     debug_old = False
 
-    def setUp(self):
-        self.user = User.objects.create_user(
+    def setUp(self) -> None:
+        self.user: User = User.objects.create_user(
             username=USER_USERNAME,
             email="jenkins.neuromat@gmail.com",
             password=USER_PWD,
@@ -502,11 +502,11 @@ class InstitutionTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "custom_user/institution_register.html")
 
-    def test_institution_new_url_resolves_institution_new_view(self):
+    def test_institution_new_url_resolves_institution_new_view(self) -> None:
         view = resolve(r"/user/institution/new/")
         self.assertEqual(view.func, institution_create)
 
-    def test_institution_create(self):
+    def test_institution_create(self) -> None:
         self.data = {
             "name": "Faculdade de Medicina",
             "acronym": "FM",
@@ -541,10 +541,10 @@ class InstitutionTests(TestCase):
         if isinstance(institution, Institution):
             url = reverse("institution_view", args=(institution.id,))
             response = self.client.get(url)
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, HTTPStatus.OK)
             self.assertTemplateUsed(response, "custom_user/institution_register.html")
 
-    def test_institution_view_url_resolves_institution_view_view(self):
+    def test_institution_view_url_resolves_institution_view_view(self) -> None:
         view = resolve("/user/institution/1/")
         self.assertEqual(view.func, institution_view)
 
@@ -579,7 +579,7 @@ class InstitutionTests(TestCase):
 
     def test_institution_view_and_action_remove_denied_because_there_is_institution_associated(
         self,
-    ):
+    ) -> None:
         parent = Institution.objects.create(
             name="Example", acronym="example", country="BR"
         )
@@ -597,14 +597,14 @@ class InstitutionTests(TestCase):
             message = list(get_messages(response.wsgi_request))
             self.assertEqual(len(message), 1)
 
-    def test_institution_update_status_code(self):
+    def test_institution_update_status_code(self) -> None:
         institution = Institution.objects.first()
 
         self.assertIsInstance(institution, Institution)
         if isinstance(institution, Institution):
             url = reverse("institution_edit", args=(institution.id,))
             response = self.client.get(url)
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, HTTPStatus.OK)
             self.assertTemplateUsed(response, "custom_user/institution_register.html")
 
     def test_institution_update_url_resolves_institution_update_view(self):
@@ -625,7 +625,7 @@ class InstitutionTests(TestCase):
             response = self.client.post(
                 reverse("institution_edit", args=(institution.id,)), self.data
             )
-            self.assertEqual(response.status_code, 302)
+            self.assertEqual(response.status_code, HTTPStatus.FOUND)
             self.assertEqual(
                 Institution.objects.filter(name="RIDC NeuroMat").count(), 1
             )
@@ -644,7 +644,7 @@ class PasswordResetTests(TestCase):
         settings.DEBUG = self.debug_old
 
     def test_status_code(self) -> None:
-        self.assertEqual(self.response.status_code, 200)
+        self.assertEqual(self.response.status_code, HTTPStatus.OK)
 
     def test_csrf(self) -> None:
         self.assertContains(self.response, "csrfmiddlewaretoken")

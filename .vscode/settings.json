@@ -46,28 +46,7 @@
         "${localWorkspaceFolder}, /usr/local/bin/python"
     ],
     "python.defaultInterpreterPath": "/usr/local/bin/python",
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "server": "172.19.0.2",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "postgres",
-            "database": "postgres",
-            "username": "postgres",
-            "password": "postgres_pass"
-        },
-        {
-            "previewLimit": 50,
-            "server": "172.20.0.3",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "database": "nes_db",
-            "password": "nes_password",
-            "username": "nes_user",
-            "name": "postgres_nes"
-        }
-    ],
+
     "python.analysis.extraPaths": [
         "${localWorkspaceFolder}",
         "patientregistrationsystem/qdc"
@@ -75,6 +54,7 @@
     "[dockerfile]": {
         "editor.defaultFormatter": "ms-azuretools.vscode-docker"
     },
+    "mypy-type-checker.reportingScope":"workspace",
     "python.testing.unittestArgs": [
         "-v",
         "-s",

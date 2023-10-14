@@ -10,7 +10,7 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
         r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
 
         self.fields["old_password"].widget = PasswordInput(
@@ -50,8 +50,8 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
             }
         )
 
-    def clean_new_password1(self):
-        password1 = self.cleaned_data.get("new_password1")
+    def clean_new_password1(self) -> str:
+        password1: str = self.cleaned_data.get("new_password1")
 
         # At least MIN_LENGTH long
         if len(password1) < PASSWORD_MIN_LEN:

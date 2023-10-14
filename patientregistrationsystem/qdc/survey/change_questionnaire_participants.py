@@ -15,7 +15,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "qdc.settings")
 django.setup()
 
 
-def parse_options(argv):
+def parse_options(argv) -> list[str]:
     questionnaire_id = ""
     new_limesurvey_id = ""
     try:
@@ -56,7 +56,7 @@ def update_questionnaire_response(old_tokens, new_tokens, q_response):
     return q_response
 
 
-def main(argv):
+def main(argv) -> None:
     # TODO: test for new_limesurvey_id existence
     questionnaire_id, new_limesurvey_id = parse_options(argv)
     questionnaire = Questionnaire.objects.get(id=questionnaire_id)

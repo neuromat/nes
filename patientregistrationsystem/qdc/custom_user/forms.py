@@ -1,5 +1,7 @@
 # coding=utf-8
-from typing import Any, Iterable, Iterator
+from typing import Any, Iterable
+
+from django.db.models import Model
 from custom_user.models import Institution, UserProfile
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.hashers import make_password
@@ -113,11 +115,11 @@ class UserForm(ModelForm):
         return email
 
     def clean_first_name(self) -> str:
-        data = self.cleaned_data["first_name"]
+        data: str = self.cleaned_data["first_name"]
         return data.upper()
 
     def clean_last_name(self) -> str:
-        data = self.cleaned_data["last_name"]
+        data: str = self.cleaned_data["last_name"]
         return data.upper()
 
 
@@ -148,7 +150,7 @@ class UserFormUpdate(UserForm):
 
 
 class CustomPasswordResetForm(PasswordResetForm):
-    def is_valid(self):
+    def is_valid(self) -> bool:
         if not super(CustomPasswordResetForm, self).is_valid():
             return False
 
@@ -225,11 +227,11 @@ class ResearcherForm(ModelForm):
         }
 
     def clean_first_name(self) -> str:
-        data = self.cleaned_data["first_name"]
+        data: str = self.cleaned_data["first_name"]
         return data.upper()
 
     def clean_last_name(self) -> str:
-        data = self.cleaned_data["last_name"]
+        data: str = self.cleaned_data["last_name"]
         return data.upper()
 
 
@@ -252,7 +254,7 @@ class InstitutionForm(ModelForm):
             "parent": Select(attrs={"class": "form-control"}),
         }
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(InstitutionForm, self).__init__(*args, **kwargs)
         self.fields["country"].initial = "BR"
         instance = kwargs.get("instance") or self.instance
@@ -265,7 +267,7 @@ class InstitutionForm(ModelForm):
             self.fields["parent"].queryset = parent_list
 
 
-def get_institutions_recursively(institution) -> list:
+def get_institutions_recursively(institution: Institution) -> list[Institution]:
     institution_list = [institution]
     children = Institution.objects.filter(parent=institution)
     for child in children:

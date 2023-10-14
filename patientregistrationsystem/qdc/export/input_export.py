@@ -166,7 +166,7 @@ def build_partial_export_structure(
 ) -> None:
     json_data = InputExport()
 
-    json_data.build_header()
+    json_data.build_header(None)
     json_data.build_dynamic_header("export_per_participant", export_per_participant)
     json_data.build_diagnosis_participant(
         "participants", OUTPUT_FILENAME_PARTICIPANTS, participant_field_header_list

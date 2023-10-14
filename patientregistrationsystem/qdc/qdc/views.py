@@ -2,6 +2,7 @@ import os
 import platform
 import sys
 from functools import partial
+from django.db.migrations import Migration
 
 import pip
 from django.conf import settings
@@ -10,7 +11,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS, connections
 from django.db.migrations.executor import MigrationExecutor
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -74,7 +75,7 @@ def password_changed(request):
 
 # FIXME: a annotation estava errada??
 # @login_required
-def check_upgrade(request):
+def check_upgrade(request: HttpRequest) -> bool:
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
     new_version = False
@@ -105,7 +106,7 @@ def check_upgrade(request):
     return new_version
 
 
-def get_nes_directory_path():
+def get_nes_directory_path() -> str:
     path_repo = "/"
     if "Windows" in platform.system():
         path_repo = ""
@@ -125,7 +126,7 @@ def get_nes_directory_path():
     return path_repo
 
 
-def get_pending_migrations():
+def get_pending_migrations() -> list[tuple[Migration, bool]]:
     connection = connections[DEFAULT_DB_ALIAS]
     connection.prepare_database()
     executor = MigrationExecutor(connection)

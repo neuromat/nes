@@ -1,10 +1,11 @@
+from typing import Any
 from custom_user.models import Institution
 from django.db import models
 from django_stubs_ext.db.models import TypedModelMeta
 from solo.models import SingletonModel
 
 
-def get_institution_logo_dir(instance, filename) -> str:
+def get_institution_logo_dir(instance: Any, filename: str) -> str:
     return "institution_logo/%s/%s" % (instance.id, filename)
 
 
@@ -31,9 +32,14 @@ class Contact(SingletonModel):
     def __str__(self) -> str:
         return "%s" % self.name
 
+    class Meta(TypedModelMeta):
+        verbose_name = "Contact"
+
 
 class RightsSupport(models.Model):
-    class Meta:
+    class Meta(TypedModelMeta):
         managed = False
 
-        permissions = (("upgrade_rights", "Can upgrade NES version"),)
+        permissions = [
+            ("upgrade_rights", "Can upgrade NES version"),
+        ]

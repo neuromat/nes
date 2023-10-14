@@ -44,14 +44,18 @@
                                 <label for="id_anonymous">{% trans "Anonymous participant?" %}</label>
                             </div>
                         </div>
-                    </div>
+                    </div> 
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div id="div_name" class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
                                 <label for="name" class="control-label">{% trans "Full name" %} <b style="color: red;">*</b></label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="fa fa-user"></span></span>
-                                    {{ patient_form.name }}
+                                    {% if  perms.patient.sensitive_data_patient or creating %}
+                                        {{ patient_form.name }}
+                                    {% else %}
+                                        <input type="text" class=form-control disabled value="{% trans 'SENSITIVE DATA' %}">
+                                    {% endif %}
                                 </div>
                                 <div id="div_name_message" class="help-block with-errors"></div>
                             </div>
@@ -61,7 +65,11 @@
                                 <label for="cpf" class="control-label">{% trans "Security id" %}</label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="fa fa-id-card"></span></span>
-                                    {{ patient_form.cpf }}
+                                    {% if  perms.patient.sensitive_data_patient or creating %}
+                                        {{ patient_form.cpf }}
+                                    {% else %}
+                                        <input type="text" class=form-control disabled value="{% trans 'SENSITIVE DATA' %}">
+                                    {% endif %}
                                 </div>
                                 <div class="help-block with-errors">
                                     {% if patient_form.cpf.errors %}
@@ -127,7 +135,11 @@
                                 <label>{% trans "RG" %}</label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"><span class="fa fa-user"></span></span>
-                                    {{ patient_form.rg }}
+                                    {% if  perms.patient.sensitive_data_patient or creating %}
+                                        {{ patient_form.rg }}
+                                    {% else %}
+                                        <input type="text" class=form-control disabled value="{% trans 'SENSITIVE DATA' %}">
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

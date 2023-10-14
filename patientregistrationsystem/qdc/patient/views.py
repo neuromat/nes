@@ -1,5 +1,4 @@
 # coding=utf-8
-from ast import Return
 import datetime
 import re
 from functools import partial
@@ -51,8 +50,6 @@ from survey.views import (
     get_questionnaire_responses,
 )
 
-# pylint: disable=E1101
-# pylint: disable=E1103
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -433,7 +430,7 @@ def patient_view_personal_data(request, patient, context):
         Patient, Telephone, form=TelephoneForm, extra=1
     )
     telephone_formset = telephone_inlineformset(instance=patient)
-
+    patient_form.fields["anonymous"].widget.attrs["checked"] = True
     if not patient.name:
         patient_form.fields["anonymous"].widget.attrs["checked"] = True
 

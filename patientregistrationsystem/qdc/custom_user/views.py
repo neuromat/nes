@@ -1,4 +1,5 @@
 # coding=utf-8
+from django.http.response import HttpResponseBase
 from custom_user.forms import (
     InstitutionForm,
     ResearcherForm,
@@ -10,16 +11,23 @@ from custom_user.models import Institution, UserProfile
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Group, User
-from django.http import HttpResponseRedirect
+from django.http import (
+    Http404,
+    HttpRequest,
+    HttpResponse,
+    HttpResponseGone,
+    HttpResponseNotFound,
+    HttpResponseRedirect,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 
-def get_group_permissions(user):
-    group_permissions = []
+def get_group_permissions(user: User) -> list[dict[str, object]]:
+    group_permissions: list[dict[str, object]] = []
     for group in Group.objects.all():
-        checked = False
+        checked: bool = False
         if user:
             checked = group in user.groups.all()
         group_permissions.append({"group": group, "checked": checked})
@@ -28,7 +36,9 @@ def get_group_permissions(user):
 
 @login_required
 @permission_required("auth.add_user")
-def user_list(request, template_name="custom_user/initial_page.html"):
+def user_list(
+    request: HttpRequest, template_name: str = "custom_user/initial_page.html"
+) -> HttpResponse:
     users = User.objects.filter(is_active=True).order_by("first_name", "last_name")
     institutions = Institution.objects.all().order_by("name")
     data = {
@@ -148,8 +158,12 @@ def user_view(request, user_id, template_name="custom_user/register_users.html")
 
 @login_required
 @permission_required("auth.change_user")
-def user_update(request, user_id, template_name="custom_user/register_users.html"):
-    user = get_object_or_404(User, pk=user_id)
+def user_update(
+    request: HttpRequest,
+    user_id: int,
+    template_name: str = "custom_user/register_users.html",
+) -> HttpResponse:
+    user: User = get_object_or_404(User, pk=user_id)
 
     if user and user.is_active:
         form = UserFormUpdate(request.POST or None, instance=user)
@@ -237,9 +251,13 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
 
         return render(request, template_name, context)
 
+    return HttpResponseGone()
+
 
 @login_required
-def institution_create(request, template_name="custom_user/institution_register.html"):
+def institution_create(
+    request: HttpRequest, template_name: str = "custom_user/institution_register.html"
+) -> HttpResponse:
     institution_form = InstitutionForm(request.POST or None)
 
     if request.method == "POST":

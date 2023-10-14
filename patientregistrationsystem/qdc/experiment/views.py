@@ -11629,7 +11629,6 @@ def subject_additional_data_create(
     additional_data_form = AdditionalDataForm(None)
 
     file_format_list = file_format_code("")
-    print(file_format_list)
     if request.method == "POST":
         if request.POST["action"] == "save":
             additional_data_form = AdditionalDataForm(request.POST, request.FILES)

@@ -1,7 +1,10 @@
 # coding=utf-8
+
 import re
 from abc import ABC, abstractmethod
 from base64 import b64decode, b64encode
+from typing import Any
+
 
 from django.conf import settings
 from jsonrpclib import Server
@@ -21,17 +24,17 @@ class ABCSearchEngine(ABC):
         "other",
     ]
 
-    session_key = None
+    session_key: Any
     server: Server = None
 
-    def __init__(self, limesurvey_rpc=None):
-        self.limesurvey_rpc = (
+    def __init__(self, limesurvey_rpc=None) -> None:
+        self.limesurvey_rpc: str = (
             limesurvey_rpc
             or settings.LIMESURVEY["URL_API"] + "/index.php/admin/remotecontrol"
         )
         self.get_session_key()
 
-    def get_session_key(self):
+    def get_session_key(self) -> None:
         self.server = Server(self.limesurvey_rpc)
         try:
             self.session_key = self.server.get_session_key(
@@ -44,22 +47,22 @@ class ABCSearchEngine(ABC):
             self.session_key = None
         # TODO: catch user/password exception
 
-    def release_session_key(self):
+    def release_session_key(self) -> None:
         if self.session_key:
             self.server.release_session_key(self.session_key)
 
     @abstractmethod
-    def find_all_questionnaires(self):
+    def find_all_questionnaires(self) -> list:
         """
         :return: all stored surveys
         """
 
-        list_survey = self.server.list_surveys(self.session_key, None)
+        list_survey: list = self.server.list_surveys(self.session_key, None)
 
         return list_survey
 
     @abstractmethod
-    def find_all_active_questionnaires(self):
+    def find_all_active_questionnaires(self) -> list:
         """
         :return: all active surveys
         """
@@ -75,7 +78,7 @@ class ABCSearchEngine(ABC):
                 ):
                     list_active_survey.append(survey)
         else:
-            list_active_survey = None
+            list_active_survey = []
 
         return list_active_survey
 

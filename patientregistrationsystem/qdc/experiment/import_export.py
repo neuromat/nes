@@ -1,3 +1,4 @@
+from argparse import ArgumentError
 import json
 import os
 import shutil
@@ -55,14 +56,14 @@ class ExportExperiment:
     FILE_NAME_ZIP = "experiment.zip"
     LIMESURVEY_ERROR = 1
 
-    def __init__(self, experiment) -> None:
-        self.experiment = experiment
-        self.temp_dir = tempfile.mkdtemp()
+    def __init__(self, experiment: Experiment) -> None:
+        self.experiment: Experiment = experiment
+        self.temp_dir: str = tempfile.mkdtemp()
 
     def __del__(self) -> None:
         shutil.rmtree(self.temp_dir)
 
-    def _generate_fixture(self, filename, elements, app="experiment."):
+    def _generate_fixture(self, filename, elements, app="experiment.") -> None:
         sysout = sys.stdout
         sys.stdout = open(path.join(self.temp_dir, filename + ".json"), "w")
         call_command(
@@ -73,7 +74,7 @@ class ExportExperiment:
         )
         sys.stdout = sysout
 
-    def _generate_detached_fixture(self, filename, elements):
+    def _generate_detached_fixture(self, filename, elements) -> None:
         with open(path.join(self.temp_dir, elements[3] + ".json")) as file:
             data = json.load(file)
         parent_ids = [
@@ -92,7 +93,7 @@ class ExportExperiment:
         )
         sys.stdout = sysout
 
-    def _generate_keywords_fixture(self):
+    def _generate_keywords_fixture(self) -> None:
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
         sys.stdout = open(path.join(self.temp_dir, "keywords.json"), "w")
@@ -106,7 +107,7 @@ class ExportExperiment:
         )
         sys.stdout = sysout
 
-    def _remove_auth_user_model_from_json(self):
+    def _remove_auth_user_model_from_json(self) -> None:
         with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace("\n", "")
 
@@ -127,7 +128,7 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, self.FILE_NAME_JSON), "w") as f:
             f.write(json.dumps(deserialized))
 
-    def _remove_researchproject_keywords_model_from_json(self):
+    def _remove_researchproject_keywords_model_from_json(self) -> None:
         with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace("\n", "")
 
@@ -144,7 +145,7 @@ class ExportExperiment:
             f.write(json.dumps(deserialized))
 
     # TODO: In future, import groups verifying existence of group_codes in the database, not excluding them
-    def _change_group_code_to_null_from_json(self):
+    def _change_group_code_to_null_from_json(self) -> None:
         with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace("\n", "")
 
@@ -160,7 +161,7 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, self.FILE_NAME_JSON), "w") as f:
             f.write(json.dumps(serialized))
 
-    def _remove_survey_code(self):
+    def _remove_survey_code(self) -> None:
         with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace("\n", "")
 
@@ -176,7 +177,7 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, self.FILE_NAME_JSON), "w") as f:
             f.write(json.dumps(serialized))
 
-    def _update_classification_of_diseases_reference(self):
+    def _update_classification_of_diseases_reference(self) -> None:
         """Change json data exported to replace references to classification
         of diseases so the reference is to code not to id. We consider that
         NES instances all share the same classification of diseases data
@@ -213,7 +214,7 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, self.FILE_NAME_JSON), "w") as f:
             f.write(json.dumps(serialized))
 
-    def get_indexes(self, app, model):
+    def get_indexes(self, app, model) -> list[int]:
         with open(self.get_file_path("json")) as f:
             data = json.load(f)
         return [
@@ -222,7 +223,7 @@ class ExportExperiment:
             if dict_["model"] == app + "." + model
         ]
 
-    def _export_surveys(self):
+    def _export_surveys(self) -> list:
         """Export experiment surveys archives using LimeSurvey RPC API.
         :return: list of survey archive paths
         """
@@ -261,7 +262,7 @@ class ExportExperiment:
             archive_paths if archive_paths else []
         )  # TODO (NES_956): return empty list?
 
-    def _create_zip_file(self, survey_archives):
+    def _create_zip_file(self, survey_archives) -> tuple:
         """Create zip file with experiment.json file and subdirs corresponding
         to file paths from models that have FileField fields
         :param survey_archives: list of survey archive paths
@@ -298,13 +299,15 @@ class ExportExperiment:
                 )
         return 0, ""
 
-    def get_file_path(self, type_="zip"):
+    def get_file_path(self, type_="zip") -> str:
         if type_ == "zip":
             return path.join(self.temp_dir, self.FILE_NAME_ZIP)
         elif type_ == "json":
             return path.join(self.temp_dir, self.FILE_NAME_JSON)
+        else:
+            raise ArgumentError(message="type not zip or json")
 
-    def export_all(self):
+    def export_all(self) -> tuple:
         for key, value in EXPERIMENT_JSON_FILES.items():
             self._generate_fixture(key, value)
         for key, value in PATIENT_JSON_FILES.items():
@@ -354,7 +357,7 @@ class ImportExperiment:
     def __del__(self) -> None:
         shutil.rmtree(self.temp_dir)
 
-    def _set_last_objects_before_import(self, research_project_id):
+    def _set_last_objects_before_import(self, research_project_id) -> None:
         """Identify last objects to deduct after import, so
         we can identify the new objects imported
         :param data: list created with json.loads from json file with
@@ -387,7 +390,7 @@ class ImportExperiment:
             self.last_objects_before_import["component"] = Component.objects.last()
 
     @staticmethod
-    def _include_human_readables(components):
+    def _include_human_readables(components) -> None:
         """Add the titles of steps (components) of experimental protocol to display
         in import log page
         """
@@ -397,7 +400,7 @@ class ImportExperiment:
                 human_readables[component["component_type"]]
             )
 
-    def _collect_new_objects(self):
+    def _collect_new_objects(self) -> None:
         """Collect new objects to display to user some main objects that was
         imported
         """
@@ -439,7 +442,7 @@ class ImportExperiment:
         else:
             self.new_objects["components"] = None
 
-    def _update_research_project_pk(self, id_):
+    def _update_research_project_pk(self, id_) -> None:
         if id_:
             research_project_index = next(
                 index
@@ -454,7 +457,7 @@ class ImportExperiment:
             )
             self.data[experiment_index]["fields"]["research_project"] = id_
 
-    def _verify_keywords(self):
+    def _verify_keywords(self) -> None:
         indexes = [
             index
             for (index, dict_) in enumerate(self.data)
@@ -493,7 +496,7 @@ class ImportExperiment:
                             ] = self.data[i]["pk"]
                             indexes_of_keywords_already_updated.append(keyword_index)
 
-    def _update_patients_stuff(self, patients_to_update):
+    def _update_patients_stuff(self, patients_to_update) -> None:
         indexes = [
             index
             for (index, dict_) in enumerate(self.data)
@@ -528,7 +531,7 @@ class ImportExperiment:
             for i in indexes:
                 self.data[i]["fields"][model[1]] = request.user.id
 
-    def _update_survey_data(self):
+    def _update_survey_data(self) -> None:
         """Make dummy references to limesurvey surveys until import them in Limesurvey.
         Create new survey codes
         """
@@ -557,7 +560,7 @@ class ImportExperiment:
                 next_code = "Q" + str(int(next_code.split("Q")[1]) + 1)
                 self.data[index]["fields"]["code"] = next_code
 
-    def _assign_right_ids(self, match_eeg_els, match_eeg_ep_list):
+    def _assign_right_ids(self, match_eeg_els, match_eeg_ep_list) -> None:
         # Need to save old pk to update other dependent models
         old_eeg_els_pk = self.data[match_eeg_els[0]]["pk"]
 
@@ -582,7 +585,7 @@ class ImportExperiment:
                 match_eeg_els[0]
             ]["pk"]
 
-    def _deal_with_eegelectrodelocalizationsystem(self):
+    def _deal_with_eegelectrodelocalizationsystem(self) -> None:
         indexes = [
             index
             for (index, dict_) in enumerate(self.data)
@@ -629,7 +632,7 @@ class ImportExperiment:
                             (eeg_els_index, eeg_els), match_tuple_list
                         )
 
-    def _deal_with_fileformat(self):
+    def _deal_with_fileformat(self) -> None:
         file_formats = FileFormat.objects.all().order_by("-id")
         if file_formats:
             max_id = file_formats[0].id
@@ -677,14 +680,14 @@ class ImportExperiment:
                                 "file_format"
                             ] = self.data[index]["pk"]
 
-    def _deal_with_models_with_unique_fields(self):
+    def _deal_with_models_with_unique_fields(self) -> None:
         """Some models that have unique fields need to be treated separately
         because the updating concept diverges from others. TODO (NES-965): explain better
         """
         self._deal_with_eegelectrodelocalizationsystem()
         self._deal_with_fileformat()
 
-    def _keep_objects_pre_loaded(self):
+    def _keep_objects_pre_loaded(self) -> None:
         """For objects in fixtures initially loaded, check if the objects
         that are to be are already there. This is to avoid duplication of that objects.
         The objects checked here are the ones that can be edited. Objects that are not
@@ -756,7 +759,7 @@ class ImportExperiment:
                                 dependent_model[1]
                             ] = self.data[i]["pk"]
 
-    def _update_subject(self, index, patient):
+    def _update_subject(self, index, patient) -> None:
         # Though in experiment.models patient attribute is ForeignKey for Subject model,
         # in the system, Subject have a OneToOne relation with Patient so
         # prevent of creating new Subject object if not creating new Patient's objects
@@ -769,7 +772,7 @@ class ImportExperiment:
             if self.data[dependent_index]["fields"]["subject"] == updated_id:
                 self.data[dependent_index]["fields"]["subject"] = subject.id
 
-    def _keep_patients_pre_loaded(self, patients_to_update):
+    def _keep_patients_pre_loaded(self, patients_to_update) -> None:
         for model, dependent_models in PRE_LOADED_PATIENT_MODEL.items():
             indexes = [
                 index
@@ -848,7 +851,7 @@ class ImportExperiment:
 
         return 0, "", participants_with_conflict
 
-    def _verify_classification_of_diseases(self):
+    def _verify_classification_of_diseases(self) -> None:
         indexes = [
             index
             for (index, dict_) in enumerate(self.data)
@@ -867,7 +870,7 @@ class ImportExperiment:
 
     def _update_data_before_importing(
         self, request, research_project_id, patients_to_update
-    ):
+    ) -> None:
         self._update_survey_data()
         self._update_research_project_pk(research_project_id)
         self._verify_keywords()
@@ -894,7 +897,7 @@ class ImportExperiment:
                             )
         return last_id + 1
 
-    def _update_pks(self, digraph, successor, next_id):
+    def _update_pks(self, digraph, successor, next_id) -> None:
         """Recursive function to update models pks based on a directed graph representing
         model relations
         """
@@ -927,7 +930,7 @@ class ImportExperiment:
             next_id += 1
             self._update_pks(digraph, predecessor, next_id)
 
-    def _build_digraph(self):
+    def _build_digraph(self) -> nx.DiGraph:
         digraph = nx.DiGraph()
         for index_from, dict_ in enumerate(self.data):
             if dict_["model"] in FOREIGN_RELATIONS:
@@ -990,7 +993,7 @@ class ImportExperiment:
 
         return digraph
 
-    def _manage_pks(self, digraph):
+    def _manage_pks(self, digraph) -> None:
         next_id = self._get_first_available_id()
         for model_root_node in MODEL_ROOT_NODES:
             root_nodes = [
@@ -1002,7 +1005,7 @@ class ImportExperiment:
                 self._update_pks(digraph, root_node, next_id)
                 next_id += 1
 
-    def _upload_files(self):
+    def _upload_files(self) -> None:
         indexes = [
             index
             for index, dict_ in enumerate(self.data)

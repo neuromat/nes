@@ -541,7 +541,6 @@ def export_create(
         return export_complete_filename
 
     except OSError as e:
-        print(e)
         error_msg = e
         messages.error(request, error_msg)
         return render(request, template_name)

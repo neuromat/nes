@@ -6,5 +6,5 @@ register = template.Library()
 
 # settings value
 @register.simple_tag
-def settings_value(name):
+def settings_value(name: str) -> object:
     return getattr(settings, name, "")

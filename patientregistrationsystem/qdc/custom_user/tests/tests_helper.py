@@ -1,13 +1,14 @@
-from django.contrib.auth.models import Group, User
+from typing import Any
+from django.contrib.auth.models import Group, GroupManager, User
 from faker import Factory, Generator
 
 
 def create_user(
     groups=Group.objects.none(),
-    username=None,
-    force_password_change=False,
-    superuser=False,
-):
+    username: str = "",
+    force_password_change: bool = False,
+    superuser: bool = False,
+) -> tuple[User, str]:
     """
     Create user to login in NES
     :param groups: QuerySet with groups of permissions to add to the user
@@ -18,7 +19,7 @@ def create_user(
     fake: Generator = Factory.create()
 
     password = "passwd"
-    if username is None:
+    if username == "":
         while True:
             username = fake.profile()["username"]
             if not User.objects.filter(username=username):
@@ -47,4 +48,4 @@ def create_user(
     for group in groups:
         user.groups.add(group)
 
-    return [user, password]
+    return (user, password)
