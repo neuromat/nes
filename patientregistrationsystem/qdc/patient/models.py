@@ -2,6 +2,7 @@
 
 import datetime
 import random
+from typing import Any
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -524,7 +525,7 @@ class SocialDemographicData(models.Model):
         self.changed_by = value
 
     @staticmethod
-    def calculate_social_class(**keywords):
+    def calculate_social_class(**keywords: Any) -> str:
         #  According to IBGE:
         punctuation_table = {
             "tv": {0: 0, 1: 1, 2: 2, 3: 3, 4: 4},

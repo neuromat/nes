@@ -10,6 +10,7 @@ from patient.models import (
     AlcoholPeriod,
 )
 from patient.views import *
+from patient.forms import *
 from django.contrib.auth.models import User
 from .test_orig import UtilTests
 
