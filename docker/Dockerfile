@@ -95,8 +95,7 @@ RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninter
 #     apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
 #     apt-get -y install --no-install-recommends redis
 
-RUN echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf && \
-    echo never > /sys/kernel/mm/transparent_hugepage/enabled
+RUN echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf 
 
 
 COPY --from=wheeler $NES_DIR $NES_DIR
