@@ -52,6 +52,8 @@ RUN pip3 install -U pip setuptools wheel && \
 
 FROM python:3.11-slim-bookworm
 
+ENV PYTHONUNBUFFERED 1
+
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8  
@@ -63,8 +65,6 @@ ENV NES_DIR=$NES_DIR
 RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y install --no-install-recommends \
     curl \
-    python3-psycopg2 \
-    python-is-python3 \
     python3-pip \
     libnss3-tools \
     git \
@@ -76,6 +76,8 @@ RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninter
     # server dependencies
     #libopenblas-dev \
     #libhdf5-dev \
+    lsb-release \
+    gpg \
     graphviz && \
     #snapd && \
     # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
@@ -84,6 +86,12 @@ RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninter
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
+
+
+RUN curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list && \
+    apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -y install --no-install-recommends redis
 
 
 COPY --from=wheeler $NES_DIR $NES_DIR

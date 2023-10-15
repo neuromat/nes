@@ -47,13 +47,6 @@ services:
     depends_on:
       - limesurvey_db
 
-  redis_cache:
-    container_name: redis_cache
-    image: redis:latest
-    restart: unless-stopped
-    expose:
-      - 6379
-
   nes_db:
     container_name: nes_db
     image: postgres:16-bookworm
