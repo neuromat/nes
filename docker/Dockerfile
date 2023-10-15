@@ -79,6 +79,7 @@ RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninter
     #libhdf5-dev \
     lsb-release \
     gpg \
+    redis-server \
     graphviz && \
     #snapd && \
     # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
@@ -89,10 +90,13 @@ RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninter
     ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 
-RUN curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/redis.list && \
-    apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
-    apt-get -y install --no-install-recommends redis
+# RUN curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
+#     echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/redis.list && \
+#     apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
+#     apt-get -y install --no-install-recommends redis
+
+RUN echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf && \
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled
 
 
 COPY --from=wheeler $NES_DIR $NES_DIR

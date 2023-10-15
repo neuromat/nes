@@ -131,7 +131,7 @@ fi
 echo "INFO: Done initializing data"
 
 echo "INFO: Starting Redis"
-redis-server --daemonize yes
+service redis-server start
 
 echo "INFO: entrypoint.sh finished"
 

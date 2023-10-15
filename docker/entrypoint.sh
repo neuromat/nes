@@ -250,7 +250,7 @@ else
 </IfModule>
 	EOF
 
-    mkcert -key-file /etc/apache2/ssl-certs/key.pem -cert-file /etc/apache2/ssl-certs/cert.pem $NES_HOSTNAME localhost
+    mkcert -key-file /etc/apache2/ssl-certs/key.pem -cert-file /etc/apache2/ssl-certs/cert.pem $NES_HOSTNAME $NES_IP localhost 0.0.0.0
 
     a2enmod ssl
     a2enmod http2
@@ -259,15 +259,15 @@ else
     a2ensite nes-ssl
 fi
 
-
 echo "INFO: Done initializing data"
 
 echo "INFO: Starting Redis"
-redis-server --daemonize yes
+service redis-server start
+
+echo "INFO: Starting Apache"
+service apache2 start
 
 echo "INFO: entrypoint.sh finished"
-
-service apache2 start
 
 exec "$@"
 
