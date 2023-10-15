@@ -66,6 +66,7 @@ RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninter
     apt-get -y install --no-install-recommends \
     curl \
     python3-pip \
+    python3-psycopg \
     libnss3-tools \
     git \
     apache2 \
@@ -88,8 +89,8 @@ RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninter
     ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 
-RUN curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list && \
+RUN curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/redis.list && \
     apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y install --no-install-recommends redis
 
@@ -103,10 +104,14 @@ RUN pip3 install -U pip setuptools wheel && \
 		rm -rf /wheels && \
 		rm -rf /root/.cache/pip*
 
+
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
 
-RUN sed -i -e 's/Listen 80/Listen 80\nServerName localhost/' /etc/apache2/ports.conf
+
+RUN sed -i -r 's@ErrorLog .*@Errorlog /dev/stderr@i' /etc/apache2/apache2.conf && \
+    echo "CustomLog /dev/stdout combined" >> /etc/apache2/apache2.conf && \
+    sed -i -e 's/Listen 80/Listen 80\nServerName localhost/' /etc/apache2/ports.conf
 
 # Setup certbot for automatic SSL certificates
 # RUN service snap start && \
