@@ -3260,14 +3260,14 @@ class ExportExecution:
                                             ok_opening = True
 
                                     if ok_opening:
-                                        complete_nwb_file_name = create_nwb_file(
+                                        complete_nwb_file = create_nwb_file(
                                             eeg_file.eeg_data,
                                             eeg_file.eeg_reading,
                                             process_requisition,
                                             req,
                                             complete_nwb_file_name,
                                         )
-                                        if complete_nwb_file_name:
+                                        if complete_nwb_file:
                                             self.files_to_zip_list.append(
                                                 [
                                                     complete_nwb_file_name,

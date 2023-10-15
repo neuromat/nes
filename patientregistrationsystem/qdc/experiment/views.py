@@ -11,10 +11,12 @@ from functools import partial
 from io import StringIO
 from operator import itemgetter
 from os import path
+from typing import Any
+from uuid import uuid4
 
 import mne
 import numpy as np
-import nwb
+import pynwb as nwb
 import pydot
 from configuration.models import LocalInstitution
 from dateutil.relativedelta import relativedelta
@@ -40,110 +42,229 @@ from experiment.import_export import ExportExperiment, ImportExperiment
 from export.directory_utils import create_directory
 from export.forms import AgeIntervalForm, ParticipantsSelectionForm
 from mne.channels import DigMontage
-# from pynwb.nwbco import *
+
 from patient.models import ClassificationOfDiseases, Patient
-from patient.models import \
-    QuestionnaireResponse as PatientQuestionnaireResponse
+from patient.models import QuestionnaireResponse as PatientQuestionnaireResponse
 from patient.models import SocialDemographicData
 from patient.views import update_acquisition_date, update_completed_status
 from survey.abc_search_engine import Questionnaires
 from survey.models import SensitiveQuestion, Survey
 from survey.survey_utils import QuestionnaireUtils, find_questionnaire_name
-from survey.views import (check_limesurvey_access, create_list_of_trees,
-                          get_questionnaire_language,
-                          get_questionnaire_responses, get_survey_header,
-                          questionnaire_evaluation_fields_excluded)
+from survey.views import (
+    check_limesurvey_access,
+    create_list_of_trees,
+    get_questionnaire_language,
+    get_questionnaire_responses,
+    get_survey_header,
+    questionnaire_evaluation_fields_excluded,
+)
 
-from .forms import (ADConverterRegisterForm, AdditionalDataForm,
-                    AmplifierRegisterForm, BlockForm, CoilModelForm,
-                    CoilModelRegisterForm, ComponentConfigurationForm,
-                    ComponentForm, ContextTreeForm, DigitalGamePhaseDataForm,
-                    DigitalGamePhaseForm, EEGAmplifierForm,
-                    EEGAmplifierSettingForm, EEGCapSizeRegisterForm,
-                    EEGDataForm, EEGElectrodeCapRegisterForm,
-                    EEGElectrodeLocalizationSystemRegisterForm,
-                    EEGElectrodeNETRegisterForm, EEGElectrodePositionForm,
-                    EEGFilterForm, EEGFilterSettingForm, EEGForm,
-                    EEGSettingForm, EEGSolutionForm, EEGSolutionRegisterForm,
-                    ElectrodeModelForm, ElectrodeModelRegisterForm,
-                    EMGADConverterSettingForm, EMGAmplifierSettingForm,
-                    EMGAnalogFilterSettingForm, EMGDataForm,
-                    EMGDigitalFilterSettingForm,
-                    EMGElectrodePlacementSettingForm, EMGElectrodeSettingForm,
-                    EMGForm, EMGIntramuscularPlacementForm,
-                    EMGIntramuscularPlacementRegisterForm,
-                    EMGNeedlePlacementRegisterForm,
-                    EMGPreamplifierFilterSettingForm,
-                    EMGPreamplifierSettingForm, EMGSettingForm,
-                    EMGSurfacePlacementForm, EMGSurfacePlacementRegisterForm,
-                    EquipmentForm, ExperimentForm, FileForm,
-                    FilterTypeRegisterForm, GenericDataCollectionDataForm,
-                    GenericDataCollectionForm, GroupForm, HotSpotForm,
-                    InstructionForm, ManufacturerRegisterForm,
-                    MaterialRegisterForm, MediaCollectionDataForm,
-                    MediaCollectionForm, MuscleRegisterForm,
-                    MuscleSideRegisterForm, MuscleSubdivisionRegisterForm,
-                    NumberOfUsesToInsertForm, PublicationForm,
-                    QuestionnaireResponseForm, ResearchProjectForm,
-                    ResearchProjectOwnerForm, ResendExperimentForm,
-                    SoftwareRegisterForm, SoftwareVersionRegisterForm,
-                    SourceCodeForm, StandardizationSystemRegisterForm,
-                    StimuliEqRegisterForm, StimulusForm, SubjectStepDataForm,
-                    TMSDataForm, TMSDeviceRegisterForm, TMSDeviceSettingForm,
-                    TMSForm, TMSLocalizationSystemForm, TMSSettingForm)
-from .models import (EEG, EMG, TMS, ADConverter, AdditionalData,
-                     AdditionalDataFile, Amplifier, Block, CoilModel,
-                     Component, ComponentAdditionalFile,
-                     ComponentConfiguration, ContextTree,
-                     DataConfigurationTree, DigitalGamePhase,
-                     DigitalGamePhaseData, DigitalGamePhaseFile,
-                     EEGAmplifierSetting, EEGCapSize, EEGData, EEGElectrodeCap,
-                     EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem,
-                     EEGElectrodeNet, EEGElectrodeNetSystem,
-                     EEGElectrodePosition,
-                     EEGElectrodePositionCollectionStatus,
-                     EEGElectrodePositionSetting, EEGFile, EEGFilterSetting,
-                     EEGSetting, EEGSolution, EEGSolutionSetting,
-                     ElectrodeModel, EMGADConverterSetting,
-                     EMGAmplifierSetting, EMGAnalogFilterSetting, EMGData,
-                     EMGDigitalFilterSetting, EMGElectrodePlacement,
-                     EMGElectrodePlacementSetting, EMGElectrodeSetting,
-                     EMGFile, EMGIntramuscularPlacement, EMGNeedlePlacement,
-                     EMGPreamplifierFilterSetting, EMGPreamplifierSetting,
-                     EMGSetting, EMGSurfacePlacement, Equipment, Experiment,
-                     ExperimentResearcher, FileFormat, FilterType,
-                     GenericDataCollection, GenericDataCollectionData,
-                     GenericDataCollectionFile, GoalkeeperGameConfig,
-                     GoalkeeperGameLog, GoalkeeperGameResults, GoalkeeperPhase,
-                     Group, Instruction, Keyword, Manufacturer, Material,
-                     MediaCollection, MediaCollectionData, MediaCollectionFile,
-                     Muscle, MuscleSide, MuscleSubdivision, Pause,
-                     PortalSelectedQuestion, Publication, Questionnaire,
-                     QuestionnaireResponse, ResearchProject, ScheduleOfSending,
-                     Software, SoftwareVersion, SourceCode,
-                     StandardizationSystem, StimuliEq, Stimulus, Subject,
-                     SubjectOfGroup, SubjectStepData, Tag, Task,
-                     TaskForTheExperimenter, TMSData, TMSDevice,
-                     TMSDeviceSetting, TMSLocalizationSystem, TMSSetting)
+from .forms import (
+    ADConverterRegisterForm,
+    AdditionalDataForm,
+    AmplifierRegisterForm,
+    BlockForm,
+    CoilModelForm,
+    CoilModelRegisterForm,
+    ComponentConfigurationForm,
+    ComponentForm,
+    ContextTreeForm,
+    DigitalGamePhaseDataForm,
+    DigitalGamePhaseForm,
+    EEGAmplifierForm,
+    EEGAmplifierSettingForm,
+    EEGCapSizeRegisterForm,
+    EEGDataForm,
+    EEGElectrodeCapRegisterForm,
+    EEGElectrodeLocalizationSystemRegisterForm,
+    EEGElectrodeNETRegisterForm,
+    EEGElectrodePositionForm,
+    EEGFilterForm,
+    EEGFilterSettingForm,
+    EEGForm,
+    EEGSettingForm,
+    EEGSolutionForm,
+    EEGSolutionRegisterForm,
+    ElectrodeModelForm,
+    ElectrodeModelRegisterForm,
+    EMGADConverterSettingForm,
+    EMGAmplifierSettingForm,
+    EMGAnalogFilterSettingForm,
+    EMGDataForm,
+    EMGDigitalFilterSettingForm,
+    EMGElectrodePlacementSettingForm,
+    EMGElectrodeSettingForm,
+    EMGForm,
+    EMGIntramuscularPlacementForm,
+    EMGIntramuscularPlacementRegisterForm,
+    EMGNeedlePlacementRegisterForm,
+    EMGPreamplifierFilterSettingForm,
+    EMGPreamplifierSettingForm,
+    EMGSettingForm,
+    EMGSurfacePlacementForm,
+    EMGSurfacePlacementRegisterForm,
+    EquipmentForm,
+    ExperimentForm,
+    FileForm,
+    FilterTypeRegisterForm,
+    GenericDataCollectionDataForm,
+    GenericDataCollectionForm,
+    GroupForm,
+    HotSpotForm,
+    InstructionForm,
+    ManufacturerRegisterForm,
+    MaterialRegisterForm,
+    MediaCollectionDataForm,
+    MediaCollectionForm,
+    MuscleRegisterForm,
+    MuscleSideRegisterForm,
+    MuscleSubdivisionRegisterForm,
+    NumberOfUsesToInsertForm,
+    PublicationForm,
+    QuestionnaireResponseForm,
+    ResearchProjectForm,
+    ResearchProjectOwnerForm,
+    ResendExperimentForm,
+    SoftwareRegisterForm,
+    SoftwareVersionRegisterForm,
+    SourceCodeForm,
+    StandardizationSystemRegisterForm,
+    StimuliEqRegisterForm,
+    StimulusForm,
+    SubjectStepDataForm,
+    TMSDataForm,
+    TMSDeviceRegisterForm,
+    TMSDeviceSettingForm,
+    TMSForm,
+    TMSLocalizationSystemForm,
+    TMSSettingForm,
+)
+from .models import (
+    EEG,
+    EMG,
+    TMS,
+    ADConverter,
+    AdditionalData,
+    AdditionalDataFile,
+    Amplifier,
+    Block,
+    CoilModel,
+    Component,
+    ComponentAdditionalFile,
+    ComponentConfiguration,
+    ContextTree,
+    DataConfigurationTree,
+    DigitalGamePhase,
+    DigitalGamePhaseData,
+    DigitalGamePhaseFile,
+    EEGAmplifierSetting,
+    EEGCapSize,
+    EEGData,
+    EEGElectrodeCap,
+    EEGElectrodeLayoutSetting,
+    EEGElectrodeLocalizationSystem,
+    EEGElectrodeNet,
+    EEGElectrodeNetSystem,
+    EEGElectrodePosition,
+    EEGElectrodePositionCollectionStatus,
+    EEGElectrodePositionSetting,
+    EEGFile,
+    EEGFilterSetting,
+    EEGSetting,
+    EEGSolution,
+    EEGSolutionSetting,
+    ElectrodeModel,
+    EMGADConverterSetting,
+    EMGAmplifierSetting,
+    EMGAnalogFilterSetting,
+    EMGData,
+    EMGDigitalFilterSetting,
+    EMGElectrodePlacement,
+    EMGElectrodePlacementSetting,
+    EMGElectrodeSetting,
+    EMGFile,
+    EMGIntramuscularPlacement,
+    EMGNeedlePlacement,
+    EMGPreamplifierFilterSetting,
+    EMGPreamplifierSetting,
+    EMGSetting,
+    EMGSurfacePlacement,
+    Equipment,
+    Experiment,
+    ExperimentResearcher,
+    FileFormat,
+    FilterType,
+    GenericDataCollection,
+    GenericDataCollectionData,
+    GenericDataCollectionFile,
+    GoalkeeperGameConfig,
+    GoalkeeperGameLog,
+    GoalkeeperGameResults,
+    GoalkeeperPhase,
+    Group,
+    Instruction,
+    Keyword,
+    Manufacturer,
+    Material,
+    MediaCollection,
+    MediaCollectionData,
+    MediaCollectionFile,
+    Muscle,
+    MuscleSide,
+    MuscleSubdivision,
+    Pause,
+    PortalSelectedQuestion,
+    Publication,
+    Questionnaire,
+    QuestionnaireResponse,
+    ResearchProject,
+    ScheduleOfSending,
+    Software,
+    SoftwareVersion,
+    SourceCode,
+    StandardizationSystem,
+    StimuliEq,
+    Stimulus,
+    Subject,
+    SubjectOfGroup,
+    SubjectStepData,
+    Tag,
+    Task,
+    TaskForTheExperimenter,
+    TMSData,
+    TMSDevice,
+    TMSDeviceSetting,
+    TMSLocalizationSystem,
+    TMSSetting,
+)
 from .pdf import render as render_to_pdf
-from .portal import (get_experiment_status_portal, get_portal_status,
-                     send_additional_data_to_portal,
-                     send_context_tree_to_portal,
-                     send_digital_game_phase_data_to_portal,
-                     send_eeg_data_to_portal, send_eeg_setting_to_portal,
-                     send_emg_data_to_portal, send_emg_setting_to_portal,
-                     send_experiment_end_message_to_portal,
-                     send_experiment_researcher_to_portal,
-                     send_experiment_to_portal,
-                     send_experimental_protocol_to_portal, send_file_to_portal,
-                     send_generic_data_collection_data_to_portal,
-                     send_group_to_portal,
-                     send_media_collection_data_to_portal,
-                     send_participant_to_portal, send_publication_to_portal,
-                     send_questionnaire_response_to_portal,
-                     send_research_project_to_portal,
-                     send_researcher_to_portal, send_steps_to_portal,
-                     send_tms_data_to_portal, send_tms_setting_to_portal)
+from .portal import (
+    get_experiment_status_portal,
+    get_portal_status,
+    send_additional_data_to_portal,
+    send_context_tree_to_portal,
+    send_digital_game_phase_data_to_portal,
+    send_eeg_data_to_portal,
+    send_eeg_setting_to_portal,
+    send_emg_data_to_portal,
+    send_emg_setting_to_portal,
+    send_experiment_end_message_to_portal,
+    send_experiment_researcher_to_portal,
+    send_experiment_to_portal,
+    send_experimental_protocol_to_portal,
+    send_file_to_portal,
+    send_generic_data_collection_data_to_portal,
+    send_group_to_portal,
+    send_media_collection_data_to_portal,
+    send_participant_to_portal,
+    send_publication_to_portal,
+    send_questionnaire_response_to_portal,
+    send_research_project_to_portal,
+    send_researcher_to_portal,
+    send_steps_to_portal,
+    send_tms_data_to_portal,
+    send_tms_setting_to_portal,
+)
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -489,7 +610,9 @@ def keyword_search_ajax(request: HttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("experiment.change_researchproject")
-def keyword_create_ajax(request, research_project_id, keyword_name) -> HttpResponseRedirect:
+def keyword_create_ajax(
+    request, research_project_id, keyword_name
+) -> HttpResponseRedirect:
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
     check_can_change(request.user, research_project)
@@ -545,7 +668,9 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
 @login_required
 @permission_required("experiment.view_researchproject")
-def publication_list(request, template_name="experiment/publication_list.html") -> HttpResponse:
+def publication_list(
+    request, template_name="experiment/publication_list.html"
+) -> HttpResponse:
     publications = Publication.objects.all().order_by("title")
     context = {
         "publications": publications,
@@ -1620,8 +1745,9 @@ def send_all_experiments_to_portal() -> None:
                                     # TODO: see answer in:
                                     # https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
                                     # TODO: for other solutions
-                                    from export.export import \
-                                        replace_multiple_choice_question_answers
+                                    from export.export import (
+                                        replace_multiple_choice_question_answers,
+                                    )
 
                                     replace_multiple_choice_question_answers(
                                         responses_list, question_list
@@ -7730,7 +7856,7 @@ def subject_eeg_view(
     group_id,
     subject_id,
     template_name="experiment/subject_eeg_collection_list.html",
-):
+) -> HttpResponse:
     group = get_object_or_404(Group, id=group_id)
     subject = get_object_or_404(Subject, id=subject_id)
 
@@ -7753,7 +7879,7 @@ def subject_eeg_view(
         )
 
         for eeg_data in eeg_data_list:
-            eeg_data.eeg_file_list = []
+            eeg_data.eeg_file_list: list[EEGFile] = []
             for eeg_file in eeg_data.eeg_files.all():
                 eeg_file.eeg_reading = eeg_data_reading(eeg_file, preload=False)
                 eeg_file.can_export_to_nwb = False
@@ -8471,8 +8597,14 @@ def eeg_file_export_nwb(request, eeg_file_id, some_number, process_requisition):
 
     return response
 
-
-def create_nwb_file(eeg_data, eeg_reading, process_requisition, request, filename):
+#TODO FIXME add the rest of the commented out parts
+def create_nwb_file(
+    eeg_data: EEGData,
+    eeg_reading: EEGReading,
+    process_requisition,
+    request,
+    filename: str,
+) -> nwb.file.NWBFile:
     subject_of_group = eeg_data.subject_of_group
     social_demographic_data = None
     social_demographic_query = SocialDemographicData.objects.filter(
@@ -8486,35 +8618,36 @@ def create_nwb_file(eeg_data, eeg_reading, process_requisition, request, filenam
     # several settings are specified when doing so. these can be supplied within
     #   the NWB constructor or defined in a dict, as in in this example
 
-    nwb_file_settings = dict()
-    nwb_file_settings["filename"] = filename
+    nwb_file_settings: dict[str, Any] = {}
+    # nwb_file_settings["filename"] = filename
     # each file should have a descriptive globally unique identifier
     #   that specifies the lab and this experiment session
     # the function nwb.create_identifier() is recommended to use as it takes
     #   the string and appends the present date and time
-    nwb_file_settings["identifier"] = nwb.create_identifier(
+    nwb_file_settings["identifier"] = str(uuid4())
+    nwb_file_settings["session_id"] = str(
         "Participant: "
         + subject_of_group.subject.patient.code
         + "; NES experiment: "
         + clean(eeg_data.subject_of_group.group.experiment.title)
     )
     # indicate that it's OK to overwrite exting file
-    nwb_file_settings["overwrite"] = True
+    # nwb_file_settings["overwrite"] = True
     # specify the start time of the experiment. all times in the NWB file
     #   are relative to experiment start time
     # if the start time is not specified the present time will be used
     # settings["start_time"] = "Sat Jul 04 2015 3:14:16"
-    nwb_file_settings["start_time"] = eeg_data.date.strftime("%Y-%m-%d") + (
-        " " + eeg_data.time.strftime("%H:%M:%S") if eeg_data.time else ""
+    nwb_file_settings["session_start_time"] = datetime.combine(
+        eeg_data.date, datetime.min.time()
     )
     # provide one or two sentences that describe the experiment and what
     #   data is in the file
-    nwb_file_settings["description"] = clean(
+    nwb_file_settings["session_description"] = clean(
         subject_of_group.group.experiment.description
     )
     # create the NWB object. this manages the file
     # print("Creating " + nwb_file_settings["filename"])
-    neurodata = nwb.NWBFile(**nwb_file_settings)
+    neurodata = nwb.file.NWBFile(**nwb_file_settings)
     ########################################################################
     # general metadata section
     #
@@ -8523,40 +8656,44 @@ def create_nwb_file(eeg_data, eeg_reading, process_requisition, request, filenam
             request, process_requisition, "reading_metadata", _("Reading metadata")
         )
 
-    neurodata.set_metadata(
-        EXPERIMENT_DESCRIPTION, clean(subject_of_group.group.experiment.description)
-    )
-    history_data = eeg_data.history.all().order_by("history_date")
-    if history_data:
-        experimenter = history_data.last().history_user
-        if experimenter.last_name or experimenter.first_name:
-            experimenter_description = (
-                experimenter.last_name + ", " + experimenter.first_name
-            )
-        else:
-            experimenter_description = experimenter.username
+    # neurodata.set_metadata(
+    #     "experiment_description", clean(subject_of_group.group.experiment.description)
+    # )
+    # history_data = eeg_data.history.all().order_by("history_date")
+    # if history_data:
+    #     experimenter = history_data.last().history_user
+    #     if experimenter.last_name or experimenter.first_name:
+    #         experimenter_description = (
+    #             experimenter.last_name + ", " + experimenter.first_name
+    #         )
+    #     else:
+    #         experimenter_description = experimenter.username
 
-        if experimenter.email:
-            experimenter_description += " - " + experimenter.email
+    #     if experimenter.email:
+    #         experimenter_description += " - " + experimenter.email
 
-        neurodata.set_metadata(EXPERIMENTER, clean(experimenter_description))
-    neurodata.set_metadata(SUBJECT_ID, subject_of_group.subject.patient.code)
-    neurodata.set_metadata(SEX, clean(subject_of_group.subject.patient.gender.name))
-    neurodata.set_metadata(SPECIES, "human")
-    neurodata.set_metadata(
-        AGE,
-        str(
-            (date.today() - subject_of_group.subject.patient.date_birth)
-            // timedelta(days=365.2425)
-        ),
+    #     neurodata.set_metadata("experimenter", clean(experimenter_description))
+
+    subject: nwb.file.Subject = nwb.file.Subject(
+        subject_id=subject_of_group.subject.patient.code,
+        sex=clean(subject_of_group.subject.patient.gender.name[0]),
+        species="Homo sapiens",
+        age=str((date.today() - subject_of_group.subject.patient.date_birth) // timedelta(days=365.2425)),
+        date_of_birth=datetime.combine(
+        subject_of_group.subject.patient.date_birth, datetime.min.time()
+    ),
     )
-    if social_demographic_data:
-        if social_demographic_data.flesh_tone:
-            neurodata.set_metadata(
-                GENOTYPE, clean(social_demographic_data.flesh_tone.name)
-            )
-        if social_demographic_data.natural_of:
-            neurodata.set_metadata(SUBJECT, clean(social_demographic_data.natural_of))
+
+    # TODO add this to subject
+    # if social_demographic_data:
+    #     if social_demographic_data.flesh_tone:
+    #         neurodata.set_metadata(
+    #             "strain", clean(social_demographic_data.flesh_tone.name)
+    #         )
+    #     if social_demographic_data.natural_of:
+    #         neurodata.set_metadata("description", clean(social_demographic_data.natural_of))
+
+    neurodata.subject = subject
 
     ########################################################################
     # general devices section
@@ -8568,152 +8705,158 @@ def create_nwb_file(eeg_data, eeg_reading, process_requisition, request, filenam
             "reading_device_data",
             _("Reading device data"),
         )
-    # Amplifier device setting
-    if hasattr(eeg_data.eeg_setting, "eeg_amplifier_setting"):
-        device_identification = clean(
-            eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification
-        )
-        device_information = _("Device type: Amplifier; ")
 
-        if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description:
-            device_information += (
-                _("Description: ")
-                + eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description
-                + "; "
-            )
+    # device_metadata: dict[str, Any] = {}
 
-        device_information += (
-            _("Manufacturer: ")
-            + eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name
-            + "; "
-        )
+    # # Amplifier device setting
+    # if hasattr(eeg_data.eeg_setting, "eeg_amplifier_setting"):
 
-        device_information += (
-            _("Gain: ")
-            + str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.gain)
-            + "; "
-        )
+    #     device_identification = clean(
+    #         eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification
+    #     )
+    #     device_information = _("Device type: Amplifier; ")
 
-        if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.input_impedance:
-            device_information += (
-                _("Impedance: ")
-                + get_nwb_eeg_amplifier_impedance_description(
-                    eeg_data.eeg_setting.eeg_amplifier_setting
-                )
-                + "; "
-            )
+    #     if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description:
+    #         device_information += (
+    #             _("Description: ")
+    #             + eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description
+    #             + "; "
+    #         )
 
-        if (
-            eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio
-        ):
-            device_information += (
-                _("Common mode rejection ratio: ")
-                + str(
-                    eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio
-                )
-                + "; "
-            )
+    #     device_information += (
+    #         _("Manufacturer: ")
+    #         + eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name
+    #         + "; "
+    #     )
 
-        neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
+    #     device_information += (
+    #         _("Gain: ")
+    #         + str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.gain)
+    #         + "; "
+    #     )
 
-    # EEG machine
-    if hasattr(eeg_data.eeg_setting, "eeg_amplifier_setting"):
-        device_identification = clean(
-            eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification
-        )
-        device_information = _("Device type: EEG Amplifier; ")
+    #     if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.input_impedance:
+    #         device_information += (
+    #             _("Impedance: ")
+    #             + get_nwb_eeg_amplifier_impedance_description(
+    #                 eeg_data.eeg_setting.eeg_amplifier_setting
+    #             )
+    #             + "; "
+    #         )
 
-        if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description:
-            device_information += (
-                _("Description: ")
-                + eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description
-                + "; "
-            )
+    #     if (
+    #         eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio
+    #     ):
+    #         device_information += (
+    #             _("Common mode rejection ratio: ")
+    #             + str(
+    #                 eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio
+    #             )
+    #             + "; "
+    #         )
 
-        device_information += (
-            _("Manufacturer: ")
-            + eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name
-            + "; "
-        )
+    #     neurodata.set_metadata((device_identification), clean(device_information))
 
-        device_information += (
-            _("Number of used channels: ")
-            + str(eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used)
-            + "; "
-        )
+    # # EEG machine
+    # if hasattr(eeg_data.eeg_setting, "eeg_amplifier_setting"):
+    #     device_identification = clean(
+    #         eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification
+    #     )
+    #     device_information = _("Device type: EEG Amplifier; ")
 
-        neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
+    #     if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description:
+    #         device_information += (
+    #             _("Description: ")
+    #             + eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description
+    #             + "; "
+    #         )
 
-    # Ephys: Filter device setting
-    if hasattr(eeg_data.eeg_setting, "eeg_filter_setting"):
-        neurodata.set_metadata(
-            EXTRA_FILTERING,
-            clean(
-                get_nwb_eeg_filter_description(eeg_data.eeg_setting.eeg_filter_setting)
-            ),
-        )
+    #     device_information += (
+    #         _("Manufacturer: ")
+    #         + eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name
+    #         + "; "
+    #     )
 
-    # EEG Electrode NET
-    if hasattr(eeg_data.eeg_setting, "eeg_electrode_layout_setting"):
-        eeg_electrode_net_system = (
-            eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system
-        )
+    #     device_information += (
+    #         _("Number of used channels: ")
+    #         + str(eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used)
+    #         + "; "
+    #     )
 
-        device_identification = clean(
-            eeg_electrode_net_system.eeg_electrode_net.identification
-        )
-        device_information = _("Device type: EEG Electrode Net; ")
+    #     neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
 
-        if eeg_electrode_net_system.eeg_electrode_net.description:
-            device_information += (
-                _("Description: ")
-                + eeg_electrode_net_system.eeg_electrode_net.description
-                + "; "
-            )
+    # # Ephys: Filter device setting
+    # if hasattr(eeg_data.eeg_setting, "eeg_filter_setting"):
+    #     neurodata.set_metadata(
+    #         EXTRA_FILTERING,
+    #         clean(
+    #             get_nwb_eeg_filter_description(eeg_data.eeg_setting.eeg_filter_setting)
+    #         ),
+    #     )
 
-        device_information += (
-            _("Manufacturer: ")
-            + eeg_electrode_net_system.eeg_electrode_net.manufacturer.name
-            + "; "
-        )
+    # # EEG Electrode NET
+    # if hasattr(eeg_data.eeg_setting, "eeg_electrode_layout_setting"):
+    #     eeg_electrode_net_system = (
+    #         eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system
+    #     )
 
-        neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
+    #     device_identification = clean(
+    #         eeg_electrode_net_system.eeg_electrode_net.identification
+    #     )
+    #     device_information = _("Device type: EEG Electrode Net; ")
 
-        # Electrode map and group
-        electrode_map = []
-        electrode_group = []
+    #     if eeg_electrode_net_system.eeg_electrode_net.description:
+    #         device_information += (
+    #             _("Description: ")
+    #             + eeg_electrode_net_system.eeg_electrode_net.description
+    #             + "; "
+    #         )
 
-        for (
-            position
-        ) in (
-            eeg_electrode_net_system.eeg_electrode_localization_system.electrode_positions.all()
-        ):
-            position_name = clean(position.name)
-            electrode_group.append(position_name)
-            electrode_map.append([position.coordinate_x, position.coordinate_y, 0])
-            neurodata.set_metadata(
-                EXTRA_SHANK_LOCATION(position_name),
-                clean(
-                    _("Position: ")
-                    + position_name
-                    + "; "
-                    + _("Coordinates: (")
-                    + str(position.coordinate_x)
-                    + ", "
-                    + str(position.coordinate_y)
-                    + "); "
-                    + _(
-                        "EEG electrode localization system: "
-                        + eeg_electrode_net_system.eeg_electrode_localization_system.name
-                    )
-                ),
-            )
-            neurodata.set_metadata(
-                EXTRA_SHANK_DEVICE(position_name), device_identification
-            )
+    #     device_information += (
+    #         _("Manufacturer: ")
+    #         + eeg_electrode_net_system.eeg_electrode_net.manufacturer.name
+    #         + "; "
+    #     )
 
-        neurodata.set_metadata(EXTRA_ELECTRODE_MAP, electrode_map)
-        neurodata.set_metadata(EXTRA_ELECTRODE_GROUP, electrode_group)
+    #     neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
+
+    #     # Electrode map and group
+    #     electrode_map = []
+    #     electrode_group = []
+
+    #     for (
+    #         position
+    #     ) in (
+    #         eeg_electrode_net_system.eeg_electrode_localization_system.electrode_positions.all()
+    #     ):
+    #         position_name = clean(position.name)
+    #         electrode_group.append(position_name)
+    #         electrode_map.append([position.coordinate_x, position.coordinate_y, 0])
+    #         neurodata.set_metadata(
+    #             EXTRA_SHANK_LOCATION(position_name),
+    #             clean(
+    #                 _("Position: ")
+    #                 + position_name
+    #                 + "; "
+    #                 + _("Coordinates: (")
+    #                 + str(position.coordinate_x)
+    #                 + ", "
+    #                 + str(position.coordinate_y)
+    #                 + "); "
+    #                 + _(
+    #                     "EEG electrode localization system: "
+    #                     + eeg_electrode_net_system.eeg_electrode_localization_system.name
+    #                 )
+    #             ),
+    #         )
+    #         neurodata.set_metadata(
+    #             EXTRA_SHANK_DEVICE(position_name), device_identification
+    #         )
+
+    #     neurodata.set_metadata(EXTRA_ELECTRODE_MAP, electrode_map)
+    #     neurodata.set_metadata(EXTRA_ELECTRODE_GROUP, electrode_group)
+
+    # device: nwb.file.Device = nwb.file.Device(device_metadata)
 
     ########################################################################
     # acquisition section
@@ -8726,46 +8869,46 @@ def create_nwb_file(eeg_data, eeg_reading, process_requisition, request, filenam
             "reading_acquisition_data",
             _("Reading acquisition data"),
         )
-    if eeg_reading:
-        if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
-            # v1.5
-            number_of_channels = len(mne.pick_types(eeg_reading.reading.info, eeg=True))
+    # if eeg_reading:
+    #     if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
+    #         # v1.5
+    #         number_of_channels = len(mne.pick_types(eeg_reading.reading.info, eeg=True))
 
-            number_of_samples = len(eeg_reading.reading._data[0])
+    #         number_of_samples = len(eeg_reading.reading._data[0])
 
-            sampling_rate = 0
-            if (
-                hasattr(eeg_data.eeg_setting, "eeg_amplifier_setting")
-                and eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
-            ):
-                sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
+    #         sampling_rate = 0
+    #         if (
+    #             hasattr(eeg_data.eeg_setting, "eeg_amplifier_setting")
+    #             and eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
+    #         ):
+    #             sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
 
-            timestamps = np.arange(number_of_samples) * (
-                (1 / sampling_rate) if sampling_rate else 0
-            )
+    #         timestamps = np.arange(number_of_samples) * (
+    #             (1 / sampling_rate) if sampling_rate else 0
+    #         )
 
-            # v1.5
-            array_data = np.zeros((number_of_samples, number_of_channels))
-            for index_channel in range(number_of_channels):
-                channel_reading = eeg_reading.reading._data[
-                    mne.pick_types(eeg_reading.reading.info, eeg=True)[index_channel]
-                ]
-                for index, value in enumerate(channel_reading):
-                    array_data[index][index_channel] = value
+    #         # v1.5
+    #         array_data = np.zeros((number_of_samples, number_of_channels))
+    #         for index_channel in range(number_of_channels):
+    #             channel_reading = eeg_reading.reading._data[
+    #                 mne.pick_types(eeg_reading.reading.info, eeg=True)[index_channel]
+    #             ]
+    #             for index, value in enumerate(channel_reading):
+    #                 array_data[index][index_channel] = value
 
-            acquisition = neurodata.create_timeseries(
-                "ElectricalSeries", "data_collection", "acquisition"
-            )
-            acquisition.set_data(array_data, resolution=1.2345e-6)
-            acquisition.set_time(timestamps)
-            acquisition.set_value("num_samples", number_of_samples)
-            acquisition.set_value("electrode_idx", list(range(number_of_channels)))
-            acquisition.finalize()
+    #         acquisition = neurodata.create_timeseries(
+    #             "ElectricalSeries", "data_collection", "acquisition"
+    #         )
+    #         acquisition.set_data(array_data, resolution=1.2345e-6)
+    #         acquisition.set_time(timestamps)
+    #         acquisition.set_value("num_samples", number_of_samples)
+    #         acquisition.set_value("electrode_idx", list(range(number_of_channels)))
+    #         acquisition.finalize()
 
     # when all data is entered, close the file
-    neurodata.close()
+    #neurodata.close()
 
-    return neurodata.file_name
+    return neurodata
 
 
 def get_nwb_eeg_filter_description(eeg_filter_setting):

@@ -7,7 +7,7 @@ LS_ID = 472711
 
 
 class LimeSurveyIntegrationTestCase(TestCase):
-    def test_acquisitiondate_field_is_not_hidden(self):
+    def test_acquisitiondate_field_is_not_hidden(self) -> None:
         ls = Questionnaires()
         groups = ls.list_groups(LS_ID)
         identification_group = next(
