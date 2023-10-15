@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -423,7 +423,9 @@ def finish_handling_post(request, patient_id, current_tab):
     return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
 
 
-def patient_view_personal_data(request, patient, context):
+def patient_view_personal_data(
+    request: HttpRequest, patient: Patient, context: dict[str, Any]
+) -> HttpResponse:
     patient_form = PatientForm(instance=patient)
 
     telephone_inlineformset = inlineformset_factory(
@@ -452,7 +454,9 @@ def patient_view_personal_data(request, patient, context):
     return render(request, "patient/register_personal_data.html", context)
 
 
-def patient_view_social_demographic_data(request, patient, context):
+def patient_view_social_demographic_data(
+    request: HttpRequest, patient: Patient, context: dict[str, Any]
+) -> HttpResponse:
     try:
         p_social_demo = SocialDemographicData.objects.get(patient_id=patient.id)
         social_demographic_form = SocialDemographicDataForm(instance=p_social_demo)
@@ -469,7 +473,9 @@ def patient_view_social_demographic_data(request, patient, context):
     return render(request, "patient/register_socialdemographic_data.html", context)
 
 
-def patient_view_social_history(request, patient, context):
+def patient_view_social_history(
+    request: HttpRequest, patient: Patient, context: dict[str, Any]
+) -> HttpResponse:
     try:
         p_social_hist = SocialHistoryData.objects.get(patient_id=patient.id)
         social_history_form = SocialHistoryDataForm(instance=p_social_hist)
@@ -484,7 +490,9 @@ def patient_view_social_history(request, patient, context):
     return render(request, "patient/register_social_history.html", context)
 
 
-def patient_view_medical_record(request, patient, context):
+def patient_view_medical_record(
+    request: HttpRequest, patient: Patient, context: dict[str, Any]
+) -> HttpResponse:
     medical_record = MedicalRecordData.objects.filter(patient_id=patient.id).order_by(
         "record_date"
     )
@@ -494,7 +502,9 @@ def patient_view_medical_record(request, patient, context):
     return render(request, "patient/register_medical_record.html", context)
 
 
-def patient_view_questionnaires(request, patient, context, is_update):
+def patient_view_questionnaires(
+    request: HttpRequest, patient: Patient, context: dict[str, Any], is_update: bool
+) -> HttpResponse:
     if is_update and request.method == "POST":
         return finish_handling_post(request, patient.id, 4)
 

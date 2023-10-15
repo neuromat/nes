@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from modeltranslation.manager import MultilingualManager
 from simple_history.models import HistoricalRecords
 from survey.models import Survey
 
@@ -278,12 +279,16 @@ def validate_date_birth(value):
 class Payment(models.Model):
     name = models.CharField(max_length=50)
 
+    objects: MultilingualManager
+
     def __str__(self) -> str:
         return self.name
 
 
 class Gender(models.Model):
     name = models.CharField(max_length=50)
+
+    objects: MultilingualManager
 
     def __str__(self) -> str:
         return self.name
@@ -292,12 +297,16 @@ class Gender(models.Model):
 class FleshTone(models.Model):
     name = models.CharField(max_length=50)
 
+    objects: MultilingualManager
+
     def __str__(self) -> str:
         return self.name
 
 
 class MaritalStatus(models.Model):
     name = models.CharField(max_length=50)
+
+    objects: MultilingualManager
 
     def __str__(self) -> str:
         return self.name
@@ -306,12 +315,16 @@ class MaritalStatus(models.Model):
 class Religion(models.Model):
     name = models.CharField(max_length=50)
 
+    objects: MultilingualManager
+
     def __str__(self) -> str:
         return self.name
 
 
 class Schooling(models.Model):
     name = models.CharField(max_length=50)
+
+    objects: MultilingualManager
 
     def __str__(self) -> str:
         return self.name
@@ -320,6 +333,8 @@ class Schooling(models.Model):
 class AmountCigarettes(models.Model):
     name = models.CharField(max_length=50)
 
+    objects: MultilingualManager
+
     def __str__(self) -> str:
         return self.name
 
@@ -327,12 +342,16 @@ class AmountCigarettes(models.Model):
 class AlcoholFrequency(models.Model):
     name = models.CharField(max_length=100)
 
+    objects: MultilingualManager
+
     def __str__(self) -> str:
         return self.name
 
 
 class AlcoholPeriod(models.Model):
     name = models.CharField(max_length=50)
+
+    objects: MultilingualManager
 
     def __str__(self) -> str:
         return self.name
