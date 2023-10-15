@@ -13570,13 +13570,13 @@ def copy_tms_setting(tms_setting, new_experiment):
     return new_tms_setting
 
 
-def create_component(component, new_experiment, orig_and_clone):
+def create_component(component, new_experiment, orig_and_clone) -> Component:
     component_type = component.component_type
     file = None  # define variable that can be used in conditionals below
 
     if component_type == "block":
         block = get_object_or_404(Block, pk=component.id)
-        clone = Block(
+        clone: Component = Block(
             number_of_mandatory_components=block.number_of_mandatory_components,
             type=block.type,
         )

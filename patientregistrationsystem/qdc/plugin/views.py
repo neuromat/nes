@@ -2,6 +2,7 @@ import json
 import pathlib
 from operator import itemgetter
 from os import path
+from typing import Any
 
 from django.conf import settings
 from django.contrib import messages
@@ -440,7 +441,7 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
     key = next(item for item in PATIENT_FIELDS if item["field"] == "code")
     del patient_fields[patient_fields.index(key)]
 
-    context = {
+    context: dict[str, Any] = {
         "participants": participants_headers,
         "patient_fields": patient_fields,
         "admission_title": admission_title,

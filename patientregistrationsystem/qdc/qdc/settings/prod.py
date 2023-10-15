@@ -1,7 +1,7 @@
 from .base import *
 
 
-DEBUG = True
+DEBUG = False
 DEBUG404 = True
 IS_TESTING = False
 

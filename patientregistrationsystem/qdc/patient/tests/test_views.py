@@ -106,8 +106,12 @@ class QuestionnaireFillTest(TestCase):
         )
 
         questionnaire_response = QuestionnaireResponse.objects.first()
+        self.assertIsInstance(questionnaire_response, QuestionnaireResponse)
 
-        self.assertEqual(questionnaire_response.date.strftime("%Y-%m-%d"), "2019-01-03")
+        if isinstance(questionnaire_response, QuestionnaireResponse):
+            self.assertEqual(
+                questionnaire_response.date.strftime("%Y-%m-%d"), "2019-01-03"
+            )
 
     @patch("survey.abc_search_engine.Server")
     def test_view_questionnaires_updates_response_date_add_updated_key_to_context(

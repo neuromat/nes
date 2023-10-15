@@ -15,10 +15,10 @@ django-debug-toolbar==4.2
 
 
 python-dateutil==2.8.2
-psycopg2>=2.9.7, <3
-psycopg2-binary>=2.9.7, <3
+psycopg[c]
 
-
+redis 
+hiredis 
 
 # Obs.: error -> ERROR: botocore 1.14.7 has requirement docutils<0.16,>=0.10, but you'll have docutils 0.16 which is incompatible.
 # But installed

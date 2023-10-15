@@ -535,6 +535,7 @@ class PluginTest(ExportTestCase):
             },
         )
         export = Export.objects.last()
+        self.assertIsInstance(export, Export)
         with open(
             os.path.join(
                 settings.MEDIA_ROOT,

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-12 11:35-0300\n"
+"POT-Creation-Date: 2023-10-14 16:40-0300\n"
 "PO-Revision-Date: 2023-10-02 12:31-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,26 +38,26 @@ msgid "Your accouunt has been locked for 1 hour: too many login attempts."
 msgstr ""
 "Sua conta foi bloqueada por 1 hora: muitas tentativas incorretas de login"
 
-#: qdc/settings/base.py:170
+#: qdc/settings/base.py:166
 msgid "Português"
 msgstr "Português"
 
-#: qdc/settings/base.py:174
+#: qdc/settings/base.py:170
 msgid "English"
 msgstr "English"
 
-#: qdc/views.py:48
+#: qdc/views.py:50
 msgid ""
 "There is a new version, please contact your NES administrator to update !"
 msgstr ""
 "Há uma nova versão, por favor contacte o Administrador do NES para atualizar "
 "o sistema."
 
-#: qdc/views.py:70
+#: qdc/views.py:72
 msgid "Password changed successfully."
 msgstr "Senha alterada com sucesso."
 
-#: qdc/views.py:99
+#: qdc/views.py:101
 msgid ""
 "You dont have NES Git installation. Automatic upgrade can be done with git "
 "installation. Please contact your system administrator to upgrade NES to a "
@@ -67,11 +67,11 @@ msgstr ""
 "pode ser realizada com a instalação do Git. Por favor contacte o "
 "administrador do NES para atualizá-lo com a nova versão."
 
-#: qdc/views.py:178
+#: qdc/views.py:180
 msgid "Updated!!! Enjoy the new version of NES  :-)"
 msgstr "Atualizado!!! Aproveite a nova versão do NES :-)"
 
-#: qdc/views.py:184
+#: qdc/views.py:186
 msgid "An unknown error ocurred ! Please contact your administrator system."
 msgstr ""
 "Ocorreu um erro desconhecido! Por favor contacte o administrador do sistema."

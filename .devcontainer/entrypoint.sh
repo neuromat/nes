@@ -46,7 +46,7 @@ else
 CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES_HOSTNAME", ]
 		DATABASES = {
 		    "default": {
-		        "ENGINE": "django.db.backends.postgresql_psycopg2",
+		        "ENGINE": "django.db.backends.postgresql",
 		        "NAME": "$NES_DB",
 		        "USER": "$NES_DB_USER",
 		        "PASSWORD": "$NES_DB_PASSWORD",
@@ -129,6 +129,9 @@ except:
 fi
 
 echo "INFO: Done initializing data"
+
+echo "INFO: Starting Redis"
+redis-server --daemonize yes
 
 echo "INFO: entrypoint.sh finished"
 

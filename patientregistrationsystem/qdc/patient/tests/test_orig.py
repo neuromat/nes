@@ -2267,6 +2267,7 @@ class QuestionnaireFormValidation(TestCase):
         of the type: entrance evaluation questionnaire and no information
         is saved in the cache
         """
+        call_command("createcachetable")
         self._set_mocks(mockServer)
 
         usermethod = self.user
@@ -2322,6 +2323,7 @@ class QuestionnaireFormValidation(TestCase):
         of the type: entrance evaluation questionnaire getting information
         from a cache
         """
+        call_command("createcachetable")
         self._set_mocks(mockServer)
 
         usermethod = self.user

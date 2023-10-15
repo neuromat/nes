@@ -23,4 +23,12 @@ PASSWORD_HASHERS: list[str] = [
     "django.contrib.auth.hashers.MD5PasswordHasher",
 ]
 
+CACHE_MIDDLEWARE_ALIAS = "default"
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    },
+}
+
 DJANGO_LOG_LEVEL = "CRITICAL"

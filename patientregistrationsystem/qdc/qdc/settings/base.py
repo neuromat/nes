@@ -52,6 +52,9 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 3600
 
+CONN_MAX_AGE = 3600
+CONN_HEALTH_CHECKS = True
+
 
 # Application definition
 
@@ -95,6 +98,7 @@ MIDDLEWARE: list[str] = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.cache.FetchFromCacheMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "maintenance_mode.middleware.MaintenanceModeMiddleware",
     "axes.middleware.AxesMiddleware",
@@ -133,13 +137,22 @@ AUTHENTICATION_BACKENDS: list[str] = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
+CACHE_MIDDLEWARE_ALIAS = "redis"
+CACHE_MIDDLEWARE_KEY_PREFIX = ""
+CACHE_MIDDLEWARE_SECONDS = 60 * 60
 
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "limesurveycache",
         "TIMEOUT": 24 * 60 * 60,
-    }
+    },
+    "redis": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+    },
 }
 
 ROOT_URLCONF = "qdc.urls"
@@ -188,7 +201,7 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, "data/locale"),
     os.path.join(BASE_DIR, "export/locale"),
     os.path.join(BASE_DIR, "qdc/locale"),
-    # os.path.join(BASE_DIR, "site_static/locale"),
+    os.path.join(BASE_DIR, "site_static/locale"),
 )
 
 USE_TZ = True
@@ -252,4 +265,4 @@ try:
 except ImportError:
     pass
 
-VERSION = "1.8.0"
+VERSION = "2.0.0"

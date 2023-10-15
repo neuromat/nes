@@ -62,7 +62,7 @@ def import_classification_of_icd_cid(file_name):
     print("\n")
 
 
-def progress_bar(count, tot_lines, status=""):
+def progress_bar(count, tot_lines, status="") -> None:
     bar_len = 100
 
     filled_len = int(round(bar_len * count / float(tot_lines)))

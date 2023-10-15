@@ -120,7 +120,11 @@ urlpatterns = [
     re_path(r"^group/(?P<group_id>\d+)/$", views.group_view, name="group_view"),
     re_path(r"^group/edit/(?P<group_id>\d+)/$", views.group_update, name="group_edit"),
     # equipment
-    re_path(r"^setup/$", views.setup_menu, name="setup_menu"),
+    re_path(
+        r"^setup/$",
+        views.setup_menu,
+        name="setup_menu",
+    ),
     # register manufacturer
     re_path(r"^manufacturer/list/$", views.manufacturer_list, name="manufacturer_list"),
     re_path(r"^manufacturer/new/$", views.manufacturer_create, name="manufacturer_new"),

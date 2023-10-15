@@ -9,6 +9,8 @@ updated boostrap, jquery and jquery-ui
 changed all the icons to font-awesome
 added django-axes to prevent bruteforce login 
 
+added cache (redis)
+
 
 ### Improved project structure:
 

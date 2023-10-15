@@ -25,6 +25,9 @@ RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninter
     apache2 \
     libapache2-mod-wsgi-py3 \
     netcat-traditional \
+    lsb-release \
+    curl \
+    gpg \
     graphviz && \
     apt-get autoremove -y && \
     apt-get clean -y && \
@@ -32,6 +35,12 @@ RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninter
     apt-get purge -y imagemagick imagemagick-6-common && \
     rm -rf /var/lib/apt/lists* && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h
+
+
+RUN curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list && \
+    apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -y install --no-install-recommends redis
 
 
 COPY $NES_DIR/patientregistrationsystem/qdc/requirements.txt /tmp/pip-tmp/

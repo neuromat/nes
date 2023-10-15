@@ -18,12 +18,11 @@ from django.contrib.auth.tokens import (
 )
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
-from django.contrib.sites.requests import RequestSite
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.template import loader
-from django.test import SimpleTestCase, TestCase
+from django.test import TestCase
 from django.test.client import RequestFactory
 from django.urls import resolve, reverse
 from django.utils.http import int_to_base36
@@ -275,9 +274,11 @@ class FormUserValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.filter(id=self.user.pk).count(), 1)
 
-        user_first_name: User = User.objects.filter(id=self.user.pk).get(id=1)
+        user_first_name = User.objects.filter(id=self.user.pk).first()
 
-        self.assertEqual(user_first_name.first_name, first_name.upper())
+        self.assertIsInstance(user_first_name, User)
+        if isinstance(user_first_name, User):
+            self.assertEqual(user_first_name.first_name, first_name.upper())
 
     def test_user_update_login_enable_false(self):
         email = "test@example.com"

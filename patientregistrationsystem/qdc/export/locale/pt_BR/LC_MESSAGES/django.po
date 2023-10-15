@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-12 11:35-0300\n"
+"POT-Creation-Date: 2023-10-14 16:40-0300\n"
 "PO-Revision-Date: 2023-10-02 12:58-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,16 +21,16 @@ msgstr ""
 msgid "Participant code"
 msgstr "Código de Participante"
 
-#: export/export.py:243 export/tests/test_orig.py:164
-#: export/tests/test_views.py:2443
+#: export/export.py:243 export/tests/test_orig.py:161
+#: export/tests/test_views.py:2521
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/export.py:3991 export/export.py:5674 export/views.py:1614
+#: export/export.py:3991 export/export.py:5674 export/views.py:1613
 msgid "Yes"
 msgstr "Sim"
 
-#: export/export.py:3991 export/export.py:5674 export/views.py:1616
+#: export/export.py:3991 export/export.py:5674 export/views.py:1615
 msgid "No"
 msgstr "Não"
 
@@ -127,7 +127,7 @@ msgstr ""
 "Mac)"
 
 #: export/templates/export/experiment_selection.html:91
-#: export/templates/export/export_data.html:136 export/tests/test_views.py:5766
+#: export/templates/export/export_data.html:136 export/tests/test_views.py:5847
 msgid "License"
 msgstr "Licença"
 
@@ -164,7 +164,7 @@ msgid "Information's organization for exportation of questionnaires data"
 msgstr "Organização da informação para exportação dos dados de questionários"
 
 #: export/templates/export/export_data.html:78
-#: export/templates/export/export_experiment_data.html:94 export/views.py:1485
+#: export/templates/export/export_experiment_data.html:94 export/views.py:1484
 msgid "Per participant"
 msgstr "Por participante"
 
@@ -389,7 +389,7 @@ msgstr "Entre com um diagnóstico"
 
 #: export/templates/export/participant_selection.html:137
 #: export/templates/export/show_selected_participants.html:41
-#: export/tests/test_views.py:1143 export/views.py:69
+#: export/tests/test_views.py:1150 export/views.py:69
 msgid "Age"
 msgstr "Idade"
 
@@ -432,324 +432,324 @@ msgstr "Cidade"
 msgid "Previous"
 msgstr "Anterior"
 
-#: export/tests/test_views.py:163 export/tests/test_views.py:164
-#: export/tests/test_views.py:1144 export/tests/test_views.py:2959
-#: export/tests/test_views.py:2960
+#: export/tests/test_views.py:170 export/tests/test_views.py:171
+#: export/tests/test_views.py:1151 export/tests/test_views.py:3038
+#: export/tests/test_views.py:3039
 msgid "Acquisition date:"
 msgstr ""
 
-#: export/tests/test_views.py:173 export/tests/test_views.py:174
-#: export/tests/test_views.py:2969 export/tests/test_views.py:2970
+#: export/tests/test_views.py:180 export/tests/test_views.py:181
+#: export/tests/test_views.py:3048 export/tests/test_views.py:3049
 msgid "Fünf Punkte Wahl"
 msgstr ""
 
-#: export/tests/test_views.py:183 export/tests/test_views.py:184
-#: export/tests/test_views.py:2979 export/tests/test_views.py:2980
+#: export/tests/test_views.py:190 export/tests/test_views.py:191
+#: export/tests/test_views.py:3058 export/tests/test_views.py:3059
 msgid "Dropdown Liste"
 msgstr ""
 
-#: export/tests/test_views.py:193 export/tests/test_views.py:194
-#: export/tests/test_views.py:2989 export/tests/test_views.py:2990
+#: export/tests/test_views.py:200 export/tests/test_views.py:201
+#: export/tests/test_views.py:3068 export/tests/test_views.py:3069
 msgid "Liste (radio)"
 msgstr ""
 
-#: export/tests/test_views.py:203 export/tests/test_views.py:2999
+#: export/tests/test_views.py:210 export/tests/test_views.py:3078
 msgid "Liste mit Kommentar"
 msgstr ""
 
-#: export/tests/test_views.py:204 export/tests/test_views.py:3000
+#: export/tests/test_views.py:211 export/tests/test_views.py:3079
 msgid "Liste mit Komme.."
 msgstr ""
 
-#: export/tests/test_views.py:213 export/tests/test_views.py:3009
+#: export/tests/test_views.py:220 export/tests/test_views.py:3088
 msgid "Liste mit Kommentar [Comment]"
 msgstr ""
 
-#: export/tests/test_views.py:214 export/tests/test_views.py:3010
+#: export/tests/test_views.py:221 export/tests/test_views.py:3089
 msgid "Liste mit Komme..  [Comment]"
 msgstr ""
 
-#: export/tests/test_views.py:223 export/tests/test_views.py:224
-#: export/tests/test_views.py:3019 export/tests/test_views.py:3020
+#: export/tests/test_views.py:230 export/tests/test_views.py:231
+#: export/tests/test_views.py:3098 export/tests/test_views.py:3099
 msgid "Array [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:233 export/tests/test_views.py:234
-#: export/tests/test_views.py:3029 export/tests/test_views.py:3030
+#: export/tests/test_views.py:240 export/tests/test_views.py:241
+#: export/tests/test_views.py:3108 export/tests/test_views.py:3109
 msgid "Array [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:243 export/tests/test_views.py:3039
+#: export/tests/test_views.py:250 export/tests/test_views.py:3118
 msgid "Array (Zehn Punkte Wahl) [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:244 export/tests/test_views.py:3040
+#: export/tests/test_views.py:251 export/tests/test_views.py:3119
 msgid "Array (Zehn Pun..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:253 export/tests/test_views.py:3049
+#: export/tests/test_views.py:260 export/tests/test_views.py:3128
 msgid "Array (Zehn Punkte Wahl) [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:254 export/tests/test_views.py:3050
+#: export/tests/test_views.py:261 export/tests/test_views.py:3129
 msgid "Array (Zehn Pun..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:263 export/tests/test_views.py:3059
+#: export/tests/test_views.py:270 export/tests/test_views.py:3138
 msgid "Array (Fünf Punkte Wahl) [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:264 export/tests/test_views.py:3060
+#: export/tests/test_views.py:271 export/tests/test_views.py:3139
 msgid "Array (Fünf Pun..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:273 export/tests/test_views.py:3069
+#: export/tests/test_views.py:280 export/tests/test_views.py:3148
 msgid "Array (Fünf Punkte Wahl) [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:274 export/tests/test_views.py:3070
+#: export/tests/test_views.py:281 export/tests/test_views.py:3149
 msgid "Array (Fünf Pun..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:283 export/tests/test_views.py:3079
+#: export/tests/test_views.py:290 export/tests/test_views.py:3158
 msgid "Array (Erhöhen/Gleiche/Verringern) [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:284 export/tests/test_views.py:3080
+#: export/tests/test_views.py:291 export/tests/test_views.py:3159
 msgid "Array (Erhöhen/..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:293 export/tests/test_views.py:3089
+#: export/tests/test_views.py:300 export/tests/test_views.py:3168
 msgid "Array (Erhöhen/Gleiche/Verringern) [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:294 export/tests/test_views.py:3090
+#: export/tests/test_views.py:301 export/tests/test_views.py:3169
 msgid "Array (Erhöhen/..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:303 export/tests/test_views.py:305
-#: export/tests/test_views.py:3099 export/tests/test_views.py:3101
+#: export/tests/test_views.py:310 export/tests/test_views.py:312
+#: export/tests/test_views.py:3178 export/tests/test_views.py:3180
 msgid "Array (Zahlen) [Unterfrage eins][Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:315 export/tests/test_views.py:317
-#: export/tests/test_views.py:3111 export/tests/test_views.py:3113
+#: export/tests/test_views.py:322 export/tests/test_views.py:324
+#: export/tests/test_views.py:3190 export/tests/test_views.py:3192
 msgid "Array (Zahlen) [Unterfrage zwei][Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:327 export/tests/test_views.py:329
-#: export/tests/test_views.py:3123 export/tests/test_views.py:3125
+#: export/tests/test_views.py:334 export/tests/test_views.py:336
+#: export/tests/test_views.py:3202 export/tests/test_views.py:3204
 msgid "Array (Texte) [Unterfrage eins][Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:339 export/tests/test_views.py:341
-#: export/tests/test_views.py:3135 export/tests/test_views.py:3137
+#: export/tests/test_views.py:346 export/tests/test_views.py:348
+#: export/tests/test_views.py:3214 export/tests/test_views.py:3216
 msgid "Array (Texte) [Unterfrage eins][Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:351 export/tests/test_views.py:3147
+#: export/tests/test_views.py:358 export/tests/test_views.py:3226
 msgid "Array (Ja/Nein/Unsicher) [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:352 export/tests/test_views.py:3148
+#: export/tests/test_views.py:359 export/tests/test_views.py:3227
 msgid "Array (Ja/Nein/..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:361 export/tests/test_views.py:3157
+#: export/tests/test_views.py:368 export/tests/test_views.py:3236
 msgid "Array (Ja/Nein/Unsicher) [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:362 export/tests/test_views.py:3158
+#: export/tests/test_views.py:369 export/tests/test_views.py:3237
 msgid "Array (Ja/Nein/..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:371 export/tests/test_views.py:372
-#: export/tests/test_views.py:3167 export/tests/test_views.py:3168
+#: export/tests/test_views.py:378 export/tests/test_views.py:379
+#: export/tests/test_views.py:3246 export/tests/test_views.py:3247
 msgid "Array von Spalte [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:381 export/tests/test_views.py:382
-#: export/tests/test_views.py:3177 export/tests/test_views.py:3178
+#: export/tests/test_views.py:388 export/tests/test_views.py:389
+#: export/tests/test_views.py:3256 export/tests/test_views.py:3257
 msgid "Array von Spalte [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:391 export/tests/test_views.py:392
-#: export/tests/test_views.py:3187 export/tests/test_views.py:3188
+#: export/tests/test_views.py:398 export/tests/test_views.py:399
+#: export/tests/test_views.py:3266 export/tests/test_views.py:3267
 msgid "Array Duale Skala [Unterfrage eins][Scale 1]"
 msgstr ""
 
-#: export/tests/test_views.py:401 export/tests/test_views.py:402
-#: export/tests/test_views.py:3197 export/tests/test_views.py:3198
+#: export/tests/test_views.py:408 export/tests/test_views.py:409
+#: export/tests/test_views.py:3276 export/tests/test_views.py:3277
 msgid "Array Duale Skala [Unterfrage eins][Scale 2]"
 msgstr ""
 
-#: export/tests/test_views.py:411 export/tests/test_views.py:412
-#: export/tests/test_views.py:3207 export/tests/test_views.py:3208
+#: export/tests/test_views.py:418 export/tests/test_views.py:419
+#: export/tests/test_views.py:3286 export/tests/test_views.py:3287
 msgid "Array Duale Skala [Unterfrage zwei][Scale 1]"
 msgstr ""
 
-#: export/tests/test_views.py:421 export/tests/test_views.py:422
-#: export/tests/test_views.py:3217 export/tests/test_views.py:3218
+#: export/tests/test_views.py:428 export/tests/test_views.py:429
+#: export/tests/test_views.py:3296 export/tests/test_views.py:3297
 msgid "Array Duale Skala [Unterfrage zwei][Scale 2]"
 msgstr ""
 
-#: export/tests/test_views.py:431 export/tests/test_views.py:432
-#: export/tests/test_views.py:3227 export/tests/test_views.py:3228
+#: export/tests/test_views.py:438 export/tests/test_views.py:439
+#: export/tests/test_views.py:3306 export/tests/test_views.py:3307
 msgid "Terminzeit"
 msgstr ""
 
-#: export/tests/test_views.py:441 export/tests/test_views.py:442
-#: export/tests/test_views.py:3237 export/tests/test_views.py:3238
+#: export/tests/test_views.py:448 export/tests/test_views.py:449
+#: export/tests/test_views.py:3316 export/tests/test_views.py:3317
 msgid "Gleichung"
 msgstr ""
 
-#: export/tests/test_views.py:451 export/tests/test_views.py:452
-#: export/tests/test_views.py:3247 export/tests/test_views.py:3248
+#: export/tests/test_views.py:458 export/tests/test_views.py:459
+#: export/tests/test_views.py:3326 export/tests/test_views.py:3327
 msgid "Datei-Upload"
 msgstr ""
 
-#: export/tests/test_views.py:461 export/tests/test_views.py:3257
+#: export/tests/test_views.py:468 export/tests/test_views.py:3336
 msgid "filecount - Datei-Upload"
 msgstr ""
 
-#: export/tests/test_views.py:462 export/tests/test_views.py:3258
+#: export/tests/test_views.py:469 export/tests/test_views.py:3337
 msgid "filecount - Dat.."
 msgstr ""
 
-#: export/tests/test_views.py:471 export/tests/test_views.py:472
-#: export/tests/test_views.py:3267 export/tests/test_views.py:3268
+#: export/tests/test_views.py:478 export/tests/test_views.py:479
+#: export/tests/test_views.py:3346 export/tests/test_views.py:3347
 msgid "Geschlecht"
 msgstr ""
 
-#: export/tests/test_views.py:481 export/tests/test_views.py:482
-#: export/tests/test_views.py:3277 export/tests/test_views.py:3278
+#: export/tests/test_views.py:488 export/tests/test_views.py:489
+#: export/tests/test_views.py:3356 export/tests/test_views.py:3357
 msgid "Sprachumschaltung"
 msgstr ""
 
-#: export/tests/test_views.py:491 export/tests/test_views.py:3287
+#: export/tests/test_views.py:498 export/tests/test_views.py:3366
 msgid "Mehrfache numerische Eingabe [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:492 export/tests/test_views.py:3288
+#: export/tests/test_views.py:499 export/tests/test_views.py:3367
 msgid "Mehrfache numer..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:501 export/tests/test_views.py:3297
+#: export/tests/test_views.py:508 export/tests/test_views.py:3376
 msgid "Mehrfache numerische Eingabe [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:502 export/tests/test_views.py:3298
+#: export/tests/test_views.py:509 export/tests/test_views.py:3377
 msgid "Mehrfache numer..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:511 export/tests/test_views.py:512
-#: export/tests/test_views.py:3307 export/tests/test_views.py:3308
+#: export/tests/test_views.py:518 export/tests/test_views.py:519
+#: export/tests/test_views.py:3386 export/tests/test_views.py:3387
 msgid "Numerische Eingabe"
 msgstr ""
 
-#: export/tests/test_views.py:521 export/tests/test_views.py:522
-#: export/tests/test_views.py:3317 export/tests/test_views.py:3318
+#: export/tests/test_views.py:528 export/tests/test_views.py:529
+#: export/tests/test_views.py:3396 export/tests/test_views.py:3397
 msgid "Rang [Rank 1]"
 msgstr ""
 
-#: export/tests/test_views.py:531 export/tests/test_views.py:532
-#: export/tests/test_views.py:3327 export/tests/test_views.py:3328
+#: export/tests/test_views.py:538 export/tests/test_views.py:539
+#: export/tests/test_views.py:3406 export/tests/test_views.py:3407
 msgid "Rang [Rank 2]"
 msgstr ""
 
-#: export/tests/test_views.py:541 export/tests/test_views.py:542
-#: export/tests/test_views.py:3337 export/tests/test_views.py:3338
+#: export/tests/test_views.py:548 export/tests/test_views.py:549
+#: export/tests/test_views.py:3416 export/tests/test_views.py:3417
 msgid "Textanzeige"
 msgstr ""
 
-#: export/tests/test_views.py:549 export/tests/test_views.py:3345
+#: export/tests/test_views.py:556 export/tests/test_views.py:3424
 msgid "Ja/Nein"
 msgstr ""
 
-#: export/tests/test_views.py:557 export/tests/test_views.py:558
-#: export/tests/test_views.py:3353 export/tests/test_views.py:3354
+#: export/tests/test_views.py:564 export/tests/test_views.py:565
+#: export/tests/test_views.py:3432 export/tests/test_views.py:3433
 msgid "Reisiger Freitext"
 msgstr ""
 
-#: export/tests/test_views.py:567 export/tests/test_views.py:568
-#: export/tests/test_views.py:3363 export/tests/test_views.py:3364
+#: export/tests/test_views.py:574 export/tests/test_views.py:575
+#: export/tests/test_views.py:3442 export/tests/test_views.py:3443
 msgid "Langer freier Text"
 msgstr ""
 
-#: export/tests/test_views.py:577 export/tests/test_views.py:3373
+#: export/tests/test_views.py:584 export/tests/test_views.py:3452
 msgid "Mehrfacher Kurztext [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:578 export/tests/test_views.py:3374
+#: export/tests/test_views.py:585 export/tests/test_views.py:3453
 msgid "Mehrfacher Kurz..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:587 export/tests/test_views.py:3383
+#: export/tests/test_views.py:594 export/tests/test_views.py:3462
 msgid "Mehrfacher Kurztext [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:588 export/tests/test_views.py:3384
+#: export/tests/test_views.py:595 export/tests/test_views.py:3463
 msgid "Mehrfacher Kurz..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:597 export/tests/test_views.py:598
-#: export/tests/test_views.py:3393 export/tests/test_views.py:3394
+#: export/tests/test_views.py:604 export/tests/test_views.py:605
+#: export/tests/test_views.py:3472 export/tests/test_views.py:3473
 msgid "Kurzer Freitext"
 msgstr ""
 
-#: export/tests/test_views.py:607 export/tests/test_views.py:608
-#: export/tests/test_views.py:3403 export/tests/test_views.py:3404
+#: export/tests/test_views.py:614 export/tests/test_views.py:615
+#: export/tests/test_views.py:3482 export/tests/test_views.py:3483
 msgid "Mehrfachauswahl [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:617 export/tests/test_views.py:618
-#: export/tests/test_views.py:3413 export/tests/test_views.py:3414
+#: export/tests/test_views.py:624 export/tests/test_views.py:625
+#: export/tests/test_views.py:3492 export/tests/test_views.py:3493
 msgid "Mehrfachauswahl [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:627 export/tests/test_views.py:3423
+#: export/tests/test_views.py:634 export/tests/test_views.py:3502
 msgid "Mehrfachauswahl mit Kommentaren [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:628 export/tests/test_views.py:3424
+#: export/tests/test_views.py:635 export/tests/test_views.py:3503
 msgid "Mehrfachauswahl..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:637 export/tests/test_views.py:657
-#: export/tests/test_views.py:3433 export/tests/test_views.py:3453
+#: export/tests/test_views.py:644 export/tests/test_views.py:664
+#: export/tests/test_views.py:3512 export/tests/test_views.py:3532
 msgid "Mehrfachauswahl mit Kommentaren [Comment]"
 msgstr ""
 
-#: export/tests/test_views.py:638 export/tests/test_views.py:658
-#: export/tests/test_views.py:3434 export/tests/test_views.py:3454
+#: export/tests/test_views.py:645 export/tests/test_views.py:665
+#: export/tests/test_views.py:3513 export/tests/test_views.py:3533
 msgid "Mehrfachauswahl..  [Comment]"
 msgstr ""
 
-#: export/tests/test_views.py:647 export/tests/test_views.py:3443
+#: export/tests/test_views.py:654 export/tests/test_views.py:3522
 msgid "Mehrfachauswahl mit Kommentaren [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:648 export/tests/test_views.py:3444
+#: export/tests/test_views.py:655 export/tests/test_views.py:3523
 msgid "Mehrfachauswahl..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1145
+#: export/tests/test_views.py:1152
 msgid "First Question"
 msgstr ""
 
-#: export/tests/test_views.py:1146
+#: export/tests/test_views.py:1153
 msgid "Second Question"
 msgstr ""
 
-#: export/tests/test_views.py:1147
+#: export/tests/test_views.py:1154
 msgid "File Upload"
 msgstr ""
 
-#: export/tests/test_views.py:2471 export/views.py:373
+#: export/tests/test_views.py:2549 export/views.py:373
 msgid "Inconsistent data read from json file"
 msgstr "Dados inconsistentes do arquivo de entrada"
 
-#: export/tests/test_views.py:2535 export/views.py:578
+#: export/tests/test_views.py:2614 export/views.py:577
 msgid "Please select at least one patient attribute"
 msgstr "Por favor, selecione pelo meno um atributo de participante"
 
@@ -856,103 +856,103 @@ msgstr "Descrição da doença"
 msgid "Disease Abbreviated Description"
 msgstr "Descrição da doença abreviada"
 
-#: export/views.py:745
+#: export/views.py:744
 msgid "Export was finished correctly"
 msgstr "Exportação foi finalizada com sucesso"
 
-#: export/views.py:754
+#: export/views.py:753
 msgid "Export data was not generated."
 msgstr "Exportação não foi gerada."
 
-#: export/views.py:772
+#: export/views.py:771
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
 
-#: export/views.py:1490
+#: export/views.py:1489
 msgid "Per experiments"
 msgstr "Por experimentos"
 
-#: export/views.py:1536
+#: export/views.py:1535
 msgid "No group(s) selected!"
 msgstr "Nenhum grupo selecionado!"
 
-#: export/views.py:1583
+#: export/views.py:1582
 msgid "Name of use"
 msgstr "Nome do uso"
 
-#: export/views.py:1586
+#: export/views.py:1585
 msgid "Number of repetitions"
 msgstr "Número de repetições"
 
-#: export/views.py:1592
+#: export/views.py:1591
 msgid "Interval between repetitions value"
 msgstr "Valor do entervalo entre repetições"
 
-#: export/views.py:1600
+#: export/views.py:1599
 msgid "Interval between repetitions unit"
 msgstr "Unidade do intervalo entre repetições"
 
-#: export/views.py:1604
+#: export/views.py:1603
 msgid "Order"
 msgstr "Ordem"
 
-#: export/views.py:1607
+#: export/views.py:1606
 msgid "Position in the set of steps "
 msgstr "Posição no conjunto de passos"
 
-#: export/views.py:1607
+#: export/views.py:1606
 msgid "Random"
 msgstr "Aleatório"
 
-#: export/views.py:1609
+#: export/views.py:1608
 msgid "Fixed"
 msgstr "Fixo"
 
-#: export/views.py:1614
+#: export/views.py:1613
 msgid "Requires start and end datetime"
 msgstr "Requer datas de início e fim"
 
-#: export/views.py:1659
+#: export/views.py:1658
 msgid "Identification"
 msgstr "Identificação"
 
-#: export/views.py:1661
+#: export/views.py:1660
 msgid "Description"
 msgstr "Descrição"
 
-#: export/views.py:1663
+#: export/views.py:1662
 msgid "Duration value"
 msgstr "Valor da duração"
 
-#: export/views.py:1665
+#: export/views.py:1664
 msgid "Duration unit"
 msgstr "Unidade da duração"
 
-#: export/views.py:1671
+#: export/views.py:1670
 msgid "Type"
 msgstr "Tipo"
 
-#: export/views.py:1674
+#: export/views.py:1673
 msgid "Number of mandatory components"
 msgstr "Número de passos obrigatórios"
 
-#: export/views.py:1681
+#: export/views.py:1680
 msgid "Text"
 msgstr "Texto"
 
-#: export/views.py:1687
+#: export/views.py:1686
 msgid "LimeSurvey ID"
 msgstr ""
 
-#: export/views.py:1698
+#: export/views.py:1697
 msgid "Questionnaire title"
 msgstr "Título do questionário"
 
-#: export/views.py:1705
+#: export/views.py:1704
 msgid "Stimulus type"
 msgstr "Tipo de estímulo"
 
-#: export/views.py:1707
+#: export/views.py:1706
 msgid "Media file"
 msgstr "Arquivo de mídia"
 
