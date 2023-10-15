@@ -262,6 +262,7 @@ fi
 echo "INFO: Done initializing data"
 
 echo "INFO: Starting Redis"
+echo never > /sys/kernel/mm/transparent_hugepage/enabled 
 service redis-server start
 
 echo "INFO: Starting Apache"
