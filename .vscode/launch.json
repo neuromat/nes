@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
-            "cwd":"${workspaceFolder}/patientregistrationsystem/qdc",
+            "cwd": "${workspaceFolder}/patientregistrationsystem/qdc",
             "args": [
                 "runserver",
                 "0.0.0.0:80"
@@ -28,7 +28,25 @@
             "args": [
                 "test"
             ],
-            "cwd":"${workspaceFolder}/patientregistrationsystem/qdc",
+            "cwd": "${workspaceFolder}/patientregistrationsystem/qdc",
+            "django": true,
+            "justMyCode": true,
+            "env": {
+                "DEBUG": "true"
+            }
+        },
+        {
+            "name": "Python: Coverage",
+            "type": "python",
+            "request": "launch",
+            //"program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
+            "module": "coverage",
+            "args": [
+                "run",
+                "manage.py",
+                "test"
+            ],
+            "cwd": "${workspaceFolder}/patientregistrationsystem/qdc",
             "django": true,
             "justMyCode": true,
             "env": {

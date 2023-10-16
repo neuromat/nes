@@ -285,21 +285,25 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
                 return redirect(reverse("send-to-plugin"))
             if zip_file:
                 export = Export.objects.last()
-                plugin_url = RandomForests.objects.first().plugin_url
-                plugin_url += (
-                    "?user_id=" + str(request.user.id) + "&export_id=" + str(export.id)
-                )
-                # Puts in session to open plugin and load posted values
-                request.session["plugin_url"] = plugin_url
-                request.session["experiment_selected_id"] = int(
-                    request.POST.get("experiment_selected", None)
-                )
-                request.session["participants_from"] = list(
-                    map(int, request.POST.getlist("from[]", None))
-                )
-                request.session["participants_to"] = list(
-                    map(int, request.POST.getlist("patients_selected[]"))
-                )
+                if isinstance(export, Export):
+                    plugin_url = RandomForests.objects.first().plugin_url
+                    plugin_url += (
+                        "?user_id="
+                        + str(request.user.id)
+                        + "&export_id="
+                        + str(export.id)
+                    )
+                    # Puts in session to open plugin and load posted values
+                    request.session["plugin_url"] = plugin_url
+                    request.session["experiment_selected_id"] = int(
+                        request.POST.get("experiment_selected", None)
+                    )
+                    request.session["participants_from"] = list(
+                        map(int, request.POST.getlist("from[]", None))
+                    )
+                    request.session["participants_to"] = list(
+                        map(int, request.POST.getlist("patients_selected[]"))
+                    )
                 return redirect(reverse("send-to-plugin"))
             else:
                 messages.error(

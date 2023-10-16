@@ -3920,7 +3920,7 @@ class ImportExperimentTest(TestCase):
             to_create2=False,
         )
 
-    @skip  # TODO: test when implementing exporting/importing data collections
+    @skip # TODO: test when implementing exporting/importing data collections
     def test_eeg_electrode_net_and_eeg_electrode_cap(self):
         self._test_creation_and_linking_between_two_models(
             "experiment.eegelectrodenet",

@@ -54,6 +54,7 @@ from experiment.models import (
     SoftwareVersion,
     StandardizationSystem,
     StimuliEq,
+    StimuliEqSetting,
     Stimulus,
     StimulusType,
     Subject,
@@ -4257,6 +4258,111 @@ class ResearchProjectTest(TestCase):
         self.assertEqual(research_project2.keywords.count(), 1)
 
 
+class StimuliEqSettingTest(TestCase):
+    data: dict[str, Any] = {}
+
+    def setUp(self) -> None:
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+        research_project = ObjectsFactory.create_research_project()
+
+        self.experiment = ObjectsFactory.create_experiment(research_project)
+
+    def test_crud_stimuli_eq_setting(self) -> None:
+        ObjectsFactory.create_stimuli_eq(ObjectsFactory.create_manufacturer())
+
+        # screen to create an stimuli_eq_setting
+        response = self.client.get(
+            reverse("stimuli_eq_setting_new", args=(self.experiment.id,))
+        )
+        self.assertEqual(response.status_code, 200)
+
+        name = "Stimuli Eq setting name"
+        description = "Stimuli Eq setting description"
+        stimuli_eq = StimuliEq.objects.get(id=1)
+
+        self.data = {
+            "action": "save",
+            "name": name,
+            "description": description,
+            # "stimuli_eq": stimuli_eq.id,
+        }
+        response = self.client.post(
+            reverse("stimuli_eq_setting_new", args=(self.experiment.id,)), self.data
+        )
+        # Missing stimuli_eq required field
+        self.assertFalse(
+            StimuliEqSetting.objects.filter(name=name, description=description).exists()
+        )
+
+        self.data["stimuli_eq"] = stimuli_eq.id
+        response = self.client.post(
+            reverse("stimuli_eq_setting_new", args=(self.experiment.id,)), self.data
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            StimuliEqSetting.objects.filter(name=name, description=description).exists()
+        )
+
+        stimuli_eq_setting = StimuliEqSetting.objects.filter(
+            name=name, description=description
+        )[0]
+
+        # screen to view an eeg_setting
+        response = self.client.get(
+            reverse("stimuli_eq_setting_view", args=(stimuli_eq_setting.id,))
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # screen to update an eeg_setting
+        response = self.client.get(
+            reverse("stimuli_eq_setting_edit", args=(stimuli_eq_setting.id,))
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # update with no changes
+        self.data = {
+            "action": "save",
+            "name": name,
+            "description": description,
+            "stimuli_eq": stimuli_eq.id,
+        }
+        response = self.client.post(
+            reverse("stimuli_eq_setting_edit", args=(stimuli_eq_setting.id,)),
+            self.data,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            StimuliEqSetting.objects.filter(name=name, description=description).exists()
+        )
+
+        name = "Stimuli Eq setting name updated"
+        description = "Stimuli Eq setting description updated"
+        self.data = {
+            "action": "save",
+            "name": name,
+            "description": description,
+            "stimuli_eq": stimuli_eq.id,
+        }
+        response = self.client.post(
+            reverse("stimuli_eq_setting_edit", args=(stimuli_eq_setting.id,)),
+            self.data,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            StimuliEqSetting.objects.filter(name=name, description=description).exists()
+        )
+
+        # remove an eeg_setting
+        self.data = {"action": "remove"}
+        response = self.client.post(
+            reverse("stimuli_eq_setting_view", args=(stimuli_eq_setting.id,)),
+            self.data,
+        )
+        self.assertEqual(response.status_code, 302)
+
+
 class EEGSettingTest(TestCase):
     data: dict[str, Any] = {}
 
@@ -6662,11 +6768,11 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(EEGElectrodeLocalizationSystem.objects.all().count(), 0)
 
-    def test_stimuli_eq_register(self):
+    def test_stimuli_eq_register(self) -> None:
         manufacturer: Manufacturer = ObjectsFactory.create_manufacturer()
 
         # list
-        response: HttpResponse = self.client.get(reverse("stimuli_eq_list", args=()))
+        response = self.client.get(reverse("stimuli_eq_list", args=()))
         self.assertEqual(response.status_code, 200)
 
         # create

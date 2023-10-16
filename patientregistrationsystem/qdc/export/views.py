@@ -4,6 +4,7 @@ import shutil
 from datetime import datetime
 from os import path
 from shutil import rmtree
+from typing import Any
 from zipfile import ZipFile
 
 from dateutil.relativedelta import relativedelta
@@ -633,7 +634,7 @@ def export_view(request, template_name="export/export_data.html"):
         )
 
         if selected_data_available:
-            component_list = {}
+            component_list: dict[str, Any] = {}
             if export_form.is_valid():
                 per_experiment = "group_selected_list" in request.session
                 per_participant = True

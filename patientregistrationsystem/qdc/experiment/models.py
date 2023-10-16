@@ -571,6 +571,25 @@ class StimuliEq(Equipment):
         return self.identification
 
 
+class StimuliEqSetting(models.Model):
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+
+    name = models.CharField(max_length=150)
+    stimuli_eq = models.ForeignKey(StimuliEq, on_delete=models.CASCADE)
+    description = models.TextField()
+
+    copied_from = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, related_name="children"
+    )
+
+    def __str__(self) -> str:
+        return str(self.name + ":" + self.stimuli_eq.identification)
+
+    def save(self, *args, **kwargs) -> None:
+        super(StimuliEqSetting, self).save(*args, **kwargs)
+        self.experiment.save()
+
+
 class EEGSetting(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)

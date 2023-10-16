@@ -257,13 +257,13 @@ COUNTRIES = (
 )
 
 
-def validate_date_questionnaire_response(value):
+def validate_date_questionnaire_response(value) -> None:
     if value > datetime.date.today():
         raise ValidationError(_("Fill date can not be bigger than today's date."))
 
 
 # Valida CPF
-def validate_cpf(value):
+def validate_cpf(value) -> None:
     validation = CPF(value)
     if not validation.isValid():
         # raise ValidationError(u'CPF %s não é válido' % value)
@@ -272,7 +272,7 @@ def validate_cpf(value):
 
 # Valida data de nascimento:
 # data de nascimento maior que a data atual
-def validate_date_birth(value):
+def validate_date_birth(value) -> None:
     if value > datetime.date.today():
         raise ValidationError(_("Date of birth can't be greater than today date."))
 
@@ -404,7 +404,7 @@ class Patient(models.Model):
             ("sensitive_data_patient", "Can view sensitive patient data"),
         )
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return "/patient/%i/" % self.pk
 
     def __str__(self) -> str:
@@ -416,7 +416,7 @@ class Patient(models.Model):
         super(Patient, self).save(*args, **kwargs)
 
     @staticmethod
-    def create_random_patient_code():
+    def create_random_patient_code() -> str:
         used_codes = set([patient.code for patient in Patient.objects.all()])
         possible_code = set(["P" + str(item) for item in range(1, 100000)])
         available_codes = list(possible_code - used_codes)
@@ -527,7 +527,7 @@ class SocialDemographicData(models.Model):
     @staticmethod
     def calculate_social_class(**keywords: Any) -> str:
         #  According to IBGE:
-        punctuation_table = {
+        punctuation_table: dict[str, Any] = {
             "tv": {0: 0, 1: 1, 2: 2, 3: 3, 4: 4},
             "radio": {0: 0, 1: 1, 2: 2, 3: 3, 4: 4},
             "dvd": {0: 0, 1: 2, 2: 2, 3: 2, 4: 2},
@@ -589,13 +589,13 @@ class SocialHistoryData(models.Model):
         return self.changed_by
 
     @_history_user.setter
-    def _history_user(self, value):
+    def _history_user(self, value) -> None:
         self.changed_by = value
 
     def __str__(self) -> str:
         return str(self.patient)
 
-    def clean(self):
+    def clean(self) -> None:
         if self.smoker and self.ex_smoker:
             raise ValidationError(_("The combination is not allowed."))
         if not self.smoker and self.amount_cigarettes:
@@ -643,7 +643,7 @@ class ClassificationOfDiseases(models.Model):
     def __str__(self) -> str:
         return self.abbreviated_description
 
-    def natural_key(self):
+    def natural_key(self) -> str:
         return self.code
 
 
@@ -687,7 +687,7 @@ class ComplementaryExam(models.Model):
         return str(self.description)
 
 
-def get_user_dir(instance, filename):
+def get_user_dir(instance, filename: str) -> str:
     return "exams/%(patient)s/%(exam)s/%(filename)s" % {
         "patient": instance.exam.diagnosis.medical_record_data.patient.pk,
         "exam": instance.exam.pk,

@@ -89,6 +89,7 @@ from experiment.models import (
     SourceCode,
     StandardizationSystem,
     StimuliEq,
+    StimuliEqSetting,
     Stimulus,
     SubjectOfGroup,
     SubjectStepData,
@@ -122,7 +123,7 @@ class ExperimentForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Title must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 },
             ),
             "description": Textarea(
@@ -151,7 +152,7 @@ class GroupForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Title must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "description": Textarea(
@@ -202,7 +203,7 @@ class ComponentForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Identification must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                     "maxlength": "50",
                 }
             ),
@@ -515,7 +516,7 @@ class ResearchProjectForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Title must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                     "maxlength": "255",
                 }
             ),
@@ -584,7 +585,7 @@ class PublicationForm(ModelForm):
                     "required": "",
                     "rows": "2",
                     "data-error": _("Title must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "citation": Textarea(
@@ -756,7 +757,7 @@ class SourceCodeForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "description": Textarea(
@@ -784,7 +785,7 @@ class EEGSettingForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "description": Textarea(
@@ -920,7 +921,7 @@ class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name field must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
@@ -938,7 +939,7 @@ class TMSLocalizationSystemForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name field must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
@@ -958,7 +959,7 @@ class EEGElectrodePositionForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name field must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "coordinate_x": NumberInput(attrs={"class": "form-control"}),
@@ -1747,7 +1748,7 @@ class EMGSettingForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "description": Textarea(
@@ -2197,6 +2198,41 @@ class HotSpotForm(ModelForm):
         }
 
 
+class StimuliEqSettingForm(ModelForm):
+    class Meta:
+        model = StimuliEqSetting
+
+        fields = ["name", "stimuli_eq", "description"]
+
+        widgets = {
+            "name": TextInput(
+                attrs={
+                    "class": "form-control",
+                    "required": "",
+                    "data-error": _("Name must be filled."),
+                    # "autofocus": "",
+                }
+            ),
+            
+            "stimuli_eq": Select(
+                attrs={
+                    "class": "form-control",
+                    "required": "",
+                    "data-error": _("Stimuli Equipment must be filled."),
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "class": "form-control",
+                    "style": "resize: vertical;",
+                    "rows": "4",
+                    "required": "",
+                    "data-error": _("Description must be filled."),
+                }
+            ),
+        }
+
+
 class TMSSettingForm(ModelForm):
     class Meta:
         model = TMSSetting
@@ -2209,7 +2245,7 @@ class TMSSettingForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "description": Textarea(
@@ -2280,7 +2316,7 @@ class ContextTreeForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
             "description": Textarea(
@@ -2510,7 +2546,7 @@ class ResendExperimentForm(ModelForm):
                     "rows": "4",
                     "required": "",
                     "data-error": _("Reason must be filled."),
-                    "autofocus": "",
+                    # "autofocus": "",
                 }
             ),
         }

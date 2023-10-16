@@ -14,6 +14,7 @@ ENV LC_ALL en_US.UTF-8
 RUN apt-get -y update --no-install-recommends && export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y install --no-install-recommends \
     python-is-python3 \
+    python3-dev \
     libjpeg-dev \
     libpng-dev \
     libpq-dev \

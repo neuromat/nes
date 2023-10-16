@@ -22,6 +22,7 @@ from experiment.models import (
     EEGSetting,
     EEGAmplifierSetting,
     EMGSetting,
+    StimuliEq,
     TMSSetting,
     TMSDevice,
     EMGElectrodeSetting,
@@ -945,6 +946,16 @@ class ObjectsFactory(object):
             kwargs={"it": information_type},
         )
         ObjectsFactory.create_component_configuration(rootcomponent, component13)
+
+    @staticmethod
+    def create_stimuli_eq(manufacturer) -> None:
+        fake = Factory.create()
+        StimuliEq.objects.create(
+            manufacturer=manufacturer,
+            identification=fake.word(),
+            description=fake.text(),
+            serial_number=fake.ssn(),
+        )
 
     @staticmethod
     def create_exam_file(patient, user):

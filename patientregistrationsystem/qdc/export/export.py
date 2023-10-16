@@ -5209,7 +5209,7 @@ class ExportExecution:
                 # TODO: This if is the first thing to do not inside for.
                 # TODO: Put this as the first line of method.
                 if limesurvey_available(questionnaire_lime_survey):
-                    data_from_lime_survey = {}
+                    data_from_lime_survey: dict = {}
                     for language in language_list:
                         responses_string1 = questionnaire_lime_survey.get_responses(
                             questionnaire_id, language, response_type[0]

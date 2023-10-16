@@ -370,6 +370,22 @@ urlpatterns = [
         views.software_version_update,
         name="software_version_edit",
     ),
+    # stimuli equipment
+    re_path(
+        r"^(?P<experiment_id>\d+)/stimuli_eq_setting/new/$",
+        views.stimuli_eq_setting_create,
+        name="stimuli_eq_setting_new",
+    ),
+    re_path(
+        r"^stimuli_eq_setting/(?P<stimuli_eq_setting_id>\d+)/$",
+        views.stimuli_eq_setting_view,
+        name="stimuli_eq_setting_view",
+    ),
+    re_path(
+        r"^stimuli_eq_setting/edit/(?P<stimuli_eq_setting_id>\d+)/$",
+        views.stimuli_eq_setting_update,
+        name="stimuli_eq_setting_edit",
+    ),
     re_path(r"^stimuli_eq/list/$", views.stimuli_eq_list, name="stimuli_eq_list"),
     re_path(r"^stimuli_eq/new/$", views.stimuli_eq_create, name="stimuli_eq_new"),
     re_path(
@@ -422,13 +438,6 @@ urlpatterns = [
         views.tms_localization_system_update,
         name="tms_localization_system_update",
     ),
-    # re_path(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/new_tms_position/$',
-    #     views.tms_localization_system_position_create, name='tms_localization_system_position_create'),
-    # re_path(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/tms_position/(?P<tms_position_id>\d+)$',
-    #     views.tms_localization_system_position_view, name='tms_localization_system_position_view'),
-    # re_path(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/tms_position/edit/(?P<tms_position_id>\d+)$',
-    #     views.tms_localization_system_position_update, name='tms_localization_system_position_update'),
-    # Localization system and position
     re_path(
         r"^eeg_electrode_localization_system/list/$",
         views.eeg_electrode_localization_system_list,

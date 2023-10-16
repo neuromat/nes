@@ -911,6 +911,7 @@ class PluginTest(ExportTestCase):
         )
 
     @skip  # get_language_properties already deal with errors returned by LimeSurvey
+    @patch("survey.abc_search_engine.Server")
     def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message9(
         self, mockServer
     ):

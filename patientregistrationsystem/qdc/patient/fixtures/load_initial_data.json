@@ -138,7 +138,7 @@
     "fields": {
       "name_pt_br": "Feminino",
       "name_en": "Female",
-      "name": "Feminino"
+      "name": "Female"
     },
     "model": "patient.gender",
     "pk": 1
@@ -147,7 +147,7 @@
     "fields": {
       "name_pt_br": "Masculino",
       "name_en": "Male",
-      "name": "Masculino"
+      "name": "Male"
     },
     "model": "patient.gender",
     "pk": 2
@@ -156,10 +156,19 @@
     "fields": {
       "name_pt_br": "Intersexo",
       "name_en": "Intersex",
-      "name": "Intersexo"
+      "name": "Intersex"
     },
     "model": "patient.gender",
     "pk": 3
+  },
+  {
+    "fields": {
+      "name_pt_br": "Outro",
+      "name_en": "Other",
+      "name": "Other"
+    },
+    "model": "patient.gender",
+    "pk": 4
   },
   {
     "fields": {

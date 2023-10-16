@@ -60,7 +60,7 @@ class PatientForm(ModelForm):
             "name": TextInput(
                 attrs={
                     "class": "form-control",
-                    "autofocus": "true",
+                    # "autofocus": "",
                     "required": "",
                     "data-error": _("Name must be included"),
                     "oninput": "this.value = this.value.toUpperCase()",

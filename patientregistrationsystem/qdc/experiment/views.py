@@ -130,6 +130,7 @@ from .forms import (
     SourceCodeForm,
     StandardizationSystemRegisterForm,
     StimuliEqRegisterForm,
+    StimuliEqSettingForm,
     StimulusForm,
     SubjectStepDataForm,
     TMSDataForm,
@@ -224,6 +225,7 @@ from .models import (
     SourceCode,
     StandardizationSystem,
     StimuliEq,
+    StimuliEqSetting,
     Stimulus,
     Subject,
     SubjectOfGroup,
@@ -2315,6 +2317,130 @@ def source_code_update(
         "editing": True,
         "experiment": source_code.experiment,
         "source_code": source_code,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.add_subject")
+def stimuli_eq_setting_create(
+    request: HttpRequest,
+    experiment_id: int,
+    template_name: str = "experiment/stimuli_eq_setting_register.html",
+) -> HttpResponse:
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    check_can_change(request.user, experiment.research_project)
+
+    stimuli_eq_setting_form = StimuliEqSettingForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if stimuli_eq_setting_form.is_valid():
+                stimuli_eq_setting_added = stimuli_eq_setting_form.save(commit=False)
+                stimuli_eq_setting_added.experiment_id = experiment_id
+                stimuli_eq_setting_added.save()
+
+                messages.success(
+                    request, _("Stimuli Equipment setting included successfully.")
+                )
+
+                redirect_url = reverse(
+                    "stimuli_eq_setting_view", args=(stimuli_eq_setting_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "stimuli_eq_setting_form": stimuli_eq_setting_form,
+        "creating": True,
+        "editing": True,
+        "experiment": experiment,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def stimuli_eq_setting_view(
+    request: HttpRequest,
+    stimuli_eq_setting_id: int,
+    template_name: str = "experiment/stimuli_eq_setting_register.html",
+) -> HttpResponse:
+    stimuli_eq_setting = get_object_or_404(StimuliEqSetting, pk=stimuli_eq_setting_id)
+    stimuli_eq_setting_form = StimuliEqSettingForm(
+        request.POST or None, instance=stimuli_eq_setting
+    )
+
+    for field in stimuli_eq_setting_form.fields:
+        stimuli_eq_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    can_change = get_can_change(
+        request.user, stimuli_eq_setting.experiment.research_project
+    )
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST["action"] == "remove":
+                experiment_id = stimuli_eq_setting.experiment_id
+
+                stimuli_eq_setting.delete()
+
+                messages.success(
+                    request, _("Stimuli Equipment setting was removed successfully.")
+                )
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "can_change": can_change,
+        "stimuli_eq_setting_form": stimuli_eq_setting_form,
+        "experiment": stimuli_eq_setting.experiment,
+        "stimuli_eq_setting": stimuli_eq_setting,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_experiment")
+def stimuli_eq_setting_update(
+    request: HttpRequest,
+    stimuli_eq_setting_id: int,
+    template_name: str = "experiment/stimuli_eq_setting_register.html",
+) -> HttpResponse:
+    stimuli_eq_setting = get_object_or_404(StimuliEqSetting, pk=stimuli_eq_setting_id)
+
+    check_can_change(request.user, stimuli_eq_setting.experiment.research_project)
+
+    stimuli_eq_setting_form = StimuliEqSettingForm(
+        request.POST or None, instance=stimuli_eq_setting
+    )
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if stimuli_eq_setting_form.is_valid():
+                if stimuli_eq_setting_form.has_changed():
+                    stimuli_eq_setting_form.save()
+                    messages.success(
+                        request, _("Stimuli Equipment setting updated successfully.")
+                    )
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse(
+                    "stimuli_eq_setting_view", args=(stimuli_eq_setting_id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "stimuli_eq_setting_form": stimuli_eq_setting_form,
+        "editing": True,
+        "experiment": stimuli_eq_setting.experiment,
+        "stimuli_eq_setting": stimuli_eq_setting,
     }
 
     return render(request, template_name, context)
@@ -8597,7 +8723,8 @@ def eeg_file_export_nwb(request, eeg_file_id, some_number, process_requisition):
 
     return response
 
-#TODO FIXME add the rest of the commented out parts
+
+# TODO FIXME add the rest of the commented out parts
 def create_nwb_file(
     eeg_data: EEGData,
     eeg_reading: EEGReading,
@@ -8678,10 +8805,13 @@ def create_nwb_file(
         subject_id=subject_of_group.subject.patient.code,
         sex=clean(subject_of_group.subject.patient.gender.name[0]),
         species="Homo sapiens",
-        age=str((date.today() - subject_of_group.subject.patient.date_birth) // timedelta(days=365.2425)),
+        age=str(
+            (date.today() - subject_of_group.subject.patient.date_birth)
+            // timedelta(days=365.2425)
+        ),
         date_of_birth=datetime.combine(
-        subject_of_group.subject.patient.date_birth, datetime.min.time()
-    ),
+            subject_of_group.subject.patient.date_birth, datetime.min.time()
+        ),
     )
 
     # TODO add this to subject
@@ -8906,7 +9036,7 @@ def create_nwb_file(
     #         acquisition.finalize()
 
     # when all data is entered, close the file
-    #neurodata.close()
+    # neurodata.close()
 
     return neurodata
 
