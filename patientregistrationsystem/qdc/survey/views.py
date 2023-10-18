@@ -985,7 +985,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
         responses_string = surveys.get_responses_by_token(
             lime_survey_id, token, language
         )
-        responses_list = []
+        responses_list: list = []
 
         if responses_string:
             reader_ = csv.reader(StringIO(responses_string), delimiter=",")
@@ -1135,7 +1135,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                                                 responses_list[1][
                                                                     index
                                                                 ],
-                                                                "%Y-%m-%d %H:%M:%S",
+                                                                r"%Y-%m-%d %H:%M:%S",
                                                             )
                                                         )
                                                     else:

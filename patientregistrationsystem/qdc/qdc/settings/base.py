@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-
 from pathlib import Path
-from django.utils.translation import gettext_lazy as _
+from typing import Any
 
+from django.utils.translation import gettext_lazy as _
 
 BASE_DIR: Path = Path(__file__).parent.parent.parent
 
@@ -48,10 +48,6 @@ AXES_COOLOFF_TIME = 1
 ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 
-SESSION_SAVE_EVERY_REQUEST = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 3600
-
 CONN_MAX_AGE = 3600
 CONN_HEALTH_CHECKS = True
 
@@ -73,6 +69,7 @@ INSTALLED_APPS: list[str] = [
     "maintenance_mode",
     "rosetta",
     "axes",
+    "django_extensions",
 ]
 
 PROJECT_APPS: list[str] = [
@@ -90,16 +87,16 @@ INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE: list[str] = [
     "django.middleware.security.SecurityMiddleware",
-    # "django.middleware.cache.UpdateCacheMiddleware",
+    "django.middleware.cache.UpdateCacheMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    # "django.middleware.http.ConditionalGetMiddleware",
+    #    "django.middleware.http.ConditionalGetMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "django.middleware.cache.FetchFromCacheMiddleware",
+    "django.middleware.cache.FetchFromCacheMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "maintenance_mode.middleware.MaintenanceModeMiddleware",
     "axes.middleware.AxesMiddleware",
@@ -139,12 +136,16 @@ AUTHENTICATION_BACKENDS: list[str] = [
 ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 60 * 60
+SESSION_CACHE_ALIAS = "redis"
 
 CACHE_MIDDLEWARE_ALIAS = "redis"
 CACHE_MIDDLEWARE_KEY_PREFIX = ""
 CACHE_MIDDLEWARE_SECONDS = 60 * 60
 
-CACHES = {
+CACHES: dict[str, Any] = {
     "default": {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "limesurveycache",

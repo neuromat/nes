@@ -8,11 +8,13 @@ from patient.models import (
     AmountCigarettes,
     AlcoholFrequency,
     AlcoholPeriod,
+    Telephone,
 )
 from patient.views import *
 from patient.forms import *
 from django.contrib.auth.models import User
 from .test_orig import UtilTests
+import datetime
 
 USER_USERNAME = "myadmin"
 USER_PWD = "mypassword"

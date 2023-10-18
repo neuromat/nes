@@ -630,7 +630,7 @@ class ClassificationOfDiseasesManager(models.Manager):
         return self.get(code=code)
 
 
-class ClassificationOfDiseases(models.Model):
+class ClassificationOfDiseases(models.Model):  # type: ignore [django-manager-missing]
     code = models.CharField(max_length=10, null=False)
     description = models.CharField(max_length=300, null=False)
     abbreviated_description = models.CharField(max_length=190, null=False)

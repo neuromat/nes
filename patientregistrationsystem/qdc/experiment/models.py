@@ -125,7 +125,6 @@ class ExperimentResearcher(models.Model):
     researcher = models.ForeignKey(User, on_delete=models.CASCADE)
     channel_index = models.IntegerField(null=True)
 
-    
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
     ) -> None:
@@ -169,7 +168,7 @@ class Manufacturer(models.Model):
         return self.name
 
 
-class Tag(models.Model):
+class Tag(models.Model):  # type: ignore [django-manager-missing]
     name = models.CharField(max_length=50, null=False, blank=False)
 
     def __str__(self) -> str:
@@ -329,7 +328,7 @@ class ElectrodeModel(models.Model):
         return self.name
 
 
-class MeasureSystem(models.Model):
+class MeasureSystem(models.Model):  # type: ignore [django-manager-missing]
     name = models.CharField(max_length=150)
 
     objects: MultilingualManager

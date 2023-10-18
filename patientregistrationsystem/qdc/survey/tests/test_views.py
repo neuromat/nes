@@ -227,7 +227,7 @@ class SurveyTest(TestCase):
             self.user, self.patient, self.survey, token_id=1
         )
 
-    @skip
+    @skip("")
     @patch("survey.abc_search_engine.Server")
     def test_survey_list(self, mockServer):
         mockServer.return_value.get_session_key.return_value = (

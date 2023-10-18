@@ -36,6 +36,7 @@ class UserForm(ModelForm):
                 "class": "form-control",
                 "placeholder": _("Type first name"),
                 "oninput": "this.value = this.value.toUpperCase()",
+                "data-maxlength": "150",
             }
         ),
     )
@@ -46,6 +47,7 @@ class UserForm(ModelForm):
                 "class": "form-control",
                 "placeholder": _("Type last name"),
                 "oninput": "this.value = this.value.toUpperCase()",
+                "data-maxlength": "150",
             }
         ),
     )
@@ -73,10 +75,10 @@ class UserForm(ModelForm):
                     "name": "username",
                     "required": "",
                     "placeholder": _("Type user name"),
-                    "data-minlength": "6",
+                    "data-minlength": "5",
                     "data-maxlength": "30",
                     "data-error": _(
-                        "Username must start with a letter and contain only alphanumeric characters (6-30)"
+                        "Username must start with a letter and contain only alphanumeric characters (5-30)"
                     ),
                     "pattern": USERNAME_REGEX,
                 }
@@ -247,6 +249,7 @@ class InstitutionForm(ModelForm):
                 attrs={
                     "class": "form-control",
                     "required": "",
+                    "maxlength": "150",
                 }
             ),
             "acronym": TextInput(attrs={"class": "form-control"}),

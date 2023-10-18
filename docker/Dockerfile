@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm as wheeler
+FROM python:3.11-slim-bookworm as wheeler
 
 ENV PYTHONUNBUFFERED 1
 
@@ -50,7 +50,7 @@ RUN pip3 install -U pip setuptools wheel && \
     pip3 wheel -r requirement/requirements.txt
 
 
-FROM python:3.12-slim-bookworm
+FROM python:3.11-slim-bookworm
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONOPTIMIZE 1

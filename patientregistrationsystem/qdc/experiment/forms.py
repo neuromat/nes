@@ -254,7 +254,12 @@ class ComponentConfigurationForm(ModelForm):
         ]
 
         widgets = {
-            "name": TextInput(attrs={"class": "form-control"}),
+            "name": TextInput(
+                attrs={
+                    "class": "form-control",
+                    "maxlength": "50",
+                }
+            ),
             "number_of_repetitions": NumberInput(
                 attrs={
                     "class": "form-control",
@@ -556,8 +561,8 @@ class ResearchProjectForm(ModelForm):
             ),
         }
 
-    def clean(self) -> dict[str, Any]:
-        cleaned_data: dict[str, Any] = super(ResearchProjectForm, self).clean()
+    def clean(self) -> Any:
+        cleaned_data: Any = super(ResearchProjectForm, self).clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
 
@@ -757,6 +762,7 @@ class SourceCodeForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                     # "autofocus": "",
                 }
             ),
@@ -784,6 +790,7 @@ class EEGSettingForm(ModelForm):
                 attrs={
                     "class": "form-control",
                     "required": "",
+                    "maxlength": "150",
                     "data-error": _("Name must be filled."),
                     # "autofocus": "",
                 }
@@ -921,6 +928,7 @@ class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name field must be filled."),
+                    "maxlength": "150",
                     # "autofocus": "",
                 }
             ),
@@ -939,6 +947,7 @@ class TMSLocalizationSystemForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name field must be filled."),
+                    "maxlength": "150",
                     # "autofocus": "",
                 }
             ),
@@ -959,6 +968,7 @@ class EEGElectrodePositionForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name field must be filled."),
+                    "maxlength": "150",
                     # "autofocus": "",
                 }
             ),
@@ -978,6 +988,7 @@ class ManufacturerRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             )
         }
@@ -1041,6 +1052,7 @@ class EEGSolutionRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
             "components": Textarea(
@@ -1067,6 +1079,7 @@ class FilterTypeRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
@@ -1093,6 +1106,7 @@ class ElectrodeModelRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
@@ -1121,6 +1135,7 @@ class MaterialRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
@@ -1138,6 +1153,7 @@ class CoilModelRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
@@ -1352,6 +1368,7 @@ class StandardizationSystemRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
@@ -1456,6 +1473,7 @@ class MuscleRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
         }
@@ -1472,6 +1490,7 @@ class MuscleSubdivisionRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
             "anatomy_origin": Textarea(attrs={"class": "form-control", "rows": "4"}),
@@ -1491,6 +1510,7 @@ class MuscleSideRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
         }
@@ -1514,6 +1534,7 @@ class SoftwareRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
@@ -1531,6 +1552,7 @@ class SoftwareVersionRegisterForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
         }
@@ -1748,6 +1770,7 @@ class EMGSettingForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                     # "autofocus": "",
                 }
             ),
@@ -2001,6 +2024,7 @@ class ElectrodeModelForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                 }
             ),
             "description": Textarea(
@@ -2180,7 +2204,12 @@ class HotSpotForm(ModelForm):
         fields = ["name", "coordinate_x", "coordinate_y", "hot_spot_map"]
 
         widgets = {
-            "name": TextInput(attrs={"class": "form-control"}),
+            "name": TextInput(
+                attrs={
+                    "class": "form-control",
+                    "maxlength": "50",
+                }
+            ),
             "coordinate_x": TextInput(
                 attrs={
                     "class": "form-control",
@@ -2210,10 +2239,10 @@ class StimuliEqSettingForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                     # "autofocus": "",
                 }
             ),
-            
             "stimuli_eq": Select(
                 attrs={
                     "class": "form-control",
@@ -2245,6 +2274,7 @@ class TMSSettingForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "150",
                     # "autofocus": "",
                 }
             ),
@@ -2316,6 +2346,7 @@ class ContextTreeForm(ModelForm):
                     "class": "form-control",
                     "required": "",
                     "data-error": _("Name must be filled."),
+                    "maxlength": "50",
                     # "autofocus": "",
                 }
             ),

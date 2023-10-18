@@ -63,6 +63,7 @@ class PatientForm(ModelForm):
                     # "autofocus": "",
                     "required": "",
                     "data-error": _("Name must be included"),
+                    "maxlength": "50",
                     "oninput": "this.value = this.value.toUpperCase()",
                 }
             ),
@@ -90,7 +91,12 @@ class PatientForm(ModelForm):
                     "data-error": _("Gender must be filled"),
                 }
             ),
-            "rg": TextInput(attrs={"class": "form-control"}),
+            "rg": TextInput(
+                attrs={
+                    "class": "form-control",
+                    "maxlength": "15",
+                }
+            ),
             "marital_status": Select(attrs={"class": "form-control"}),
             "country": Select(attrs={"class": "form-control"}),
             "zipcode": TextInput(

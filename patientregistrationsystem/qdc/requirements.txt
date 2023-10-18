@@ -10,9 +10,9 @@ django-maintenance-mode>=0.16.3
 django-fixture-magic>=0.1.5
 django-solo==2.1.0
 django-rosetta
+django-debug-toolbar>=4.2, <5.0
+django-extensions>=3.2.3, <4.0
 jsonrpclib==0.2.1
-django-debug-toolbar==4.2
-
 
 python-dateutil==2.8.2
 psycopg[c]
@@ -20,8 +20,7 @@ psycopg[c]
 redis 
 hiredis 
 
-# Obs.: error -> ERROR: botocore 1.14.7 has requirement docutils<0.16,>=0.10, but you'll have docutils 0.16 which is incompatible.
-# But installed
+
 numpy>=1.25.2
 scipy>=1.11.1
 h5py>=2.6.0
@@ -36,10 +35,8 @@ networkx>=2.8.8,<3
 
 
 mne==1.3.1
-
 pynwb
 #-e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
-#src/nwb/dist/nwb-1.0.0-py3-none-any.whl
 
 
 # For testing

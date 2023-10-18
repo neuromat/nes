@@ -360,6 +360,7 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
                 return redirect(reverse("send-to-plugin"))
             if zip_file:
                 export = Export.objects.last()
+                assert isinstance(export, Export)
                 plugin_url = RandomForests.objects.first().plugin_url
                 plugin_url += (
                     "?user_id=" + str(request.user.id) + "&export_id=" + str(export.id)

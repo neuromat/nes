@@ -3,7 +3,7 @@ import random
 from django.db import models
 
 
-class Survey(models.Model):
+class Survey(models.Model): # type: ignore [django-manager-missing]
     code = models.CharField(max_length=10, unique=True)
 
     lime_survey_id = models.IntegerField(unique=True)

@@ -516,12 +516,14 @@ class PluginTest(ExportTestCase):
     #  questionnaire for plugin. The maintenance of extensible mocks is not
     #  more viable. It's necessary to adopt another strategy for the tests
     #  that involve consuming LimeSurvey RPC API.
-    @skip
+    @skip(
+        "It's necessary to adopt another strategy for the tests that involve consuming LimeSurvey RPC API."
+    )
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("survey.abc_search_engine.Server")
     def test_POST_send_to_plugin_write_files_and_dirs_the_right_way_and_always_in_english(
         self, mockServer
-    ):
+    ) -> None:
         set_limesurvey_api_mocks2(mockServer)
 
         self._create_basic_objects()
@@ -535,7 +537,7 @@ class PluginTest(ExportTestCase):
             },
         )
         export = Export.objects.last()
-        self.assertIsInstance(export, Export)
+        assert isinstance(export, Export)
         with open(
             os.path.join(
                 settings.MEDIA_ROOT,
@@ -910,7 +912,7 @@ class PluginTest(ExportTestCase):
             ),
         )
 
-    @skip  # get_language_properties already deal with errors returned by LimeSurvey
+    @skip("get_language_properties already deal with errors returned by LimeSurvey")
     @patch("survey.abc_search_engine.Server")
     def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message9(
         self, mockServer
