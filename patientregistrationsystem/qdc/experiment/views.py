@@ -7626,7 +7626,7 @@ def questionnaire_response_view(
 
 def delete_questionnaire_response(
     questionnaire: Questionnaire, questionnaire_response: QuestionnaireResponse
-):
+) -> bool:
     # Checking if it is used by patient_questionnaire_response
     token_is_used_patient_questionnaire_response = (
         PatientQuestionnaireResponse.objects.filter(
@@ -7946,7 +7946,7 @@ def load_questionnaire_data(request, group_id):
 
 def update_list_of_reused_tokens(
     new_questionnaire_response, questionnaire, reused_tokens
-):
+) -> None:
     if questionnaire.survey.lime_survey_id not in reused_tokens:
         reused_tokens[questionnaire.survey.lime_survey_id] = [
             new_questionnaire_response.token_id
@@ -8045,7 +8045,7 @@ def subject_eeg_view(
     return render(request, template_name, context)
 
 
-def file_format_code(tag=""):
+def file_format_code(tag: str = "") -> list[dict[str, Any]]:
     """
 
     :return: List of dicts. Each dict contains information about a file format.
@@ -8084,7 +8084,7 @@ def list_data_configuration_tree(eeg_configuration_id, list_of_path):
     data_configuration_tree = DataConfigurationTree.objects.filter(
         component_configuration_id=eeg_configuration_id
     )
-    list_of_path_in_db = []
+    list_of_path_in_db: list[int] = []
     data_configuration_tree_id = None
 
     if data_configuration_tree:

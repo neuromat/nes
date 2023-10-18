@@ -83,22 +83,23 @@ PROJECT_APPS: list[str] = [
     "export",
     "configuration",
     "plugin",
+    "processing",
 ]
 
 INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE: list[str] = [
     "django.middleware.security.SecurityMiddleware",
-    "django.middleware.cache.UpdateCacheMiddleware",
+    # "django.middleware.cache.UpdateCacheMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.http.ConditionalGetMiddleware",
+    # "django.middleware.http.ConditionalGetMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.cache.FetchFromCacheMiddleware",
+    # "django.middleware.cache.FetchFromCacheMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "maintenance_mode.middleware.MaintenanceModeMiddleware",
     "axes.middleware.AxesMiddleware",
@@ -198,8 +199,8 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, "experiment/locale"),
     os.path.join(BASE_DIR, "survey/locale"),
     os.path.join(BASE_DIR, "custom_user/locale"),
-    os.path.join(BASE_DIR, "data/locale"),
     os.path.join(BASE_DIR, "export/locale"),
+    os.path.join(BASE_DIR, "processing/locale"),
     os.path.join(BASE_DIR, "qdc/locale"),
     os.path.join(BASE_DIR, "site_static/locale"),
 )

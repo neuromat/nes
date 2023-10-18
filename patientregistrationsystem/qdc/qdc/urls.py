@@ -25,6 +25,7 @@ urlpatterns = [
     re_path(r"^survey/", include("survey.urls")),
     re_path(r"^export/", include("export.urls")),
     re_path(r"^plugin/", include("plugin.urls")),
+    re_path(r"^processing/", include("processing.urls")),
     re_path(r"^home/$", qdcviews.contact, name="contact"),
     re_path(r"^accounts/login/$", authviews.LoginView.as_view(), name="login"),
     re_path(r"^account/", include("django.contrib.auth.urls")),
