@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import datetime
 from os import path
-from typing import Any, LiteralString, override
+from typing import Any, LiteralString
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -125,7 +125,7 @@ class ExperimentResearcher(models.Model):
     researcher = models.ForeignKey(User, on_delete=models.CASCADE)
     channel_index = models.IntegerField(null=True)
 
-    @override
+    
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
     ) -> None:

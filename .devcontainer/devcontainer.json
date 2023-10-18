@@ -62,7 +62,8 @@
 				"mrmlnc.vscode-apache",
 				"shakram02.bash-beautify",
 				"bibhasdn.django-html",
-				"matangover.mypy"
+				"matangover.mypy",
+				"VisualStudioExptTeam.vscodeintellicode-completions"
 			]
 		}
 	}

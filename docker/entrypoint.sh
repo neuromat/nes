@@ -228,7 +228,7 @@ else
     #Alias /img/ $NES_PROJECT_PATH/img/
 
     WSGIScriptAlias / $NES_PROJECT_PATH/qdc/wsgi.py application-group=%{GLOBAL}
-    WSGIDaemonProcess nes-ssl lang='en_US.UTF-8' locale='en_US.UTF-8'
+    WSGIDaemonProcess nes-ssl python-home=/usr/local/bin/python lang='en_US.UTF-8' locale='en_US.UTF-8'
     WSGIProcessGroup nes-ssl
 
     SSLEngine on

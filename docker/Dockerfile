@@ -7,7 +7,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8  
 
 
-ARG NES_BRANCH=local
+ARG NES_BRANCH=dev
 ARG NES_DIR=/usr/local/nes
 ENV NES_DIR=$NES_DIR
 
@@ -34,9 +34,6 @@ RUN mkdir -p $NES_DIR  && \
     if [ $NES_BRANCH != "unset" ]; then \
         echo Cloning $NES_BRANCH branch ;\
         git clone -j $(nproc) -b "$NES_BRANCH"  https://github.com/mcostat/nes.git $NES_DIR ;\
-    elif [ ${NES_BRANCH} == "local"]; then \
-        echo Copying local; \
-        cp .. $NES_DIR; \
     else \
         echo Cloning master branch ;\
         git clone -j $(nproc) https://github.com/mcostat/nes.git $NES_DIR ;\
