@@ -724,7 +724,7 @@ def restore_patient(request, patient_id) -> HttpResponseRedirect:
 @login_required
 @permission_required("patient.view_patient")
 def search_patients_ajax(request) -> HttpResponse:
-    patient_list: list[Patient] = []
+    patient_list = []
     if request.method == "POST":
         search_text = request.POST["search_text"]
         if search_text:
@@ -734,7 +734,7 @@ def search_patients_ajax(request) -> HttpResponse:
                     .exclude(removed=True)
                     .order_by("code")
                 )
-            elif re.match(r"[a-zA-Z ]+", search_text):
+            elif re.match(r"^[a-zA-Z]{1}[a-zA-Z ]{0,}$", search_text):
                 patient_list = (
                     Patient.objects.filter(name__icontains=search_text)
                     .exclude(removed=True)

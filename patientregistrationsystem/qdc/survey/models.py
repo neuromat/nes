@@ -31,7 +31,7 @@ class Survey(models.Model):
         super(Survey, self).save(*args, **kwargs)
 
     @staticmethod
-    def create_random_survey_code():
+    def create_random_survey_code() -> str:
         used_codes = set([survey.code for survey in Survey.objects.all()])
         possible_code = set(["Q" + str(item) for item in range(1, 100000)])
         available_codes = list(possible_code - used_codes)

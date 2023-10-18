@@ -507,7 +507,7 @@ class ImportExperiment:
         # TODO (Refactor): Patient model has function to generate random patient code
         patients = Patient.objects.all()
         if patients:
-            last_patient_code = patients.order_by("-code").first().code
+            last_patient_code: str = patients.order_by("-code").first().code
             if last_patient_code:
                 numerical_part_code = int(last_patient_code.split("P")[1])
                 next_numerical_part = numerical_part_code + 1

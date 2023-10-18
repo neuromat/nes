@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm as wheeler
+FROM python:3.12-slim-bookworm as wheeler
 
 ENV PYTHONUNBUFFERED 1
 
@@ -7,7 +7,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8  
 
 
-ARG NES_BRANCH=dev
+ARG NES_BRANCH=local
 ARG NES_DIR=/usr/local/nes
 ENV NES_DIR=$NES_DIR
 
@@ -34,6 +34,9 @@ RUN mkdir -p $NES_DIR  && \
     if [ $NES_BRANCH != "unset" ]; then \
         echo Cloning $NES_BRANCH branch ;\
         git clone -j $(nproc) -b "$NES_BRANCH"  https://github.com/mcostat/nes.git $NES_DIR ;\
+    elif [ ${NES_BRANCH} == "local"]; then \
+        echo Copying local; \
+        cp .. $NES_DIR; \
     else \
         echo Cloning master branch ;\
         git clone -j $(nproc) https://github.com/mcostat/nes.git $NES_DIR ;\
@@ -50,9 +53,10 @@ RUN pip3 install -U pip setuptools wheel && \
     pip3 wheel -r requirement/requirements.txt
 
 
-FROM python:3.11-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONOPTIMIZE 1
 
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
