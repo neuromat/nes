@@ -2014,7 +2014,7 @@ class QuestionnaireFormValidation(TestCase):
         self.assertTrue(not completed)
 
     # TODO: this is an integration test. TODO (NES-995): take it to its place
-    @skip
+    @skip("(NES-995): take it to its place")
     def test_check_limesurvey_availability(self):
         """Test if LimeSurvey is available under circumstances"""
         patient = self.util.create_patient(self.user)

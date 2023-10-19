@@ -63,6 +63,7 @@ services:
       PGDATA: /var/lib/postgresql/data
       POSTGRES_HOST_AUTH_METHOD: md5
       POSTGRES_INITDB_ARGS: --auth-host=md5
+      PGCLIENTENCODING: UTF8
 
   nes:
     build:

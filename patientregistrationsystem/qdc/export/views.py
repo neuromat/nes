@@ -21,7 +21,6 @@ from django.utils.translation import gettext_lazy as _
 from experiment.models import (
     AdditionalData,
     Block,
-    ClassificationOfDiseases,
     Component,
     ComponentConfiguration,
     DataConfigurationTree,
@@ -40,12 +39,11 @@ from experiment.models import ResearchProject, Stimulus, SubjectOfGroup, TMSData
 from export.export import ExportExecution, create_directory
 from export.export_utils import can_export_nwb, create_list_of_trees
 from export.input_export import build_complete_export_structure
-from patient.models import Patient, QuestionnaireResponse
-from patient.views import check_limesurvey_access
+from patient.models import Patient, QuestionnaireResponse, ClassificationOfDiseases
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 from survey.survey_utils import QuestionnaireUtils
-from survey.views import get_questionnaire_language
+from survey.views import get_questionnaire_language, check_limesurvey_access
 
 from .forms import AgeIntervalForm, ExportForm, ParticipantsSelectionForm
 from .models import Export

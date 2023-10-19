@@ -26,7 +26,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/patientregistrationsystem/qdc/manage.py",
             "args": [
-                "test"
+                "test",
+                "export"
             ],
             "cwd": "${workspaceFolder}/patientregistrationsystem/qdc",
             "django": true,

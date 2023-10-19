@@ -2566,7 +2566,6 @@ class ExportParticipantsTest(ExportTestCase):
             )
         )
 
-    @skip
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch("export.export.ExportExecution.create_export_directory")
     def test_create_export_directory_fails_return_error_message(
@@ -4128,7 +4127,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
         shutil.rmtree(temp_dir)
 
-    @skip  # FIXME skip until fix the NWB to PYNWB
+    @skip("skip until fix the NWB to PYNWB")  # FIXME skip until fix the NWB to PYNWB
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_per_experiment_adds_eeg_data_collection_nwb_file_resource(
         self,

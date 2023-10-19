@@ -23,6 +23,8 @@ PASSWORD_HASHERS: list[str] = [
     "django.contrib.auth.hashers.MD5PasswordHasher",
 ]
 
+SESSION_CACHE_ALIAS = "default"
+
 CACHE_MIDDLEWARE_ALIAS = "default"
 
 CACHES = {

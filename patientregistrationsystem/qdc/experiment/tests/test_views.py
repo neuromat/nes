@@ -3920,7 +3920,9 @@ class ImportExperimentTest(TestCase):
             to_create2=False,
         )
 
-    @skip # TODO: test when implementing exporting/importing data collections
+    @skip(
+        "test when implementing exporting/importing data collections"
+    )  # TODO: test when implementing exporting/importing data collections
     def test_eeg_electrode_net_and_eeg_electrode_cap(self):
         self._test_creation_and_linking_between_two_models(
             "experiment.eegelectrodenet",
@@ -4304,6 +4306,7 @@ class ImportExperimentTest(TestCase):
 
         # Changes name simulating importing without his existence
         manufacturer = Manufacturer.objects.last()
+        assert isinstance(manufacturer, Manufacturer)
         manufacturer.name = "new manufacturer"
         manufacturer.save()
 
@@ -4327,6 +4330,7 @@ class ImportExperimentTest(TestCase):
 
         # Changes description simulating importing without existence
         material = Material.objects.last()
+        assert isinstance(material, Material)
         material.description = "new description"
         material.save()
 
@@ -4335,6 +4339,7 @@ class ImportExperimentTest(TestCase):
 
         self.assertEqual(2, Material.objects.count())
         material = Material.objects.last()
+
         self.assertEqual(ElectrodeModel.objects.last().material, material)
         # TODO: test when importing/exporting data collections
         # self.assertEqual(EEGElectrodeCap.objects.last().material, material)
@@ -4592,6 +4597,7 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         electrode_loc_sys = EEGElectrodeLocalizationSystem.objects.last()
+        assert isinstance(electrode_loc_sys, EEGElectrodeLocalizationSystem)
         electrode_pos = electrode_loc_sys.electrode_positions.first()
         electrode_pos.coordinate_x = 21
         electrode_pos.save()
@@ -4601,11 +4607,14 @@ class ImportExperimentTest(TestCase):
 
         self.assertEqual(2, EEGElectrodeLocalizationSystem.objects.count())
         new_electrode_loc_sys = EEGElectrodeLocalizationSystem.objects.last()
+        assert isinstance(electrode_loc_sys, EEGElectrodeLocalizationSystem)
         new_electrode_pos = EEGElectrodePosition.objects.last()
+        assert isinstance(new_electrode_pos, EEGElectrodePosition)
         self.assertEqual(
             new_electrode_pos.eeg_electrode_localization_system, new_electrode_loc_sys
         )
         new_eegelectrodenetsystem = EEGElectrodeNetSystem.objects.last()
+        assert isinstance(new_eegelectrodenetsystem, EEGElectrodeNetSystem)
         self.assertEqual(
             new_eegelectrodenetsystem.eeg_electrode_localization_system,
             new_electrode_loc_sys,
@@ -4724,6 +4733,7 @@ class ImportExperimentTest(TestCase):
 
         # Changes description simulating importing without existence
         material = Material.objects.last()
+        assert isinstance(material, Material)
         material.description = "new description"
         material.save()
 
@@ -4822,6 +4832,7 @@ class ImportExperimentTest(TestCase):
 
         self.assertEqual(2, ClassificationOfDiseases.objects.count())
         new_cid10 = ClassificationOfDiseases.objects.last()
+        assert isinstance(new_cid10, ClassificationOfDiseases)
         self.assertEqual(new_cid10.code, "A01")
         self.assertEqual(new_cid10.description, "(imported, not recognized)")
         self.assertEqual(
@@ -5000,6 +5011,7 @@ class ImportExperimentTest(TestCase):
 
         # Created right above: to remove files below
         tms_ls = TMSLocalizationSystem.objects.last()
+        assert isinstance(tms_ls, TMSLocalizationSystem)
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -5023,6 +5035,7 @@ class ImportExperimentTest(TestCase):
         )
 
         tms_file_imported = TMSLocalizationSystem.objects.last()
+        assert isinstance(tms_file_imported, TMSLocalizationSystem)
         filepath = os.path.join(
             self.TEMP_MEDIA_ROOT, tms_file_imported.tms_localization_system_image.name
         )

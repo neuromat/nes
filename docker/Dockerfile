@@ -1,6 +1,7 @@
 FROM python:3.11-slim-bookworm as wheeler
 
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONOPTIMIZE 1
 
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
