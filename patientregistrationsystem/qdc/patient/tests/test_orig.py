@@ -140,7 +140,7 @@ class UtilTests:
         )
 
     @staticmethod
-    def create_cid10_to_search():
+    def create_cid10_to_search() -> None:
         cid10 = ClassificationOfDiseases.objects.create(
             code="A01",
             description="Febres paratifoide",
@@ -155,7 +155,7 @@ class UtilTests:
         cid10.save()
 
     @staticmethod
-    def create_cid10(code=None):
+    def create_cid10(code=None) -> ClassificationOfDiseases:
         """Create classification of desease"""
         fake = Factory.create()
 
@@ -167,7 +167,7 @@ class UtilTests:
         )
 
     @staticmethod
-    def create_medical_record(user, patient):
+    def create_medical_record(user, patient) -> MedicalRecordData:
         return MedicalRecordData.objects.create(
             patient=patient, record_responsible=user
         )
@@ -183,7 +183,7 @@ class UtilTests:
     # TODO (NES-1032): removes from here. Creates in Survey tests helper (
     #  already exists)
     @staticmethod
-    def create_survey(survey_id, is_initial_evaluation):
+    def create_survey(survey_id, is_initial_evaluation) -> Survey:
         return Survey.objects.create(
             lime_survey_id=survey_id, is_initial_evaluation=is_initial_evaluation
         )
@@ -205,7 +205,7 @@ class UtilTests:
     @staticmethod
     def create_response_survey(
         responsible, patient, survey, token_id=None, is_completed=datetime.now()
-    ):
+    ) -> QuestionnaireResponse:
         if token_id is None:
             token_id = 21
 
@@ -508,7 +508,7 @@ class PatientFormValidation(TestCase):
         patient_to_update = Patient.objects.filter(name=self.data["name"]).first()
         self.fill_social_demographic_data()
         self.data["currentTab"] = 1
-
+        assert isinstance(patient_to_update, Patient)
         # Success case
         response = self.client.post(
             reverse(PATIENT_EDIT, args=(patient_to_update.pk,)), self.data, follow=True

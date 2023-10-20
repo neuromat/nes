@@ -565,7 +565,7 @@ def export_view(request, template_name="export/export_data.html"):
     questionnaires_experiment_fields_list = []
     language_code = request.LANGUAGE_CODE
 
-    component_list = []
+    component_list: dict[str, Any] = {}
 
     if request.method == "POST":
         # Test for at least one patient attribute selected
@@ -632,7 +632,6 @@ def export_view(request, template_name="export/export_data.html"):
         )
 
         if selected_data_available:
-            component_list: dict[str, Any] = {}
             if export_form.is_valid():
                 per_experiment = "group_selected_list" in request.session
                 per_participant = True

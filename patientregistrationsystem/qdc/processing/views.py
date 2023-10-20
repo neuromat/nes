@@ -1,6 +1,8 @@
 import tempfile
 from typing import Any
 
+from git import Object
+
 import experiment
 import mne
 from click import Group
@@ -102,7 +104,7 @@ def index(
 def select_files(
     request: HttpRequest, template_name: str = "processing/file_selection.html"
 ) -> HttpResponse:
-    return None
+    return Object()
 
 
 def get_avaliable_projects() -> list[Experiment]:

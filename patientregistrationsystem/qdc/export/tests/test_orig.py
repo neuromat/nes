@@ -494,7 +494,7 @@ class AdvancedSearchTest(TestCase):
             Patient.objects.filter(gender__name="Female").count(),
         )
 
-    def test_filter_age_participants(self):
+    def test_filter_age_participants(self) -> None:
         self.create_initial_patients_data()
 
         self.data["action"] = "next-step-1"
@@ -503,8 +503,6 @@ class AdvancedSearchTest(TestCase):
 
         self.data["min_age"] = 5
         self.data["max_age"] = 17
-
-        # print("age")
 
         response = self.client.post(reverse("filter_participants"), self.data)
         self.assertEqual(response.status_code, 200)

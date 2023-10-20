@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 raise CommandError('Filename "%s" has incorrect format.' % filename)
 
 
-def import_classification_of_icd_cid(file_name):
+def import_classification_of_icd_cid(file_name: str) -> None:
     filename = os.path.join(
         settings.BASE_DIR,
         os.path.join(

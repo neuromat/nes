@@ -2494,7 +2494,7 @@ class ImportExperimentTest(TestCase):
             strip_tags(response.content.decode("utf-8")),
         )
         self.assertIn(
-            "1 Experimento/projeto importado: " + Experiment.objects.last().title,
+            "1 Experimento/projeto importado: " + str(Experiment.objects.last().title),
             strip_tags(response.content.decode("utf-8")),
         )
 

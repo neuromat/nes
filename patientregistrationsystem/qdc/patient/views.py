@@ -14,6 +14,7 @@ from django.forms.models import inlineformset_factory
 from django.http import HttpRequest, HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.template import Context
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from experiment.models import Questionnaire
@@ -56,7 +57,7 @@ permission_required = partial(permission_required, raise_exception=True)
 
 @login_required
 @permission_required("patient.view_patient")
-def patient_view(request, patient_id) -> HttpResponse:
+def patient_view(request: HttpRequest, patient_id: int) -> HttpResponse:
     current_tab = get_current_tab(request)
     patient = get_object_or_404(Patient, pk=patient_id)
 
@@ -84,7 +85,7 @@ def patient_view(request, patient_id) -> HttpResponse:
         return HttpResponseRedirect(redirect_url)
 
     if patient and not patient.removed:
-        context = {
+        context: Context = {
             "editing": False,
             "currentTab": current_tab,
             "patient_id": patient_id,
@@ -109,7 +110,9 @@ def patient_view(request, patient_id) -> HttpResponse:
 
 @login_required
 @permission_required("patient.add_patient")
-def patient_create(request, template_name="patient/register_personal_data.html"):
+def patient_create(
+    request: HttpRequest, template_name: str = "patient/register_personal_data.html"
+) -> HttpResponse:
     patient_form = PatientForm(request.POST or None)
     telephone_inlineformset = inlineformset_factory(
         Patient, Telephone, form=TelephoneForm
@@ -195,7 +198,7 @@ def patient_update(request, patient_id):
                 raise PermissionDenied
 
 
-def get_current_tab(request):
+def get_current_tab(request: HttpRequest) -> str:
     current_tab = "0"
 
     if request.method == "POST":
@@ -208,7 +211,9 @@ def get_current_tab(request):
     return current_tab
 
 
-def patient_update_personal_data(request, patient, context):
+def patient_update_personal_data(
+    request: HttpRequest, patient: Patient, context: Context
+) -> HttpResponse:
     patient_form = PatientForm(request.POST or None, instance=patient)
 
     telephone_inlineformset = inlineformset_factory(
@@ -264,7 +269,9 @@ def patient_update_personal_data(request, patient, context):
     return render(request, "patient/register_personal_data.html", context)
 
 
-def patient_update_social_demographic_data(request, patient, context):
+def patient_update_social_demographic_data(
+    request: HttpRequest, patient: int, context: Context
+) -> HttpResponse:
     try:
         p_social_demo = SocialDemographicData.objects.get(patient_id=patient.id)
         social_demographic_form = SocialDemographicDataForm(
@@ -354,7 +361,9 @@ def patient_update_social_demographic_data(request, patient, context):
     return render(request, "patient/register_socialdemographic_data.html", context)
 
 
-def patient_update_social_history(request, patient, context):
+def patient_update_social_history(
+    request: HttpRequest, patient: Patient, context: Context
+) -> HttpResponse:
     try:
         p_social_hist = SocialHistoryData.objects.get(patient_id=patient.id)
         social_history_form = SocialHistoryDataForm(
@@ -400,7 +409,9 @@ def patient_update_medical_record(request, patient, context):
     return render(request, "patient/register_medical_record.html", context)
 
 
-def finish_handling_post(request, patient_id, current_tab):
+def finish_handling_post(
+    request: HttpRequest, patient_id: int, current_tab: int
+) -> HttpResponse:
     if "action" in request.POST:
         redirect_url = reverse("patient_edit", args=(patient_id,))
 
@@ -1184,8 +1195,12 @@ def exam_create(
 @login_required
 @permission_required("patient.add_medicalrecorddata")
 def exam_edit(
-    request, patient_id, record_id, exam_id, template_name="patient/exams.html"
-):
+    request: HttpRequest,
+    patient_id: int,
+    record_id: int,
+    exam_id: int,
+    template_name: str = "patient/exams.html",
+) -> HttpResponse:
     current_patient = Patient.objects.get(id=patient_id)
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
 
@@ -1261,8 +1276,12 @@ def exam_edit(
 @login_required
 @permission_required("patient.view_medicalrecorddata")
 def exam_view(
-    request, patient_id, record_id, exam_id, template_name="patient/exams.html"
-):
+    request: HttpRequest,
+    patient_id: int,
+    record_id: int,
+    exam_id: int,
+    template_name: str = "patient/exams.html",
+) -> HttpResponse:
     status = ""
     if "status" in request.GET:
         status = request.GET["status"]
@@ -1302,7 +1321,9 @@ def exam_view(
 
 @login_required
 @permission_required("patient.add_medicalrecorddata")
-def exam_delete(request, patient_id, record_id, exam_id):
+def exam_delete(
+    request: HttpRequest, patient_id: int, record_id: int, exam_id: int
+) -> HttpResponseRedirect:
     status = ""
     if "status" in request.GET:
         status = request.GET["status"]
@@ -1339,7 +1360,7 @@ def exam_delete(request, patient_id, record_id, exam_id):
 
 @login_required
 @permission_required("patient.add_medicalrecorddata")
-def exam_file_delete(request, exam_file_id):
+def exam_file_delete(request: HttpRequest, exam_file_id: int) -> HttpResponseRedirect:
     status = ""
     if "status" in request.GET:
         status = request.GET["status"]
@@ -1371,7 +1392,7 @@ def exam_file_delete(request, exam_file_id):
     )
 
 
-def get_origin(request):
+def get_origin(request: HttpRequest) -> str:
     origin = "0"
 
     if "origin" in request.GET:
@@ -1386,10 +1407,10 @@ def get_origin(request):
 @login_required
 @permission_required("patient.view_questionnaireresponse")
 def questionnaire_response_view(
-    request,
-    questionnaire_response_id,
-    template_name="experiment/subject_questionnaire_response_form.html",
-):
+    request: HttpRequest,
+    questionnaire_response_id: int,
+    template_name: str = "experiment/subject_questionnaire_response_form.html",
+) -> HttpResponseRedirect | HttpResponse:
     questionnaire_response = get_object_or_404(
         QuestionnaireResponse, pk=questionnaire_response_id
     )
@@ -1531,14 +1552,13 @@ def questionnaire_response_view(
 
 
 @login_required
-# TODO: associate the right permission
-# @permission_required('patient.add_medicalrecorddata')
+@permission_required("patient.add_questionnaireresponse")
 def questionnaire_response_create(
-    request,
-    patient_id,
-    survey_id,
-    template_name="experiment/subject_questionnaire_response_form.html",
-):
+    request: HttpRequest,
+    patient_id: int,
+    survey_id: int,
+    template_name: str = "experiment/subject_questionnaire_response_form.html",
+) -> HttpResponse:
     patient = get_object_or_404(Patient, pk=patient_id)
     survey = get_object_or_404(Survey, pk=survey_id)
 
@@ -1600,10 +1620,10 @@ def questionnaire_response_create(
 @login_required
 @permission_required("patient.change_questionnaireresponse")
 def questionnaire_response_update(
-    request,
-    questionnaire_response_id,
-    template_name="experiment/subject_questionnaire_response_form.html",
-):
+    request: HttpRequest,
+    questionnaire_response_id: int,
+    template_name: str = "experiment/subject_questionnaire_response_form.html",
+) -> HttpResponseRedirect | HttpResponse:
     questionnaire_response = get_object_or_404(
         QuestionnaireResponse, pk=questionnaire_response_id
     )
@@ -1709,7 +1729,9 @@ def questionnaire_response_update(
     return render(request, template_name, context)
 
 
-def questionnaire_response_start_fill_questionnaire(request, patient_id, survey):
+def questionnaire_response_start_fill_questionnaire(
+    request: HttpRequest, patient_id: int, survey: Survey
+) -> tuple:
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     if questionnaire_response_form.is_valid():
@@ -1772,7 +1794,7 @@ def questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
         return None, None
 
 
-def check_required_fields(surveys, lime_survey_id):
+def check_required_fields(surveys, lime_survey_id) -> bool:
     """
     Verify if questionnaire have right identification questions
     and question types
@@ -1812,7 +1834,7 @@ def check_required_fields(surveys, lime_survey_id):
     return validated_quantity == len(fields_to_validate)
 
 
-def get_limesurvey_response_url(questionnaire_response):
+def get_limesurvey_response_url(questionnaire_response: QuestionnaireResponse) -> str:
     questionnaire_lime_survey = Questionnaires()
     token = questionnaire_lime_survey.get_participant_properties(
         questionnaire_response.survey.lime_survey_id,

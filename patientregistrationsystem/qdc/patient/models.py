@@ -580,6 +580,8 @@ class SocialHistoryData(models.Model):
     )
     drugs = models.CharField(max_length=25, null=True, blank=True)
 
+    medical_drugs_history = models.TextField(null=True, blank=True)
+
     # Audit trail
     history = HistoricalRecords()
     changed_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)

@@ -193,6 +193,8 @@ class FileForm(ModelForm):
 
 
 class ComponentForm(ModelForm):
+    component_type: str = ""
+
     class Meta:
         model = Component
         fields = ["identification", "description", "duration_value", "duration_unit"]

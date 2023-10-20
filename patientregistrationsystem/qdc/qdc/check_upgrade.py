@@ -8,7 +8,7 @@ from git.repo import Repo
 
 def check_upgrade() -> bool:
     # FIXME arrumar isso
-    print(os.path.dirname(os.path.abspath(__file__)))
+    # print(os.path.dirname(os.path.abspath(__file__)))
     repo = Repo("https://github.com/mcostat/nes.git")
     for remote in repo.remotes:
         remote.fetch()
@@ -17,8 +17,7 @@ def check_upgrade() -> bool:
 
     remote_version = str(tags[-1]).rsplit("-", 1)[-1]
     current_version = settings.VERSION.split(".")
-    print(remote_version)
-    print(current_version)
+    print(f"Current version: {current_version} -> Remote version: {remote_version}")
     if int(remote_version[0]) == int(current_version[0]):
         if int(remote_version[1]) > int(current_version[1]):
             return True
