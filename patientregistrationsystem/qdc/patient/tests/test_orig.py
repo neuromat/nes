@@ -937,7 +937,7 @@ class PatientFormValidation(TestCase):
         self.data[SEARCH_TEXT] = ""
         response = self.client.post(reverse("patients_verify_homonym"), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["patient_homonym"], "")
+        self.assertEqual(response.context["patient_homonym"], None)
 
         # Busca invalida
         self.data[SEARCH_TEXT] = "!@#"
@@ -1527,7 +1527,7 @@ class QuestionnaireFormValidation(TestCase):
     - questionnaire with error: invalid survey (SURVEY_INVALID)
     """
 
-    user = ""
+    user: User = object()
     data: dict[str, Any] = {}
     util = UtilTests()
 
@@ -2015,7 +2015,7 @@ class QuestionnaireFormValidation(TestCase):
 
     # TODO: this is an integration test. TODO (NES-995): take it to its place
     @skip("(NES-995): take it to its place")
-    def test_check_limesurvey_availability(self):
+    def test_check_limesurvey_availability(self) -> None:
         """Test if LimeSurvey is available under circumstances"""
         patient = self.util.create_patient(self.user)
 
@@ -2048,7 +2048,7 @@ class QuestionnaireFormValidation(TestCase):
         ] = "https://survey.numec.prp.usp.br/"  # without error
 
     @patch("survey.abc_search_engine.Server")
-    def test_entrance_evaluation_response_create(self, mockServer):
+    def test_entrance_evaluation_response_create(self, mockServer) -> None:
         """Test inclusion of questionnaire response to a clear survey
         of the type: entrance evaluation questionnaire
         """

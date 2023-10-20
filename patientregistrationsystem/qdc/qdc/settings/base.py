@@ -48,7 +48,7 @@ AXES_COOLOFF_TIME = 1
 ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 
-CONN_MAX_AGE = 3600
+CONN_MAX_AGE = 10 * 60
 CONN_HEALTH_CHECKS = True
 
 
@@ -87,16 +87,16 @@ INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE: list[str] = [
     "django.middleware.security.SecurityMiddleware",
-    "django.middleware.cache.UpdateCacheMiddleware",
+    # "django.middleware.cache.UpdateCacheMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    #    "django.middleware.http.ConditionalGetMiddleware",
+    "django.middleware.http.ConditionalGetMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    # "django.middleware.cache.FetchFromCacheMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.cache.FetchFromCacheMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "maintenance_mode.middleware.MaintenanceModeMiddleware",
     "axes.middleware.AxesMiddleware",
@@ -143,7 +143,7 @@ SESSION_CACHE_ALIAS = "redis"
 
 CACHE_MIDDLEWARE_ALIAS = "redis"
 CACHE_MIDDLEWARE_KEY_PREFIX = ""
-CACHE_MIDDLEWARE_SECONDS = 60 * 60
+CACHE_MIDDLEWARE_SECONDS = 10 * 60
 
 CACHES: dict[str, Any] = {
     "default": {

@@ -724,6 +724,7 @@ def restore_patient(request, patient_id) -> HttpResponseRedirect:
 @login_required
 @permission_required("patient.view_patient")
 def search_patients_ajax(request: HttpRequest) -> HttpResponse:
+    sensitive_perm = request.user.has_perm("patient.sensitive_data_patient")
     patient_list = []
     if request.method == "POST":
         search_text = request.POST["search_text"]
@@ -734,7 +735,9 @@ def search_patients_ajax(request: HttpRequest) -> HttpResponse:
                     .exclude(removed=True)
                     .order_by("code")
                 )
-            elif re.match(r"^[a-zA-Z]{1}[a-zA-Z ]{0,}$", search_text):
+            elif (
+                re.match(r"^[a-zA-Z]{1}[a-zA-Z ]{0,}$", search_text) and sensitive_perm
+            ):
                 patient_list = (
                     Patient.objects.filter(name__icontains=search_text)
                     .exclude(removed=True)
@@ -756,14 +759,14 @@ def search_patients_ajax(request: HttpRequest) -> HttpResponse:
         "patient/ajax_search.html",
         {
             "patients": patient_list,
-            "sensitive_perm": request.user.has_perm("patient.sensitive_data_patient"),
+            "sensitive_perm": sensitive_perm,
         },
     )
 
 
 @login_required
 @permission_required("patient.view_patient")
-def patients_verify_homonym(request):
+def patients_verify_homonym(request: HttpRequest) -> HttpResponse:
     patient_homonym = None
     if request.method == "POST":
         search_text = request.POST["search_text"].strip()
@@ -777,7 +780,7 @@ def patients_verify_homonym(request):
                     removed=True
                 )
         else:
-            patient_homonym = ""
+            patient_homonym = None
 
     return render(
         None, "patient/ajax_homonym.html", {"patient_homonym": patient_homonym}
@@ -786,7 +789,7 @@ def patients_verify_homonym(request):
 
 @login_required
 @permission_required("patient.view_patient")
-def patients_verify_homonym_excluded(request):
+def patients_verify_homonym_excluded(request: HttpRequest) -> HttpResponse:
     patient_homonym_excluded = None
     if request.method == "POST":
         search_text = request.POST["search_text"]
@@ -800,7 +803,7 @@ def patients_verify_homonym_excluded(request):
                     cpf=search_text, removed=True
                 )
         else:
-            patient_homonym_excluded = ""
+            patient_homonym_excluded = None
 
     return render(
         None,
@@ -812,7 +815,7 @@ def patients_verify_homonym_excluded(request):
 @login_required
 @permission_required("patient.add_medicalrecorddata")
 def search_cid10_ajax(request):
-    cid_10_list = ""
+    cid_10_list = None
 
     if request.method == "POST":
         search_text = request.POST["search_text"]
@@ -843,8 +846,10 @@ def search_cid10_ajax(request):
 @login_required
 @permission_required("patient.add_medicalrecorddata")
 def medical_record_create(
-    request, patient_id, template_name="patient/medical_record.html"
-):
+    request: HttpRequest,
+    patient_id: int,
+    template_name: str = "patient/medical_record.html",
+) -> HttpResponse:
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
     if current_patient.name:
@@ -867,7 +872,10 @@ def medical_record_create(
 @login_required
 @permission_required("patient.view_medicalrecorddata")
 def medical_record_view(
-    request, patient_id, record_id, template_name="patient/medical_record.html"
+    request: HttpRequest,
+    patient_id: int,
+    record_id: int,
+    template_name: str = "patient/medical_record.html",
 ):
     status = ""
     if "status" in request.GET:

@@ -304,6 +304,7 @@ delimiter = "-"
 
 class EEGReading:
     file_format: FileFormat = None
+    
     reading = None
 
 
