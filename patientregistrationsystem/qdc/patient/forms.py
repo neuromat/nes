@@ -254,6 +254,7 @@ class SocialHistoryDataForm(ModelForm):
             "alcohol_frequency",
             "alcohol_period",
             "drugs",
+            "medical_drugs_history",
         ]
 
         widgets = dict(
@@ -261,11 +262,18 @@ class SocialHistoryDataForm(ModelForm):
             alcohol_frequency=Select(attrs={"class": "form-control"}),
             alcohol_period=Select(attrs={"class": "form-control"}),
             drugs=RadioSelect(
+                attrs={"class": "radio-inline"},
                 choices=(
                     ("ja_fez", _("Have already used")),
                     ("faz", _("It is using")),
                     ("nunca_fez", _("Have never used")),
-                )
+                ),
+            ),
+            medical_drugs_history=Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": "4",
+                }
             ),
         )
 
