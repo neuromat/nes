@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    {% if messages %}
+    {% comment %} {% if messages %}
         {% for message in messages %}
 
             {% if message.tags == "success" %}
@@ -47,7 +47,7 @@
             {% endif %}
 
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     <div hidden="hidden">
         <input id="process_requisition" type="text" value="{{ process_requisition }}">

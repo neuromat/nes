@@ -23,7 +23,7 @@
     </div>
 
     <div class="tab-content">
-        {% if messages %}
+        {% comment %} {% if messages %}
             {% for message in messages %}
 
                 {% if message.tags == "success" %}
@@ -43,7 +43,7 @@
                 {% endif %}
 
             {% endfor %}
-        {% endif %}
+        {% endif %} {% endcomment %}
 
         {% if export_form.errors %}
             <script type="text/javascript">

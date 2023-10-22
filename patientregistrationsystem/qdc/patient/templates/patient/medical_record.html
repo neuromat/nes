@@ -56,7 +56,7 @@
         </div>
     {% endif %}
 
-    {% if messages %}
+    {% comment %} {% if messages %}
         {% for message in messages %}
 
             {% if message.tags == "success" %}
@@ -76,7 +76,7 @@
             {% endif %}
 
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     {% if medical_record_form.errors %}
         <script type="text/javascript">
@@ -153,24 +153,24 @@
                                                                             </h4>
                                                                         </div>
                                                                         <div class="modal-body">
-                                                                            <div class="row">
+                                                                            {% comment %} <div class="row"> {% endcomment %}
                                                                                 <div class="form-group">
                                                                                     <label id="description-label-{{ diagnosis.id }}">{% trans "Observation" %}</label>
-                                                                                        <textarea class="form-control" cols="100" rows="3" id="diagnosis_description" name="description-{{ diagnosis.id }}" placeholder="{% trans "Observation" %}">{% if diagnosis.description %}{{ diagnosis.description }}{% endif %}</textarea>
+                                                                                    <textarea class="form-control" cols="100" rows="3" id="diagnosis_description" name="description-{{ diagnosis.id }}" placeholder="{% trans 'Observation' %}">{% if diagnosis.description %}{{ diagnosis.description }}{% endif %}</textarea>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div class="row">
+                                                                            {% comment %} </div> {% endcomment %}
+                                                                            {% comment %} <div class="row"> {% endcomment %}
                                                                                 <div class="form-group">
                                                                                     <label id="date-label-{{ diagnosis.id }}">{% trans "Date" %}</label>
                                                                                     <div class="input-group  input-group-sm">
-                                                                                        <input value="{{ diagnosis.date|date:'d/m/Y' }}" class="form-control" id="diagnosis_date-{{ diagnosis.id }}" name="date-{{ diagnosis.id }}" placeholder="{% trans "Date" %}" type="text">
+                                                                                        <input value="{{ diagnosis.date|date:'d/m/Y' }}" class="form-control" id="diagnosis_date-{{ diagnosis.id }}" name="date-{{ diagnosis.id }}" placeholder="{% trans 'Date' %}" >
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
+                                                                            {% comment %} </div> {% endcomment %}
                                                                         </div>
                                                                         <div class="modal-footer">
                                                                             <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                                                                            <button class="btn btn-primary" style="background-color: blue; color: #ffffff" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}">{% trans "Save" %}</button>
+                                                                            <button class="btn btn-primary" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}">{% trans "Save" %}</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>

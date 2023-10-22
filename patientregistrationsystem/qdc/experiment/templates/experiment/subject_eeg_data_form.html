@@ -71,7 +71,7 @@
         </div>
     </div>
 
-    {% if messages %}
+    {% comment %} {% if messages %}
         {% for message in messages %}
 
             {% if message.tags == "success" %}
@@ -91,7 +91,7 @@
             {% endif %}
 
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     {% if eeg_data_form.errors %}
         <script type="text/javascript">

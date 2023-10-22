@@ -5,7 +5,7 @@
 {% block activeSetup %}class="active"{% endblock %}
 
 {% block content %}
-
+    {% comment %} 
     {% if messages %}
         {% for message in messages %}
 
@@ -26,7 +26,7 @@
             {% endif %}
 
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     <div class="tab-pane fade in active" id="researchProjectBreadCrumb">
         <div class="col-md-12">

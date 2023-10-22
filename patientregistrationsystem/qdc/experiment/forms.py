@@ -144,7 +144,7 @@ class GroupForm(ModelForm):
     class Meta:
         model = Group
 
-        fields = ["title", "description"]
+        fields = ["title", "description", "inclusion_description"]
 
         widgets = {
             "title": TextInput(
@@ -162,6 +162,14 @@ class GroupForm(ModelForm):
                     "rows": "4",
                     "required": "",
                     "data-error": _("Description must be filled."),
+                }
+            ),
+            "inclusion_description": Textarea(
+                attrs={
+                    "class": "form-control",
+                    "style": "resize: vertical;",
+                    "rows": "4",
+                    "placeholder": _("Other inclusion criteria"),
                 }
             ),
         }
@@ -582,7 +590,7 @@ class ResearchProjectForm(ModelForm):
 class PublicationForm(ModelForm):
     class Meta:
         model = Publication
-        fields = ["title", "citation", "url", "publication_type"]
+        fields = ["title", "citation", "url", "publication_type", "file"]
 
         widgets = {
             "title": Textarea(

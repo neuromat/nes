@@ -589,7 +589,9 @@ def send_electrode_model_to_portal(experiment_nes_id, electrode_model: Electrode
 
     else:
         action_keys = ["experiments", "intramuscular_electrode", "create"]
-        electrode_instance = IntramuscularElectrode.objects.get(pk=electrode_model.id)
+        electrode_instance: IntramuscularElectrode = IntramuscularElectrode.objects.get(
+            pk=electrode_model.id
+        )
         params["strand"] = electrode_instance.strand
         params["insulation_material_name"] = (
             electrode_instance.insulation_material.name
@@ -1516,7 +1518,9 @@ def send_steps_to_portal(
 
     elif step_type == "generic_data_collection":
         api_step_method = "generic_data_collection_step"
-        step_specialization = GenericDataCollection.objects.get(pk=component.id)
+        step_specialization: GenericDataCollection = GenericDataCollection.objects.get(
+            pk=component.id
+        )
         params["information_type_name"] = step_specialization.information_type.name
         params[
             "information_type_description"
@@ -1524,7 +1528,9 @@ def send_steps_to_portal(
 
     elif step_type == "media_collection":
         api_step_method = "generic_data_collection_step"
-        step_specialization = MediaCollection.objects.get(pk=component.id)
+        step_specialization: MediaCollection = MediaCollection.objects.get(
+            pk=component.id
+        )
         params[
             "information_type_media_name"
         ] = step_specialization.information_type_media.name
@@ -1534,7 +1540,7 @@ def send_steps_to_portal(
 
     elif step_type == "stimulus":
         api_step_method = "stimulus_step"
-        step_specialization = Stimulus.objects.get(pk=component.id)
+        step_specialization: Stimulus = Stimulus.objects.get(pk=component.id)
         params["stimulus_type_name"] = step_specialization.stimulus_type.name
         if step_specialization.media_file:
             media_file = open(
@@ -1547,7 +1553,9 @@ def send_steps_to_portal(
 
     elif step_type == "goalkeeper_game":
         api_step_method = "goalkeeper_game_step"
-        step_specialization = DigitalGamePhase.objects.get(pk=component.id)
+        step_specialization: DigitalGamePhase = DigitalGamePhase.objects.get(
+            pk=component.id
+        )
         params["software_name"] = step_specialization.software_version.software.name
         params[
             "software_description"
@@ -1559,7 +1567,7 @@ def send_steps_to_portal(
 
     elif step_type == "block":
         api_step_method = "set_of_step"
-        step_specialization = Block.objects.get(pk=component.id)
+        step_specialization: Block = Block.objects.get(pk=component.id)
         params[
             "number_of_mandatory_steps"
         ] = step_specialization.number_of_mandatory_components
@@ -1569,7 +1577,7 @@ def send_steps_to_portal(
 
     elif step_type == "questionnaire":
         api_step_method = "questionnaire_step"
-        step_specialization = Questionnaire.objects.get(pk=component.id)
+        step_specialization: Questionnaire = Questionnaire.objects.get(pk=component.id)
         params["code"] = step_specialization.survey.code
         survey = step_specialization.survey
 

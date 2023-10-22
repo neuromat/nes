@@ -20,7 +20,7 @@
 
 {% block content %}
 
-    {% if messages %}
+    {% comment %} {% if messages %}
         {% for message in messages %}
 
             {% if message.tags == "success" %}
@@ -40,7 +40,7 @@
             {% endif %}
 
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     {% if publication_form.errors %}
         <script type="text/javascript">
@@ -105,6 +105,20 @@
                         <div class="form-group">
                             <label class="control-label">{% trans "URL" %}</label>
                             {{ publication_form.url }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "File" %}</label>
+                            {% if editing %}
+                                {{ publication_form.file }}
+                            {% else %}
+                                {{ publication_form.file.value }}
+                                <button class="btn btn-default" type="button" onclick="location.href='{{ publication_form.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                            {% endif %}
                             <div class="help-block with-errors"></div>
                         </div>
                     </div>

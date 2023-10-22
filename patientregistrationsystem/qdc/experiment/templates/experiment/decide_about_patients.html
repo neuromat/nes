@@ -7,7 +7,7 @@
 {% block content %}
 
     <div class="tab-content">
-        {% if messages %}
+        {% comment %} {% if messages %}
             {% for message in messages %}
 
                 {% if message.tags == "success" %}
@@ -27,7 +27,7 @@
                 {% endif %}
 
             {% endfor %}
-        {% endif %}
+        {% endif %} {% endcomment %}
 
         <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
             <div class="col-md-12">

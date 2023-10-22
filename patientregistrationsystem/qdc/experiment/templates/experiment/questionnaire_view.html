@@ -13,7 +13,7 @@
 
 {% block content %}
 
-    {% if messages %}
+    {% comment %} {% if messages %}
         {% for message in messages %}
 
             {% if message.tags == "success" %}
@@ -33,7 +33,7 @@
             {% endif %}
 
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     {% if questionnaire_form.errors %}
         <script type="text/javascript">

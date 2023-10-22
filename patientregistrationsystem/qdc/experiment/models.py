@@ -109,6 +109,16 @@ class Experiment(models.Model):
     def __str__(self) -> str:
         return self.title
 
+    def save(self, *args, **kwargs) -> None:
+        if self.pk is None:
+            saved_file = self.ethics_committee_project_file
+            self.ethics_committee_project_file = None
+            super(Experiment, self).save(*args, **kwargs)
+            self.ethics_committee_project_file = saved_file
+            kwargs.pop('force_insert', None) 
+
+        super(Experiment, self).save(*args, **kwargs)
+
     # @property
     # def _history_user(self):
     #     return self.changed_by
@@ -142,6 +152,10 @@ class ExperimentResearcher(models.Model):
         super(ExperimentResearcher, self).save()
 
 
+def get_publication_dir(instance, filename: str) -> str:
+    return "publication_files/%s/%s" % (instance.id, filename)
+
+
 class PublicationType(models.Model):
     name = models.CharField(max_length=50)
 
@@ -159,6 +173,8 @@ class Publication(models.Model):
     publication_type = models.ForeignKey(
         PublicationType, null=True, blank=True, on_delete=models.CASCADE
     )
+
+    file = models.FileField(upload_to=get_publication_dir, null=True, blank=True)
 
 
 class Manufacturer(models.Model):
@@ -465,8 +481,9 @@ class EEGElectrodeLocalizationSystem(models.Model):
             self.map_image_file = None
             super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
             self.map_image_file = saved_file
-        else:
-            super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
+            kwargs.pop('force_insert', None) 
+
+        super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
 
 
 class EEGElectrodePosition(models.Model):
@@ -1127,8 +1144,9 @@ class TMSLocalizationSystem(models.Model):
             self.tms_localization_system_image = None
             super(TMSLocalizationSystem, self).save(*args, **kwargs)
             self.tms_localization_system_image = saved_file
-        else:
-            super(TMSLocalizationSystem, self).save(*args, **kwargs)
+            kwargs.pop('force_insert') 
+
+        super(TMSLocalizationSystem, self).save(*args, **kwargs)
 
 
 class CoilOrientation(models.Model):
@@ -1349,8 +1367,9 @@ class ContextTree(models.Model):
             self.setting_file = None
             super(ContextTree, self).save(*args, **kwargs)
             self.setting_file = saved_file
-        else:
-            super(ContextTree, self).save(*args, **kwargs)
+            kwargs.pop('force_insert', None) 
+
+        super(ContextTree, self).save(*args, **kwargs)
 
         self.experiment.save()
 
@@ -1436,6 +1455,8 @@ class Group(models.Model):
     experimental_protocol = models.ForeignKey(
         Component, null=True, on_delete=models.SET_NULL
     )
+
+    inclusion_description = models.TextField(null=True, blank=True)
 
     class Meta:
         verbose_name = _("Group")
@@ -1741,9 +1762,9 @@ class SourceCode(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    # def save(self, *args, **kwargs) -> None:
-    #     super(SourceCode, self).save(*args, **kwargs)
-    #     self.experiment.save()
+    def save(self, *args, **kwargs) -> None:
+        super(SourceCode, self).save(*args, **kwargs)
+        self.experiment.save()
 
     # @property
     # def _history_user(self):

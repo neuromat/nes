@@ -44,7 +44,7 @@
                 {% endif %}
             </ol>
 
-            {% if messages %}
+            {% comment %} {% if messages %}
                 {% for message in messages %}
                     {% if message.tags == "success" %}
                         <script>showSuccessMessage('{{ message }}')</script>
@@ -59,7 +59,7 @@
                         <script>showInfoMessage('{{ message }}')</script>
                     {% endif %}
                 {% endfor %}
-            {% endif %}
+            {% endif %} {% endcomment %}
 
             {% if complementary_exam_form.errors %}
                 {% for field in complementary_exam_form %}

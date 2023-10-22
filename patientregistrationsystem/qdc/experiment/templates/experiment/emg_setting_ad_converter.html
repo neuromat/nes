@@ -11,7 +11,7 @@
 
 {% block content %}
 
-    {% if messages %}
+    {% comment %} {% if messages %}
         {% for message in messages %}
 
             {% if message.tags == "success" %}
@@ -31,7 +31,7 @@
             {% endif %}
 
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     {% if emg_ad_converter_setting_form.errors %}
         <script type="text/javascript">

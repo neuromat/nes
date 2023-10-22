@@ -16,7 +16,7 @@
 
 {% block content %}
 
-    {% if messages %}
+    {% comment %} {% if messages %}
         {% for message in messages %}
 
             {% if message.tags == "success" %}
@@ -36,7 +36,7 @@
             {% endif %}
 
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     {% if experiment_form.errors %}
         <script type="text/javascript">
@@ -89,6 +89,18 @@
                         </div>
                     </div>
                 </div>
+
+                {% if editing %}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Other inclusion description" %}</label>
+                                {{ group_form.inclusion_description }}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
 
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
@@ -151,6 +163,15 @@
                                     {% endif %}
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Other inclusion description" %}</label>
+                                {{ group_form.inclusion_description }}
+                                <div class="help-block with-errors"></div>
                             </div>
                         </div>
                     </div>

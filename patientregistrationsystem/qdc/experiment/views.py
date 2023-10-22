@@ -304,7 +304,7 @@ delimiter = "-"
 
 class EEGReading:
     file_format: FileFormat = None
-    
+
     reading = None
 
 
@@ -614,7 +614,7 @@ def keyword_search_ajax(request: HttpRequest) -> HttpResponse:
 @login_required
 @permission_required("experiment.change_researchproject")
 def keyword_create_ajax(
-    request, research_project_id, keyword_name
+    request: HttpRequest, research_project_id: int, keyword_name: str
 ) -> HttpResponseRedirect:
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 

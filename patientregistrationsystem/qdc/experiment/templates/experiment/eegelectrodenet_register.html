@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-
+{% comment %} 
     {% if messages %}
         {% for message in messages %}
 
@@ -32,7 +32,7 @@
             {% endif %}
 
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     {% if equipment_form.errors %}
         <script type="text/javascript">

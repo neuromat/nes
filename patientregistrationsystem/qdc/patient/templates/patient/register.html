@@ -80,7 +80,7 @@
             <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
 
             <div class="tab-content">
-                {% if messages %}
+                {% comment %} {% if messages %}
                     {% for message in messages %}
 
                         {% if message.tags == "success" %}
@@ -100,7 +100,7 @@
                         {% endif %}
 
                     {% endfor %}
-                {% endif %}
+                {% endif %} {% endcomment %}
 
                 {% block sub_content %}{% endblock %}
 
