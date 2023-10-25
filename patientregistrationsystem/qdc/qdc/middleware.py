@@ -18,6 +18,5 @@ class PasswordChangeMiddleware(MiddlewareMixin):
             and not re.search(r"/logout/?", request.path)
             and not request.user.is_superuser
         ):
-            zm, created = UserProfile.objects.get_or_create(user=request.user)
-            if zm.force_password_change:
+            if UserProfile.cached_force_password_change(request.user):
                 return redirect(reverse("password_change"))

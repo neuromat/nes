@@ -201,6 +201,7 @@ class ResearcherForm(ModelForm):
                     "placeholder": _("Type first name"),
                     "data-error": _("Only use letters and spaces"),
                     "oninput": "this.value = this.value.toUpperCase()",
+                    "data-maxlength": "150",
                 }
             ),
             "last_name": TextInput(
@@ -210,6 +211,7 @@ class ResearcherForm(ModelForm):
                     "placeholder": _("Type last name"),
                     "data-error": _("Only use letters and spaces"),
                     "oninput": "this.value = this.value.toUpperCase()",
+                    "data-maxlength": "1150",
                 }
             ),
             "email": TextInput(
@@ -252,7 +254,12 @@ class InstitutionForm(ModelForm):
                     "maxlength": "150",
                 }
             ),
-            "acronym": TextInput(attrs={"class": "form-control"}),
+            "acronym": TextInput(
+                attrs={
+                    "class": "form-control",
+                    "maxlength": "30",
+                }
+            ),
             "country": Select(attrs={"class": "form-control"}),
             "parent": Select(attrs={"class": "form-control"}),
         }

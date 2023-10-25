@@ -7,6 +7,7 @@
     {% load l10n %}
     {% load qdc_tags %}
     {% load solo_tags %}
+    {% load cache %}
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -163,6 +164,7 @@
     </form>
 </header>
 
+
 {% block form %}{% endblock %}
 
 <div id="main" class="container">
@@ -239,8 +241,10 @@
                         </a>
                     </li>
                 {% endif %}
-
+                
+                {% cache 600 plugin_random_forests request.user.username using="redis"%}
                 {% get_solo 'plugin.RandomForests' as random_forests %}
+                {% endcache %}
                 {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
                     <li {% block activePlugin %}{% endblock %}>
                         <a href="/plugin/">

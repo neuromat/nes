@@ -31,6 +31,9 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
     },
+    "redis": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    },
 }
 
 DJANGO_LOG_LEVEL = "CRITICAL"

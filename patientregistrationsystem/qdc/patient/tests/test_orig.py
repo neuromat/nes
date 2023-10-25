@@ -2259,7 +2259,10 @@ class QuestionnaireFormValidation(TestCase):
                 "BACKEND": "django.core.cache.backends.db.DatabaseCache",
                 "LOCATION": "limesurveycache",
                 "TIMEOUT": 0,
-            }
+            },
+            "redis": {
+                "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+            },
         }
     )
     def test_entrance_ev_response_complete_without_cache(self, mockServer):
@@ -2315,7 +2318,10 @@ class QuestionnaireFormValidation(TestCase):
                 "BACKEND": "django.core.cache.backends.db.DatabaseCache",
                 "LOCATION": "limesurveycache",
                 "TIMEOUT": 60,
-            }
+            },
+            "redis": {
+                "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+            },
         }
     )
     def test_entrance_ev_response_complete_with_cache(self, mockServer):

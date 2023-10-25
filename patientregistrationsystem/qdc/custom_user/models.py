@@ -1,9 +1,14 @@
+from tkinter import NO
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import gettext_lazy as _
 from django_stubs_ext.db.models import TypedModelMeta
 from patient.models import COUNTRIES
+from django.db.models.signals import post_delete, post_save
+from django.core.cache import caches
+from django.dispatch import receiver
+
 
 LOGIN = (
     (False, _("No")),
@@ -46,6 +51,33 @@ class UserProfile(models.Model):
     login_enabled = models.BooleanField(default=False, choices=LOGIN)
     force_password_change = models.BooleanField(default=True)
     citation_name = models.CharField(max_length=150, blank=True, default="")
+
+    @staticmethod
+    def cached_force_password_change(_user: User) -> bool:
+        key = "pw_change_{}".format(_user.username)
+        cache = caches["redis"]
+        pw_change = cache.get(key, None)
+
+        if isinstance(pw_change, bool):
+            return pw_change
+
+        u = UserProfile.objects.filter(user=_user).first()
+
+        if isinstance(u, UserProfile):
+            cache.set(key, u.force_password_change, 30 * 60)
+
+            return u.force_password_change
+
+        return False
+
+
+@receiver((post_delete, post_save), sender=UserProfile)
+def invalidate_force_password_change_cache(sender, instance, **kwargs):
+    """
+    Invalidate the book cached data when a book is changed or deleted
+    """
+    key = "pw_change_{}".format(instance.user.username)
+    caches["redis"].delete(key)
 
 
 def create_user_profile_signal(sender, instance, created, **kwargs) -> None:

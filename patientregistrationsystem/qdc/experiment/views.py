@@ -870,6 +870,7 @@ def experiment_view(
 ):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_list = Group.objects.filter(experiment=experiment).order_by("title")
+    stimuli_eq_setting_list = StimuliEqSetting.filter(experiment=experiment).order_by("name")
     source_code_list = SourceCode.objects.filter(experiment=experiment).order_by("name")
     eeg_setting_list = EEGSetting.objects.filter(experiment=experiment).order_by("name")
     emg_setting_list = EMGSetting.objects.filter(experiment=experiment).order_by("name")
@@ -965,6 +966,7 @@ def experiment_view(
         "experiment_form": experiment_form,
         "group_list": group_list,
         "source_code_list": source_code_list,
+        "stimuli_eq_setting_list": stimuli_eq_setting_list,
         "eeg_setting_list": eeg_setting_list,
         "emg_setting_list": emg_setting_list,
         "tms_setting_list": tms_setting_list,

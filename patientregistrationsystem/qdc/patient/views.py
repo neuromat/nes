@@ -270,7 +270,7 @@ def patient_update_personal_data(
 
 
 def patient_update_social_demographic_data(
-    request: HttpRequest, patient: int, context: Context
+    request: HttpRequest, patient: Patient, context: Context
 ) -> HttpResponse:
     try:
         p_social_demo = SocialDemographicData.objects.get(patient_id=patient.id)
