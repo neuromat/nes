@@ -531,7 +531,7 @@ def create_experiments_questionnaire_data_list(survey, surveys):
         component__component_type="questionnaire"
     ):
         q = Questionnaire.objects.filter(id=use.component_id).first()
-
+        assert isinstance(q, Questionnaire)
         if q is not None:
             if q.survey == survey:
                 if use.id not in experiments_questionnaire_data_dictionary:

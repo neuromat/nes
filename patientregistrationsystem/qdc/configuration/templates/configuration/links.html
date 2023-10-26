@@ -1,0 +1,22 @@
+{% extends "base/template.html" %}
+{% block activeLinks %}class="active"{% endblock %}
+{% load static %}
+
+{% load i18n static %}
+
+
+{% block content %}
+    <div class="col-md-12">
+        <div class="container-fluid well">
+            {% for link in useful_links %}
+                <div class="row">
+                    {{link.name}}
+                    <a href="{{ link.url }}">
+                        {{ link.url }}
+                    </a>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+
+{% endblock %}

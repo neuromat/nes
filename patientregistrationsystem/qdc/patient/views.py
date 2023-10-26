@@ -85,7 +85,7 @@ def patient_view(request: HttpRequest, patient_id: int) -> HttpResponse:
         return HttpResponseRedirect(redirect_url)
 
     if patient and not patient.removed:
-        context: Context = {
+        context = {
             "editing": False,
             "currentTab": current_tab,
             "patient_id": patient_id,

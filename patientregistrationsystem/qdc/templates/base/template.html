@@ -254,6 +254,13 @@
                     </li>
                 {% endif %}
 
+                <li {% block activeLinks %}{% endblock %}>
+                    <a href="/links/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Useful links of tools' %}">
+                        <span class="fa fa-link fa-fw fa-lg"></span>
+                        {% trans "Useful Links" %}
+                    </a>
+                </li>
+
             </ul>
         </nav>
 
@@ -304,10 +311,6 @@
                 showInfoMessage('{{ message }}');
             {% endif %}
         {% endfor %}
-
-    {% endif %}
-    {% if survey_form.errors %}
-        showErrorMessage(gettext('Please, correct the highlighted fields.'))
     {% endif %}
 
     $(function(){

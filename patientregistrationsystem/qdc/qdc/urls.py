@@ -11,6 +11,7 @@ from django.urls import path, re_path
 from django.views.i18n import JavaScriptCatalog
 from django.views.static import serve as staticserve
 from qdc import views as qdcviews
+from configuration import views as confviews
 
 from .forms import PasswordChangeFormCustomized
 
@@ -27,6 +28,7 @@ urlpatterns = [
     re_path(r"^plugin/", include("plugin.urls")),
     re_path(r"^processing/", include("processing.urls")),
     re_path(r"^home/$", qdcviews.contact, name="contact"),
+    re_path(r"^links/$", confviews.useful_links_view, name="useful_links"),
     re_path(r"^accounts/login/$", authviews.LoginView.as_view(), name="login"),
     re_path(r"^account/", include("django.contrib.auth.urls")),
     re_path(

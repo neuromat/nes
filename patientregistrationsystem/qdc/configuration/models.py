@@ -1,5 +1,4 @@
 from typing import Any
-from django.db.models.base import ModelBase
 from custom_user.models import Institution
 from django.db import models
 from django_stubs_ext.db.models import TypedModelMeta
@@ -44,3 +43,8 @@ class RightsSupport(models.Model):
         permissions = [
             ("upgrade_rights", "Can upgrade NES version"),
         ]
+
+
+class UsefulLink(models.Model):
+    name = models.CharField(max_length=150)
+    url = models.URLField()

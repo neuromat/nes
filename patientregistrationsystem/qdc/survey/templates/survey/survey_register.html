@@ -311,5 +311,11 @@
 {% endblock %}
 
 {% block script %}
+    <script>
+        {% if survey_form.errors %}
+            showErrorMessage(gettext('Please, correct the highlighted fields.'))
+        {% endif %}
+    </script>
+
     <script src="{% static 'site/js/survey.js' %}"></script>
 {% endblock %}

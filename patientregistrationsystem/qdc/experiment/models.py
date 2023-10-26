@@ -1681,7 +1681,7 @@ class QuestionnaireResponse(DataCollection):
     questionnaire_responsible = models.ForeignKey(
         User, on_delete=models.CASCADE, null=False, related_name="+"
     )
-    history = HistoricalRecords()
+    
     is_completed = models.CharField(max_length=50, default="")
 
     class Meta:
@@ -1689,6 +1689,8 @@ class QuestionnaireResponse(DataCollection):
             # ('view_questionnaireresponse', 'Can view questionnaire response'),
         )
 
+    history = HistoricalRecords()
+    
     # @property
     # def _history_user(self):
     #     return self.changed_by
