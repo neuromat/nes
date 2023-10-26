@@ -178,7 +178,7 @@ class Publication(models.Model):
 
 
 class Manufacturer(models.Model):
-    name = models.CharField(max_length=50)  # TODO: possibly make unique
+    name = models.CharField(max_length=50, unique=True)
 
     def __str__(self) -> str:
         return self.name
@@ -1400,7 +1400,7 @@ class ComponentConfiguration(models.Model):
     component = models.ForeignKey(
         Component, on_delete=models.CASCADE, null=False, related_name="configuration"
     )
-    # TODO Change to not null.
+
     parent = models.ForeignKey(Block, on_delete=models.CASCADE, related_name="children")
 
     # This field is only useful for component configurations marked as fixed

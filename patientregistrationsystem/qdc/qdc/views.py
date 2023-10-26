@@ -12,7 +12,7 @@ from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS, connections
 from django.db.migrations import Migration
 from django.db.migrations.executor import MigrationExecutor
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -22,14 +22,16 @@ from git.repo import Repo
 from packaging.version import Version
 
 
-def qdc_permission_denied_view(request, exception, template_name="admin/qdc_403.html"):
+def qdc_permission_denied_view(
+    request: HttpRequest, exception, template_name: str = "admin/qdc_403.html"
+) -> HttpResponse:
     context = {"exception": exception}
 
     return render(request, template_name, context, status=403)
 
 
 @login_required
-def contact(request):
+def contact(request: HttpRequest) -> HttpResponse:
     # messages.success(request, _("Test !"))
     if_upgrade = False
     if check_upgrade(request):
@@ -60,7 +62,7 @@ def contact(request):
 
 
 @login_required
-def language_change(request, language_code):
+def language_change(request: HttpRequest, language_code: str) -> HttpResponseRedirect:
     activate(language_code)
     request.session["_language"] = language_code
 
@@ -68,14 +70,12 @@ def language_change(request, language_code):
 
 
 @login_required
-def password_changed(request):
+def password_changed(request: HttpRequest) -> HttpResponse:
     messages.success(request, _("Password changed successfully."))
 
     return contact(request)
 
 
-# FIXME: a annotation estava errada??
-# @login_required
 def check_upgrade(request: HttpRequest) -> bool:
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
@@ -137,7 +137,7 @@ def get_pending_migrations() -> list[tuple[Migration, bool]]:
 
 @login_required
 @permission_required("configuration.upgrade_rights", raise_exception=True)
-def upgrade_nes(request):
+def upgrade_nes(request: HttpRequest) -> HttpResponseRedirect:
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
 

@@ -1747,7 +1747,7 @@ def send_all_experiments_to_portal() -> None:
                                     # Import here because of ImportError
                                     # (cannot import name) exception
                                     # possibly due to circular import error.
-                                    # TODO: see answer in:
+                                    # see answer in:
                                     # https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
                                     # TODO: for other solutions
                                     from export.export import (

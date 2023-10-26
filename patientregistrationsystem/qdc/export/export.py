@@ -1729,7 +1729,7 @@ class ExportExecution:
                         rows_participant_data = self.get_input_data("participants")[
                             "data_list"
                         ]
-                        answer_list = {
+                        answer_list: dict[str, list] = {
                             "fields": [],
                             "header": [],
                             "header_questionnaire": [],
@@ -1765,7 +1765,7 @@ class ExportExecution:
                             },
                         }
                     else:
-                        datapackage_json = ""
+                        datapackage_json: str = ""
                     self.files_to_zip_list.append(
                         [complete_filename, export_directory, datapackage_json]
                     )
@@ -1946,7 +1946,7 @@ class ExportExecution:
             for language in language_list:
                 # Get data for datapackage resource questionnaire response table schema
                 rows_participant_data = self.get_input_data("participants")["data_list"]
-                answer_list = {"fields": [], "header": [], "header_questionnaire": []}
+                answer_list: dict[str, list] = {"fields": [], "header": [], "header_questionnaire": []}
                 for question in questionnaire["output_list"]:
                     answer_list["fields"].append(question["field"])
                     answer_list["header"].append(question["header"])
