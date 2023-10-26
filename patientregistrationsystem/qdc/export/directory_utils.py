@@ -1,7 +1,7 @@
 from os import path, makedirs
 
 
-def create_directory(basedir: str, path_to_create: str) -> str:
+def create_directory(basedir: str, path_to_create: str) -> tuple[str, str]:
     """
     Create a directory
 

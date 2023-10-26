@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-14 16:40-0300\n"
+"POT-Creation-Date: 2023-10-26 18:33-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid "Home"
 msgstr "Início"
 
 #: plugin/templates/plugin/send_to_plugin.html:29
-#: plugin/templates/plugin/send_to_plugin.html:56
+#: plugin/templates/plugin/send_to_plugin.html:57
 msgid "Plugin"
 msgstr ""
 
@@ -31,95 +31,95 @@ msgstr ""
 msgid "Participants selection"
 msgstr "Seleção de participantes"
 
-#: plugin/templates/plugin/send_to_plugin.html:72
+#: plugin/templates/plugin/send_to_plugin.html:73
 msgid "Questionnaires data to be sent"
 msgstr "Dados de questionários a serem enviados"
 
-#: plugin/templates/plugin/send_to_plugin.html:77
+#: plugin/templates/plugin/send_to_plugin.html:78
 msgid ""
 "Questionnaire title for Unified Admission Assessment not available in en"
 msgstr "Título do Questionário Avaliação de Entrada não disponível em pt-BR"
 
-#: plugin/templates/plugin/send_to_plugin.html:82
+#: plugin/templates/plugin/send_to_plugin.html:83
 msgid "Questionnaire title for Surgical Assessment not available in en"
 msgstr "Título do Questionário Avaliação Cirúrgica não disponível em pt-BR"
 
-#: plugin/templates/plugin/send_to_plugin.html:88
+#: plugin/templates/plugin/send_to_plugin.html:89
 msgid "Questionnaire title for Follow-Up Assessment not available in en"
 msgstr "Título do Questionário Avaliação de Seguimento não disponível em pt-BR"
 
-#: plugin/templates/plugin/send_to_plugin.html:107
+#: plugin/templates/plugin/send_to_plugin.html:108
 msgid "Per Experiment"
 msgstr "Por Experimento"
 
-#: plugin/templates/plugin/send_to_plugin.html:111
+#: plugin/templates/plugin/send_to_plugin.html:112
 #, fuzzy
 #| msgid "Participants selection"
 msgid "Filters selection"
 msgstr "Seleção de participantes"
 
-#: plugin/templates/plugin/send_to_plugin.html:115
+#: plugin/templates/plugin/send_to_plugin.html:116
 msgid "Experiments"
 msgstr "Experimentos"
 
-#: plugin/templates/plugin/send_to_plugin.html:129
-#: plugin/templates/plugin/send_to_plugin.html:214
+#: plugin/templates/plugin/send_to_plugin.html:130
+#: plugin/templates/plugin/send_to_plugin.html:215
 msgid "List of participants"
 msgstr "Lista de participantes"
 
-#: plugin/templates/plugin/send_to_plugin.html:138
-#: plugin/templates/plugin/send_to_plugin.html:218
+#: plugin/templates/plugin/send_to_plugin.html:139
+#: plugin/templates/plugin/send_to_plugin.html:219
 msgid "Participants available:"
 msgstr "Participantes disponíveis:"
 
-#: plugin/templates/plugin/send_to_plugin.html:164
-#: plugin/templates/plugin/send_to_plugin.html:246
+#: plugin/templates/plugin/send_to_plugin.html:165
+#: plugin/templates/plugin/send_to_plugin.html:247
 msgid "Participants chosen:"
 msgstr "Participantes escolhidos:"
 
-#: plugin/templates/plugin/send_to_plugin.html:191
-#: plugin/templates/plugin/send_to_plugin.html:272
+#: plugin/templates/plugin/send_to_plugin.html:192
+#: plugin/templates/plugin/send_to_plugin.html:273
 msgid "Send"
 msgstr "Enviar"
 
-#: plugin/templates/plugin/send_to_plugin.html:209
+#: plugin/templates/plugin/send_to_plugin.html:210
 msgid "Per Participant"
 msgstr "Por Participante"
 
-#: plugin/templates/plugin/send_to_plugin.html:279
+#: plugin/templates/plugin/send_to_plugin.html:280
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: plugin/tests/test_views.py:429 plugin/views.py:306 plugin/views.py:367
+#: plugin/tests/test_views.py:429 plugin/views.py:310 plugin/views.py:372
 msgid "Could not open zip file to send to Forest Plugin"
 msgstr ""
 "Não foi possível abrir o arquivo zip para enviar para o plugin Floresta"
 
-#: plugin/tests/test_views.py:450 plugin/views.py:520
+#: plugin/tests/test_views.py:450 plugin/views.py:525
 msgid "Data from questionnaires was sent to Forest Plugin"
 msgstr "Os dados dos questionários foram enviados para o plugin Floresta"
 
-#: plugin/tests/test_views.py:471 plugin/views.py:320
+#: plugin/tests/test_views.py:471 plugin/views.py:324
 msgid "Please select at least Gender participant attribute"
 msgstr "Selecione ao menos o atributo Gênero do participante"
 
-#: plugin/tests/test_views.py:491 plugin/views.py:313
+#: plugin/tests/test_views.py:491 plugin/views.py:317
 #, fuzzy
 #| msgid "Please, select a patient field from the list."
 msgid "Please select at least one patient"
 msgstr "Por favor, selecione uma opção da lista."
 
-#: plugin/tests/test_views.py:512 plugin/views.py:326
+#: plugin/tests/test_views.py:512 plugin/views.py:330
 msgid "The Floresta Plugin needs to send at least Gender attribute"
 msgstr ""
 "O plugin floresta precisa enviar ao menos o atributo gênero do participante"
 
-#: plugin/tests/test_views.py:705 plugin/tests/test_views.py:734
-#: plugin/tests/test_views.py:763 plugin/tests/test_views.py:792
-#: plugin/tests/test_views.py:821 plugin/tests/test_views.py:850
-#: plugin/tests/test_views.py:879 plugin/tests/test_views.py:908
-#: plugin/tests/test_views.py:936 plugin/views.py:269 plugin/views.py:281
-#: plugin/views.py:340 plugin/views.py:352
+#: plugin/tests/test_views.py:707 plugin/tests/test_views.py:736
+#: plugin/tests/test_views.py:765 plugin/tests/test_views.py:794
+#: plugin/tests/test_views.py:823 plugin/tests/test_views.py:852
+#: plugin/tests/test_views.py:881 plugin/tests/test_views.py:910
+#: plugin/tests/test_views.py:939 plugin/views.py:269 plugin/views.py:281
+#: plugin/views.py:344 plugin/views.py:356
 msgid ""
 "Error: some thing went wrong consuming LimeSurvey API. Please try again. If "
 "problem persists please contact System Administrator."

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-06 17:50+0000\n"
+"POT-Creation-Date: 2023-10-26 18:33-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -227,31 +227,31 @@ msgstr "Código"
 msgid "Description"
 msgstr "Descrição"
 
-#: survey/views.py:171
+#: survey/views.py:172
 msgid "Questionnaire created successfully."
 msgstr "Questionário criado com sucesso."
 
-#: survey/views.py:188
+#: survey/views.py:189
 msgid "No questionnaire found."
 msgstr "Questionário não encontrado"
 
-#: survey/views.py:228
+#: survey/views.py:229
 msgid "Questionnaire updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:230 survey/views.py:323
+#: survey/views.py:231 survey/views.py:324
 msgid "There are no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: survey/views.py:321
+#: survey/views.py:322
 msgid "Questionnaire was updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:758
+#: survey/views.py:759
 msgid "responses were updated!"
 msgstr "respostas foram atualizadas!"
 
-#: survey/views.py:765
+#: survey/views.py:766
 msgid ""
 "No acquisition date for completed responses has been changed on LimeSurvey "
 "since the last update, the purchase date is not filled in LimeSurvey, or was "
@@ -261,11 +261,11 @@ msgstr ""
 "desde a última atualização, a data de aquisição não está preenchida no "
 "LimeSurvey, ou foi preenchida em um formato não reconhecido pelo NES."
 
-#: survey/views.py:804
+#: survey/views.py:805
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:810
+#: survey/views.py:811
 msgid ""
 "It was not possible to delete questionnaire, becausethere are experimental "
 "answers or steps associated."
@@ -273,24 +273,24 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:937
+#: survey/views.py:938
 msgid "Other"
 msgstr "Outros"
 
-#: survey/views.py:972
+#: survey/views.py:973
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:1065 survey/views.py:1087 survey/views.py:1127
+#: survey/views.py:1066 survey/views.py:1088 survey/views.py:1128
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:1198
+#: survey/views.py:1199
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 "O LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:1249
+#: survey/views.py:1250
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
 

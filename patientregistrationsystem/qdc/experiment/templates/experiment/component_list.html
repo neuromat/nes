@@ -102,7 +102,12 @@
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                             {% for type, type_name, icon in component_type_choices %}
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/{{ experiment.id }}/new_component/{{ type }}"> {{ type_name }}</a></li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/{{ type }}"> 
+                                        <span class="{{ icon }}"></span> 
+                                        {{ type_name }}
+                                    </a>
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>

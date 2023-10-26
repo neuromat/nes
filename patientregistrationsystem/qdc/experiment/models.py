@@ -115,7 +115,7 @@ class Experiment(models.Model):
             self.ethics_committee_project_file = None
             super(Experiment, self).save(*args, **kwargs)
             self.ethics_committee_project_file = saved_file
-            kwargs.pop('force_insert', None) 
+            kwargs.pop("force_insert", None)
 
         super(Experiment, self).save(*args, **kwargs)
 
@@ -481,7 +481,7 @@ class EEGElectrodeLocalizationSystem(models.Model):
             self.map_image_file = None
             super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
             self.map_image_file = saved_file
-            kwargs.pop('force_insert', None) 
+            kwargs.pop("force_insert", None)
 
         super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
 
@@ -1144,7 +1144,7 @@ class TMSLocalizationSystem(models.Model):
             self.tms_localization_system_image = None
             super(TMSLocalizationSystem, self).save(*args, **kwargs)
             self.tms_localization_system_image = saved_file
-            kwargs.pop('force_insert') 
+            kwargs.pop("force_insert")
 
         super(TMSLocalizationSystem, self).save(*args, **kwargs)
 
@@ -1367,7 +1367,7 @@ class ContextTree(models.Model):
             self.setting_file = None
             super(ContextTree, self).save(*args, **kwargs)
             self.setting_file = saved_file
-            kwargs.pop('force_insert', None) 
+            kwargs.pop("force_insert", None)
 
         super(ContextTree, self).save(*args, **kwargs)
 
@@ -1401,9 +1401,7 @@ class ComponentConfiguration(models.Model):
         Component, on_delete=models.CASCADE, null=False, related_name="configuration"
     )
     # TODO Change to not null.
-    parent = models.ForeignKey(
-        Block, on_delete=models.CASCADE, null=True, related_name="children"
-    )
+    parent = models.ForeignKey(Block, on_delete=models.CASCADE, related_name="children")
 
     # This field is only useful for component configurations marked as fixed
     # and inside a sequence. However, we leave it as not null because we
@@ -1681,7 +1679,7 @@ class QuestionnaireResponse(DataCollection):
     questionnaire_responsible = models.ForeignKey(
         User, on_delete=models.CASCADE, null=False, related_name="+"
     )
-    
+
     is_completed = models.CharField(max_length=50, default="")
 
     class Meta:
@@ -1690,7 +1688,7 @@ class QuestionnaireResponse(DataCollection):
         )
 
     history = HistoricalRecords()
-    
+
     # @property
     # def _history_user(self):
     #     return self.changed_by

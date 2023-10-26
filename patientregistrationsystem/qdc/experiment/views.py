@@ -1728,7 +1728,7 @@ def send_all_experiments_to_portal() -> None:
                             responses_string = surveys.get_responses_by_token(
                                 limesurvey_id, token, questionnaire_language
                             )
-                            limesurvey_response = {"questions": "", "answers": ""}
+                            limesurvey_response: dict[str, Any] = {"questions": "", "answers": ""}
 
                             if isinstance(responses_string, bytes):
                                 reader = csv.reader(
@@ -6344,7 +6344,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     ):
                         number_of_questionnaires_filled += 1
 
-            percentage_of_questionnaires = 0
+            percentage_of_questionnaires = 0.0
 
             if len(list_of_questionnaires_configuration) > 0:
                 percentage_of_questionnaires = (
@@ -6368,7 +6368,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 if eeg_data_files.count():
                     number_of_eeg_data_files_uploaded += 1
 
-            percentage_of_eeg_data_files_uploaded = 0
+            percentage_of_eeg_data_files_uploaded = 0.0
             if len(list_of_eeg_configuration) > 0:
                 percentage_of_eeg_data_files_uploaded = (
                     100
@@ -6391,7 +6391,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 if emg_data_files.count():
                     number_of_emg_data_files_uploaded += 1
 
-            percentage_of_emg_data_files_uploaded = 0
+            percentage_of_emg_data_files_uploaded = 0.0
             if len(list_of_emg_configuration) > 0:
                 percentage_of_emg_data_files_uploaded = (
                     100.0
@@ -6414,7 +6414,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 if tms_data_files.count():
                     number_of_tms_data_files_uploaded += 1
 
-            percentage_of_tms_data_files_uploaded = 0
+            percentage_of_tms_data_files_uploaded = 0.0
             if len(list_of_tms_configuration) > 0:
                 percentage_of_tms_data_files_uploaded = (
                     100.0
@@ -6439,7 +6439,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 if digital_game_phase_data_files.count():
                     number_of_digital_game_phase_data_files_uploaded += 1
 
-            percentage_of_digital_game_phase_data_files_uploaded = 0
+            percentage_of_digital_game_phase_data_files_uploaded = 0.0
             if len(list_of_digital_game_phase_configuration) > 0:
                 percentage_of_digital_game_phase_data_files_uploaded = (
                     100.0
@@ -6466,7 +6466,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 if generic_data_collection_data_files.count():
                     number_of_generic_data_collection_data_files_uploaded += 1
 
-            percentage_of_generic_data_collection_data_files_uploaded = 0
+            percentage_of_generic_data_collection_data_files_uploaded = 0.0
             if len(list_of_generic_data_collection_configuration) > 0:
                 percentage_of_generic_data_collection_data_files_uploaded = (
                     100.0
@@ -6491,7 +6491,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 if media_collection_data_files.count():
                     number_of_media_collection_data_files_uploaded += 1
 
-            percentage_of_media_collection_data_files_uploaded = 0
+            percentage_of_media_collection_data_files_uploaded = 0.0
             if len(list_of_media_collection_configuration) > 0:
                 percentage_of_media_collection_data_files_uploaded = (
                     100.0

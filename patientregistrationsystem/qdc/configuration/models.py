@@ -48,3 +48,6 @@ class RightsSupport(models.Model):
 class UsefulLink(models.Model):
     name = models.CharField(max_length=150)
     url = models.URLField()
+
+    def __str__(self) -> str:
+        return "%s" % self.name

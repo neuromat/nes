@@ -1,8 +1,6 @@
 import tempfile
 from typing import Any
 
-from git import Object
-
 import experiment
 import mne
 from click import Group
@@ -59,8 +57,8 @@ def index(
     research_projects = ResearchProject.objects.order_by("start_date")
     experiment_list = get_avaliable_projects()
     group_list = None
-    study_list = []
-    study_selected = []
+    study_list: list[Any] = []
+    study_selected: list[Any] = []
 
     if request.method == "POST":
         participants_list = Patient.objects.filter(removed=False)

@@ -541,6 +541,7 @@ class SurveyTest(TestCase):
 
         # Create a survey with a dummy lime survey id and without any code
         survey = Survey.objects.create(lime_survey_id=-1)
+        isinstance(survey.pt_title, str)
         self.assertIsNone(survey.pt_title)
 
         response = self.client.get(reverse("survey_list"))

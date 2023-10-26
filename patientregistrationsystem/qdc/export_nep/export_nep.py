@@ -150,10 +150,10 @@ for subject in models.Subject.objects.all():
             "POST",
             portal_server + "/api/participants/",
             "date_birth=" + str(patient.date_birth),
-            "district=" + patient.district,
-            "city=" + patient.city,
-            "state=" + patient.state,
-            "country=" + patient.country,
+            "district=" + str(patient.district),
+            "city=" + str(patient.city),
+            "state=" + str(patient.state),
+            "country=" + str(patient.country),
             "gender=" + patient.gender.name,
             "marital_status=" + patient.marital_status.name
             if patient.marital_status

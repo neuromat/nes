@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-14 16:40-0300\n"
+"POT-Creation-Date: 2023-10-26 18:33-0300\n"
 "PO-Revision-Date: 2023-10-02 12:30-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,254 +17,258 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.9.9\n"
 
-#: custom_user/forms.py:37 custom_user/forms.py:199
+#: custom_user/forms.py:37 custom_user/forms.py:201
 msgid "Type first name"
 msgstr "Entrar primeiro nome"
 
-#: custom_user/forms.py:47 custom_user/forms.py:208
+#: custom_user/forms.py:48 custom_user/forms.py:211
 msgid "Type last name"
 msgstr "Entrar último nome"
 
-#: custom_user/forms.py:57 custom_user/forms.py:218
+#: custom_user/forms.py:59 custom_user/forms.py:222
 msgid "Type e-mail"
 msgstr "Entra e-mail"
 
-#: custom_user/forms.py:60 custom_user/forms.py:221
+#: custom_user/forms.py:62 custom_user/forms.py:225
 msgid "Invalid e-mail"
 msgstr "E-mail inválido"
 
-#: custom_user/forms.py:75
+#: custom_user/forms.py:77
 msgid "Type user name"
 msgstr "Entrar nome do usuário"
 
-#: custom_user/forms.py:79
+#: custom_user/forms.py:81
+#, fuzzy
+#| msgid ""
+#| "Username must start with a letter and contain only alphanumeric "
+#| "characters (6-30)"
 msgid ""
 "Username must start with a letter and contain only alphanumeric characters "
-"(6-30)"
+"(5-30)"
 msgstr ""
 "Nome de usuário deve começar com uma letra e ter apenas caracteres "
 "alfanuméricos"
 
-#: custom_user/forms.py:90 custom_user/forms.py:133
-#: custom_user/templates/custom_user/register_users.html:206
+#: custom_user/forms.py:92 custom_user/forms.py:135
+#: custom_user/templates/custom_user/register_users.html:207
 msgid "Type password"
 msgstr "Entrar senha"
 
-#: custom_user/forms.py:94 custom_user/forms.py:137
+#: custom_user/forms.py:96 custom_user/forms.py:139
 msgid "Password must contain at least a number and a lowercase letter (8-127)"
 msgstr "A senha deve conter pelo menos um número e uma letra minúscula"
 
-#: custom_user/forms.py:114 custom_user/views.py:212
+#: custom_user/forms.py:116 custom_user/views.py:212
 msgid "E-mail already registered"
 msgstr "E-mail já cadastrado"
 
-#: custom_user/forms.py:165 custom_user/forms.py:166
+#: custom_user/forms.py:167 custom_user/forms.py:168
 msgid "E-mail is not registered"
 msgstr "E-mail não cadastrado"
 
-#: custom_user/forms.py:179 custom_user/forms.py:225
+#: custom_user/forms.py:181 custom_user/forms.py:229
 msgid "Type citation name"
 msgstr "Entrar nome para citação"
 
-#: custom_user/forms.py:200 custom_user/forms.py:209
+#: custom_user/forms.py:202 custom_user/forms.py:212
 msgid "Only use letters and spaces"
 msgstr "Use apenas letras e espaços"
 
-#: custom_user/models.py:9
+#: custom_user/models.py:13
 msgid "No"
 msgstr "Não"
 
-#: custom_user/models.py:10
+#: custom_user/models.py:14
 msgid "Yes, a username and password must be configured"
 msgstr "Sim, um nome de usuário e uma senha devem ser configurados"
 
-#: custom_user/templates/custom_user/initial_page.html:34
-#: custom_user/templates/custom_user/institution_register.html:47
-#: custom_user/templates/custom_user/register_users.html:69
+#: custom_user/templates/custom_user/initial_page.html:13
+#: custom_user/templates/custom_user/institution_register.html:48
+#: custom_user/templates/custom_user/register_users.html:70
 msgid "Home"
 msgstr "Home"
 
-#: custom_user/templates/custom_user/initial_page.html:35
-#: custom_user/templates/custom_user/institution_register.html:48
-#: custom_user/templates/custom_user/register_users.html:70
+#: custom_user/templates/custom_user/initial_page.html:14
+#: custom_user/templates/custom_user/institution_register.html:49
+#: custom_user/templates/custom_user/register_users.html:71
 msgid "Researchers and Institutions"
 msgstr "Pesquisadores e Instituições"
 
-#: custom_user/templates/custom_user/initial_page.html:43
+#: custom_user/templates/custom_user/initial_page.html:22
 msgid "Researchers"
 msgstr "Pesquisadores"
 
-#: custom_user/templates/custom_user/initial_page.html:49
+#: custom_user/templates/custom_user/initial_page.html:28
 msgid "Show/Hide researchers"
 msgstr "Mostrar/Ocultar pesquisadores"
 
-#: custom_user/templates/custom_user/initial_page.html:59
+#: custom_user/templates/custom_user/initial_page.html:38
 msgid "Researcher"
 msgstr "Pesquisador"
 
-#: custom_user/templates/custom_user/initial_page.html:60
+#: custom_user/templates/custom_user/initial_page.html:39
 msgid "E-mail"
 msgstr "E-mail"
 
-#: custom_user/templates/custom_user/initial_page.html:61
-#: custom_user/templates/custom_user/institution_register.html:67
-#: custom_user/templates/custom_user/register_users.html:131
+#: custom_user/templates/custom_user/initial_page.html:40
+#: custom_user/templates/custom_user/institution_register.html:68
+#: custom_user/templates/custom_user/register_users.html:132
 msgid "Institution"
 msgstr "Instituição"
 
-#: custom_user/templates/custom_user/initial_page.html:62
-#: custom_user/templates/custom_user/register_users.html:170
+#: custom_user/templates/custom_user/initial_page.html:41
+#: custom_user/templates/custom_user/register_users.html:171
 msgid "Username"
 msgstr "Usuário"
 
-#: custom_user/templates/custom_user/initial_page.html:63
-#: custom_user/templates/custom_user/register_users.html:143
+#: custom_user/templates/custom_user/initial_page.html:42
+#: custom_user/templates/custom_user/register_users.html:144
 msgid "Citation name"
 msgstr "Citação"
 
-#: custom_user/templates/custom_user/initial_page.html:70
-#: custom_user/templates/custom_user/initial_page.html:72
-#: custom_user/templates/custom_user/institution_register.html:122
-#: custom_user/templates/custom_user/register_users.html:269
+#: custom_user/templates/custom_user/initial_page.html:49
+#: custom_user/templates/custom_user/initial_page.html:51
+#: custom_user/templates/custom_user/institution_register.html:123
+#: custom_user/templates/custom_user/register_users.html:270
 msgid "Edit"
 msgstr "Editar"
 
-#: custom_user/templates/custom_user/initial_page.html:72
+#: custom_user/templates/custom_user/initial_page.html:51
 msgid "Name not registered"
 msgstr "Nome não cadastrado"
 
-#: custom_user/templates/custom_user/initial_page.html:86
-#: custom_user/templates/custom_user/initial_page.html:143
+#: custom_user/templates/custom_user/initial_page.html:65
+#: custom_user/templates/custom_user/initial_page.html:122
 msgid "Insert new"
 msgstr "Inserir novo"
 
-#: custom_user/templates/custom_user/initial_page.html:98
+#: custom_user/templates/custom_user/initial_page.html:77
 msgid "Institutions"
 msgstr "Instituições"
 
-#: custom_user/templates/custom_user/initial_page.html:104
+#: custom_user/templates/custom_user/initial_page.html:83
 msgid "Show/Hide institutions"
 msgstr "Mostrar/Ocultar instituições"
 
-#: custom_user/templates/custom_user/initial_page.html:114
-#: custom_user/templates/custom_user/institution_register.html:72
+#: custom_user/templates/custom_user/initial_page.html:93
+#: custom_user/templates/custom_user/institution_register.html:73
 msgid "Name"
 msgstr "Nome"
 
-#: custom_user/templates/custom_user/initial_page.html:115
-#: custom_user/templates/custom_user/institution_register.html:83
+#: custom_user/templates/custom_user/initial_page.html:94
+#: custom_user/templates/custom_user/institution_register.html:84
 msgid "Acronym"
 msgstr "Acrônimo"
 
-#: custom_user/templates/custom_user/initial_page.html:116
-#: custom_user/templates/custom_user/institution_register.html:97
+#: custom_user/templates/custom_user/initial_page.html:95
+#: custom_user/templates/custom_user/institution_register.html:98
 msgid "Country"
 msgstr "País"
 
-#: custom_user/templates/custom_user/initial_page.html:117
-#: custom_user/templates/custom_user/institution_register.html:108
+#: custom_user/templates/custom_user/initial_page.html:96
+#: custom_user/templates/custom_user/institution_register.html:109
 msgid "Parent"
 msgstr "Pai"
 
-#: custom_user/templates/custom_user/initial_page.html:124
+#: custom_user/templates/custom_user/initial_page.html:103
 msgid "Visualize"
 msgstr "Visualizar"
 
-#: custom_user/templates/custom_user/institution_register.html:50
+#: custom_user/templates/custom_user/institution_register.html:51
 msgid "New institution"
 msgstr "Nova instituição"
 
-#: custom_user/templates/custom_user/institution_register.html:54
+#: custom_user/templates/custom_user/institution_register.html:55
 msgid "Editing"
 msgstr "Edição"
 
-#: custom_user/templates/custom_user/institution_register.html:131
+#: custom_user/templates/custom_user/institution_register.html:132
 msgid "Delete institution"
 msgstr "Remover instituição"
 
-#: custom_user/templates/custom_user/institution_register.html:136
-#: custom_user/templates/custom_user/register_users.html:266
+#: custom_user/templates/custom_user/institution_register.html:137
+#: custom_user/templates/custom_user/register_users.html:267
 msgid "Save"
 msgstr "Salvar"
 
-#: custom_user/templates/custom_user/institution_register.html:140
-#: custom_user/templates/custom_user/institution_register.html:159
-#: custom_user/templates/custom_user/register_users.html:275
-#: custom_user/templates/custom_user/register_users.html:294
-#: custom_user/templates/custom_user/register_users.html:308
+#: custom_user/templates/custom_user/institution_register.html:141
+#: custom_user/templates/custom_user/institution_register.html:160
+#: custom_user/templates/custom_user/register_users.html:276
+#: custom_user/templates/custom_user/register_users.html:295
+#: custom_user/templates/custom_user/register_users.html:309
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: custom_user/templates/custom_user/institution_register.html:144
-#: custom_user/templates/custom_user/register_users.html:278
-#: custom_user/templates/custom_user/register_users.html:281
+#: custom_user/templates/custom_user/institution_register.html:145
+#: custom_user/templates/custom_user/register_users.html:279
+#: custom_user/templates/custom_user/register_users.html:282
 msgid "Back"
 msgstr "Voltar"
 
-#: custom_user/templates/custom_user/institution_register.html:156
+#: custom_user/templates/custom_user/institution_register.html:157
 msgid "Are you sure you want to delete this institution?"
 msgstr "Tem certeza que deseja excluir esta instituição?"
 
-#: custom_user/templates/custom_user/institution_register.html:160
-#: custom_user/templates/custom_user/register_users.html:261
-#: custom_user/templates/custom_user/register_users.html:295
+#: custom_user/templates/custom_user/institution_register.html:161
+#: custom_user/templates/custom_user/register_users.html:262
+#: custom_user/templates/custom_user/register_users.html:296
 msgid "Delete"
 msgstr "Remover"
 
-#: custom_user/templates/custom_user/register_users.html:72
+#: custom_user/templates/custom_user/register_users.html:73
 msgid "New"
 msgstr "Novo"
 
-#: custom_user/templates/custom_user/register_users.html:82
+#: custom_user/templates/custom_user/register_users.html:83
 msgid "Basic Information"
 msgstr "Informações Básicas"
 
-#: custom_user/templates/custom_user/register_users.html:86
+#: custom_user/templates/custom_user/register_users.html:87
 msgid "First name"
 msgstr "Nome"
 
-#: custom_user/templates/custom_user/register_users.html:100
+#: custom_user/templates/custom_user/register_users.html:101
 msgid "Last name"
 msgstr "Sobrenome"
 
-#: custom_user/templates/custom_user/register_users.html:156
+#: custom_user/templates/custom_user/register_users.html:157
 msgid "Can this researcher access the system?"
 msgstr "Este pesquisador pode acessar o sistema?"
 
-#: custom_user/templates/custom_user/register_users.html:187
+#: custom_user/templates/custom_user/register_users.html:188
 msgid "Password"
 msgstr "Senha"
 
-#: custom_user/templates/custom_user/register_users.html:202
+#: custom_user/templates/custom_user/register_users.html:203
 msgid "Please confirm password"
 msgstr "Confirmar senha"
 
-#: custom_user/templates/custom_user/register_users.html:221
+#: custom_user/templates/custom_user/register_users.html:222
 msgid "Update password"
 msgstr "Alterar senha"
 
-#: custom_user/templates/custom_user/register_users.html:228
+#: custom_user/templates/custom_user/register_users.html:229
 msgid "Profiles"
 msgstr "Perfis"
 
-#: custom_user/templates/custom_user/register_users.html:232
+#: custom_user/templates/custom_user/register_users.html:233
 msgid "In which these profiles does user identify?"
 msgstr "Em quais desses perfis o usuário se identifica?"
 
-#: custom_user/templates/custom_user/register_users.html:291
+#: custom_user/templates/custom_user/register_users.html:292
 msgid "Are you sure you want to delete this researcher?"
 msgstr "Tem certeza que deseja excluir este pesquisador?"
 
-#: custom_user/templates/custom_user/register_users.html:305
+#: custom_user/templates/custom_user/register_users.html:306
 msgid "Are you sure you want to deactivate this researcher's system access?"
 msgstr ""
 "Tem certeza que deseja desativar o acesso ao sistema deste pesquisador?"
 
-#: custom_user/templates/custom_user/register_users.html:309
+#: custom_user/templates/custom_user/register_users.html:310
 msgid "Deactivate"
 msgstr "Desativar"
 
-#: custom_user/tests/test.py:171 custom_user/views.py:79
+#: custom_user/tests/test.py:170 custom_user/views.py:79
 #: custom_user/views.py:106
 msgid ""
 "A researcher with this email address has already been registered before. "

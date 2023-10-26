@@ -212,7 +212,10 @@
                             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                 {% for type, type_name, icon in component_type_choices %}
                                     <li {% if type == "questionnaire" and not limesurvey_available %}class="disabled"{% endif %} role="presentation">
-                                        <a role="menuitem" tabindex="-1" class="{{ icon }}" {% if type == "questionnaire" and not limesurvey_available %}href="#"{% else %}href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}{% if component.type == "sequence" %}?position=fixed{% endif %}"{% endif %}> {{ type_name }}</a>
+                                        <a role="menuitem" tabindex="-1" {% if type == "questionnaire" and not limesurvey_available %}href="#"{% else %}href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}{% if component.type == "sequence" %}?position=fixed{% endif %}"{% endif %}> 
+                                            <span  class="{{ icon }}"> </span>
+                                            {{ type_name }}
+                                        </a>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -320,7 +323,10 @@
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                     {% for type, type_name, icon in component_type_choices %}
                                         <li {% if type == "questionnaire" and not limesurvey_available %}class="disabled"{% endif %} role="presentation">
-                                            <a role="menuitem" tabindex="-1" class="{{ icon }}" {% if type == "questionnaire" and not limesurvey_available %}href="#"{% else %}href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}?position=random"{% endif %}> {{ type_name }}</a>
+                                            <a role="menuitem" tabindex="-1" {% if type == "questionnaire" and not limesurvey_available %}href="#"{% else %}href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}?position=random"{% endif %}> 
+                                                <span class="{{ icon }}"></span>
+                                                {{ type_name }}
+                                            </a>
                                         </li>
                                     {% endfor %}
                                 </ul>

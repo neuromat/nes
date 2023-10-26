@@ -1,11 +1,9 @@
 # coding=utf-8
 
-from typing import Any, overload
+from typing import Any
 
 from django.contrib.auth.models import User
 from django.forms import (
-    DateInput,
-    Field,
     Form,
     IntegerField,
     ModelChoiceField,
@@ -221,7 +219,12 @@ class ComponentForm(ModelForm):
             # respect that information.
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
             "duration_value": NumberInput(
-                attrs={"class": "form-control", "placeholder": _("Time")}
+                attrs={
+                    "class": "form-control",
+                    "min": 0,
+                    "max": 999,
+                    "placeholder": _("Time"),
+                }
             ),
             "duration_unit": Select(attrs={"class": "form-control"}),
         }
@@ -274,6 +277,7 @@ class ComponentConfigurationForm(ModelForm):
                 attrs={
                     "class": "form-control",
                     "min": "1",
+                    "max": "99999",
                     "data-error": _("Quantity of repetitions must be filled."),
                     "placeholder": _("Repetitions"),
                 }
@@ -495,6 +499,8 @@ class BlockForm(ModelForm):
             "number_of_mandatory_components": NumberInput(
                 attrs={
                     "class": "form-control",
+                    "min": "0",
+                    "max": "99999",
                     "required": "",
                     "data-error": _("Quantity must be filled."),
                 }
@@ -570,7 +576,7 @@ class ResearchProjectForm(ModelForm):
                 },
             ),
         }
-        
+
     def clean(self) -> Any:
         cleaned_data: Any = super(ResearchProjectForm, self).clean()
         start_date = cleaned_data.get("start_date")
@@ -631,6 +637,8 @@ class NumberOfUsesToInsertForm(Form):
         widget=NumberInput(
             attrs={
                 "class": "form-control",
+                "min": "1",
+                "max": "9999",
                 "required": "",
                 "data-error": _("Quantity must be filled."),
             }

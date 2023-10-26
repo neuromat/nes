@@ -8,6 +8,7 @@ from csv import reader
 from io import StringIO
 from itertools import chain
 from operator import itemgetter
+from typing import Any
 
 from django.contrib import messages
 from django.contrib.admin.utils import flatten
@@ -605,7 +606,7 @@ def create_patients_questionnaire_data_list(survey, surveys):
     data base. Uses a dictionary because it is useful for filtering out
     duplicate patients from the list.
     """
-    patients_questionnaire_data_dictionary: dict[int, dict[str, object]] = {}
+    patients_questionnaire_data_dictionary: dict[int, dict[str, Any]] = {}
 
     # Continue (NES-1032): get token list and responses list from LS and use
     # the two lists to get de acquisitiondate field for each patient.
@@ -729,12 +730,12 @@ def update_acquisitiondate(tokens, ls_responses, nes_responses):
             )
             if ls_response is not None:
                 try:
-                    new_date = datetime.datetime.strptime(
+                    new_date_time = datetime.datetime.strptime(
                         ls_response["acquisitiondate"], "%Y-%m-%d %H:%M:%S"
                     )
                 except ValueError:
                     continue
-                new_date = new_date.date()
+                new_date = new_date_time.date()
                 if response.date != new_date:
                     response.date = new_date
                     responses_updated.append(response)
@@ -836,7 +837,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
 
 
 def get_questionnaire_responses(language_code, lime_survey_id, token_id, request):
-    groups_of_questions = []
+    groups_of_questions: list[Any] = []
 
     surveys = Questionnaires()
     token = surveys.get_participant_properties(lime_survey_id, token_id, "token")
@@ -1210,8 +1211,8 @@ def mark_off_super_question(groups_of_questions, last_super_question_index):
 
 
 def add_questionnaire_response_to_group(
-    groups_of_question, question, answer, link=None, no_response_flag=False
-):
+    groups_of_question: list[Any], question, answer, link=None, no_response_flag=False
+) -> list[Any]:
     groups = groups_of_question
 
     # add a new group if the id changed

@@ -14,7 +14,6 @@ from django.forms.models import inlineformset_factory
 from django.http import HttpRequest, HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
-from django.template import Context
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from experiment.models import Questionnaire
@@ -212,7 +211,7 @@ def get_current_tab(request: HttpRequest) -> str:
 
 
 def patient_update_personal_data(
-    request: HttpRequest, patient: Patient, context: Context
+    request: HttpRequest, patient: Patient, context: dict[str, Any]
 ) -> HttpResponse:
     patient_form = PatientForm(request.POST or None, instance=patient)
 
@@ -270,7 +269,7 @@ def patient_update_personal_data(
 
 
 def patient_update_social_demographic_data(
-    request: HttpRequest, patient: Patient, context: Context
+    request: HttpRequest, patient: Patient, context: dict[str, Any]
 ) -> HttpResponse:
     try:
         p_social_demo = SocialDemographicData.objects.get(patient_id=patient.id)
@@ -362,7 +361,7 @@ def patient_update_social_demographic_data(
 
 
 def patient_update_social_history(
-    request: HttpRequest, patient: Patient, context: Context
+    request: HttpRequest, patient: Patient, context: dict[str, Any]
 ) -> HttpResponse:
     try:
         p_social_hist = SocialHistoryData.objects.get(patient_id=patient.id)
