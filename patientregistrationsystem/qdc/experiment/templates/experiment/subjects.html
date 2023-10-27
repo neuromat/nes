@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="tab-pane fade in active" id="subjectBreadCrumb">
+    <div class="tab-pane fade show active" id="subjectBreadCrumb">
         <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
@@ -69,7 +69,7 @@
         {% endfor %}
     {% endif %} {% endcomment %}
 
-    <div class="tab-pane fade in active" id="menuUserTab">
+    <div class="tab-pane fade show active" id="menuUserTab">
         <div class="col-lg-12">
 
             <ul class="nav nav-tabs">
@@ -84,7 +84,7 @@
             <div class="tab-content">
 
                 {# tab 'Per participant' #}
-                <div id="per_participants" class="tab-pane fade in active">
+                <div id="per_participants" class="tab-pane fade show active">
 
                     <br/>
                     {% if perms.experiment.add_subject and can_change %}
@@ -464,7 +464,7 @@
             $("#per_participants_tab").removeAttr('class');
             $("#per_steps_tab").attr('class', 'active');
             $("#per_participants").attr('class', 'tab-pane fade');
-            $("#per_steps_of_experimental_protocol").attr("class", "tab-pane fade in active");
+            $("#per_steps_of_experimental_protocol").attr("class", "tab-pane fade show active");
 
             // clear url query substring used to redirect to this page with per_steps_tab active
             // see redirects in data_collection_manage view, post method sections

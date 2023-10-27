@@ -15,7 +15,7 @@
 
 {% block content %}
 
-    <div class="tab-pane fade in active" id="subjectBreadCrumb">
+    <div class="tab-pane fade show active" id="subjectBreadCrumb">
         <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
@@ -50,7 +50,7 @@
         {% endfor %}
     {% endif %}
 
-    <div class="tab-pane fade in active" id="mainMenuUserTab">
+    <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="col-lg-12">
             {% if perms.experiment.add_subject and can_change %}
                 <div class="container-fluid well">

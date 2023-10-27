@@ -47,7 +47,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="tab-pane fade in active" id="eegDataProjectBreadCrumb">
+    <div class="tab-pane fade show active" id="eegDataProjectBreadCrumb">
         <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
@@ -91,7 +91,7 @@
         {% endfor %}
     {% endif %} {% endcomment %}
 
-    <div class="tab-pane fade in active" id="menuUserTab">
+    <div class="tab-pane fade show active" id="menuUserTab">
         <div class="col-lg-12">
             <div hidden="hidden">
                 <input id="eeg_electrode_position" type="text" value="{{ json_list }}">

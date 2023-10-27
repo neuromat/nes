@@ -144,105 +144,84 @@
 {% block form %}{% endblock %}
 
 <div id="main" class="container">
-    <div class="row">
-        <nav class="col-12 col-lg-2">
-            <ul class="nav nav-pills nav-fill flex-column">
-
-                <li class="nav-item">
-                    <a href="/home/" class="nav-link {% block activeContact %}{% endblock %}">
-                        <span class="fa fa-home fa-fw fa-lg"></span>
-                        {% trans "Home" %}
-                    </a>
-                </li>
+    <div class="row content">
+        <div class="col-12 col-md-3">
+            <nav class="nav nav-pills flex-column flex-sm-row flex-lg-column justify-content-start">
+                <a href="/home/" class="nav-link {% block activeContact %}{% endblock %}">
+                    <span class="fa fa-home fa-fw fa-lg"></span>
+                    {% trans "Home" %}
+                </a>
 
                 {% if perms.patient.view_patient %}
-                    <li class="nav-item">
-                        <a href="/patient/find/" class="nav-link {% block activePatient %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add people that participated in the experiments' %}">
-                            <span class="fa fa-users fa-fw fa-lg"></span>
-                            {% trans "Participants" %}
-                        </a>
-                    </li>
+                    <a href="/patient/find/" class="nav-link {% block activePatient %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add people that participated in the experiments' %}">
+                        <span class="fa fa-users fa-fw fa-lg"></span>
+                        {% trans "Participants" %}
+                    </a>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
-                    <li class="nav-item">
-                        <a href="/experiment/research_project/list/" class="nav-link {% block activeAdvancedResearchProject %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
-                            <span class="fa fa-graduation-cap fa-fw fa-lg"></span>
-                            {% trans "Studies" %}
-                        </a>
-                    </li>
+                    <a href="/experiment/research_project/list/" class="nav-link {% block activeAdvancedResearchProject %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add publications' %}">
+                        <span class="fa fa-graduation-cap fa-fw fa-lg"></span>
+                        {% trans "Studies" %}
+                    </a>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
-                    <li class="nav-item">
-                        <a href="/experiment/publication/list/" class="nav-link {% block activeAdvancedPublication %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
-                            <span class="fa fa-book fa-fw fa-lg"></span>
-                            {% trans "Publications" %}
-                        </a>
-                    </li>
+                    <a href="/experiment/publication/list/" class="nav-link {% block activeAdvancedPublication %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add publications' %}">
+                        <span class="fa fa-book fa-fw fa-lg"></span>
+                        {% trans "Publications" %}
+                    </a>
                 {% endif %}
 
                 {% if perms.survey.view_survey %}
-                    <li class="nav-item">
-                        <a href="/survey/list/" class="nav-link {% block activeAdvancedSurvey %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
-                            <span class="fa fa-list-alt fa-fw fa-lg"></span>
-                            {% trans "Questionnaires" %}
-                        </a>
-                    </li>
+                    <a href="/survey/list/" class="nav-link {% block activeAdvancedSurvey %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add users and institutions to the database' %}">
+                        <span class="fa fa-list-alt fa-fw fa-lg"></span>
+                        {% trans "Questionnaires" %}
+                    </a>
                 {% endif %}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
-                    <li class="nav-item">
-                        <a href="/user/list/" class="nav-link {% block activeUser %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
-                            <span class="fa fa-user fa-fw fa-lg"></span>
-                            {% trans "Researchers" %}
-                        </a>
-                    </li>
+                    <a href="/user/list/" class="nav-link {% block activeUser %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add users and institutions to the database' %}">
+                        <span class="fa fa-user fa-fw fa-lg"></span>
+                        {% trans "Researchers" %}
+                    </a>
                 {% endif %}
 
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
-                    <li class="nav-item">
-                        <a href="/export/" class="nav-link {% block activeExport %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Export your projects' %}">
-                            <span class="fa fa-upload fa-fw fa-lg"></span>
-                            {% trans "Export" %}
-                        </a>
-                    </li>
+                    <a href="/export/" class="nav-link {% block activeExport %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Export your projects' %}">
+                        <span class="fa fa-upload fa-fw fa-lg"></span>
+                        {% trans "Export" %}
+                    </a>
                 {% endif %}
 
                 {% if perms.experiment.register_equipment %}
-                    <li class="nav-item">
-                        <a href="/experiment/setup/" class="nav-link {% block activeSetup %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Here you can setup the equipments used in the projects' %}">
-                            <span class="fa fa-pencil fa-fw fa-lg"></span>
-                            {% trans "Set up" %}
-                        </a>
-                    </li>
+                    <a href="/experiment/setup/" class="nav-link {% block activeSetup %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Here you can setup the equipments used in the projects' %}">
+                        <span class="fa fa-pencil fa-fw fa-lg"></span>
+                        {% trans "Set up" %}
+                    </a>
                 {% endif %}
                 
                 {% cache 600 plugin_random_forests request.user.username using="redis"%}
                 {% get_solo 'plugin.RandomForests' as random_forests %}
                 {% endcache %}
                 {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
-                    <li class="nav-item">
-                        <a href="/plugin/" class="nav-link {% block activePlugin %}{% endblock %}">
-                            <span class="fa fa-cloud-upload fa-fw fa-lg"></span>
-                            {% trans "Plugin" %}
-                        </a>
-                    </li>
+                    <a href="/plugin/" class="nav-link {% block activePlugin %}{% endblock %}">
+                        <span class="fa fa-cloud-upload fa-fw fa-lg"></span>
+                        {% trans "Plugin" %}
+                    </a>
                 {% endif %}
 
-                <li class="nav-item">
-                    <a href="/links/" class="nav-link {% block activeLinks %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Useful links of tools' %}">
-                        <span class="fa fa-link fa-fw fa-lg"></span>
-                        {% trans "Useful Links" %}
-                    </a>
-                </li>
+                <a href="/links/" class="nav-link {% block activeLinks %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Useful links of tools' %}">
+                    <span class="fa fa-link fa-fw fa-lg"></span>
+                    {% trans "Useful Links" %}
+                </a>
 
-            </ul>
-        </nav>
+            </nav>
+        </div>
 
-        <div class="col-12 col-lg-10 content">
+        <div class="col-12 col-md-9">
             <div id="myMenuContent" class="tab-content">
-                <noscript><h1 align="center">{% trans "Please enable Javascript" %} <span style="color: red; font-weight: bold">*</span></h1></noscript>
+                <noscript><h1 class="center">{% trans "Please enable Javascript" %} <span style="color: red; font-weight: bold">*</span></h1></noscript>
                 {% block content %} {% endblock %}
             </div>
         </div>

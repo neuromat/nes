@@ -49,7 +49,7 @@
 
 {% block content %}
 
-    <div class="tab-pane fade in active" id="tmsDataProjectBreadCrumb">
+    <div class="tab-pane fade show active" id="tmsDataProjectBreadCrumb">
         <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
@@ -99,7 +99,7 @@
         </script>
     {% endif %}
 
-    <div class="tab-pane fade in active" id="menuUserTab">
+    <div class="tab-pane fade show active" id="menuUserTab">
         <div class="col-lg-12">
             <div class="container-fluid well">
 
@@ -128,7 +128,7 @@
 
                 <div class="tab-content">
 
-                    <div id="data_collection" {% if tab == '1' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="data_collection" {% if tab == '1' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
 
                         <h4></h4>
                         <div hidden="hidden">
@@ -295,7 +295,7 @@
 
                                 <div class="row">
                                     <div class="panel-body">
-                                        <img src="{% static 'imgs/coil_orientation2.svg' %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
+                                        <img src="{% static 'imgs/coil_orientation2.svg' %}" class="img-fluid center-block" width="800" height="600" style="margin: auto" >
                                     </div>
                                 </div>
 
@@ -317,7 +317,7 @@
 
                     </div>
 
-                    <div id="position_setting" {% if tab == '2' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="position_setting" {% if tab == '2' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% block subcontent %}
                         {% endblock %}
                     </div>

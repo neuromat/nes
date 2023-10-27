@@ -41,7 +41,7 @@
             </script>
         {% endif %}
 
-        <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
+        <div class="tab-pane fade show active" id="selectedParticipantBreadCrumb">
             <div class="col-lg-12">
                 <ol class="breadcrumb">
                     <li><a href="/home">{% trans "Home" %}</a></li>
@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="col-lg-12">
 
                 <h4>{% trans "Structure and fields selection for exportation" %}</h4>
@@ -72,7 +72,7 @@
                 </ul>
 
                 <div class="tab-content">
-                    <div id="general_information" {% if tab == '1' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="general_information" {% if tab == '1' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if perms.patient.export_patient %}
                             <div class="container-fluid well">
                                 <div class="row">
@@ -225,7 +225,7 @@
 
                     </div>
 
-                    <div id="questionnaire_from_entrance_evaluation" {% if tab == '2' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="questionnaire_from_entrance_evaluation" {% if tab == '2' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if perms.patient.export_patient %}
                             {% if questionnaires_fields_list %}
                                 <div class="container-fluid well">
@@ -326,7 +326,7 @@
                         {% endif %}
                     </div>
 
-                    <div id="questionnaires_from_experiments" {% if tab == '3' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="questionnaires_from_experiments" {% if tab == '3' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if perms.patient.export_patient %}
                             {% if questionnaires_experiment_fields_list %}
                                 <div class="container-fluid well">
@@ -428,7 +428,7 @@
 
                     </div>
 
-                    <div id="participants_and_diagnosis" {% if tab == '4' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="participants_and_diagnosis" {% if tab == '4' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         <div class="container-fluid well">
                             {% if perms.patient.export_patient %}
                                 <h4>{% trans "Participants" %}</h4>
