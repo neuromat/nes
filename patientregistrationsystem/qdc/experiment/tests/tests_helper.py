@@ -3,6 +3,7 @@ from io import BufferedWriter
 import os
 import random
 import tempfile
+from venv import create
 import zipfile
 
 from django.apps import apps
@@ -94,6 +95,7 @@ from patient.models import (
     Diagnosis,
     ComplementaryExam,
     ExamFile,
+    Patient,
 )
 from patient.tests.test_orig import UtilTests
 from survey.tests.tests_helper import create_survey
@@ -264,18 +266,18 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_standardization_system():
+    def create_standardization_system() -> StandardizationSystem:
         return StandardizationSystem.objects.create(
             name="Standardization System identification",
             description="Standardization System description",
         )
 
     @staticmethod
-    def create_muscle():
+    def create_muscle() -> Muscle:
         return Muscle.objects.create(name="Muscle identification")
 
     @staticmethod
-    def create_muscle_subdivision(muscle):
+    def create_muscle_subdivision(muscle: Muscle) -> MuscleSubdivision:
         return MuscleSubdivision.objects.create(
             name="Muscle subdivision identification",
             anatomy_origin="Anatomy origin description",
@@ -285,7 +287,7 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_muscle_side(muscle):
+    def create_muscle_side(muscle: Muscle) -> MuscleSide:
         muscle_side = MuscleSide.objects.create(
             name="Muscle side identification", muscle=muscle
         )
@@ -293,7 +295,10 @@ class ObjectsFactory(object):
         return muscle_side
 
     @staticmethod
-    def create_emg_electrode_placement(standardization_system, muscle_subdivision):
+    def create_emg_electrode_placement(
+        standardization_system: StandardizationSystem,
+        muscle_subdivision: MuscleSubdivision,
+    ) -> EMGElectrodePlacement:
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
             emg_ep = EMGElectrodePlacement.objects.create(
@@ -308,7 +313,9 @@ class ObjectsFactory(object):
         return emg_ep
 
     @staticmethod
-    def create_component(experiment, component_type, identification=None, kwargs=None):
+    def create_component(
+        experiment, component_type, identification=None, kwargs=None
+    ) -> Component:
         fake = Factory.create()
 
         if component_type == Component.TASK_EXPERIMENT:
@@ -385,7 +392,7 @@ class ObjectsFactory(object):
         return component
 
     @staticmethod
-    def create_group(experiment, experimental_protocol=None):
+    def create_group(experiment: Experiment, experimental_protocol=None) -> Group:
         """
         :param experiment: experiment
         :param experimental_protocol: experimental protocol
@@ -402,7 +409,7 @@ class ObjectsFactory(object):
         return group
 
     @staticmethod
-    def create_subject(patient):
+    def create_subject(patient: Patient) -> Subject:
         """
         :param patient: Patient model instance
         :return: Subject model instance
@@ -410,7 +417,7 @@ class ObjectsFactory(object):
         return Subject.objects.create(patient=patient)
 
     @staticmethod
-    def create_subject_of_group(group, subject):
+    def create_subject_of_group(group: Group, subject: Subject) -> SubjectOfGroup:
         """
         :param group: Group model instance
         :param subject: Subject model instance
@@ -422,7 +429,7 @@ class ObjectsFactory(object):
         return subject_of_group
 
     @staticmethod
-    def create_block(experiment):
+    def create_block(experiment) -> Block:
         block = Block.objects.create(
             identification="Block identification",
             description="Block description",
@@ -434,12 +441,14 @@ class ObjectsFactory(object):
         return block
 
     @staticmethod
-    def create_manufacturer():
-        manufacturer = Manufacturer.objects.create(name="Manufacturer name")
+    def create_manufacturer() -> Manufacturer:
+        manufacturer, create = Manufacturer.objects.get_or_create(
+            name="Manufacturer name"
+        )
         return manufacturer
 
     @staticmethod
-    def create_amplifier(manufacturer):
+    def create_amplifier(manufacturer) -> Amplifier:
         amplifier = Amplifier.objects.create(
             manufacturer=manufacturer,
             equipment_type="amplifier",
@@ -449,7 +458,7 @@ class ObjectsFactory(object):
         return amplifier
 
     @staticmethod
-    def create_eeg_solution(manufacturer):
+    def create_eeg_solution(manufacturer) -> EEGSolution:
         eeg_solution = EEGSolution.objects.create(
             manufacturer=manufacturer, name="Solution name"
         )
@@ -457,19 +466,19 @@ class ObjectsFactory(object):
         return eeg_solution
 
     @staticmethod
-    def create_filter_type():
+    def create_filter_type() -> FilterType:
         filter_type = FilterType.objects.create(name="Filter type name")
         filter_type.save()
         return filter_type
 
     @staticmethod
-    def create_tag(name="TAG name"):
+    def create_tag(name="TAG name") -> Tag:
         tag = Tag.objects.create(name=name)
         tag.save()
         return tag
 
     @staticmethod
-    def create_electrode_model():
+    def create_electrode_model() -> ElectrodeModel:
         electrode_model = ElectrodeModel.objects.create(name="Electrode Model name")
         tagaux = ObjectsFactory.create_tag("EEG")
         electrode_model.tags.add(tagaux)
@@ -477,7 +486,9 @@ class ObjectsFactory(object):
         return electrode_model
 
     @staticmethod
-    def create_eeg_electrode_net(manufacturer, electrode_model_default):
+    def create_eeg_electrode_net(
+        manufacturer, electrode_model_default
+    ) -> EEGElectrodeNet:
         eeg_electrode_net = EEGElectrodeNet.objects.create(
             manufacturer=manufacturer,
             equipment_type="eeg_electrode_net",
@@ -490,7 +501,7 @@ class ObjectsFactory(object):
     @staticmethod
     def create_eeg_electrode_net_system(
         eeg_electrode_net, eeg_electrode_localization_system
-    ):
+    ) -> EEGElectrodeNetSystem:
         eeg_electrode_net_system = EEGElectrodeNetSystem.objects.create(
             eeg_electrode_net=eeg_electrode_net,
             eeg_electrode_localization_system=eeg_electrode_localization_system,
@@ -499,7 +510,7 @@ class ObjectsFactory(object):
         return eeg_electrode_net_system
 
     @staticmethod
-    def create_eeg_electrode_localization_system():
+    def create_eeg_electrode_localization_system() -> EEGElectrodeLocalizationSystem:
         fake = Factory.create()
 
         with tempfile.TemporaryDirectory() as tmpdirname:

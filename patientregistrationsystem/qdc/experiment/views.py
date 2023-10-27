@@ -1,4 +1,6 @@
 # coding=utf-8
+from __future__ import annotations
+
 import base64
 import csv
 import json
@@ -13,6 +15,7 @@ from operator import itemgetter
 from os import path
 from typing import Any
 from uuid import uuid4
+
 
 import mne
 import numpy as np
@@ -268,6 +271,8 @@ from .portal import (
     send_tms_setting_to_portal,
 )
 
+
+# mypy: disable-error-code="misc"
 permission_required = partial(permission_required, raise_exception=True)
 
 icon_class: dict[str, str] = {
@@ -303,7 +308,7 @@ delimiter = "-"
 
 
 class EEGReading:
-    file_format: FileFormat = None
+    file_format: FileFormat | None = None
 
     reading = None
 
@@ -579,8 +584,8 @@ def research_project_update(
 @login_required
 @permission_required("experiment.view_researchproject")
 def keyword_search_ajax(request: HttpRequest) -> HttpResponse:
-    keywords_name_list = []
-    keywords_list_filtered = []
+    keywords_name_list = None
+    keywords_list_filtered = None
     search_text = None
 
     if request.method == "POST":
@@ -870,7 +875,9 @@ def experiment_view(
 ):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_list = Group.objects.filter(experiment=experiment).order_by("title")
-    stimuli_eq_setting_list = StimuliEqSetting.objects.filter(experiment=experiment).order_by("name")
+    stimuli_eq_setting_list = StimuliEqSetting.objects.filter(
+        experiment=experiment
+    ).order_by("name")
     source_code_list = SourceCode.objects.filter(experiment=experiment).order_by("name")
     eeg_setting_list = EEGSetting.objects.filter(experiment=experiment).order_by("name")
     emg_setting_list = EMGSetting.objects.filter(experiment=experiment).order_by("name")
@@ -1728,7 +1735,10 @@ def send_all_experiments_to_portal() -> None:
                             responses_string = surveys.get_responses_by_token(
                                 limesurvey_id, token, questionnaire_language
                             )
-                            limesurvey_response: dict[str, Any] = {"questions": "", "answers": ""}
+                            limesurvey_response: dict[str, Any] = {
+                                "questions": "",
+                                "answers": "",
+                            }
 
                             if isinstance(responses_string, bytes):
                                 reader = csv.reader(
@@ -12198,8 +12208,8 @@ def subjects_insert(request, group_id, patient_id):
 
 @login_required
 @permission_required("experiment.view_researchproject")
-def search_patients_ajax(request):
-    patient_list = ""
+def search_patients_ajax(request: HttpRequest):
+    patient_list = None
 
     if request.method == "POST":
         search_text = request.POST["search_text"]
@@ -15812,8 +15822,10 @@ def emg_setting_ad_converter(
 @login_required
 @permission_required("experiment.change_experiment")
 def emg_setting_ad_converter_edit(
-    request, emg_setting_id, template_name="experiment/emg_setting_ad_converter.html"
-):
+    request: HttpRequest,
+    emg_setting_id: int,
+    template_name: str = "experiment/emg_setting_ad_converter.html",
+) -> HttpResponseRedirect | HttpResponse:
     emg_setting = get_object_or_404(EMGSetting, pk=emg_setting_id)
 
     check_can_change(request.user, emg_setting.experiment.research_project)
@@ -15860,7 +15872,9 @@ def emg_setting_ad_converter_edit(
 
 @login_required
 @permission_required("experiment.change_experiment")
-def get_json_coilmodel_attributes(request, coilmodel_id):
+def get_json_coilmodel_attributes(
+    request: HttpRequest, coilmodel_id: int
+) -> HttpResponse:
     coil_model = get_object_or_404(CoilModel, pk=coilmodel_id)
 
     response_data = {"description": coil_model.description}

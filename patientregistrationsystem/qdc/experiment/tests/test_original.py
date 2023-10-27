@@ -1138,7 +1138,7 @@ class SubjectTest(TestCase):
         self.data[SEARCH_TEXT] = ""
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["patients"], "")
+        self.assertIsNone(response.context["patients"])
 
     def test_subject_search_on_group_already_with_subject_being_searched(self):
         """
@@ -1184,7 +1184,7 @@ class SubjectTest(TestCase):
         self.data[SEARCH_TEXT] = ""
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["patients"], "")
+        self.assertIsNone(response.context["patients"])
 
     def test_subject_view(self):
         """Test exhibition of subjects of a group"""

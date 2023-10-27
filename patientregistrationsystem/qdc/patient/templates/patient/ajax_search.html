@@ -1,5 +1,5 @@
 {% load i18n %}
-{% if patients.count > 0 %}
+{% if patients %}
     {{perms}}
     {% for patient in patients %}
     <li><a href="/patient/{{ patient.id }}">

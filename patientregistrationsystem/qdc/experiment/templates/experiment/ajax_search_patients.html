@@ -1,5 +1,5 @@
 {% load i18n %}
-{% if patients.count > 0 %}
+{% if patients %}
 
     {% for patient in patients %}
         <li><a href="/experiment/group/{{ group_id }}/add_subject/{{ patient.id }}">

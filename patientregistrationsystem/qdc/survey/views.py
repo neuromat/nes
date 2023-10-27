@@ -48,8 +48,8 @@ questionnaire_evaluation_fields_excluded = [
 
 
 class GroupOfQuestions:
-    id: int = None
-    name: str = None
+    id: int | None = None
+    name: str | None = None
     questionnaire_responses: list = []
 
 
@@ -1040,7 +1040,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                             else:
                                 previous_question = question["question_id"]
 
-                                answer = ""
+                                answer: str = ""
                                 no_response_flag = False
 
                                 if not question["type"] == "X":
@@ -1131,7 +1131,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                                 # type "D" means "Date/Time"
                                                 if question["type"] == "D":
                                                     if responses_list[1][index]:
-                                                        answer = (
+                                                        answer: datetime.datetime = (
                                                             datetime.datetime.strptime(
                                                                 responses_list[1][
                                                                     index

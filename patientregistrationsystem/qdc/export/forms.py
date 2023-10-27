@@ -74,7 +74,7 @@ class ParticipantsSelectionForm(ModelForm):
     class Meta:
         model = Patient
 
-        fields: dict[str, Any] = [
+        fields = [
             "gender",
             "marital_status",
             "country",
@@ -83,21 +83,13 @@ class ParticipantsSelectionForm(ModelForm):
         ]
 
         widgets = {
-            "gender": SelectMultiple(
-                attrs={"class": "form-control", "required": "", "disabled": ""}
-            ),
+            "gender": SelectMultiple(attrs={"class": "form-control", "disabled": ""}),
             "marital_status": SelectMultiple(
-                attrs={"class": "form-control", "required": "", "disabled": ""}
+                attrs={"class": "form-control", "disabled": ""}
             ),
-            "country": SelectMultiple(
-                attrs={"class": "form-control", "required": "", "disabled": ""}
-            ),
-            "state": SelectMultiple(
-                attrs={"class": "form-control", "required": "", "disabled": ""}
-            ),
-            "city": SelectMultiple(
-                attrs={"class": "form-control", "required": "", "disabled": ""}
-            ),
+            "country": SelectMultiple(attrs={"class": "form-control", "disabled": ""}),
+            "state": SelectMultiple(attrs={"class": "form-control", "disabled": ""}),
+            "city": SelectMultiple(attrs={"class": "form-control", "disabled": ""}),
         }
 
     def __init__(self, *args, **kwargs) -> None:
@@ -154,8 +146,8 @@ class AgeIntervalForm(Form):
         ),
     )
 
-    def clean(self):
-        cleaned_data = super(AgeIntervalForm, self).clean()
+    def clean(self) -> dict[str, Any]:
+        cleaned_data: dict[str, Any] = super(AgeIntervalForm, self).clean()
         min_age = cleaned_data.get("min_age")
         max_age = cleaned_data.get("max_age")
 

@@ -735,7 +735,7 @@ def restore_patient(request, patient_id) -> HttpResponseRedirect:
 @permission_required("patient.view_patient")
 def search_patients_ajax(request: HttpRequest) -> HttpResponse:
     sensitive_perm = request.user.has_perm("patient.sensitive_data_patient")
-    patient_list = []
+    patient_list = None
     if request.method == "POST":
         search_text = request.POST["search_text"]
         if search_text:
