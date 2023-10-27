@@ -4,34 +4,12 @@
 {% load i18n static %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="user_form" method="post" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
 
     {% if experiment_form.errors %}
         <script type="text/javascript">
@@ -39,21 +17,20 @@
         </script>
     {% endif %}
 
-
     <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li class="active">{% trans "Steps of experimental protocol" %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
+                <li class="breadcrumb-item active">{% trans "Steps of experimental protocol" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
                 <div class="row">
                     <div class="col-6 col-sm-6">
@@ -141,5 +118,4 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}

@@ -29,17 +29,17 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
-                <li class="active">{% trans "Muscle" %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/setup">{% trans "Set up" %}</a></li>
+                <li class="breadcrumb-item active">{% trans "Muscle" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
                 <h4>{% trans "Muscle List" %}</h4>
                 <div class="form-group">

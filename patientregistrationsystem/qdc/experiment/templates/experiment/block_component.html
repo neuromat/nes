@@ -5,7 +5,7 @@
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">{% trans "New set of steps" %}</li>
+        <li class="breadcrumb-item active">{% trans "New set of steps" %}</li>
     {% else %}
         {% if updating and not component_configuration %}
             <li class="active"> {% trans "Editing" %} </li>
@@ -106,8 +106,8 @@
                                         {% if accordion|length > 1 %}
                                             <tr>
                                                 <td colspan="6" style="padding: 0px;">
-                                                    <div class="panel panel-default collapsed" style="margin: 0px;">
-                                                        <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="{% trans "Expand" %}">
+                                                    <div class="card   collapsed" style="margin: 0px;">
+                                                        <div class="card-header" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="{% trans "Expand" %}">
                                                             <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
                                                                 <tbody>
                                                                     {% if not accordion.0.random_position %}  {# If the first is random, all confs from this accordeon will be random. #}
@@ -171,8 +171,8 @@
                                                         </div>
 
 
-                                                        <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
-                                                            <div class="panel-body">
+                                                        <div id="collapse{{ forloop.counter }}" class=" collapse" role="tabcard" aria-labelledby="heading{{ forloop.counter }}">
+                                                            <div class="card-body">
                                                                 <table class="table table-striped" style="margin: 0px;">
                                                                     <tbody>
                                                                         {% for configuration in accordion %}
@@ -250,8 +250,8 @@
                                             {% if accordion|length > 1 %}
                                                 <tr>
                                                     <td colspan="4" style="padding: 0px;">
-                                                        <div class="panel panel-default collapsed" style="margin: 0px;">
-                                                            <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="{%  trans "Expand" %}">
+                                                        <div class="card   collapsed" style="margin: 0px;">
+                                                            <div class="card-header" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="{%  trans "Expand" %}">
                                                                 <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
                                                                     <tbody>
                                                                         <tr>
@@ -281,8 +281,8 @@
                                                             </div>
 
 
-                                                            <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
-                                                                <div class="panel-body">
+                                                            <div id="collapse{{ forloop.counter }}" class=" collapse" role="tabcard" aria-labelledby="heading{{ forloop.counter }}">
+                                                                <div class="card-body">
                                                                     <table class="table table-striped" style="margin: 0px;">
                                                                         <tbody>
                                                                             {% for configuration in accordion %}

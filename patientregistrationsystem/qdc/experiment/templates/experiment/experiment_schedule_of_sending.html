@@ -3,7 +3,7 @@
 {% load i18n static %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
@@ -35,19 +35,19 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li class="active">{% trans "Schedule of sending" %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
+                <li class="breadcrumb-item active">{% trans "Schedule of sending" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
 
             <div class="container-fluid well">
 
@@ -59,11 +59,11 @@
 
                 <div class="form-group">
 
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{% trans "Committee responsible for the Portal" %}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">{% trans "Committee responsible for the Portal" %}</h3>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             {% trans "When the experiment/project is sent to the Portal, its information is verified by a committee before it is publicly available." %}
                             {% trans "Then, after be approved, an email will be sent to the experiment/project owner." %}
                         </div>
@@ -86,11 +86,11 @@
                     <input id="id_send_age" type="checkbox" name="send_age"checked><label for="id_send_age">&nbsp;{% trans 'send patient age' %}</label>
                 </div>
                 <h5>{% trans "Questionnaires and questions to send" %}</h5>
-                <div class="panel-group" id="accordion">
+                <div class="card-group" id="accordion">
                     {% for survey_key, survey_value in experiment_questionnaires.items %}
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h9 class="panel-title">
+                        <div class="card  ">
+                            <div class="card-header">
+                                <h9 class="card-title">
                                     <a data-toggle="collapse" data-parent="#accordion"
                                        href="#collapse_{{ survey_key }}">
 
@@ -101,8 +101,8 @@
 
                                 </h9>
                             </div>
-                            <div id="collapse_{{ survey_key }}" class="panel-collapse collapse">
-                                <div class="panel-body">
+                            <div id="collapse_{{ survey_key }}" class=" collapse">
+                                <div class="card-body">
                                     <div class="col-lg-5 col-sm-12">
                                         <div class="form-group">
                                             <label class="control-label">{% trans "Fields available:" %} </label>
@@ -171,7 +171,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

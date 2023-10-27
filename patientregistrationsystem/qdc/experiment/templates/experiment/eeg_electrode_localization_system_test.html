@@ -5,7 +5,7 @@
 {% block activeSetup %} active{% endblock %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
@@ -35,26 +35,26 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active" id="breadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
-                <li><a href="/experiment/eeg_electrode_localization_system/list">{% trans "EEG electrode localization system" %}</a></li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/setup">{% trans "Set up" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/eeg_electrode_localization_system/list">{% trans "EEG electrode localization system" %}</a></li>
 
                 {% if creating %}
-                    <li><a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}">{{ localization_system.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}">{{ localization_system.name }}</a></li>
                 {% else %}
-                    <li><a href="/experiment/eeg_electrode_localization_system/{{ position.eeg_electrode_localization_system.id }}">{{ position.eeg_electrode_localization_system.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="/experiment/eeg_electrode_localization_system/{{ position.eeg_electrode_localization_system.id }}">{{ position.eeg_electrode_localization_system.name }}</a></li>
                 {% endif %}
 
                 {% if creating %}
-                    <li class="active">{% trans "New electrode coordinates" %}</li>
+                    <li class="breadcrumb-item active">{% trans "New electrode coordinates" %}</li>
                 {% else %}
                     {% if editing %}
-                        <li><a href="/experiment/eeg_electrode_position/{{ position.id }}">{{ position.name }}</a></li>
-                        <li class="active">{% trans "Editing" %}</li>
+                    <li class="breadcrumb-item"><a href="/experiment/eeg_electrode_position/{{ position.id }}">{{ position.name }}</a></li>
+                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
                     {% else %}
-                        <li class="active"> {{ position.name }} </li>
+                        <li class="breadcrumb-item active"> {{ position.name }} </li>
                     {% endif %}
                 {% endif %}
             </ol>
@@ -73,7 +73,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

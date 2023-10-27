@@ -29,16 +29,16 @@
 
 {% block content %}
     <div class="tab-pane fade show active" id="mainMenuSearchCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li class="active">{% trans "Search Participants" %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item active">{% trans "Search Participants" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuSearchTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
                 <h4>{% trans "Search participant" %}</h4>
                 <div class="form-group">

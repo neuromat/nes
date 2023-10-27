@@ -4,7 +4,7 @@
 {% load i18n static %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="component_form" method="post" data-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
@@ -41,24 +41,24 @@
 
 
     <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
 
                 {% if group != None %}
-                    <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                    <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 {% else %}
-                    <li><a href="/experiment/{{ experiment.id }}/components">{% trans "Steps of experimental protocol" %}</a></li>
+                    <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}/components">{% trans "Steps of experimental protocol" %}</a></li>
                 {% endif %}
 
                 {% for url_and_name in list_of_breadcrumbs %}
                     {% if url_and_name != list_of_breadcrumbs|last or can_reuse or reusing or updating and component_configuration == None %}
-                        <li><a href="{{ url_and_name.url }}">{{ url_and_name.name }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_and_name.url }}">{{ url_and_name.name }}</a></li>
                     {% else %}
-                        <li class="active">{{ url_and_name.name }}</li>
+                        <li class="breadcrumb-item active">{{ url_and_name.name }}</li>
                     {% endif %}
                 {% endfor %}
 
@@ -69,7 +69,7 @@
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
                 <div class="row">
                     <div class="col-12 col-sm-12">

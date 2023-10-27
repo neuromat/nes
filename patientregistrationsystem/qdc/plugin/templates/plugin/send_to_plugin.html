@@ -23,11 +23,11 @@
 {% block content %}
 
     <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/">{% trans "Home" %}</a></li>
-                <li><a href="/plugin">{% trans "Plugin" %}</a></li>
-                <li class="active">{% trans "Participants selection" %}</li>
+                <li class="breadcrumb-item"><a href="/">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/plugin">{% trans "Plugin" %}</a></li>
+                <li class="breadcrumb-item active">{% trans "Participants selection" %}</li>
             </ol>
         </div>
     </div>
@@ -50,7 +50,7 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
                 {% if perms.patient.export_patient %}
                     <h4>{% trans "Plugin" %}</h4>
@@ -70,7 +70,7 @@
             {# Questionnaires Info Section #}
             <div class="container-fluid well">
                 <h4>{% trans "Questionnaires data to be sent" %}</h4>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="col-lg-5 col-sm-12">
                         <ul>
                             {% if not admission_title %}
@@ -100,13 +100,13 @@
                 {% csrf_token %}
                 <div class="container-fluid well">
                     <div class="row">
-                        <div class="panel-group" id="accordion">
-                            <div class="panel-heading">
+                        <div class="card-group" id="accordion">
+                            <div class="card-header">
                                 <h4><a data-toggle="collapse" data-parent="#accordion" href="#collapse_experiment"
                                        aria-expanded="true">
                                     {% trans 'Per Experiment' %} </a></h4>
                             </div>
-                            <div id="collapse_experiment" class="panel-collapse collapse in">
+                            <div id="collapse_experiment" class=" collapse in">
                                 <div id="studies_container" class="container-fluid well">
                                     <h4>{% trans "Filters selection" %}</h4>
                                     <div class="form-group">
@@ -127,7 +127,7 @@
                                     </div>
                                     <div class="container-fluid well">
                                     <h4>{% trans "List of participants" %}</h4>
-                                    <div class="panel-body">
+                                    <div class="card-body">
                                         <div class="col-lg-5 col-sm-12">
                                             <div class="form-group" style="position: relative;">
                                                 <div id="loading_box" class="loading-box">
@@ -202,17 +202,17 @@
                 <input type="hidden" name="headings" value="code">
                 <div class="container-fluid well">
                     <div class="row">
-                        <div class="panel-group" id="accordion">
-                            <div class="panel-heading">
+                        <div class="card-group" id="accordion">
+                            <div class="card-header">
                                 <h4><a data-toggle="collapse" data-parent="#accordion"
                                             href="#collapse_participant">
                                     {% trans 'Per Participant' %} </a></h4>
                             </div>
-                            <div id="collapse_participant" class="panel-collapse collapse">
+                            <div id="collapse_participant" class=" collapse">
                                 {# List of Participants Section #}
                                 <div class="container-fluid well">
                                     <h4>{% trans "List of participants" %}</h4>
-                                    <div class="panel-body">
+                                    <div class="card-body">
                                         <div class="col-lg-5 col-sm-12">
                                             <div class="form-group">
                                                 <label for="multiselect_" class="control-label">{% trans "Participants available:" %} </label>

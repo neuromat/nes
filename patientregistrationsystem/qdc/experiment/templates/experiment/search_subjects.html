@@ -8,7 +8,7 @@
 {% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="subject_form" method="post">
     {% csrf_token %}
 {% endblock %}
@@ -16,14 +16,14 @@
 {% block content %}
 
     <div class="tab-pane fade show active" id="subjectBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li class="active">{% trans "Search Participants" %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                <li class="breadcrumb-item active">{% trans "Search Participants" %}</li>
             </ol>
         </div>
     </div>
@@ -51,7 +51,7 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
 
             <div id="participants_container" class="container-fluid well">
                 <h4>{% trans "Add new participants" %}</h4>
@@ -100,8 +100,8 @@
                             </input>
                         </div>
 
-                        <div id="id_locations" class="panel panel-default" style="border:1px solid lightgray;">
-                            <div class="panel-body" style="background-color: whitesmoke">
+                        <div id="id_locations" class="card  " style="border:1px solid lightgray;">
+                            <div class="card-body" style="background-color: whitesmoke">
 
                                 <div class="row">
                                     <div id="div-search-locations" class="col-12 col-sm-12">
@@ -135,8 +135,8 @@
                             </input>
                         </div>
 
-                        <div id="id_age" class="panel panel-default" style="border:1px solid lightgray;">
-                            <div class="panel-body" style="background-color: whitesmoke">
+                        <div id="id_age" class="card  " style="border:1px solid lightgray;">
+                            <div class="card-body" style="background-color: whitesmoke">
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
                                         <div class="input-group input-group-sm">
@@ -167,8 +167,8 @@
                             </input>
                         </div>
 
-                        <div id="id_age" class="panel panel-default" style="border:1px solid lightgray;">
-                            <div class="panel-body" style="background-color: whitesmoke">
+                        <div id="id_age" class="card  " style="border:1px solid lightgray;">
+                            <div class="card-body" style="background-color: whitesmoke">
                                 <div class="col-6 col-sm-2">
                                     <div class="form-group">
                                         {{ age_interval_form.min_age }}
@@ -215,7 +215,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

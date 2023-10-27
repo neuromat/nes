@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
@@ -35,17 +35,17 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="active">{% trans "Schedule of sending" %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item active">{% trans "Schedule of sending" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
 
             <div class="container-fluid well">
                 <h4>{% trans "List of experiments to send to Portal" %}</h4>
@@ -87,7 +87,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

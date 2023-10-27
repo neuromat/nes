@@ -30,15 +30,15 @@
         {% endif %} {% endcomment %}
 
         <div class="tab-pane fade show active" id="selectedParticipantBreadCrumb">
-            <div class="col-lg-12">
+            <div class="container-fluid">
                 <ol class="breadcrumb">
                     <li><a href="/home">{% trans "Home" %}</a></li>
-                    <li class="active">{% trans "Studies" %}</li>
+                    <li class="breadcrumb-item active">{% trans "Studies" %}</li>
                 </ol>
             </div>
         </div>
 
-        <div class="col-lg-12">
+        <div class="container-fluid">
             {% if perms.patient.export_patient %}
                 {% if patients %}
                     <form role="form" action="" method="POST">
@@ -48,8 +48,8 @@
                             <div class="container-fluid well">
                                 {% trans "There is a conflict with one or more participants to be imported with the participants already in the database." %}<br>
                                 {% trans "You can decide whether you want to update the patient in the database or create a new patient them." %}<br><br>
-                                <div class="panel panel-default">
-                                    <div class="panel-body">
+                                <div class="card  ">
+                                    <div class="card-body">
                                         <div class="col-lg-5 col-sm-12">
                                             <div class="form-group">
                                                 <label class="control-label">{% trans "Participants to update/overwrite database" %}: </label>

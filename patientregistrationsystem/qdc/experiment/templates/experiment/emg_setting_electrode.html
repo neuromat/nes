@@ -4,7 +4,7 @@
 {% load i18n static %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="emg_setting_form" method="post" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
@@ -41,22 +41,22 @@
 
 
     <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ emg_setting.experiment.research_project.id }}">{{ emg_setting.experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ emg_setting.experiment.id }}">{{ emg_setting.experiment.title }}</a></li>
-                <li><a href="/experiment/emg_setting/{{ emg_setting.id }}">{{ emg_setting.name }}</a></li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ emg_setting.experiment.research_project.id }}">{{ emg_setting.experiment.research_project.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/{{ emg_setting.experiment.id }}">{{ emg_setting.experiment.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/emg_setting/{{ emg_setting.id }}">{{ emg_setting.name }}</a></li>
 
                 {% if creating %}
-                    <li class="active">{% trans "Add electrode setting" %} </li>
+                    <li class="breadcrumb-item active">{% trans "Add electrode setting" %} </li>
                 {% else %}
                     {% if editing %}
-                        <li><a href="/experiment/emg_electrode_setting/{{ emg_electrode_setting.id }}">{{ emg_electrode_setting.emg_electrode_placement_setting.emg_electrode_placement }}</a></li>
-                        <li class="active">{% trans "Editing" %}</li>
+                        <li class="breadcrumb-item"><a href="/experiment/emg_electrode_setting/{{ emg_electrode_setting.id }}">{{ emg_electrode_setting.emg_electrode_placement_setting.emg_electrode_placement }}</a></li>
+                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
                     {% else %}
-                        <li class="active"> {{ emg_electrode_setting.emg_electrode_placement_setting.emg_electrode_placement }} </li>
+                        <li class="breadcrumb-item active"> {{ emg_electrode_setting.emg_electrode_placement_setting.emg_electrode_placement }} </li>
                     {% endif %}
                 {% endif %}
             </ol>
@@ -64,7 +64,7 @@
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
 
                 <h4>{% trans "EMG electrode settings" %}</h4>

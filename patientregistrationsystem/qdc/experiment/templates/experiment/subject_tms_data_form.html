@@ -42,7 +42,7 @@
 {% endblock %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
@@ -50,21 +50,21 @@
 {% block content %}
 
     <div class="tab-pane fade show active" id="tmsDataProjectBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
 
-                <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms">{% get_name_or_code subject.patient.id %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms">{% get_name_or_code subject.patient.id %}</a></li>
 
                 {% if creating %}
-                    <li class="active">{% trans "New TMS stimulation setting" %}</li>
+                    <li class="breadcrumb-item active">{% trans "New TMS stimulation setting" %}</li>
                 {% else %}
-                    <li class="active">{{ tms_data_form.description.value }}</li>
+                    <li class="breadcrumb-item active">{{ tms_data_form.description.value }}</li>
                 {% endif %}
 
             </ol>
@@ -100,7 +100,7 @@
     {% endif %}
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
 
                 <h4>{% trans "TMS stimulation setting" %}</h4>
@@ -181,12 +181,12 @@
                             </div>
                         </div>
 
-                        <div id="id_stimulation_setting" class="panel panel-default" style="border:1px solid lightgray;">
-                            <div class="panel-heading"><b>{% trans "Stimulation Settings" %} -
+                        <div id="id_stimulation_setting" class="card  " style="border:1px solid lightgray;">
+                            <div class="card-header"><b>{% trans "Stimulation Settings" %} -
                                 <label id="id_pulse_stimulus">{% if pulse_stimulus %}{{ pulse_stimulus }}{% else %}{% trans "Not configured" %}{% endif %}</label>
 
                                 </b></div>
-                            <div class="panel-body" style="background-color: whitesmoke">
+                            <div class="card-body" style="background-color: whitesmoke">
 
                                 <div class="row">
                                     <div class="col-6 col-sm-6">
@@ -270,9 +270,9 @@
                             </div>
                         </div>
 
-                        <div id="id_coil_orientation" class="panel panel-default" style="border:1px solid lightgray;">
-                            <div class="panel-heading"><b>{% trans "Coil orientation Settings" %}</b></div>
-                            <div class="panel-body" style="background-color: whitesmoke">
+                        <div id="id_coil_orientation" class="card  " style="border:1px solid lightgray;">
+                            <div class="card-header"><b>{% trans "Coil orientation Settings" %}</b></div>
+                            <div class="card-body" style="background-color: whitesmoke">
 
                                 <div class="row">
                                     <div class="col-6 col-sm-6">
@@ -294,7 +294,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="panel-body">
+                                    <div class="card-body">
                                         <img src="{% static 'imgs/coil_orientation2.svg' %}" class="img-fluid center-block" width="800" height="600" style="margin: auto" >
                                     </div>
                                 </div>
@@ -380,7 +380,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

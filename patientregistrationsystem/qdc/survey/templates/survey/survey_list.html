@@ -6,16 +6,16 @@
 
 {% block content %}
     <div class="tab-pane fade show active" id="surveyBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li class="active" >{% trans "Questionnaires" %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item active" >{% trans "Questionnaires" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
                 <h4>{% trans "List of questionnaires" %}</h4>
                 <div class="form-group">

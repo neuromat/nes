@@ -4,7 +4,7 @@
 {% load i18n static %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="eeg_setting_form" role="form" method="post" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
@@ -41,20 +41,20 @@
 
 
     <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ eeg_setting.experiment.research_project.id }}">{{ eeg_setting.experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ eeg_setting.experiment.id }}">{{ eeg_setting.experiment.title }}</a></li>
-                <li><a href="/experiment/eeg_setting/{{ eeg_setting.id }}">{{ eeg_setting.name }}</a></li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ eeg_setting.experiment.research_project.id }}">{{ eeg_setting.experiment.research_project.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/{{ eeg_setting.experiment.id }}">{{ eeg_setting.experiment.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/eeg_setting/{{ eeg_setting.id }}">{{ eeg_setting.name }}</a></li>
 
                 {% if creating %}
-                    <li class="active">{% trans "Add setting" %} </li>
+                    <li class="breadcrumb-item active">{% trans "Add setting" %} </li>
                 {% else %}
-                    <li class="active"> {{ equipment_selected.identification }} </li>
+                    <li class="breadcrumb-item active"> {{ equipment_selected.identification }} </li>
                     {% if eeg_setting_type == "eeg_electrode_net_system" %}
-                        <li class="active"> {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.name }} </li>
+                        <li class="breadcrumb-item active"> {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.name }} </li>
                     {% endif %}
                 {% endif %}
 
@@ -65,7 +65,7 @@
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
 
                 <div hidden="hidden">

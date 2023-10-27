@@ -5,7 +5,7 @@
 {% block activeExport %} active{% endblock %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="user_form" method="post" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
@@ -13,17 +13,17 @@
 {% block content %}
 
     <div class="tab-pane fade show active" id="selectedParticipantBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li class="active">{% trans "Export" %}</li>
-                <li class="active">{% trans "Selected participants" %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item active">{% trans "Export" %}</li>
+                <li class="breadcrumb-item active">{% trans "Selected participants" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
 
                 <h4>{% trans "List of participants" %}</h4>
@@ -101,7 +101,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

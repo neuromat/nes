@@ -5,7 +5,7 @@
 {% load subjects_tags %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="subject_form" method="post">
     {% csrf_token %}
 {% endblock %}
@@ -13,15 +13,15 @@
 {% block content %}
 
     <div class="tab-pane fade show active" id="subjectBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
-                <li class="active">{% get_name_or_code subject.patient.id %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+                <li class="breadcrumb-item active">{% get_name_or_code subject.patient.id %}</li>
             </ol>
         </div>
     </div>
@@ -49,7 +49,7 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-12 col-sm-12">
                     <div class="form-group">
@@ -149,7 +149,7 @@
                                                                             {% trans "Reuse questionnaire response" %} <span class="fa fa-arrow-right"></span>
                                                                         </a>
                                                                         <div id="collapse_{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}"
-                                                                             class="panel-collapse collapse out" role="tabpanel">
+                                                                             class=" collapse out" role="tabcard">
 
                                                                             {% for patient_questionnaire_response in subject_questionnaire.patient_questionnaire_responses %}
 
@@ -202,7 +202,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

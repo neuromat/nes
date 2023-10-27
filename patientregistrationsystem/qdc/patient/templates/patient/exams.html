@@ -5,7 +5,7 @@
 {% block activePatient %} active{% endblock %}
 
 {% block form %}
-    <div class="row">
+    
         <form id="form_exam" role="form" method="post" data-toggle="validator" enctype="multipart/form-data">
         {% csrf_token %}
 {% endblock %}
@@ -14,15 +14,15 @@
 {% block content %}
 
     <div class="tab-pane fade show active" id="examTab">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/patient/find/">{% trans "Participants" %}</a></li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/patient/find/">{% trans "Participants" %}</a></li>
 
                 {% if status == "edit" %}
-                    <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
+                    <li class="breadcrumb-item"><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
                 {% else %}
-                    <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
+                    <li class="breadcrumb-item"><a href="/patient/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
                 {% endif %}
 
                 <li>{% trans "Medical assessment" %}</li>
@@ -31,16 +31,16 @@
                     <li><a onclick="show_modal_remove_exam()">{% trans "Diagnosis and Exams" %}</a></li>
                 {% else %}
                     {% if viewing %}
-                        <li><a href="/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status={{ status }}&currentTab=3">{% trans "Diagnosis and Exams" %}</a></li>
+                        <li class="breadcrumb-item"><a href="/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status={{ status }}&currentTab=3">{% trans "Diagnosis and Exams" %}</a></li>
                     {% else %}
-                        <li><a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status={{ status }}&currentTab=3">{% trans "Diagnosis and Exams" %}</a></li>
+                        <li class="breadcrumb-item"><a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status={{ status }}&currentTab=3">{% trans "Diagnosis and Exams" %}</a></li>
                     {% endif %}
                 {% endif %}
 
                 {% if viewing %}
-                    <li class="active">{% trans "Exam" %}</li>
+                    <li class="breadcrumb-item active">{% trans "Exam" %}</li>
                 {% else %}
-                    <li class="active">{% trans "New Exam" %}</li>
+                    <li class="breadcrumb-item active">{% trans "New Exam" %}</li>
                 {% endif %}
             </ol>
 
@@ -75,7 +75,7 @@
 
             <div class="tab-content">
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="container-fluid">
                         <div class="container-fluid well">
                             <div class="row">
                                 <div class="col-5 col-sm-4">
@@ -227,7 +227,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

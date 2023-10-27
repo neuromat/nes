@@ -34,11 +34,11 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="{% url 'research_project_list' %}">{% trans "Studies" %}</a></li>
-                <li class="active">
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'research_project_list' %}">{% trans "Studies" %}</a></li>
+                <li class="breadcrumb-item active">
                     {% if research_project_id %}
                         {% trans "Import Experiment/Project" %}
                     {% else %}
@@ -50,7 +50,7 @@
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
 
             <div class="container-fluid well">
             {% if research_project_id %}

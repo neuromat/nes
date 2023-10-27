@@ -5,7 +5,7 @@
 {% block activeSetup %} active{% endblock %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
@@ -42,21 +42,21 @@
 
 
     <div class="tab-pane fade show active" id="equipmentBreadCrumb">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
-                <li><a href="/experiment/standardization_system/list">{% trans "EMG electrode placement system" %}</a></li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/setup">{% trans "Set up" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/standardization_system/list">{% trans "EMG electrode placement system" %}</a></li>
 
                 {% if creating %}
-                    <li><a href="/experiment/standardization_system/{{ standardization_system.id }}">{{ standardization_system.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="/experiment/standardization_system/{{ standardization_system.id }}">{{ standardization_system.name }}</a></li>
                 {% else %}
-                    <li><a href="/experiment/standardization_system/{{ emg_electrode_placement.standardization_system.id }}">{{ emg_electrode_placement.standardization_system.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="/experiment/standardization_system/{{ emg_electrode_placement.standardization_system.id }}">{{ emg_electrode_placement.standardization_system.name }}</a></li>
                     {% if editing %}
-                        <li><a href="/experiment/emg_electrode_placement/{{ emg_electrode_placement.id }}">{{ emg_electrode_placement.muscle_subdivision.muscle.name }} - {{ emg_electrode_placement.muscle_subdivision.name }}</a></li>
-                        <li class="active">{% trans "Editing" %}</li>
+                        <li class="breadcrumb-item"><a href="/experiment/emg_electrode_placement/{{ emg_electrode_placement.id }}">{{ emg_electrode_placement.muscle_subdivision.muscle.name }} - {{ emg_electrode_placement.muscle_subdivision.name }}</a></li>
+                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
                     {% else %}
-                        <li class="active"> {{ emg_electrode_placement.muscle_subdivision.muscle.name }} - {{ emg_electrode_placement.muscle_subdivision.name }}</li>
+                        <li class="breadcrumb-item active"> {{ emg_electrode_placement.muscle_subdivision.muscle.name }} - {{ emg_electrode_placement.muscle_subdivision.name }}</li>
                     {% endif %}
                 {% endif %}
 
@@ -68,7 +68,7 @@
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div class="container-fluid well">
                 <h4>{% trans "Information about" %} {% block placement_label %}{% endblock %}</h4>
 
@@ -171,7 +171,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

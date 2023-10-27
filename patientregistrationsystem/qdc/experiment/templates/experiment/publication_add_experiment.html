@@ -5,7 +5,7 @@
 {% block activeExport %} active{% endblock %}
 
 {% block form %}
-    <div class="row">
+    
     <form id="user_form" method="post" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
@@ -13,18 +13,18 @@
 {% block content %}
 
     <div class="tab-pane fade show active">
-        <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/publication/list">{% trans "Publications" %}</a></li>
-                <li><a href="/experiment/publication/{{ publication.id }}"> {{ publication.title }}</a></li>
-                <li class="active">{% trans "Add experiment" %}</li>
+                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/publication/list">{% trans "Publications" %}</a></li>
+                <li class="breadcrumb-item"><a href="/experiment/publication/{{ publication.id }}"> {{ publication.title }}</a></li>
+                <li class="breadcrumb-item active">{% trans "Add experiment" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="col-lg-12">
+        <div class="container-fluid">
             <div id="studies_container" class="container-fluid well">
                 <h4>{% trans "Experiment selection" %}</h4>
 
@@ -85,7 +85,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}

@@ -5,7 +5,7 @@
 {% block activePatient %} active{% endblock %}
 
 {% block form %}
-    <div class="row">
+    
 
     <form id="form_medical_record" role="form" method="post" data-toggle="validator">
     {% csrf_token %}
@@ -20,7 +20,7 @@
     <div class="col-lg-1">
     </div>
 
-    <div class="col-lg-12">
+    <div class="container-fluid">
 
     <ol class="breadcrumb">
         <li><a href="/home">{% trans "Home" %}</a></li>
@@ -30,7 +30,7 @@
         {% else %}
             <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
         {% endif %}
-        <li class="active">{% trans "Medical assessment" %}</li>
+        <li class="breadcrumb-item active">{% trans "Medical assessment" %}</li>
     </ol>
 
     {% if not creating %}
@@ -86,7 +86,7 @@
 
     <div class="tab-content">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="container-fluid">
                 <div class="container-fluid well">
                     {% if editing %}
                     <div class="row">
@@ -262,7 +262,6 @@
 
 {% block end_form %}
     </form>
-    </div>
 {% endblock %}
 
 {% block script %}
