@@ -70,7 +70,7 @@
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid well">
+            <div class="container-fluid card card-body bg-light">
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <h4>{% trans "Information about" %} {% block component_label %}{% endblock %}</h4>
@@ -206,7 +206,7 @@
 
             {% if can_reuse or reusing %}
                 {% if not is_configuring_new_experimental_protocol %}
-                    <div class="container-fluid well">
+                    <div class="container-fluid card card-body bg-light">
                         <div class="row">
                             <div class="col-12 col-sm-12">
                                 <h4>{% trans "Quantity of uses to be inserted" %} <b style="color: red;">*</b></h4>
@@ -223,7 +223,7 @@
             {% endif %}
 
             {% if component_configuration %}
-                <div class="container-fluid well">
+                <div class="container-fluid card card-body bg-light">
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <h4>{% trans "Information about this use of step" %}</h4>

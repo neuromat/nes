@@ -74,7 +74,7 @@
     {% if not updating and not creating %}
         <div class="row">
             <div class="col-12 col-sm-12">
-                <div class="container-fluid well">
+                <div class="container-fluid card card-body bg-light">
 
                     {% if component.type == "sequence" %}
                         <h4>{% trans "Steps with fixed position" %}</h4>
@@ -225,7 +225,7 @@
                 </div>
 
                 {% if component.type == "sequence" %}
-                    <div class="container-fluid well">
+                    <div class="container-fluid card card-body bg-light">
                         <div class="form-group">
 
                             <h4>{% trans "Steps with random position" %}</h4>

@@ -101,7 +101,7 @@
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid well">
+            <div class="container-fluid card card-body bg-light">
 
                 <h4>{% trans "EEG data collection" %}</h4>
 
@@ -345,7 +345,7 @@
                                         <input id="image_status" type="text" value="{{ editing }}">
                                         <input id="map_file" type="text" value="{{ eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
                                     </div>
-                                    <div class="container-fluid well">
+                                    <div class="container-fluid card card-body bg-light">
                                         <h4>{% trans "EEG electrode localization system basic information" %}</h4>
                                         <div class="row">
                                             <div style="width:100%;">

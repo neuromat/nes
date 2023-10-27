@@ -10,15 +10,15 @@
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/home/">{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Researchers and Institutions" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-            <div class="container-fluid well">
+        <div class="container">
+            <div class="container-fluid card card-body bg-light">
                 <h4>{% trans "Researchers" %}</h4>
                 <div id="accordion">
                     <div class="card">
@@ -46,9 +46,9 @@
                                     {% for user in object_list %}
                                         <tr>
                                             {% if user.first_name and user.last_name %}
-                                                <td><a data-toggle="tooltip" data-placement="left" title data-original-title="{% trans "Edit" %}" href="/user/view/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></td>
+                                                <td><a data-toggle="tooltip" data-placement="left" title data-original-title="{% trans 'Edit' %}" href="/user/view/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></td>
                                             {% else %}
-                                                <td><a data-toggle="tooltip" data-placement="left" title data-original-title="{% trans "Edit" %}" href="/user/view/{{ user.id }}"><em>{% trans "Name not registered" %}</em></a></td>
+                                                <td><a data-toggle="tooltip" data-placement="left" title data-original-title="{% trans 'Edit' %}" href="/user/view/{{ user.id }}"><em>{% trans "Name not registered" %}</em></a></td>
                                             {% endif %}
                                             <td>{{ user.email }}</td>
                                             <td>{% if user.user_profile.institution %}{{ user.user_profile.institution.acronym }}{% endif %}</td>
@@ -60,20 +60,25 @@
                                 </table>
                             </div>
                         </div>
-                        {% if perms.auth.add_user %}
-                            <div class="btn-group pull-left">
-                                <a href="/user/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                            </div>
-                        {% endif %}
+
+                        <div class="card-footer">
+                            {% if perms.auth.add_user %}
+                                <div class="btn-group pull-left">
+                                    <a href="/user/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <br>
+
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid well">
+            <div class="container-fluid card card-body bg-light">
                 <h4>{% trans "Institutions" %}</h4>
                 <div id="accordion">
                     <div class="card">
@@ -100,7 +105,7 @@
                                     {% for institution in institutions %}
                                         <tr>
                                             <td>{% if perms.auth.add_user %}
-                                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
+                                                    <a data-toggle="tooltip" data-placement="left" title="{% trans 'Visualize' %}"
                                                        href="/user/institution/{{ institution.id }}">
                                                         {{ institution.name }}
                                                     </a>
@@ -117,11 +122,14 @@
                                 </table>
                             </div>
                         </div>
-                        {% if perms.auth.add_user %}
-                            <div class="btn-group pull-left">
-                                <a href="/user/institution/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                            </div>
-                        {% endif %}
+
+                        <div class="card-footer">
+                            {% if perms.auth.add_user %}
+                                <div class="btn-group pull-left">
+                                    <a href="/user/institution/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
