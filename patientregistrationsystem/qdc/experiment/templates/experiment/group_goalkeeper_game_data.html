@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -13,7 +13,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="subjectBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -49,10 +49,10 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-lg-4">
                         <label>{% trans "Institution" %}</label>
                         <br/>
                         {% if institution_code %}
@@ -69,12 +69,12 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-lg-4">
                         <label>{% trans "Group" %}</label>
                         <br/>
                         {{ group.title }}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-lg-4">
                         <label>{% trans "Group code" %}</label>
                         <br/>
                         {% if group.code %}
@@ -111,15 +111,15 @@
             </div>
         </div>
 
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="row">
-                <div class="col-xs-12 col-sm-12">
+                <div class="col-12 col-sm-12">
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th class="col-md-6">{% trans "Goalkeeper game phase path" %}</th>
-                                <th class="col-md-6">{% trans "Game and phase" %}</th>
+                                <th class="col-lg-6">{% trans "Goalkeeper game phase path" %}</th>
+                                <th class="col-lg-6">{% trans "Game and phase" %}</th>
                             </tr>
                             </thead>
                             <tbody>

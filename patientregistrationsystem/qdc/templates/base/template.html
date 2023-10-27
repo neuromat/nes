@@ -18,7 +18,7 @@
     <meta name="author" content="">
 
     <link rel="stylesheet" href="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'site/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'site/bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}">
     <link rel="stylesheet" href="{% static 'site/font-awesome-4.7.0/css/font-awesome.min.css' %}">
 
@@ -73,20 +73,6 @@
         textarea {
             resize: vertical;
         }
-         
-        @media screen and (min-width: 992px) {
-            #sidenav-left {
-                position: fixed;
-                width: auto;
-            }
-            .sidenav {
-                height: auto;
-                padding: 15px;
-            }
-            .row.content {
-                height: auto;
-            }
-        }
 
     </style>
 
@@ -97,91 +83,81 @@
 <header>
     <form  id="language_form" action="{% url 'set_language' %}" method="post">
         {% csrf_token %}
-        <nav class="navbar  navbar-inverse navbar-fixed-top" role="navigation">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" role="navigation">
             <div class="container">
+                <a class="navbar-brand" href="/home/">{% trans "NES" %}</a>
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
+                    <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
                     </button>
-                    <a class="navbar-brand" href="/home/">{% trans "NES" %}</a>
                 </div>
                 
-                <div class="collapse navbar-collapse navbar-ex1-collapse">
-                    <ol class="nav navbar-nav navbar-right">
+                <div class="navbar-collapse collapse" id="navbarCollapse">
+                    <ul class="navbar-nav ml-auto">
                         {% if perms.configuration.upgrade_rights and if_upgrade %}
-                            <li>
-                                <a href="/home/upgrade_nes/"><span class="fa fa-download fa-fw"></span>Upgrade_nes</a>
+                            <li class="nav-item">
+                                <a href="/home/upgrade_nes/" class="nav-link"><span class="fa fa-download fa-fw"></span>Upgrade_nes</a>
                             </li>
                         {% endif %}
-                        <li>
+                        <li class="nav-item dropdown">
                             {% get_current_language as LANGUAGE_CODE %}
                             {% get_available_languages as LANGUAGES %}
                             {% get_language_info_list for LANGUAGES as languages %}
 
                             <input id="language" name="language" type="hidden">
-                            <a class="btn-default dropdown-toggle navbar-inverse" data-toggle="dropdown" href="#">
-                                <span  class="fa fa-globe fa-fw"></span>
-                                {{ LANGUAGE_CODE|language_name_local }}
-                                <span class="caret"></span>
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                                <span class="fa fa-globe fa-fw"></span> {{ LANGUAGE_CODE|language_name_local }}
                             </a> 
                             
-                            <ul class="dropdown dropdown-user dropdown-menu" role="menu" name="language">
+                            <div class="dropdown-menu" role="menu" name="language" aria-labelledby="navbarDropdown">
                                 {% for language in languages %}
                                     {% if language.code != LANGUAGE_CODE %}
-                                        <li>
-                                            <a href="javascript:{}" onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit();">
-                                                <span  class="fa fa-globe fa-fw"></span>
-                                                {{ language.name_local }}
-                                            </a>
-                                        </li>
+                                        <a href="javascript:{}" class="dropdown-item" onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit();">
+                                            <span  class="fa fa-globe fa-fw"></span>
+                                            {{ language.name_local }}
+                                        </a>
                                     {% endif %}
                                 {% endfor %}
-                            </ul>   
+                            </div>   
                         </li>
-                        <li>
-                            <a class="btn-default dropdown-toggle navbar-inverse"
-                            data-toggle="dropdown" href="#">
-                                <span  class="fa fa-user-circle fa-fw"></span> {{ request.user.username }}
-                                <span class="caret"></span>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                                <span class="fa fa-user-circle fa-fw"></span> {{ request.user.username }}
                             </a>
-                            <ul class="dropdown dropdown-user dropdown-menu" role="menu">
+                            <div class="dropdown-menu" role="menu" aria-labelledby="navbarDropdown">
                                 {% if request.user.is_superuser %}
-                                    <li><a href="/admin"><span class="fa fa-star fa-fw"></span> {% trans "Admin" %}</a></li>
+                                    <a href="/admin" class="dropdown-item"><span class="fa fa-star fa-fw"></span> {% trans "Admin" %}</a>
                                 {% endif %}
-                                <li><a href="/password_change"><span class="fa fa-key fa-fw"></span> {% trans "Change password" %}</a></li>
-                                <li><a href="https://nes.readthedocs.io/en/latest/userguide/userguide.html"><span class="fa fa-question-circle fa-fw"></span> {% trans "Help" %}</a></li>
-                                <li><a href="{% url 'logout' %}"><span class="fa fa-power-off fa-fw"></span> {% trans "Logout" %}</a></li>
-                            </ul>
+                                <a href="/password_change" class="dropdown-item"><span class="fa fa-key fa-fw"></span> {% trans "Change password" %}</a>
+                                <a href="https://nes.readthedocs.io/en/latest/userguide/userguide.html" class="dropdown-item"><span class="fa fa-question-circle fa-fw"></span> {% trans "Help" %}</a>
+                                <a href="{% url 'logout' %}" class="dropdown-item"><span class="fa fa-power-off fa-fw"></span> {% trans "Logout" %}</a>
+                            </div>
 
                         </li>
-                    </ol>
+                    </ul>
                 </div>
             </div>
         </nav>
     </form>
 </header>
 
-
 {% block form %}{% endblock %}
 
 <div id="main" class="container">
     <div class="row">
-        <nav class="col-xs-12 col-md-2" id="#leftCol">
-            <ul class="nav nav-pills nav-stacked sidenav" id="sidenav-left">
+        <nav class="col-12 col-lg-2">
+            <ul class="nav nav-pills nav-fill flex-column">
 
-                <li {% block activeContact %}{% endblock %}>
-                    <a href="/home/">
+                <li class="nav-item">
+                    <a href="/home/" class="nav-link {% block activeContact %}{% endblock %}">
                         <span class="fa fa-home fa-fw fa-lg"></span>
                         {% trans "Home" %}
                     </a>
                 </li>
 
                 {% if perms.patient.view_patient %}
-                    <li {% block activePatient %}{% endblock %} >
-                        <a href="/patient/find/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add people that participated in the experiments' %}">
+                    <li class="nav-item">
+                        <a href="/patient/find/" class="nav-link {% block activePatient %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add people that participated in the experiments' %}">
                             <span class="fa fa-users fa-fw fa-lg"></span>
                             {% trans "Participants" %}
                         </a>
@@ -189,8 +165,8 @@
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
-                    <li {% block activeAdvancedResearchProject %}{% endblock %}>
-                        <a href="/experiment/research_project/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
+                    <li class="nav-item">
+                        <a href="/experiment/research_project/list/" class="nav-link {% block activeAdvancedResearchProject %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
                             <span class="fa fa-graduation-cap fa-fw fa-lg"></span>
                             {% trans "Studies" %}
                         </a>
@@ -198,8 +174,8 @@
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
-                    <li {% block activeAdvancedPublication %}{% endblock %}>
-                        <a href="/experiment/publication/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
+                    <li class="nav-item">
+                        <a href="/experiment/publication/list/" class="nav-link {% block activeAdvancedPublication %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add publications' %}">
                             <span class="fa fa-book fa-fw fa-lg"></span>
                             {% trans "Publications" %}
                         </a>
@@ -207,8 +183,8 @@
                 {% endif %}
 
                 {% if perms.survey.view_survey %}
-                    <li {% block activeAdvancedSurvey %}{% endblock %}>
-                        <a href="/survey/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
+                    <li class="nav-item">
+                        <a href="/survey/list/" class="nav-link {% block activeAdvancedSurvey %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
                             <span class="fa fa-list-alt fa-fw fa-lg"></span>
                             {% trans "Questionnaires" %}
                         </a>
@@ -216,8 +192,8 @@
                 {% endif %}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
-                    <li {% block activeUser %}{% endblock %}>
-                        <a href="/user/list/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
+                    <li class="nav-item">
+                        <a href="/user/list/" class="nav-link {% block activeUser %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add users and institutions to the database' %}">
                             <span class="fa fa-user fa-fw fa-lg"></span>
                             {% trans "Researchers" %}
                         </a>
@@ -225,8 +201,8 @@
                 {% endif %}
 
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
-                    <li {% block activeExport %}{% endblock %}>
-                        <a href="/export/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Export your projects' %}">
+                    <li class="nav-item">
+                        <a href="/export/" class="nav-link {% block activeExport %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Export your projects' %}">
                             <span class="fa fa-upload fa-fw fa-lg"></span>
                             {% trans "Export" %}
                         </a>
@@ -234,8 +210,8 @@
                 {% endif %}
 
                 {% if perms.experiment.register_equipment %}
-                    <li {% block activeSetup %}{% endblock %}>
-                        <a href="/experiment/setup/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Here you can setup the equipments used in the projects' %}">
+                    <li class="nav-item">
+                        <a href="/experiment/setup/" class="nav-link {% block activeSetup %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Here you can setup the equipments used in the projects' %}">
                             <span class="fa fa-pencil fa-fw fa-lg"></span>
                             {% trans "Set up" %}
                         </a>
@@ -246,16 +222,16 @@
                 {% get_solo 'plugin.RandomForests' as random_forests %}
                 {% endcache %}
                 {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
-                    <li {% block activePlugin %}{% endblock %}>
-                        <a href="/plugin/">
+                    <li class="nav-item">
+                        <a href="/plugin/" class="nav-link {% block activePlugin %}{% endblock %}">
                             <span class="fa fa-cloud-upload fa-fw fa-lg"></span>
                             {% trans "Plugin" %}
                         </a>
                     </li>
                 {% endif %}
 
-                <li {% block activeLinks %}{% endblock %}>
-                    <a href="/links/" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Useful links of tools' %}">
+                <li class="nav-item">
+                    <a href="/links/" class="nav-link {% block activeLinks %}{% endblock %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Useful links of tools' %}">
                         <span class="fa fa-link fa-fw fa-lg"></span>
                         {% trans "Useful Links" %}
                     </a>
@@ -264,7 +240,7 @@
             </ul>
         </nav>
 
-        <div class="col-xs-12 col-md-10 content">
+        <div class="col-12 col-lg-10 content">
             <div id="myMenuContent" class="tab-content">
                 <noscript><h1 align="center">{% trans "Please enable Javascript" %} <span style="color: red; font-weight: bold">*</span></h1></noscript>
                 {% block content %} {% endblock %}
@@ -288,7 +264,7 @@
 
 <script type="text/javascript" src="{% static 'site/jquery/jquery-2.2.4.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/bootstrap-4.6.2-dist/js/bootstrap.bundle.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/masked_input/jquery.maskedinput.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/Bootstrap-Validator-Master/validator.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/toastr/toastr.min.js' %}"></script>

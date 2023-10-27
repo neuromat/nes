@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeUser %}class="active"{% endblock %}
+{% block activeUser %} active{% endblock %}
 
 {% block header %}
     <style>
@@ -64,7 +64,7 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="equipmentBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/user/list">{% trans "Researchers and Institutions" %}</a></li>
@@ -77,11 +77,11 @@
         </div>
     </div>
 
-    <div class="col-md-12">
+    <div class="col-lg-12">
         <div class="container-fluid well">
             <h4>{% trans "Basic Information" %}</h4>
             <div class="row">
-                <div class="col-xs-6 col-sm-6">
+                <div class="col-6 col-sm-6">
                     <div class="form-group {% if form.errors.first_name %}has-error{% endif %}">
                         <label for="id_first_name" class="control-label">{% trans "First name" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
@@ -95,7 +95,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-6 col-sm-6">
+                <div class="col-6 col-sm-6">
                     <div class="form-group {% if form.errors.last_name %}has-error{% endif %}">
                         <label for="id_last_name" class="control-label">{% trans "Last name" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
@@ -112,7 +112,7 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-6 col-sm-6">
+                <div class="col-6 col-sm-6">
                     <div class="form-group {% if form.errors.email %}has-error{% endif %}" id="mailDivId">
                         <label for="id_email" class="control-label">E-mail<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
@@ -126,7 +126,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-6 col-sm-6">
+                <div class="col-6 col-sm-6">
                     <div class="form-group">
                         <label for="id_institution" class="control-label">{% trans "Institution" %}</label>
                         <div class="input-group input-group-sm">
@@ -138,7 +138,7 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-6 col-sm-6">
+                <div class="col-6 col-sm-6">
                     <div class="form-group"  id="citation_name_id">
                         <label for="id_citation_name" class="control-label">{% trans "Citation name" %}</label>
                         <div class="input-group input-group-sm">
@@ -150,7 +150,7 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-10 col-sm-10">
+                <div class="col-10 col-sm-10">
                     <div class="form-group">
                         <input type="text" id="operation" value="{% if creating %}creating{% elif editing %}editing{% else %}viewing{% endif %}" hidden="hidden">
                         <label for="operation" >{%  trans "Can this researcher access the system?" %}</label><br>
@@ -165,7 +165,7 @@
         </div>
         <div class="container-fluid well" id="user_account">
             <div class="row">
-                <div class="col-xs-12 col-sm-12" id="username">
+                <div class="col-12 col-sm-12" id="username">
                     <div class="form-group {% if form.errors.username %}has-error{% endif %}">
                         <label for="id_username" class="control-label">{% trans "Username" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm">
@@ -182,7 +182,7 @@
             </div>
 
             <div class="row" id="div_password">
-                <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left">
+                <div class="col-6 col-sm-6" data-toggle="tooltip" data-placement="left">
                     <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
                         <label for="id_new_password1" class="control-label">{% trans "Password" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm right-inner-addon">
@@ -197,7 +197,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-6 col-sm-6">
+                <div class="col-6 col-sm-6">
                     <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password2_form_group">
                         <label for="id_new_password2" class="control-label">{% trans "Please confirm password" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm has-feedback">
@@ -215,7 +215,7 @@
                 </div>
             </div>
             <div class="row" id="div_password_flag">
-                <div class="col-xs-12 col-sm-12">
+                <div class="col-12 col-sm-12">
                     <div class="form-group">
                         <input type="checkbox" id="password_flag" name="password_flag" {% if creating %}checked="checked" disabled {% endif %}>
                         <label for="password_flag" class="control-label"><b> {% trans "Update password" %}</b></label>
@@ -254,7 +254,7 @@
         </div>
     </div>
 
-    <div class="col-md-12">
+    <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
             <div class="btn-group pull-left">
                 {% if not creating and perms.auth.delete_user and current_user_id != user.id %}

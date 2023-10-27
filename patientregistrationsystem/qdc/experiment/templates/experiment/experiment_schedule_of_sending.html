@@ -8,7 +8,7 @@
     {% csrf_token %}
 {% endblock %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% block content %}
 
@@ -35,7 +35,7 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade in active">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="tab-pane fade in active" id="mainMenuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
 
             <div class="container-fluid well">
 
@@ -71,7 +71,7 @@
 
                     {% if experiment.last_sending %}
                         <div class="row">
-                            <div class="col-xs-12 col-sm-12">
+                            <div class="col-12 col-sm-12">
                                 <div class="form-group">
                                     <label class="control-label">{% trans "Reason for resending" %} <b style="color: red;">*</b></label>
                                     {{ resend_experiment_form.reason_for_resending }}
@@ -103,7 +103,7 @@
                             </div>
                             <div id="collapse_{{ survey_key }}" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                    <div class="col-md-5 col-sm-12">
+                                    <div class="col-lg-5 col-sm-12">
                                         <div class="form-group">
                                             <label class="control-label">{% trans "Fields available:" %} </label>
                                                 <select class="form-control" size="13" id="multiselect_{{ survey_key }}"
@@ -121,7 +121,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-2 col-sm-2">
+                                    <div class="col-lg-2 col-sm-2">
                                         <button type="button" id="multiselect_{{ survey_key }}_rightAll"
                                                 class="btn btn-default btn-block"><i
                                                 class="fa fa-forward"></i></button>
@@ -136,7 +136,7 @@
                                                 class="fa fa-backward"></i></button>
                                     </div>
 
-                                    <div class="col-md-5 col-sm-10">
+                                    <div class="col-lg-5 col-sm-10">
                                         <label class="control-label">{% trans "Fields chosen:" %} </label>
 
                                         <select name="to[]" id="multiselect_{{ survey_key }}_to"

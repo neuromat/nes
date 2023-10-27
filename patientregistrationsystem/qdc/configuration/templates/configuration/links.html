@@ -1,12 +1,12 @@
 {% extends "base/template.html" %}
-{% block activeLinks %}class="active"{% endblock %}
+{% block activeLinks %} active{% endblock %}
 {% load static %}
 
 {% load i18n static %}
 
 
 {% block content %}
-    <div class="col-md-12">
+    <div class="col-lg-12">
         <div class="container-fluid well">
             {% for link in useful_links %}
                 <div class="row">

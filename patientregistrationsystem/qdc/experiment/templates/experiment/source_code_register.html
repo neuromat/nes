@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -42,7 +42,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -64,11 +64,11 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
                 <h4><span class="fa fa-file-code-o"></span> {% trans "Source Code" %}</h4>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Name" %} <b style="color: red;">*</b></label>
                             {{ source_code_form.name }}
@@ -77,7 +77,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Description" %} <b style="color: red;">*</b></label>
                             {{ source_code_form.description }}
@@ -86,7 +86,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
                             {{ source_code_form.source_code_data }}
@@ -96,7 +96,7 @@
                 </div>
                 {% if editing or source_code_form.file.value %}
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
                             {% if editing %}

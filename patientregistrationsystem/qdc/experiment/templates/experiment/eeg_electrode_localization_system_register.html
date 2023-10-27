@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeSetup %}class="active"{% endblock %}
+{% block activeSetup %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -42,7 +42,7 @@
 
 
     <div class="tab-pane fade in active" id="breadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
@@ -63,11 +63,11 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
                 <h4>{% trans "EEG electrode localization system basic information" %}</h4>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Name" %} <b style="color: red;">*</b></label>
                             {{ localization_system_form.name }}
@@ -77,7 +77,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Description" %}</label>
                             {{ localization_system_form.description }}
@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Map image file" %}</label>
                             {% if editing %}
@@ -152,12 +152,12 @@
                                             {{ position.position_reference.eeg_electrode_localization_system.name }} / {{ position.position_reference.name }}
                                         {% endif %}
                                     </td>
-                                    <td class="text-right col-md-1">
+                                    <td class="text-right col-lg-1">
                                         {% if not forloop.last %}
                                             <a class="btn fa fa-arrow-down" href="/experiment/eeg_electrode_position/change_the_order/{{ position.id }}/down/"></a>
                                         {% endif %}
                                     </td>
-                                    <td class="col-md-1">
+                                    <td class="col-lg-1">
                                         {% if not forloop.first %}
                                             <a class="btn fa fa-arrow-up" href="/experiment/eeg_electrode_position/change_the_order/{{ position.id }}/up/"></a>
                                         {% endif %}

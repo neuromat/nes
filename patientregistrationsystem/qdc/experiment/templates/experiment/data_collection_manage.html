@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -13,7 +13,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="subjectBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -49,9 +49,9 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="row">
-                <div class="col-xs-12 col-sm-12">
+                <div class="col-12 col-sm-12">
 
                     {# Page title #}
                     <h4>
@@ -98,7 +98,7 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-12 col-sm-12">
+                <div class="col-12 col-sm-12">
                     <h5>
                         {% trans "Action: " %}
                     </h5>
@@ -118,7 +118,7 @@
             </div>
 
             <div class="row collapse" id="transfer_selection_div" style="visibility: hidden">
-                <div class="col-xs-12 col-sm-12">
+                <div class="col-12 col-sm-12">
 
                     <h5>
                     {% trans "Choose step to transfer selected data collections:" %}

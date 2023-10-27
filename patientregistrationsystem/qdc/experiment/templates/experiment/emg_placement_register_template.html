@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeSetup %}class="active"{% endblock %}
+{% block activeSetup %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -42,7 +42,7 @@
 
 
     <div class="tab-pane fade in active" id="equipmentBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
@@ -68,12 +68,12 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
                 <h4>{% trans "Information about" %} {% block placement_label %}{% endblock %}</h4>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Muscle subdivision" %} <b style="color: red;">*</b></label>
                             {{ emg_electrode_placement_form.muscle_subdivision }}
@@ -83,7 +83,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Location description" %}</label>
                             {{ emg_electrode_placement_form.location }}
@@ -96,7 +96,7 @@
                 {% endblock %}
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <span class="fa fa-camera"></span>
                             <label class="control-label">{% trans "Photo" %}</label>

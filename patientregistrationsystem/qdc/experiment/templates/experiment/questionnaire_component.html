@@ -26,7 +26,7 @@
 
 {% block extra_fields %}
     <div class="row">
-        <div class="col-xs-6 col-sm-12">
+        <div class="col-6 col-sm-12">
             <div class="form-group">
                 <label for="questionnaire_selected" class="control-label">{% trans "Questionnaire name at LimeSurvey" %}<b style="color: red;">*</b></label>
                 <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating or reusing %}disabled{% endif %}>

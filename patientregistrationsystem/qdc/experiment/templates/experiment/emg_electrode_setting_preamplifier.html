@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% load i18n static %}
 
@@ -41,7 +41,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -66,13 +66,13 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
 
                 <h4>{% trans "EMG Preamplifier settings" %}</h4>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Manufacturer" %} </label>
                             <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
@@ -88,7 +88,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Preamplifier" %} </label>
                             {{ emg_preamplifier_setting_form.amplifier }}
@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Description" %} </label>
                             {{ equipment_form.description }}
@@ -109,7 +109,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group {% if emg_preamplifier_setting_form.gain.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Gain" %} {% trans "(times)" %}</label>
                             {{ emg_preamplifier_setting_form.gain }}
@@ -125,7 +125,7 @@
                 <h4>{% trans "Analog filter settings" %}</h4>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group {% if emg_preamplifier_filter_setting_form.low_pass.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Low pass" %} (Hz)</label>
                             {{ emg_preamplifier_filter_setting_form.low_pass }}
@@ -139,7 +139,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group {% if emg_preamplifier_filter_setting_form.high_pass.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "High pass" %} (Hz)</label>
                             {{ emg_preamplifier_filter_setting_form.high_pass }}
@@ -153,7 +153,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-6 col-sm-6">
+                    <div class="col-6 col-sm-6">
                         <div class="form-group {% if emg_preamplifier_filter_setting_form.low_band_pass.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Low band pass" %} (Hz)</label>
                             {{ emg_preamplifier_filter_setting_form.low_band_pass }}
@@ -165,7 +165,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-6 col-sm-6">
+                    <div class="col-6 col-sm-6">
                         <div class="form-group {% if emg_preamplifier_filter_setting_form.high_band_pass.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "High band pass" %} (Hz)</label>
                             {{ emg_preamplifier_filter_setting_form.high_band_pass }}
@@ -179,7 +179,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-6 col-sm-6">
+                    <div class="col-6 col-sm-6">
                         <div class="form-group {% if emg_preamplifier_filter_setting_form.low_notch.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Low notch" %} (Hz)</label>
                             {{ emg_preamplifier_filter_setting_form.low_notch }}
@@ -191,7 +191,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-6 col-sm-6">
+                    <div class="col-6 col-sm-6">
                         <div class="form-group {% if emg_preamplifier_filter_setting_form.high_notch.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "High notch" %} (Hz)</label>
                             {{ emg_preamplifier_filter_setting_form.high_notch }}
@@ -205,7 +205,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group {% if emg_preamplifier_filter_setting_form.order.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Order" %} </label>
                             {{ emg_preamplifier_filter_setting_form.order }}

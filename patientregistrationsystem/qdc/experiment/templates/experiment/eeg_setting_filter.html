@@ -6,9 +6,9 @@
     <h4>{% trans "EEG filter settings" %}</h4>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-10 col-sm-10">
+        <div class="col-10 col-sm-10">
             <div class="form-group">
                 <label class="control-label">{% trans "Filter type" %} </label>
 
@@ -26,9 +26,9 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-10 col-sm-10">
+        <div class="col-10 col-sm-10">
             <div class="form-group">
                 <label class="control-label">{% trans "Description" %} </label>
                 {{ equipment_form.description }}
@@ -42,9 +42,9 @@
 {% block settings %}
 {{ block.super }}
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-10 col-sm-10">
+        <div class="col-10 col-sm-10">
             <div class="form-group {% if setting_form.high_pass.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "High pass cutoff (Hz)" %} </label>
                 {{ setting_form.high_pass }}
@@ -58,9 +58,9 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-10 col-sm-10">
+        <div class="col-10 col-sm-10">
             <div class="form-group {% if setting_form.low_pass.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "Low pass cutoff (Hz)" %} </label>
                 {{ setting_form.low_pass }}
@@ -74,9 +74,9 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-5 col-sm-5">
+        <div class="col-5 col-sm-5">
             <div class="form-group {% if setting_form.low_band_pass.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "Low band pass (Hz)" %}</label>
                 {{ setting_form.low_band_pass }}
@@ -88,7 +88,7 @@
             </div>
         </div>
 
-        <div class="col-xs-5 col-sm-5">
+        <div class="col-5 col-sm-5">
             <div class="form-group {% if setting_form.high_band_pass.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "High band pass (Hz)" %}</label>
                 {{ setting_form.high_band_pass }}
@@ -102,9 +102,9 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-5 col-sm-5">
+        <div class="col-5 col-sm-5">
             <div class="form-group {% if setting_form.low_notch.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "Low notch (Hz)" %}</label>
                 {{ setting_form.low_notch }}
@@ -116,7 +116,7 @@
             </div>
         </div>
 
-        <div class="col-xs-5 col-sm-5">
+        <div class="col-5 col-sm-5">
             <div class="form-group {% if setting_form.high_notch.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "High notch (Hz)" %}</label>
                 {{ setting_form.high_notch }}
@@ -130,9 +130,9 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-10 col-sm-10">
+        <div class="col-10 col-sm-10">
             <div class="form-group {% if setting_form.order.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "Order" %} </label>
                 {{ setting_form.order }}

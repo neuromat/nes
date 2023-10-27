@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% block header %}
 <link rel="stylesheet" href="{% static 'site/magnific-popup/magnific-popup.css' %}">
@@ -46,7 +46,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -68,11 +68,11 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
                 <h4>{% trans "Group basic information" %}</h4>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Title" %} <b style="color: red;">*</b></label>
                             {{ group_form.title }}
@@ -81,7 +81,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Description" %} <b style="color: red;">*</b></label>
                             {{ group_form.description }}
@@ -92,7 +92,7 @@
 
                 {% if editing %}
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Other inclusion description" %}</label>
                                 {{ group_form.inclusion_description }}
@@ -114,7 +114,7 @@
                     <h4>{% trans "Inclusion criteria" %}</h4>
                     {% if can_change %}
                         <div class="row">
-                            <div class="col-xs-12 col-sm-12">
+                            <div class="col-12 col-sm-12">
                                 <div class="form-group">
                                     <input id="group_id" value="{{ group.id }}" style="display: none;">
                                     <div class="input-group  input-group-sm "><span class="input-group-addon">
@@ -129,7 +129,7 @@
                         </div>
                     {% endif %}
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <table class="table table-striped">
                                     <thead>
@@ -167,7 +167,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Other inclusion description" %}</label>
                                 {{ group_form.inclusion_description }}
@@ -180,19 +180,19 @@
                 <div class="container-fluid well">
                     <h4>{% trans "Questionnaires of experimental protocol" %}</h4>
                     <div class="form-group">
-                        <table class="table table-striped col-xs-12 col-md-12">
+                        <table class="table table-striped col-12 col-lg-12">
                             <thead>
                             <tr>
-                                <th class="col-md-6">{% trans "Name" %}</th>
+                                <th class="col-lg-6">{% trans "Name" %}</th>
                                 {# Can't use bootstrap tooltip in the columns, because it hurts the format of the table. #}
                                 {# data-toggle="tooltip" data-placement="top" #}
-                                <th class="col-md-2 hidden-xs"
+                                <th class="col-lg-2 hidden-xs"
                                     title="{% trans "Quantity of fills for each participant" %}">
                                     {% trans "Needed fills by participant" %}</th>
-                                <th class="col-md-2 hidden-xs"
+                                <th class="col-lg-2 hidden-xs"
                                     title={% trans "Quantity of fills needed by pariticipant multiplied by quantity of participants in this group" %}>
                                     {% trans "Total fills needed" %}</th>
-                                <th class="col-md-2 hidden-xs"
+                                <th class="col-lg-2 hidden-xs"
                                     title={% trans "Sum of fills quantity already made by each participant" %}>
                                     {% trans "Total fills already made" %}</th>
                                 <th class="visible-xs"
@@ -245,7 +245,7 @@
                 <div class="container-fluid well">
                     <h4>{% trans "Participants and data collections" %}</h4>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             {% if number_of_subjects > 0 %}
                                 <div class="form-group">
                                     <a data-toggle="tooltip" data-placement="left" title="{% trans "View / Edit" %}"
@@ -276,7 +276,7 @@
                 <div class="container-fluid well">
                     <h4>{% trans "Experimental protocol" %}</h4>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             {% if group.experimental_protocol %}
                                 <div class="form-group">
                                     <table class="table table-striped">
@@ -314,11 +314,11 @@
                                     </table>
 
                                     <div class="row">
-                                        <div class="col-md-7">
+                                        <div class="col-lg-7">
                                             <label class="control-label">{% trans "Textual description" %}</label>
                                             <textarea class="form-control" rows="25" disabled>{{ experimental_protocol_description }}</textarea>
                                         </div>
-                                        <div class="col-md-5">
+                                        <div class="col-lg-5">
 
                                             <label class="control-label">{% trans "Graph representation" %}</label>
 

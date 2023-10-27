@@ -5,7 +5,7 @@
 {#information from http://stackoverflow.com/questions/6451304/django-simple-custom-template-tag-example#}
 {% load subjects_tags %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% block header %}
     <style>
@@ -35,7 +35,7 @@
 
 {% block content %}
     <div class="tab-pane fade in active" id="subjectBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -70,7 +70,7 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
 
             <ul class="nav nav-tabs">
                 <li id="per_participants_tab" class="active">
@@ -90,7 +90,7 @@
                     {% if perms.experiment.add_subject and can_change %}
                         <div class="container-fluid well">
                             <div class="row">
-                                <div class="col-xs-12 col-sm-12">
+                                <div class="col-12 col-sm-12">
                                     <div class="form-group">
                                         <input id="group_id" value="{{ group.id }}" style="display: none;">
                                         <label>{% trans "Add participant" %}</label>
@@ -114,7 +114,7 @@
                                 </div>
                             </div>
                             <div class="row" align="right">
-                                <div class="col-md-12">
+                                <div class="col-lg-12">
                                     <a href="/experiment/group/{{ group.id }}/search_subjects">
                                         {% trans "Advanced search" %}
                                     </a>
@@ -123,7 +123,7 @@
                         </div>
                     {% endif %}
 
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                     <div class="row">
                         {% if experimental_protocol_info.number_of_questionnaires %}
                         <div class="pull-right">
@@ -143,7 +143,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <table class="table table-striped">
                                     <thead>
@@ -153,7 +153,7 @@
                                         {% if experimental_protocol_info.number_of_questionnaires %}
                                             <th>{% trans "Completed questionnaires" %}</th>
                                         {% endif %}
-                                        <th class="col-md-6">{% trans "Data files uploaded" %}</th>
+                                        <th class="col-lg-6">{% trans "Data files uploaded" %}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -179,7 +179,7 @@
 
                                                 </td>
                                                 <td>
-                                                    <div class="col-xs-2 col-sm-2" >
+                                                    <div class="col-2 col-sm-2" >
                                                         {% if can_change and perms.patient.sensitive_data_patient %}
                                                             <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file"
                                                                data-toggle="tooltip" data-placement="top" title="{% trans 'Upload consent form' %}">
@@ -189,7 +189,7 @@
                                                             <span class="fa fa-paperclip fa-fw"></span>
                                                         {% endif %}
                                                     </div>
-                                                    <div class="col-xs-10 col-sm-10" >
+                                                    <div class="col-10 col-sm-10" >
                                                         {% if item.consent %}
                                                             <span class="label label-success">{% trans "Attached" %}</span>
                                                         {% else %}
@@ -201,13 +201,13 @@
                                                 <td>
                                                     <div class="row">
                                                         {% if limesurvey_available %}
-                                                            <div class="col-xs-2 col-sm-2">
+                                                            <div class="col-2 col-sm-2">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/"
                                                                    data-toggle="tooltip" data-placement="top" title="{% trans "Fill questionnaires" %}">
                                                                     <span class="fa fa-list-alt fa-fw"></span>
                                                                 </a>
                                                             </div>
-                                                            <div class="col-xs-10 col-sm-10" >
+                                                            <div class="col-10 col-sm-10" >
                                                                 <div class="progress">
                                                                     <div class="progress-bar {% if item.percentage_of_questionnaires == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage_of_questionnaires }}%;">
                                                                         <span>{{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}</span>
@@ -223,13 +223,13 @@
                                                 <td>
                                                     {% if experimental_protocol_info.number_of_eeg_data %}
                                                         <div class="row">
-                                                            <div class="col-xs-4 col-sm-4">
+                                                            <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans 'Uploaded EEG data files' %}">
                                                                     <span class="fa fa-flash fa-fw"></span> {% trans "EEG" %}
                                                                 </a>
                                                             </div>
-                                                            <div class="col-xs-8 col-sm-8">
+                                                            <div class="col-8 col-sm-8">
                                                                 <div class="progress">
                                                                     <div class="progress-bar {% if item.percentage_of_eeg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_eeg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_eeg_data_files }}" style="color: #000000; width: {{ item.percentage_of_eeg_data_files_uploaded }}%;">
                                                                         <span>{{ item.number_of_eeg_data_files_uploaded }}/{{ item.total_of_eeg_data_files }}</span>
@@ -241,13 +241,13 @@
 
                                                     {% if experimental_protocol_info.number_of_emg_data %}
                                                         <div class="row">
-                                                            <div class="col-xs-4 col-sm-4">
+                                                            <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans 'Uploaded EMG data files' %}">
                                                                     <span class="fa fa-bar-chart fa-fw"></span> {% trans "EMG" %}
                                                                 </a>
                                                             </div>
-                                                            <div class="col-xs-8 col-sm-8">
+                                                            <div class="col-8 col-sm-8">
                                                                 <div class="progress">
                                                                     <div class="progress-bar {% if item.percentage_of_emg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_emg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_emg_data_files }}" style="color: #000000; width: {{ item.percentage_of_emg_data_files_uploaded }}%;">
                                                                         <span>{{ item.number_of_emg_data_files_uploaded }}/{{ item.total_of_emg_data_files }}</span>
@@ -259,13 +259,13 @@
 
                                                     {% if experimental_protocol_info.number_of_tms_data %}
                                                         <div class="row">
-                                                            <div class="col-xs-4 col-sm-4">
+                                                            <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/tms"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded TMS data files" %}">
                                                                     <span class="fa fa-magnet fa-fw"></span> {% trans "TMS" %}
                                                                 </a>
                                                             </div>
-                                                            <div class="col-xs-8 col-sm-8">
+                                                            <div class="col-8 col-sm-8">
                                                                 <div class="progress">
                                                                     <div class="progress-bar {% if item.percentage_of_tms_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_tms_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_tms_data_files }}" style="color: #000000; width: {{ item.percentage_of_tms_data_files_uploaded }}%;">
                                                                         <span>{{ item.number_of_tms_data_files_uploaded }}/{{ item.total_of_tms_data_files }}</span>
@@ -277,13 +277,13 @@
 
                                                     {% if experimental_protocol_info.number_of_digital_game_phase_data %}
                                                         <div class="row">
-                                                            <div class="col-xs-4 col-sm-4">
+                                                            <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/digital_game_phase"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded goalkeeper game phase data files" %}">
                                                                     <span class="fa fa-play-circle fa-fw"></span> {% trans "Game" %}
                                                                 </a>
                                                             </div>
-                                                            <div class="col-xs-8 col-sm-8">
+                                                            <div class="col-8 col-sm-8">
                                                                 <div class="progress">
                                                                     <div class="progress-bar {% if item.percentage_of_digital_game_phase_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_digital_game_phase_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_digital_game_phase_data_files }}" style="color: #000000; width: {{ item.percentage_of_digital_game_phase_data_files_uploaded }}%;">
                                                                         <span>{{ item.number_of_digital_game_phase_data_files_uploaded }}/{{ item.total_of_digital_game_phase_data_files }}</span>
@@ -295,13 +295,13 @@
 
                                                     {% if experimental_protocol_info.number_of_generic_data_collection_data %}
                                                         <div class="row">
-                                                            <div class="col-xs-4 col-sm-4">
+                                                            <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/generic_data_collection"
                                                                         data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded generic collection data files" %}">
                                                                     <span class="fa fa-file fa-fw"></span> {% trans "Data collection" %}
                                                                 </a>
                                                             </div>
-                                                            <div class="col-xs-8 col-sm-8">
+                                                            <div class="col-8 col-sm-8">
                                                                 <div class="progress">
                                                                     <div class="progress-bar {% if item.percentage_of_generic_data_collection_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_generic_data_collection_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_generic_data_collection_data_files }}" style="color: #000000; width: {{ item.percentage_of_generic_data_collection_data_files_uploaded }}%;">
                                                                         <span>{{ item.number_of_generic_data_collection_data_files_uploaded }}/{{ item.total_of_generic_data_collection_data_files }}</span>
@@ -312,7 +312,7 @@
                                                     {% endif %}
 
                                                     <div class="row">
-                                                        <div class="col-xs-12 col-sm-12">
+                                                        <div class="col-12 col-sm-12">
                                                             <span style="background-color: steelblue" class="badge">{{ item.number_of_additional_data_uploaded }}</span>
                                                             <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data" data-toggle="tooltip" title="{% trans "Uploaded additional data files" %}">
                                                                 {% trans "Additional" %}
@@ -336,7 +336,7 @@
 
                     <div class="row">
                         <br/>
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <table class="table table-striped">
                                     <thead>

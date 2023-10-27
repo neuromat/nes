@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block activeSetup %}class="active"{% endblock %}
+{% block activeSetup %} active{% endblock %}
 
 {% block content %}
 
@@ -29,7 +29,7 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade in active" id="researchProjectBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
@@ -39,7 +39,7 @@
     </div>
 
     <div class="tab-pane fade in active" id="mainMenuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
                 <h4>{% trans "EEG Machine List" %}</h4>
                 <div class="form-group">

@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeUser %}class="active"{% endblock %}
+{% block activeUser %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -42,7 +42,7 @@
 
 
     <div class="tab-pane fade in active" id="equipmentBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/user/list">{% trans "Researchers and Institutions" %}</a></li>
@@ -61,13 +61,13 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
 
                 <h4>{% trans "Institution" %}</h4>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-12 col-sm-6">
                         <div class="form-group has-feedback {% if institution_form.name.errors %}has-error{% endif %}">
                             <label for="id_name" class="control-label">{% trans "Name" %} <b style="color: red;">*</b></label>
                             {{ institution_form.name }}
@@ -78,7 +78,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-12 col-sm-6">
                         <div class="form-group {% if institution_form.acronym.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Acronym" %} <b style="color: red;">*</b></label>
                             {{ institution_form.acronym }}
@@ -92,7 +92,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-12 col-sm-6">
                         <div class="form-group {% if institution_form.country.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Country" %} <b style="color: red;">*</b></label>
                             {{ institution_form.country }}
@@ -103,7 +103,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-12 col-sm-6">
                         <div class="form-group {% if institution_form.parent.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Parent" %} </label>
                             {{ institution_form.parent }}

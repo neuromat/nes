@@ -5,7 +5,7 @@
 {#information from http://stackoverflow.com/questions/6451304/django-simple-custom-template-tag-example#}
 {% load subjects_tags %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -16,7 +16,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="subjectBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -51,7 +51,7 @@
     {% endif %} {% endcomment %}
 
     <div class="tab-pane fade in active" id="mainMenuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
 
             <div id="participants_container" class="container-fluid well">
                 <h4>{% trans "Add new participants" %}</h4>
@@ -69,8 +69,8 @@
                         </input>
                     </div>
 
-                    <div class="col-md-1"></div>
-                    <div class="col-md-11 collapse" id="participants_filter_div" style="visibility: hidden">
+                    <div class="col-lg-1"></div>
+                    <div class="col-lg-11 collapse" id="participants_filter_div" style="visibility: hidden">
 
                         <div class="form-group">
                             <input id="id_gender_checkbox" name="gender_checkbox" type="checkbox" value="gender_selected">
@@ -104,7 +104,7 @@
                             <div class="panel-body" style="background-color: whitesmoke">
 
                                 <div class="row">
-                                    <div id="div-search-locations" class="col-xs-12 col-sm-12">
+                                    <div id="div-search-locations" class="col-12 col-sm-12">
                                         <div hidden="hidden">
                                             <input id="group_id" value="{{ group.id }}" type="text">
                                         </div>
@@ -120,7 +120,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-12 col-sm-12">
+                                    <div class="col-12 col-sm-12">
                                         <div id="localization_list" class="form-group">
                                         </div>
                                     </div>
@@ -138,7 +138,7 @@
                         <div id="id_age" class="panel panel-default" style="border:1px solid lightgray;">
                             <div class="panel-body" style="background-color: whitesmoke">
                                 <div class="row">
-                                    <div class="col-xs-12 col-sm-12">
+                                    <div class="col-12 col-sm-12">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"> <span class="fa fa-search"></span></span>
                                             <div class="ui-widget">
@@ -151,7 +151,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-12 col-sm-12">
+                                    <div class="col-12 col-sm-12">
                                         <div id="diagnosis_list" class="form-group">
 
                                         </div>
@@ -169,15 +169,15 @@
 
                         <div id="id_age" class="panel panel-default" style="border:1px solid lightgray;">
                             <div class="panel-body" style="background-color: whitesmoke">
-                                <div class="col-xs-6 col-sm-2">
+                                <div class="col-6 col-sm-2">
                                     <div class="form-group">
                                         {{ age_interval_form.min_age }}
                                     </div>
                                 </div>
-                                <div class="col-xs-1">
+                                <div class="col-1">
                                     <span>{% trans "to" %}</span>
                                 </div>
-                                <div class="col-xs-6 col-sm-2">
+                                <div class="col-6 col-sm-2">
                                     <div class="form-group">
                                         {{ age_interval_form.max_age }}
                                     </div>

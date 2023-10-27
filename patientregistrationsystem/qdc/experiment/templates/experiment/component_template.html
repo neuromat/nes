@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% load i18n static %}
 
@@ -41,7 +41,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -69,16 +69,16 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <h4>{% trans "Information about" %} {% block component_label %}{% endblock %}</h4>
                     </div>
                 </div>
                 {% if can_reuse or reusing %}
                     <div class="row">
-                        <div class="col-xs-12 col-sm-6">
+                        <div class="col-12 col-sm-6">
                             {% if reusing %}
                                 <label class="control-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
                             {% endif %}
@@ -115,7 +115,7 @@
 
                 {% if not reusing %}
                     <div class="row">
-                        <div class="col-xs-12 col-sm-6">
+                        <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label class="control-label" for="identification">{% trans "Identification" %} <b style="color: red;">*</b></label>
                                 {{ component_form.identification }}
@@ -126,7 +126,7 @@
                     </div>
                 {% endif %}
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label" for="description">{% trans "Description" %}</label>
                             {{ component_form.description }}
@@ -139,7 +139,7 @@
                 {% endblock %}
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
 
                             <label for="additional_files" class="control-label">{% trans "Additional files" %}</label>
@@ -186,7 +186,7 @@
                 {# If component_configuration, buttom is shown further bellow #}
                 {% if not component_configuration and not creating and not updating and can_change %}
                     <div class="row" style="padding-bottom: 1em">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <a class="btn btn-primary" href="/experiment/component/edit/{{ path_of_the_components }}">{% trans "Edit" %}</a>
                         </div>
                     </div>
@@ -197,7 +197,7 @@
 
                 {% if component_configuration %}
                     <div class="row" style="padding-bottom: 1em">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <a class="btn btn-primary" href="/experiment/component/{% if component_configuration.component.component_type != "block" %}edit/{% endif %}{{ path_of_the_components }}-{{ component_configuration.component.id }}">{% trans "Edit" %}</a>
                         </div>
                     </div>
@@ -208,10 +208,10 @@
                 {% if not is_configuring_new_experimental_protocol %}
                     <div class="container-fluid well">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-12">
+                            <div class="col-12 col-sm-12">
                                 <h4>{% trans "Quantity of uses to be inserted" %} <b style="color: red;">*</b></h4>
                             </div>
-                            <div class="col-xs-6 col-sm-2">
+                            <div class="col-6 col-sm-2">
                                 <div class="form-group">
                                     {{ number_of_uses_form.number_of_uses_to_insert }}
                                     <div class="help-block with-errors"></div>
@@ -225,12 +225,12 @@
             {% if component_configuration %}
                 <div class="container-fluid well">
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <h4>{% trans "Information about this use of step" %}</h4>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-6">
+                        <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label class="control-label" for="name" class="control-label">{% trans "Name" %}</label>
                                     {{ configuration_form.name }}
@@ -238,7 +238,7 @@
                             </div>
                         </div>
                         {% if type_of_the_parent_block == "sequence" %}
-                            <div class="col-xs-12 col-sm-5 col-sm-offset-1">
+                            <div class="col-12 col-sm-5 col-sm-offset-1">
                                 <div class="form-group">
                                     <label>{% trans "Position in the set of steps" %} <b style="color: red;">*</b></label>
                                     <div class="input-group  input-group-sm">
@@ -256,7 +256,7 @@
                         {% endif %}
                     </div>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-3">
+                        <div class="col-12 col-sm-3">
                             <div>
                                 <label for="unlimited_number_of_repetitions" class="control-label">{% trans "Quantity of repetitions" %} <b style="color: red;">*</b></label>
                                 <div class="radio-inline" style="margin-top: 0px">
@@ -273,7 +273,7 @@
                             </div>
                         </div>
                         <div id="interval_div">
-                            <div class="col-xs-12 col-sm-6 col-sm-offset-1">
+                            <div class="col-12 col-sm-6 col-sm-offset-1">
                                 <label for="undefined_interval" id="undefined_interval_label" class="control-label">{% trans "Interval among repetitions" %} <b style="color: red;">*</b></label>
                                 <div class="radio" style="margin-top: 0px">
                                     <input {% if not can_change %}disabled{% endif %} id="id_interval_0" name="undefined_interval" type="radio" value="undefined">
@@ -281,13 +281,13 @@
                                 </div>
                                 <label class="radio">
                                     <input {% if not can_change %}disabled{% endif %} id="id_interval_1" name="undefined_interval" type="radio" value="limited">
-                                        <div class="col-xs-4 col-sm-4" style="padding-left: 0px">
+                                        <div class="col-4 col-sm-4" style="padding-left: 0px">
                                             <div class="form-group" id="div_form_interval_between_repetitions_value">
                                                 {{ configuration_form.interval_between_repetitions_value }}
                                                 <div class="help-block with-errors" id="div_for_errors_in_interval_between_repetitions_value"></div>
                                             </div>
                                         </div>
-                                        <div class="col-xs-4 col-sm-5" style="padding-left: 0px">
+                                        <div class="col-4 col-sm-5" style="padding-left: 0px">
                                             <div class="form-group" id="div_form_interval_between_repetitions_unit">
                                                 {{ configuration_form.interval_between_repetitions_unit }}
                                                 <div class="help-block with-errors" id="div_for_errors_in_interval_between_repetitions_unit"></div>
@@ -296,7 +296,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-6">
+                        <div class="col-12 col-sm-6">
                             {{ configuration_form.requires_start_and_end_datetime }}
                             <label class="control-label">{% trans "Requires start and end date/time" %}</label>
                         </div>

@@ -1,7 +1,7 @@
 {% extends "base/template.html" %}
 
-{% block activePatient %}{% if origin == 'subject' %}class="active"{% endif %}{% endblock %}
-{% block activeAdvancedResearchProject %}{% if origin != 'subject' %}class="active"{% endif %}{% endblock %}
+{% block activePatient %}{% if origin == 'subject' %} active{% endif %}{% endblock %}
+{% block activeAdvancedResearchProject %}{% if origin != 'subject' %} active{% endif %}{% endblock %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -15,7 +15,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="subjectBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 {% if origin == 'subject' %}
@@ -48,7 +48,7 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
 
             {% if completed %}
                 <div style="text-align: right; color: steelblue">
@@ -80,7 +80,7 @@
                     <br/>
                     <div class="container-fluid well">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-6">
+                            <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label>{% trans "Questionnaire" %}</label>
 
@@ -93,7 +93,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-sm-6">
+                            <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label>{% trans "Participant" %}</label>
                                     <div class="input-group input-group-sm">
@@ -108,7 +108,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-sm-6">
+                            <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label>{% trans "Responsible for fill" %}</label>
 
@@ -120,7 +120,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-sm-6">
+                            <div class="col-12 col-sm-6">
                                 <div class="form-group {% if questionnaire_response_form.errors.date %}has-error{% endif %}">
 {#                                    Commented since we hide date input field on the fly (NES-1033). TODO: remove code #}
 {#                                    <label for="fill_date" class="control-label">{% trans "Fill date" %}<b#}
@@ -159,14 +159,14 @@
                         <div id="group-{{ group_of_questions.id }}" class="tab-pane fade {% if forloop.first %} in active{% endif %}">
 
                             <div class="container-fluid well">
-                                <div class="col-md-12">
+                                <div class="col-lg-12">
 
                                     <h4><span class="fa fa-tag"></span> {{ group_of_questions.name }}</h4>
                                     <br/>
 
                                 {% for question_response in group_of_questions.questionnaire_responses %}
                                     <div class="row{% if question_response.no_response_flag %} no-response{% endif %}">
-                                        <div class="col-xs-12 col-sm-12">
+                                        <div class="col-12 col-sm-12">
                                             <div class="form-group">
                                                 <div class="input-group input-group-sm">
                                                     {% if question_response.type == 'M' %}

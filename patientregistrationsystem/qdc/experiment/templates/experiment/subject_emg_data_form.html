@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -13,7 +13,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="breadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -63,14 +63,14 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
 
                 <h4>{% trans "EMG data collection" %}</h4>
 
                 <h4></h4>
                 <div class="row">
-                    <div class="col-xs-6 col-sm-6">
+                    <div class="col-6 col-sm-6">
                         <div class="form-group {% if emg_data_form.errors.date %}has-error{% endif %}">
                             <label class="control-label">{% trans "Date" %}<b style="color: red;">*</b></label>
                             {{ emg_data_form.date }}
@@ -81,7 +81,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-6 col-sm-6">
+                    <div class="col-6 col-sm-6">
                         <div class="form-group {% if emg_data_form.errors.time %}has-error{% endif %}">
                             <label class="control-label">{% trans "Hour" %}</label>
                             {{ emg_data_form.time }}
@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-6 col-sm-6">
+                    <div class="col-6 col-sm-6">
                         <div class="form-group">
                             <label class="control-label">{% trans "EMG setting" %}<b style="color: red;">*</b></label>
                                 {{ emg_data_form.emg_setting }}
@@ -105,7 +105,7 @@
                 </div>
 
                 <div class="row" id="div-reason-for-change">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Reason for change the EMG setting" %} <b style="color: red;">*</b></label>
                             {{ emg_data_form.emg_setting_reason_for_change }}
@@ -115,7 +115,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-6 col-sm-6">
+                    <div class="col-6 col-sm-6">
                         <div class="form-group">
                             <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
                             {{ emg_data_form.file_format }}
@@ -125,7 +125,7 @@
                 </div>
 
                 <div class="row" id="div-file-format-description">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
                             {{ emg_data_form.file_format_description }}
@@ -135,7 +135,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "EMG data collection description" %} <b style="color: red;">*</b></label>
                             {{ emg_data_form.description }}
@@ -145,7 +145,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group {% if emg_data_form.errors.file %}has-error{% endif %}">
 
                             {% if creating or editing %}

@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeExport %}class="active"{% endblock %}
+{% block activeExport %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -13,7 +13,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/export">{% trans "Export" %}</a></li>
@@ -52,19 +52,19 @@
         {% endif %}
 
         <div class="tab-pane fade in active" id="menuUserTab">
-            <div class="col-md-12">
+            <div class="col-lg-12">
 
             {% if perms.patient.export_patient %}
                 {% if questionnaires_fields_list %}
                     <div class="container-fluid well">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-12">
+                            <div class="col-12 col-sm-12">
                                 <h4>{% trans "General Information" %}</h4>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-xs-12 col-sm-7">
+                            <div class="col-12 col-sm-7">
                                 <label data-toggle="tooltip" data-placement="auto left"
                                        title="{% trans "At least one option must be selected" %}" for="directory_structure"
                                        class="control-label">{% trans "Information's organization for exportation of questionnaires data" %} </label>
@@ -96,7 +96,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-6 col-sm-6">
+                            <div class="col-6 col-sm-6">
                                         <label for="headings"
                                             class="control-label">{% trans "Headings" %}</label>
 
@@ -108,7 +108,7 @@
                                        {% endfor %}
                                 </div>
                             </div>
-                            <div class="col-xs-6 col-sm-6">
+                            <div class="col-6 col-sm-6">
                                 <label>{% trans "Responses" %}</label>
 
                                 <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">
@@ -121,7 +121,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-6 col-sm-6">
+                            <div class="col-6 col-sm-6">
                                 <label for="filesformat" class="control-label">{% trans "File format " %}
                                 </label>
                                 <div class="form-group {% if export_form.errors.filesformat %}has-error{% endif %}">
@@ -132,7 +132,7 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            <div class="col-xs-6 col-sm-6">
+                            <div class="col-6 col-sm-6">
                                 <p><strong>{% trans "License" %}</strong></p>
                                 <input type="radio" name="license" id="license1" value="0" checked>
                                 <label for="license1">Creative Commons</label><br>
@@ -163,7 +163,7 @@
                                         <div id="collapse_{{ survey.index }}" class="panel-collapse collapse">
                                             <div class="panel-body">
 
-                                                <div class="col-md-5 col-sm-12">
+                                                <div class="col-lg-5 col-sm-12">
                                                     <div class="form-group">
                                                         <label class="control-label">{% trans "Fields available:" %} </label>
 
@@ -185,7 +185,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2 col-sm-2">
+                                                <div class="col-lg-2 col-sm-2">
                                                     <button type="button" id="multiselect_{{ survey.index }}_rightAll"
                                                             class="btn btn-default btn-block"><i
                                                             class="fa fa-forward"></i></button>
@@ -200,7 +200,7 @@
                                                             class="fa fa-backward"></i></button>
                                                 </div>
 
-                                                <div class="col-md-5 col-sm-10">
+                                                <div class="col-lg-5 col-sm-10">
                                                     <label class="control-label">{% trans "Fields chosen:" %} </label>
 
                                                     <select name="to[]" id="multiselect_{{ survey.index }}_to"
@@ -237,7 +237,7 @@
 
 
                         <div class="row">
-                            <div class="col-xs-12 col-sm-12">
+                            <div class="col-12 col-sm-12">
                                 <div class="form-group">
                                     <label class="control-label">{% trans "Participant fields" %} </label>
                                     <select class="form-control" size="13" id="patient_selected" name="patient_selected"
@@ -259,7 +259,7 @@
                         <h4>{% trans "Diagnosis" %}</h4>
 
                         <div class="row">
-                            <div class="col-xs-12 col-sm-12">
+                            <div class="col-12 col-sm-12">
                                 <div class="form-group">
                                     <label class="control-label">{% trans "Diagnosis fields" %} </label>
                                     <select class="form-control" size="13" id="diagnosis_selected" name="diagnosis_selected"

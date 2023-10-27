@@ -5,7 +5,7 @@
 {#information from http://stackoverflow.com/questions/6451304/django-simple-custom-template-tag-example#}
 {% load subjects_tags %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -16,7 +16,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="subjectBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -51,11 +51,11 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="mainMenuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             {% if perms.experiment.add_subject and can_change %}
                 <div class="container-fluid well">
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <input id="group_id" value="{{ group.id }}" style="display: none;">
                                 <label>{% trans "Add participant" %}</label>
@@ -73,7 +73,7 @@
                         </div>
                     </div>
                     <div class="row" align="right">
-                        <div class="col-md-12">
+                        <div class="col-lg-12">
                             <a href="/experiment/group/{{ group.id }}/search_subjects">
                                 {% trans "Advanced search" %}
                             </a>
@@ -83,7 +83,7 @@
             {% endif %}
 
             <div class="row">
-                <div class="col-xs-12 col-sm-12">
+                <div class="col-12 col-sm-12">
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>

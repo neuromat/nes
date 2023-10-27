@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% block content %}
 
@@ -30,7 +30,7 @@
         {% endif %} {% endcomment %}
 
         <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <ol class="breadcrumb">
                     <li><a href="/home">{% trans "Home" %}</a></li>
                     <li class="active">{% trans "Studies" %}</li>
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="col-md-12">
+        <div class="col-lg-12">
             {% if perms.patient.export_patient %}
                 {% if patients %}
                     <form role="form" action="" method="POST">
@@ -50,7 +50,7 @@
                                 {% trans "You can decide whether you want to update the patient in the database or create a new patient them." %}<br><br>
                                 <div class="panel panel-default">
                                     <div class="panel-body">
-                                        <div class="col-md-5 col-sm-12">
+                                        <div class="col-lg-5 col-sm-12">
                                             <div class="form-group">
                                                 <label class="control-label">{% trans "Participants to update/overwrite database" %}: </label>
                                                 <select class="form-control" size="13"
@@ -67,7 +67,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-2 col-sm-2">
+                                        <div class="col-lg-2 col-sm-2">
                                             <button type="button" id="multiselect__rightAll"
                                                     class="btn btn-block"><i
                                                     class="fa fa-forward"></i></button>
@@ -81,7 +81,7 @@
                                                     class="btn btn-block"><i
                                                     class="fa fa-backward"></i></button>
                                         </div>
-                                        <div class="col-md-5 col-sm-10">
+                                        <div class="col-lg-5 col-sm-10">
                                             <label class="control-label">{% trans "New participants" %}: </label>
                                             <select name="to[]" id="multiselect__to"
                                                     class="form-control" size="13"

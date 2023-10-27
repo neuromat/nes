@@ -6,9 +6,9 @@
     <h4>{% trans "EEG machine settings" %}</h4>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-11 col-sm-11">
             <div class="form-group">
                 <label class="control-label">{% trans "Manufacturer" %} </label>
 
@@ -25,9 +25,9 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-11 col-sm-11">
             <div class="form-group">
                 <label class="control-label">{% trans "Identification" %} </label>
 
@@ -45,9 +45,9 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-11 col-sm-11">
             <div class="form-group">
                 <label class="control-label">{% trans "Description" %} </label>
                 {{ equipment_form.description }}
@@ -58,9 +58,9 @@
 
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-11 col-sm-11">
             <div class="form-group">
                 <label class="control-label">{% trans "Software version" %} </label>
                 {{ selection_form.software_version }}
@@ -70,9 +70,9 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-11 col-sm-11">
             <div class="form-group">
                 <label class="control-label">{% trans "Number of channels" %} </label>
                 {{ selection_form.number_of_channels }}
@@ -86,9 +86,9 @@
 {% block settings %}
 {{ block.super }}
     <div class="row">
-        <div class="col-xs-1 col-sm-1">
+        <div class="col-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-11 col-sm-11">
             <div class="form-group">
                 <label class="control-label">{% trans "Number of used channels" %} </label>
                 {{ setting_form.number_of_channels_used }}

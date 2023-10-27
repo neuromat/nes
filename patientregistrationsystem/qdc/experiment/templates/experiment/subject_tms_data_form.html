@@ -1,5 +1,5 @@
 {% extends "experiment/subject_tms_data_form_template.html" %}
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -50,7 +50,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="tmsDataProjectBreadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -100,7 +100,7 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
 
                 <h4>{% trans "TMS stimulation setting" %}</h4>
@@ -135,7 +135,7 @@
                             <input id="pulse_type" type="text" value="{{ tms_data.tms_setting.tms_device_setting.pulse_stimulus_type }}">
                         </div>
                         <div class="row">
-                            <div class="col-xs-6 col-sm-6">
+                            <div class="col-6 col-sm-6">
                                 <div class="form-group {% if tms_data_form.errors.date %}has-error{% endif %}">
                                     <label class="control-label">{% trans "Date" %}<b style="color: red;">*</b></label>
                                     {{ tms_data_form.date }}
@@ -147,7 +147,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-xs-6 col-sm-6">
+                            <div class="col-6 col-sm-6">
                                 <div class="form-group {% if tms_data_form.errors.time %}has-error{% endif %}">
                                     <label class="control-label">{% trans "Hour" %}</label>
                                     {{ tms_data_form.time }}
@@ -162,7 +162,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-xs-6 col-sm-6">
+                            <div class="col-6 col-sm-6">
                                 <div class="form-group">
                                     <label class="control-label">{% trans "TMS setting" %}<b style="color: red;">*</b></label>
                                         {{ tms_data_form.tms_setting }}
@@ -172,7 +172,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-xs-12 col-sm-12">
+                            <div class="col-12 col-sm-12">
                                 <div class="form-group">
                                     <label class="control-label">{% trans "TMS stimulation description" %} <b style="color: red;">*</b></label>
                                         {{ tms_data_form.description }}
@@ -189,7 +189,7 @@
                             <div class="panel-body" style="background-color: whitesmoke">
 
                                 <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
+                                    <div class="col-6 col-sm-6">
                                         <div class="form-group">
                                             <label class="control-label">{% trans "Resting motor threshold - RMT (%)" %}</label>
                                                 {{ tms_data_form.resting_motor_threshold }}
@@ -199,14 +199,14 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
+                                    <div class="col-6 col-sm-6">
                                         <div class="form-group">
                                             <label class="control-label">{% trans "Test pulse intensity of stimulation (% over the %RMT)" %}</label>
                                                 {{ tms_data_form.test_pulse_intensity_of_simulation }}
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
-                                    <div id="second_pulse_intensity" class="col-xs-6 col-sm-6">
+                                    <div id="second_pulse_intensity" class="col-6 col-sm-6">
                                         <div class="form-group">
                                             <label class="control-label">{% trans "Second test pulse intensity of stimulation (% over the %RMT)" %}</label>
                                                 {{ tms_data_form.second_test_pulse_intensity }}
@@ -217,7 +217,7 @@
 
                                 <div id="div_interval_pulses">
                                     <div class="row">
-                                        <div class="col-xs-6 col-sm-6">
+                                        <div class="col-6 col-sm-6">
                                             <div class="form-group">
                                                 <label class="control-label">{% trans "Interval between pulses" %}</label>
                                                     {{ tms_data_form.interval_between_pulses }}
@@ -225,7 +225,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-xs-6 col-sm-6">
+                                        <div class="col-6 col-sm-6">
                                             <div class="form-group">
                                                 <label class="control-label">{% trans "Interval between pulses unit" %}</label>
                                                     {{ tms_data_form.interval_between_pulses_unit }}
@@ -237,7 +237,7 @@
 
                                 <div id="div_paired_pulse">
                                     <div class="row">
-                                        <div class="col-xs-6 col-sm-6">
+                                        <div class="col-6 col-sm-6">
                                             <div class="form-group">
                                                 <label class="control-label">{% trans "Time between mep trials" %}</label>
                                                     {{ tms_data_form.time_between_mep_trials }}
@@ -245,7 +245,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-xs-6 col-sm-6">
+                                        <div class="col-6 col-sm-6">
                                             <div class="form-group">
                                                 <label class="control-label">{% trans "Time between mep trials unit" %}</label>
                                                     {{ tms_data_form.time_between_mep_trials_unit }}
@@ -257,7 +257,7 @@
 
                                 <div id="div_repetitive_pulse">
                                     <div class="row">
-                                        <div class="col-xs-6 col-sm-6">
+                                        <div class="col-6 col-sm-6">
                                             <div class="form-group">
                                                 <label class="control-label">{% trans "Repetitive pulse frequency (Hz)" %}</label>
                                                     {{ tms_data_form.repetitive_pulse_frequency }}
@@ -275,7 +275,7 @@
                             <div class="panel-body" style="background-color: whitesmoke">
 
                                 <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
+                                    <div class="col-6 col-sm-6">
                                         <div class="form-group">
                                             <label class="control-label">{% trans "Coil orientation" %}</label>
                                                 {{ tms_data_form.coil_orientation }}
@@ -283,7 +283,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-xs-6 col-sm-6">
+                                    <div class="col-6 col-sm-6">
                                         <div class="form-group">
                                             <label class="control-label">{% trans "Orientation angle" %}</label>
                                                 {{ tms_data_form.coil_orientation_angle }}

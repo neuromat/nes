@@ -3,7 +3,7 @@
 {% load i18n static %}
 {% load subjects_tags_survey %}
 
-{% block activeAdvancedSurvey %}class="active"{% endblock %}
+{% block activeAdvancedSurvey %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -14,7 +14,7 @@
 {% block content %}
     <div class="tab-content">
         <div class="tab-pane fade in active" id="surveyBreadCrumb">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <ol class="breadcrumb">
                     <li><a href="/home">{% trans "Home" %}</a></li>
                     <li><a href="/survey/list">{% trans "Questionnaires" %}</a></li>
@@ -34,11 +34,11 @@
         </div>
 
         <div class="tab-pane fade in active" id="menuUserTab">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="container-fluid well">
                     <h4>{% trans "Questionnaire information" %}</h4>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Questionnaire" %}</label>
                                 <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" {% if not creating %} disabled {% endif %} 
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Required fill" %}<b style="color: red;">*</b></label>
                                 {{ survey_form.is_initial_evaluation }}
@@ -81,7 +81,7 @@
                     {# Sensitive questions table #}
                     <div class="container-fluid well">
                         <div class="row">
-                            <div class="col-xs-12 col-md-12">
+                            <div class="col-12 col-lg-12">
                                 <h4>{% trans "Sensitive questions" %}</h4>
                             </div>
                         </div>
@@ -115,7 +115,7 @@
                     {# Answers #}
                     <div class="container-fluid well">
                         <div class="row">
-                            <div class="col-xs-12 col-md-12">
+                            <div class="col-12 col-lg-12">
                                 <h4>{% trans "Answered by participants" %}</h4>
                             </div>
                         </div>
@@ -143,15 +143,15 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <table class="col-xs-12 col-md-12">
+                                            <table class="col-12 col-lg-12">
                                                 {% for response in patient_questionnaire.questionnaire_responses %}
                                                     <tr>
-                                                        <td class="col-xs-4 col-md-8">
+                                                        <td class="col-4 col-lg-8">
                                                             {{ response.questionnaire_response.date }}
                                                         </td>
                                                         {#Just for debbugging: remove it!#}
 {#                                                        <td>{{ response.questionnaire_response.token_id }}</td>#}
-                                                        <td class="col-xs-4 col-md-4">
+                                                        <td class="col-4 col-lg-4">
                                                             {% if limesurvey_available and response.completed != None %}
                                                                 {% if response.completed %}
                                                                     <span class="label label-success">{% trans "Complete" %}</span>
@@ -176,43 +176,43 @@
                     {% if perms.experiment.view_researchproject %}
                         <div class="container-fluid well">
                             <div class="row">
-                                <div class="col-xs-12 col-md-12">
+                                <div class="col-12 col-lg-12">
                                     <h4>{% trans "Used in experiments" %}</h4>
                                 </div>
                             </div>
                             {% for dict in experiments_questionnaire_data_list %}
                                 <div class="container-fluid well">
                                     <div class="row" style="margin-bottom: 5px">
-                                        <div class="col-xs-12 col-md-8">
+                                        <div class="col-12 col-lg-8">
                                             <strong>{% trans "Experiment:" %}</strong><br/>
                                             {{ dict.experiment_title }}
                                         </div>
-                                        <div class="col-xs-12 col-md-4">
+                                        <div class="col-12 col-lg-4">
                                             <strong>{% trans "Group:" %}</strong><br/>
                                             {{ dict.group_title }}
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-12 col-md-4">
+                                        <div class="col-12 col-lg-4">
                                             <strong>{% trans "Set of parent steps:" %}</strong><br/>
                                             {{ dict.parent_identification }}
                                         </div>
-                                        <div class="col-xs-12 col-md-4">
+                                        <div class="col-12 col-lg-4">
                                             <strong>{% trans "Step:" %}</strong><br/>
                                             {{ dict.component_identification }}
                                         </div>
-                                        <div class="col-xs-12 col-md-4">
+                                        <div class="col-12 col-lg-4">
                                             <strong>{% trans "Name of the use:" %}</strong><br/>
                                             {{ dict.use_name }}
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <table class="table table-striped col-xs-12 col-md-12">
+                                        <table class="table table-striped col-12 col-lg-12">
                                             <thead>
                                             <tr>
-                                                <th class="col-xs-6 col-md-6">{% trans "Participant" %}</th>
-                                                <th class="col-xs-6 col-md-6">{% trans "Fills" %} &nbsp;&nbsp;
+                                                <th class="col-6 col-lg-6">{% trans "Participant" %}</th>
+                                                <th class="col-6 col-lg-6">{% trans "Fills" %} &nbsp;&nbsp;
                                                     &nbsp;
                                                     <a href="/survey/update_acquisitiondate/{{ survey.id }}"
                                                        class="btn btn-primary"
@@ -228,15 +228,15 @@
                                                         {% get_name_or_code patient_questionnaire.patient_id %}
                                                     </td>
                                                     <td>
-                                                        <table class="col-xs-12 col-md-12">
+                                                        <table class="col-12 col-lg-12">
                                                             {% for response in patient_questionnaire.questionnaire_responses %}
                                                                 <tr>
-                                                                    <td class="col-xs-8 col-md-8">
+                                                                    <td class="col-8 col-lg-8">
                                                                         {{ response.questionnaire_response.date }}
                                                                     </td>
                                                                     {#Just for debbugging: remove it!#}
 {#                                                                    <td>{{ response.questionnaire_response.token_id }}</td>#}
-                                                                    <td class="col-xs-4 col-md-4">
+                                                                    <td class="col-4 col-lg-4">
                                                                         {% if limesurvey_available and response.completed != None %}
                                                                             {% if response.completed %}
                                                                                 <span class="label label-success">{% trans "Complete" %}</span>

@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block activeExport %}class="active"{% endblock %}
+{% block activeExport %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -32,12 +32,12 @@
 
 
     <div class="tab-pane fade in active" id="mainMenuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div id="studies_container" class="container-fluid well">
                 <h4>{% trans "Filters selection" %}</h4>
                 <div class="form-group">
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-12 col-sm-12">
                             <label for="id_research_projects" class="control-label">{% trans "Studies" %} <b style="color: red;">*</b></label>
                             <select class="form-control" id="id_research_projects" name="research_projects_selected">
                                 <option value>-------</option>
@@ -52,7 +52,7 @@
 
                 <div class="form-group">
                     <div class="row">
-                        <div class="col-xs-12 col-xs-12">
+                        <div class="col-12 col-12">
                             <label for="id_experiments" class="control-label">{% trans "Experiments" %} <b style="color: red;">*</b></label>
                             <select class="form-control" id="id_experiments" name="experiment_selected">
                                 <option value>-------</option>
@@ -66,7 +66,7 @@
 
                 <div class="form-group">
                     <div class="row">
-                        <div class="col-xs-12 col-xs-12">
+                        <div class="col-12 col-12">
                             <label for="group_selected" class="control-label">{% trans "Groups" %} <b style="color: red;">*</b></label>
                             <select class="form-control" id="group_selected" name="group_selected" multiple="multiple">
                                 {% for group in group_list %}

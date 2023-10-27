@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -13,7 +13,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="breadCrumb">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
@@ -59,13 +59,13 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
 
                 <h4>{% trans "Subject step data" %}</h4>
 
                 <div class="row">
-                    <div class="col-xs-3 col-sm-3">
+                    <div class="col-3 col-sm-3">
                         <div class="form-group {% if subject_step_data_form.errors.start_date %}has-error{% endif %}">
                             <label class="control-label">{% trans "Start date" %}</label>
                             {{ subject_step_data_form.start_date }}
@@ -76,7 +76,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-3 col-sm-3">
+                    <div class="col-3 col-sm-3">
                         <div class="form-group {% if subject_step_data_form.errors.start_time %}has-error{% endif %}">
                             <label class="control-label">{% trans "time" %}</label>
                             {{ subject_step_data_form.start_time }}
@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-3 col-sm-3">
+                    <div class="col-3 col-sm-3">
                         <div class="form-group {% if subject_step_data_form.errors.end_date %}has-error{% endif %}">
                             <label class="control-label">{% trans "End date" %}</label>
                             {{ subject_step_data_form.end_date }}
@@ -101,7 +101,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-3 col-sm-3">
+                    <div class="col-3 col-sm-3">
                         <div class="form-group {% if subject_step_data_form.errors.end_time %}has-error{% endif %}">
                             <label class="control-label">{% trans "time" %}</label>
                             {{ subject_step_data_form.end_time }}

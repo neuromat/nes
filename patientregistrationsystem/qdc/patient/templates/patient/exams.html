@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activePatient %}class="active"{% endblock %}
+{% block activePatient %} active{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -14,7 +14,7 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="examTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/patient/find/">{% trans "Participants" %}</a></li>
@@ -75,10 +75,10 @@
 
             <div class="tab-content">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-lg-12">
                         <div class="container-fluid well">
                             <div class="row">
-                                <div class="col-xs-5 col-sm-4">
+                                <div class="col-5 col-sm-4">
                                     <div class="form-group {% if complementary_exam_form.errors.date %}has-error{% endif %}">
                                         <label>{% trans "Date" %} <b style="color: red;">*</b></label>
                                         {{ complementary_exam_form.date }}
@@ -91,7 +91,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-7 col-sm-8">
+                                <div class="col-7 col-sm-8">
                                     <div class="form-group">
                                         <label>{% trans "Performed in" %}</label>
                                         {{ complementary_exam_form.exam_site }}
@@ -99,7 +99,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-12 col-sm-12">
+                                <div class="col-12 col-sm-12">
                                     <div class="form-group">
                                         <label>{% trans "Description " %}<b style="color: red;">*</b></label>
                                         {{ complementary_exam_form.description }}
@@ -108,13 +108,13 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-5 col-sm-4">
+                                <div class="col-5 col-sm-4">
                                     <div class="form-group">
                                         <label>{% trans "CRM" %}</label>
                                         {{ complementary_exam_form.doctor_register }}
                                     </div>
                                 </div>
-                                <div class="col-xs-7 col-sm-8">
+                                <div class="col-7 col-sm-8">
                                     <div class="form-group">
                                         <label>{% trans "Doctor name" %}</label>
                                         {{ complementary_exam_form.doctor }}
@@ -122,7 +122,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-12 col-sm-12">
+                                <div class="col-12 col-sm-12">
                                     <div class="form-group">
                                         <table class="table table-bordered">
                                             <thead>

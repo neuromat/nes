@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeAdvancedPublication %}class="active"{% endblock %}
+{% block activeAdvancedPublication %} active{% endblock %}
 
 {% block header %}
     <style>
@@ -50,7 +50,7 @@
 
 
     <div class="tab-pane fade in active">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/publication/list">{% trans "Publications" %}</a></li>
@@ -70,11 +70,11 @@
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="container-fluid well">
                 <h4>{% trans "Publication" %}</h4>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Title" %} <b style="color: red;">*</b></label>
                             {{ publication_form.title }}
@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Publication Type" %} <b style="color: red;">*</b></label>
                             {{ publication_form.publication_type }}
@@ -92,7 +92,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Citation" %} <b style="color: red;">*</b></label>
                             {{ publication_form.citation }}
@@ -101,7 +101,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "URL" %}</label>
                             {{ publication_form.url }}
@@ -110,7 +110,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+                    <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "File" %}</label>
                             {% if editing %}
@@ -161,7 +161,7 @@
                                     <td>{{ experiment.description }}</td>
                                     <td style="text-align: center">{% if experiment.is_public %}<span class="fa fa-check" style="color: royalblue"></span> {% endif %}</td>
                                     <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="fa fa-check" style="color: royalblue"></span> {% endif %}</td>
-                                    <td class="text-center col-md-1">
+                                    <td class="text-center col-lg-1">
                                         <a class="btn fa fa-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_experiment_from_publication('{{ experiment.id }}');" title="{% trans 'Remove experiment/project from list' %}"></a>
                                     </td>
                                 </tr>
