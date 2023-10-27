@@ -349,7 +349,7 @@ class ImportExperiment:
     def __init__(self, file_path) -> None:
         self.file_path = file_path
         self.temp_dir = tempfile.mkdtemp()
-        self.data = []
+        self.data: list[dict] = []
         self.last_objects_before_import = dict()
         self.new_objects = dict()
         self.limesurvey_relations = dict()
@@ -405,10 +405,12 @@ class ImportExperiment:
         imported
         """
         last_experiment = Experiment.objects.last()
+        assert isinstance(last_experiment, Experiment)
         self.new_objects["experiment_id"] = last_experiment.id
         self.new_objects["experiment_title"] = last_experiment.title
         if "research_project" in self.last_objects_before_import:
             last_study = ResearchProject.objects.last()
+            assert isinstance(last_study, ResearchProject)
             self.new_objects["research_project_id"] = last_study.id
             self.new_objects["research_project_title"] = last_study.title
         else:
@@ -1045,7 +1047,7 @@ class ImportExperiment:
         # As there can be same survey in more than one questionnaire component,
         # create a dictionaire to nao questionnaire compontents by limesurvey
         # surveys.
-        token_ids_survey = dict()
+        token_ids_survey = {}
         for index in indexes:
             questionnaire = Questionnaire.objects.get(id=self.data[index]["pk"])
             limesurvey_id = questionnaire.survey.lime_survey_id

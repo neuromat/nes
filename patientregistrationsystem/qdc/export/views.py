@@ -584,7 +584,7 @@ def export_view(request, template_name="export/export_data.html"):
 
         # for entrance questionnaires
         previous_questionnaire_id = -1
-        output_list = []
+        output_list: list = []
         for questionnaire in questionnaires_selected_list:
             index, sid, title, field, header = questionnaire.split("*")
 
@@ -757,7 +757,9 @@ def export_view(request, template_name="export/export_data.html"):
 
                 for questionnaire in experiment_questionnaires_list:
                     for field in questionnaire[2]:
-                        selected_ev_quest_experiments.append(questionnaire[0], field[0])
+                        selected_ev_quest_experiments.append(
+                            (questionnaire[0], field[0])
+                        )
 
                 for participant in participants:
                     selected_participant.append(participant[0])
@@ -774,7 +776,7 @@ def export_view(request, template_name="export/export_data.html"):
     # Experiments export
     if "group_selected_list" in request.session:
         group_list = request.session["group_selected_list"]
-        component_list = []
+        component_list = {}
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
@@ -1002,7 +1004,7 @@ def get_component_with_data_and_metadata(group, component_list):
 
 
 def get_experiment_questionnaire_response_list(group_id):
-    experiment_questionnaire_response_dict = {}
+    experiment_questionnaire_response_dict: dict[str, Any] = {}
     group = get_object_or_404(Group, pk=group_id)
     if group.experimental_protocol:
         for path_experiment in create_list_of_trees(
@@ -1502,8 +1504,8 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
     research_projects = ResearchProject.objects.order_by("start_date")
     experiment_list = Experiment.objects.all()
     group_list = None
-    study_list = []
-    study_selected = []
+    study_list: list = []
+    study_selected: list = []
 
     if request.method == "POST":
         participants_list = Patient.objects.filter(removed=False)
@@ -1718,7 +1720,7 @@ def list_data_configuration_tree(eeg_configuration_id, list_of_path):
     data_configuration_tree = DataConfigurationTree.objects.filter(
         component_configuration_id=eeg_configuration_id
     )
-    list_of_path_in_db = []
+    list_of_path_in_db: list[int] = []
     data_configuration_tree_id = None
 
     if data_configuration_tree:

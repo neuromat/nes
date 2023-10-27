@@ -94,7 +94,7 @@ for user in users:
                             + str(experiment.id)
                             + "/protocol_components/",
                             "identification=" + component.identification,
-                            "description=" + component.description,
+                            "description=" + str(component.description),
                             "duration_unit=" + str(component.duration_unit),
                             "component_type=" + str(component.component_type),
                             "nes_id=" + str(component.id),
@@ -113,7 +113,7 @@ for user in users:
                             + str(experiment.id)
                             + "/protocol_components/",
                             "identification=" + component.identification,
-                            "description=" + component.description,
+                            "description=" + str(component.description),
                             "duration_value=" + str(component.duration_value),
                             "duration_unit=" + str(component.duration_unit),
                             "component_type=" + str(component.component_type),

@@ -1,4 +1,5 @@
 # coding=utf-8
+from typing import Any
 from django.forms import (
     ModelForm,
     Form,
@@ -73,7 +74,13 @@ class ParticipantsSelectionForm(ModelForm):
     class Meta:
         model = Patient
 
-        fields = ["gender", "marital_status", "country", "city", "state"]
+        fields: dict[str, Any] = [
+            "gender",
+            "marital_status",
+            "country",
+            "city",
+            "state",
+        ]
 
         widgets = {
             "gender": SelectMultiple(
@@ -93,7 +100,7 @@ class ParticipantsSelectionForm(ModelForm):
             ),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(ParticipantsSelectionForm, self).__init__(*args, **kwargs)
         self.fields["gender"].empty_label = None
         self.fields["marital_status"].empty_label = None
