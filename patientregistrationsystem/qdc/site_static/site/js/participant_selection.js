@@ -136,8 +136,8 @@ $(document).ready(function () {
 
 
     $('#get_location').autocomplete({
-        source: "/export/get_locations",
-        select: function (event, ui) {
+        serviceUrl: "/export/get_locations",
+        onSelect: function (event, ui) {
             add_location(ui.item.value);
             $('ui-id-1').empty();
         },
@@ -148,9 +148,9 @@ $(document).ready(function () {
     });
 
     $("#get_diagnosis").autocomplete({
-        source: "/export/get_diagnoses",
+        serviceUrl: "/export/get_diagnoses",
         minLength: 2,
-        select: function (event, ui) {
+        onSelect: function (event, ui) {
             add_disease(ui.item.id, ui.item.value);
             $('ui-id-2').empty();
         },

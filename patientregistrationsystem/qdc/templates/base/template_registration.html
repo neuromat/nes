@@ -15,9 +15,8 @@
     <meta name="description" content="Database system for storing data related to EEG and EMG">
     <meta name="author" content="">
 
-    {% block extraheader %}{% endblock %}
+    {% block extraheader %}{% endblock extraheader %}
 
-    <link rel="stylesheet" href="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.css' %}">
     <link rel="stylesheet" href="{% static 'site/bootstrap-5.3.2-dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}">
     <link rel="stylesheet" href="{% static 'site/font-awesome-4.7.0/css/font-awesome.min.css' %}">
@@ -78,17 +77,16 @@
         } 
     </style>
 
-    {% block extrastyle %}{% endblock %}
+    {% block extrastyle %}{% endblock extrastyle %}
 
 </head>
 
 <body>
-    {% block content %}{% endblock %}
+    {% block content %}{% endblock content %}
 
 
 
-    <script type="text/javascript" src="{% static 'site/jquery/jquery-2.2.4.js' %}"></script>
-    <script type="text/javascript" src="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'site/jquery/jquery-2.2.4.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'site/bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'site/toastr/toastr.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'site/js/validate.js' %}"></script>
@@ -122,6 +120,6 @@
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     </script>
 
-    {% block extrascript %}{% endblock %}
+    {% block extrascript %}{% endblock extrascript %}
 </body>
 </html>

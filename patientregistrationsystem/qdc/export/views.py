@@ -1743,7 +1743,7 @@ def list_data_configuration_tree(eeg_configuration_id, list_of_path):
 
 
 def search_locations(request):
-    if request.is_ajax():
+    if request.accepts("application/json"):
         search_text = request.GET.get("term", "")
 
         if search_text:
@@ -1773,7 +1773,7 @@ def search_locations(request):
 
 
 def search_diagnoses(request):
-    if request.is_ajax():
+    if request.accepts("application/json"):
         search_text = request.GET.get("term", "")
 
         if search_text:

@@ -14,8 +14,8 @@ $(document).ready(function () {
 
     // Get city from the database
     $('#get_location').autocomplete({
-       source: "/export/get_locations",
-        select: function (event, ui) {
+        serviceUrl: "/export/get_locations",
+        onSelect: function (event, ui) {
             $("#get_location").val(ui.item.value);
             // $('ul').empty();
         },

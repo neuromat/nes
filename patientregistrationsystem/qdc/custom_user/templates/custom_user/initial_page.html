@@ -1,135 +1,159 @@
-{% extends "base/template.html" %}
+{% extends 'base/template.html' %}
 
 {% load i18n static %}
 
-{% block activeUser %} active{% endblock %}
-
-{% block extrahead %}{% endblock %}
-
-{% block content %}
-    <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/home/">{% trans "Home" %}</a></li>
-                <li class="breadcrumb-item active">{% trans "Researchers and Institutions" %}</li>
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-            <div class="container">
-                <h4>{% trans "Researchers" %}</h4>
-                <div class="accordion accordion-flush" id="accordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                 {% trans "Show/Hide researchers" %}
-                            </button>
-                        </h2>
-
-                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion">
-                            <div class="accordion-body">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>{% trans "Researcher" %}</th>
-                                            <th>{% trans "E-mail" %}</th>
-                                            <th>{% trans "Institution" %}</th>
-                                            <th class="text-center">{% trans "Username" %}</th>
-                                            <th>{% trans "Citation name" %}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for user in object_list %}
-                                        <tr>
-                                            {% if user.first_name and user.last_name %}
-                                                <td><a data-bs-toggle="tooltip" data-bs-placement="left" title data-bs-original-title="{% trans 'Edit' %}" href="/user/view/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></td>
-                                            {% else %}
-                                                <td><a data-bs-toggle="tooltip" data-bs-placement="left" title data-bs-original-title="{% trans 'Edit' %}" href="/user/view/{{ user.id }}"><em>{% trans "Name not registered" %}</em></a></td>
-                                            {% endif %}
-                                            <td>{{ user.email }}</td>
-                                            <td>{% if user.user_profile.institution %}{{ user.user_profile.institution.acronym }}{% endif %}</td>
-                                            <td class="text-center">{% if user.user_profile.login_enabled %}{{ user.username }}{% else %}---{% endif %}</td>
-                                            <td>{% if user.user_profile.citation_name %}{{ user.user_profile.citation_name }}{% else %}---{% endif %}</td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                {% if perms.auth.add_user %}
-                    <div class="btn-group">
-                        <a href="/user/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-            <div class="container">
-                <h4>{% trans "Institutions" %}</h4>
-                <div class="accordion accordion-flush" id="accordion2">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                {% trans "Show/Hide institutions" %}
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordion2">
-                            <div class="accordion-body">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>{% trans "Name" %}</th>
-                                            <th>{% trans "Acronym" %}</th>
-                                            <th>{% trans "Country" %}</th>
-                                            <th>{% trans "Parent" %}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for institution in institutions %}
-                                        <tr>
-                                            <td>
-                                                {% if perms.auth.add_user %}
-                                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Visualize' %}"
-                                                       href="/user/institution/{{ institution.id }}">
-                                                        {{ institution.name }}
-                                                    </a>
-                                                {% else %}
-                                                    {{ institution.name }}
-                                                {% endif %}
-                                            </td>
-                                            <td>{{ institution.acronym }}</td>
-                                            <td>{{ institution.country|default:"" }}</td>
-                                            <td>{{ institution.parent|default:"" }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <br>
-            {% if perms.auth.add_user %}
-                <div class="btn-group">
-                    <a href="/user/institution/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                </div>
-            {% endif %}
-            </div>
-        </div>
-    </div>
+{% block activeUser %}
+  active
 {% endblock %}
 
+{% block content %}
+  <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/home/">{% trans 'Home' %}</a>
+        </li>
+        <li class="breadcrumb-item active">
+          {% trans 'Researchers and Institutions' %}
+        </li>
+      </ol>
+    </nav>
+  </div>
 
-{% block extrascript %}
+  <div class="tab-pane fade show active" id="mainMenuUserTab">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+      <div class="container">
+        <h4>{% trans 'Researchers' %}</h4>
+        <hr class="hr" />
+        <div class="accordion accordion-flush" id="accordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">{% trans 'Show/Hide researchers' %}</button></h2>
 
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion">
+              <div class="accordion-body">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>
+                        {% trans 'Researcher' %}
+                      </th>
+                      <th>
+                        {% trans 'E-mail' %}
+                      </th>
+                      <th>
+                        {% trans 'Institution' %}
+                      </th>
+                      <th class="text-center">
+                        {% trans 'Username' %}
+                      </th>
+                      <th>
+                        {% trans 'Citation name' %}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for user in object_list %}
+                      <tr>
+                        {% if user.first_name and user.last_name %}
+                          <td>
+                            <a data-bs-toggle="tooltip" data-bs-placement="left" title data-bs-original-title="{% trans 'Edit' %}" href="/user/view/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a>
+                          </td>
+                        {% else %}
+                          <td>
+                            <a data-bs-toggle="tooltip" data-bs-placement="left" title data-bs-original-title="{% trans 'Edit' %}" href="/user/view/{{ user.id }}"><em>{% trans 'Name not registered' %}</em></a>
+                          </td>
+                        {% endif %}
+                        <td>{{ user.email }}</td>
+                        <td>
+                          {% if user.user_profile.institution %}{{ user.user_profile.institution.acronym }}{% endif %}
+                        </td>
+                        <td class="text-center">
+                          {% if user.user_profile.login_enabled %}
+                            {{ user.username }}
+                          {% else %}
+                            ---
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if user.user_profile.citation_name %}
+                            {{ user.user_profile.citation_name }}
+                          {% else %}
+                            ---
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+        {% if perms.auth.add_user %}
+          <div class="btn-group">
+            <a href="/user/new/" class="btn btn-primary">{% trans 'Insert new' %}</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-pane fade show active" id="mainMenuUserTab">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+      <div class="container">
+        <h4>{% trans 'Institutions' %}</h4>
+        <hr class="hr" />
+        <div class="accordion accordion-flush" id="accordion2">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">{% trans 'Show/Hide institutions' %}</button></h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordion2">
+              <div class="accordion-body">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>
+                        {% trans 'Name' %}
+                      </th>
+                      <th>
+                        {% trans 'Acronym' %}
+                      </th>
+                      <th>
+                        {% trans 'Country' %}
+                      </th>
+                      <th>
+                        {% trans 'Parent' %}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for institution in institutions %}
+                      <tr>
+                        <td>
+                          {% if perms.auth.add_user %}
+                            <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Visualize' %}" href="/user/institution/{{ institution.id }}">{{ institution.name }}</a>
+                          {% else %}
+                            {{ institution.name }}
+                          {% endif %}
+                        </td>
+                        <td>{{ institution.acronym }}</td>
+                        <td>{{ institution.country|default:'' }}</td>
+                        <td>{{ institution.parent|default:'' }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+        {% if perms.auth.add_user %}
+          <div class="btn-group">
+            <a href="/user/institution/new/" class="btn btn-primary">{% trans 'Insert new' %}</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+  <head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+      integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <!-- Guriddo jqGrid  -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/5.8.0/css/ui.jqgrid-bootstrap5.min.css"
+      integrity="sha512-pe0T8HNTeyVsApzv6krouJsGayYXrprnaP9MpSltQGvoQByZDnTbZ9NUIwZr5eOafBRxmwUK4fk4I3/N5ty4YQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/5.8.0/js/i18n/grid.locale-en.min.js"
+      integrity="sha512-Oc3yFMZtHlWgPAVqS+azgzK1R519KJEYiBhi9yr+wdm5PfAJWz960R/EkSXTe352aEZyqVK88u/+qqHaqxaWbQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/5.8.0/js/jquery.jqGrid.min.js"
+      integrity="sha512-hOIl/gV8jrQSC2Q5zfN8DOZCg1mwkcXmFeiImwX/OQXeL75PaqLDf/zkpm5nn9UVXUxov5uOM0uMOei1vHmeow=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <!-- bootstrap autocomplete -->
+    <script>
+      jQuery(document).ready(function () {
+        var grid = $("#demo").jqGrid({
+          datatype: "local",
+          data: [],
+          styleUI: "Bootstrap5",
+          colModel: [{ name: "name", label: "label" }],
+        });
+        var IDs = { themodal: "alertmod_", modalhead: "alerthd_", modalcontent: "alertcnt_" };
+        var content = "<div>Warning<input class='form-control' id='test'></div>";
+        var cnt = "<div id='info_id'>";
+        cnt += "<div>" + content + "</div>";
+        cnt += "<a href='#' id='closedialog' class='fm-button btn btn-primary'>Close</a></div>";
+        cnt += "</div>";
+
+        $("#info").on("click", function () {
+          $.jgrid.createModal(
+            IDs,
+            cnt,
+            {
+              gbox: "#gbox_" + $.jgrid.jqID(grid[0].p.id),
+              jqModal: true,
+              drag: true,
+              caption: "Caption",
+              top: 100,
+              left: 100,
+              width: 400,
+              height: 200,
+
+              zIndex: 900,
+              styleUI: grid[0].p.styleUI,
+            },
+            "#gview_" + $.jgrid.jqID(grid[0].p.id),
+            $("#gbox_" + $.jgrid.jqID(grid[0].p.id))[0],
+            true
+          );
+          $.jgrid.viewModal("#" + IDs.themodal, { gbox: "#gbox_" + grid[0].p.id, jqm: true, modal: true });
+
+          import("./autocomplete.js")
+            .then((Autocomplete) => {
+              var src = [];
+              for (let i = 0; i < 50; i++) {
+                src.push({
+                  title: "Option " + i,
+                  id: "opt" + i,
+                  data: {
+                    key: i,
+                  },
+                });
+              }
+              new Autocomplete.default(document.getElementById("test"), {
+                items: src,
+                valueField: "id",
+                labelField: "title",
+                highlightTyped: true,
+                fixed: true,
+                onSelectItem: console.log,
+              });
+              $("#closedialog").on("click", function () {
+                $.jgrid.hideModal("#alertmod_", { removemodal: true });
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
+      });
+    </script>
+
+    <style>
+      body {
+        min-height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <table id="demo">
+      <tr></tr>
+    </table>
+
+    <button id="info" class="btn btn-primary">Click Me</button>
+
+    <div style="height:90vh;background:#ccc">Some div that takes height</div>
+
+    <p>Id est eiusmod in culpa enim nulla elit. Proident et adipisicing irure aliqua consectetur laborum commodo id adipisicing sunt. Occaecat aute excepteur do non dolor culpa sunt incididunt et non excepteur ad.</p>
+  </body>
+</html>

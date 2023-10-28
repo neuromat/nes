@@ -1,22 +1,36 @@
 {% extends "base/template.html" %}
-{% block activeLinks %} active{% endblock %}
-{% load static %}
+
+{% block activeLinks %} active {% endblock activeLinks %}
 
 {% load i18n static %}
 
-
 {% block content %}
-    <div class="container-fluid">
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-            {% for link in useful_links %}
-                <div class="row">
-                    {{link.name}}
-                    <a href="{{ link.url }}">
-                        {{ link.url }}
-                    </a>
-                </div>
-            {% endfor %}
-            </div>
-        </div>
+    <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/home/">{% trans 'Home' %}</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    {% trans 'Useful Links' %}
+                </li>
+            </ol>
+        </nav>
+    </div>
 
-{% endblock %}
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        <h4>{% trans "Useful Links" %}</h4>
+        <hr class="hr">
+        <ul class="list-group list-group-flush">
+        {% for link in useful_links %}
+            <li class="list-group-item">
+                {{ link.name }}
+                <a href="{{ link.url }}">
+                    {{ link.url }}
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+
+{% endblock content %}

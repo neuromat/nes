@@ -28,45 +28,22 @@
         </nav>
     </div>
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="container-fluid">
 
             <div id="participants_container" class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Add new participants" %}</h4>
-
+                <hr class="hr">
                 <div class="form-group">
 
-                    <div class="radio" style="margin-top: 0px">
-                        <input id="id_type_of_selection_radio_0" name="type_of_selection_radio" type="radio" value="all" checked>
-                            {% trans "All participants" %}
-                        </input>
+                    <div class="form-check" style="margin-top: 0px">
+                        <input id="id_type_of_selection_radio_0" name="type_of_selection_radio" class="form-check-input" type="radio" value="all" checked>
+                        <label class="form-check-label" for="id_type_of_selection_radio_0">{% trans "All participants" %}</label>
                     </div>
-                    <div class="radio">
-                        <input id="id_type_of_selection_radio_1" name="type_of_selection_radio" type="radio" value="selected">
-                            {% trans "Filter participants" %}
-                        </input>
+                    <div class="form-check">
+                        <input id="id_type_of_selection_radio_1" name="type_of_selection_radio" class="form-check-input" type="radio" value="selected">
+                        <label class="form-check-label" for="id_type_of_selection_radio_1">{% trans "Filter participants" %}</label>
                     </div>
 
                     <div class="col-lg-1"></div>
@@ -101,7 +78,7 @@
                         </div>
 
                         <div id="id_locations" class="card  " style="border:1px solid lightgray;">
-                            <div class="card-body" style="background-color: whitesmoke">
+                            <div class="card-body">
 
                                 <div class="row">
                                     <div id="div-search-locations" class="col-12 col-sm-12">
@@ -136,7 +113,7 @@
                         </div>
 
                         <div id="id_age" class="card  " style="border:1px solid lightgray;">
-                            <div class="card-body" style="background-color: whitesmoke">
+                            <div class="card-body">
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
                                         <div class="input-group input-group-sm">
@@ -168,7 +145,7 @@
                         </div>
 
                         <div id="id_age" class="card  " style="border:1px solid lightgray;">
-                            <div class="card-body" style="background-color: whitesmoke">
+                            <div class="card-body">
                                 <div class="col-6 col-sm-2">
                                     <div class="form-group">
                                         {{ age_interval_form.min_age }}

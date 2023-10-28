@@ -15,22 +15,22 @@
     <meta name="description" content="Database system for storing data related to EEG and EMG">
     <meta name="author" content="">
 
-    <link rel="stylesheet" href="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.css' %}"> {% endcomment %}
     <link rel="stylesheet" href="{% static 'site/bootstrap-5.3.2-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}">
     <link rel="stylesheet" href="{% static 'site/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}">
 
     <link rel="stylesheet" href="{% static 'site/css/nes.css' %}">
 
 
-    {% block extrahead %}{% endblock %}
+    {% block extrahead %}{% endblock extrahead %}
 </head>
 
 <body class="bg-body-tertiary">
 <header>
-    <form  id="language_form" action="{% url 'set_language' %}" method="post">
+    <form id="language_form" action="{% url 'set_language' %}" method="post">
         {% csrf_token %}
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" role="navigation">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark shadow-sm" role="navigation">
             <div class="container">
                 <a class="navbar-brand" href="/home/">{% trans "NES" %}</a>
                 <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-label="Toggle navigation">
@@ -83,8 +83,8 @@
                                 <span class="fa fa-star-half-o fa-fw"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
-                                <a class="dropdown-item" data-bs-theme-value="light" aria-pressed="false"><span class="fa fa-sun-o fa-fw"></span> {% trans "Light Theme" %}</a>
-                                <a class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false"><span class="fa fa-moon-o fa-fw"></span> {% trans "Dark Theme" %}</a>
+                                <a class="dropdown-item" data-bs-theme-value="light" aria-pressed="false" href="#"><span class="fa fa-sun-o fa-fw"></span> {% trans "Light Theme" %}</a>
+                                <a class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false" href="#"><span class="fa fa-moon-o fa-fw"></span> {% trans "Dark Theme" %}</a>
                             </div>
                         </li>
                     </ul>
@@ -96,61 +96,61 @@
 
 
 <main id="main" class="container">
-    {% block form %}{% endblock %}
+    {% block form %}{% endblock form %}
 
     <div class="row content">
-        <div class="col-12 col-md-3">
-            <nav class="nav nav-pills flex-column flex-sm-row flex-lg-column justify-content-start">
+        <div class="col-12 col-md-2">
+            <nav class="nav nav-pills flex-column flex-sm-row flex-lg-column justify-content-start mb-auto">
                 <a href="/home/" class="nav-link {% block activeContact %}{% endblock %}">
-                    <span class="fa fa-home fa-fw fa-lg"></span>
+                    <span class="fa fa-home fa-fw fa-md"></span>
                     {% trans "Home" %}
                 </a>
 
                 {% if perms.patient.view_patient %}
                     <a href="/patient/find/" class="nav-link {% block activePatient %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add people that participated in the experiments' %}">
-                        <span class="fa fa-users fa-fw fa-lg"></span>
+                        <span class="fa fa-users fa-fw fa-md"></span>
                         {% trans "Participants" %}
                     </a>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
                     <a href="/experiment/research_project/list/" class="nav-link {% block activeAdvancedResearchProject %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add publications' %}">
-                        <span class="fa fa-graduation-cap fa-fw fa-lg"></span>
+                        <span class="fa fa-graduation-cap fa-fw fa-md"></span>
                         {% trans "Studies" %}
                     </a>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
                     <a href="/experiment/publication/list/" class="nav-link {% block activeAdvancedPublication %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add publications' %}">
-                        <span class="fa fa-book fa-fw fa-lg"></span>
+                        <span class="fa fa-book fa-fw fa-md"></span>
                         {% trans "Publications" %}
                     </a>
                 {% endif %}
 
                 {% if perms.survey.view_survey %}
                     <a href="/survey/list/" class="nav-link {% block activeAdvancedSurvey %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add users and institutions to the database' %}">
-                        <span class="fa fa-list-alt fa-fw fa-lg"></span>
+                        <span class="fa fa-list-alt fa-fw fa-md"></span>
                         {% trans "Questionnaires" %}
                     </a>
                 {% endif %}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <a href="/user/list/" class="nav-link {% block activeUser %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add users and institutions to the database' %}">
-                        <span class="fa fa-user fa-fw fa-lg"></span>
+                        <span class="fa fa-user fa-fw fa-md"></span>
                         {% trans "Researchers" %}
                     </a>
                 {% endif %}
 
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
                     <a href="/export/" class="nav-link {% block activeExport %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Export your projects' %}">
-                        <span class="fa fa-upload fa-fw fa-lg"></span>
+                        <span class="fa fa-upload fa-fw fa-md"></span>
                         {% trans "Export" %}
                     </a>
                 {% endif %}
 
                 {% if perms.experiment.register_equipment %}
                     <a href="/experiment/setup/" class="nav-link {% block activeSetup %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Here you can setup the equipments used in the projects' %}">
-                        <span class="fa fa-pencil fa-fw fa-lg"></span>
+                        <span class="fa fa-pencil fa-fw fa-md"></span>
                         {% trans "Set up" %}
                     </a>
                 {% endif %}
@@ -160,35 +160,35 @@
                 {% endcache %}
                 {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
                     <a href="/plugin/" class="nav-link {% block activePlugin %}{% endblock %}">
-                        <span class="fa fa-cloud-upload fa-fw fa-lg"></span>
+                        <span class="fa fa-cloud-upload fa-fw fa-md"></span>
                         {% trans "Plugin" %}
                     </a>
                 {% endif %}
 
                 <a href="/links/" class="nav-link {% block activeLinks %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Useful links of tools' %}">
-                    <span class="fa fa-link fa-fw fa-lg"></span>
+                    <span class="fa fa-link fa-fw fa-md"></span>
                     {% trans "Useful Links" %}
                 </a>
 
             </nav>
         </div>
 
-        <div class="col-12 col-md-9">
+        <div class="col-12 col-md-10">
             <div id="myMenuContent" class="tab-content">
                 <noscript><h1 class="center">{% trans "Please enable Javascript" %} <span style="color: red; font-weight: bold">*</span></h1></noscript>
-                {% block content %} {% endblock %}
+                {% block content %} {% endblock content %}
             </div>
         </div>
     </div>
 
-    {% block end_form %}{% endblock %}
+    {% block end_form %}{% endblock end_form %}
 </main>
 
 
 <footer class="footer mt-auto bg-body-secondary">
     <div class="container">
         <a href="http://ccsl.ime.usp.br">
-            <img src="{% static 'imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre">
+            <img src="{% static 'imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" width="120" height="40">
         </a>
 
         <span class="version_number">v{% settings_value "VERSION" %}</span>
@@ -197,8 +197,9 @@
 
 
 <script type="text/javascript" src="{% static 'site/jquery/jquery-2.2.4.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/bootstrap-5.3.2-dist/js/bootstrap.bundle.js' %}"></script>
+{% comment %} <script type="text/javascript" src="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script> {% endcomment %}
+<script type="text/javascript" src="{% static 'site/bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/jquery.autocomplete.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/masked_input/jquery.maskedinput.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/Bootstrap-Validator-Master/validator.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/toastr/toastr.min.js' %}"></script>
@@ -227,6 +228,6 @@
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
-{% block extrascript %}{% endblock %}
+{% block extrascript %}{% endblock extrascript %}
 </body>
 </html>

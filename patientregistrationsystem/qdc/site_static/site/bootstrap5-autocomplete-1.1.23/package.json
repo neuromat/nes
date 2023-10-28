@@ -1,0 +1,45 @@
+{
+  "name": "bootstrap5-autocomplete",
+  "type": "module",
+  "version": "1.1.23",
+  "description": "Autocomplete for Bootstrap 5 (and 4!)",
+  "main": "autocomplete",
+  "scripts": {
+    "test": "ava",
+    "build": "esbuild --mangle-props=^_ --bundle --minify --format=esm --sourcemap autocomplete.js --outfile=autocomplete.min.js",
+    "start": "npm run build -- --servedir=.",
+    "watch": "npm run build -- --watch",
+    "build-min": "npm run build && git add -A && git commit -m \"build min file\"",
+    "build-types": "npx -p typescript tsc autocomplete.js --declaration --allowJs --emitDeclarationOnly --outDir types",
+    "bump": "npm run build-min && npm version patch",
+    "update-deps": "npx npm-check-updates -u",
+    "jsdoc": "npx jsdoc-to-markdown autocomplete.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lekoala/bootstrap5-autocomplete"
+  },
+  "keywords": [
+    "DOM",
+    "autocomplete",
+    "input",
+    "bootstrap",
+    "bootstrap5",
+    "bootstrap 5",
+    "bootstrap4",
+    "bootstrap 4",
+    "es6"
+  ],
+  "author": "LeKoala",
+  "license": "MIT",
+  "ava": {
+    "require": [
+      "./test/_setup-browser-env.js"
+    ]
+  },
+  "devDependencies": {
+    "@happy-dom/global-registrator": "^9.10.9",
+    "ava": "^5.2.0",
+    "esbuild": "^0.17.18"
+  }
+}
