@@ -21,33 +21,15 @@
 {% block activePlugin %} active{% endblock %}
 
 {% block content %}
-
     <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
+            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
                 <li class="breadcrumb-item"><a href="/">{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/plugin">{% trans "Plugin" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Participants selection" %}</li>
             </ol>
         </nav>
     </div>
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-        {% endfor %}
-    {% endif %} {% endcomment %}
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">

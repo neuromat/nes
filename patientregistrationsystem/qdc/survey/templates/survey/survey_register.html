@@ -14,23 +14,23 @@
 {% block content %}
     <div class="tab-content">
         <div class="tab-pane fade show active" id="surveyBreadCrumb">
-            <div class="container-fluid">
-                <ol class="breadcrumb">
-                    <li><a href="/home">{% trans "Home" %}</a></li>
-                    <li><a href="/survey/list">{% trans "Questionnaires" %}</a></li>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="/survey/list">{% trans "Questionnaires" %}</a></li>
 
                     {% if creating %}
                         <li class="breadcrumb-item active">{% trans "New" %}</li>
                     {% else %}
                         {% if editing %}
-                            <li><a href="/survey/{{ survey.id }}">{{ survey_title }}</a></li>
+                            <li class="breadcrumb-item"><a href="/survey/{{ survey.id }}">{{ survey_title }}</a></li>
                             <li class="breadcrumb-item active">{% trans "Editing" %}</li>
                         {% else %}
                             <li class="breadcrumb-item active">{{ survey_title }} </li>
                         {% endif %}
                     {% endif %}
                 </ol>
-            </div>
+            </nav>
         </div>
 
         <div class="tab-pane fade show active" id="menuUserTab">

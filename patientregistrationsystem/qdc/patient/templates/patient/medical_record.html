@@ -5,7 +5,6 @@
 {% block activePatient %} active{% endblock %}
 
 {% block form %}
-    
 
     <form id="form_medical_record" role="form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
@@ -14,6 +13,20 @@
 
 
 {% block content %}
+    <div class="tab-pane fade show active" id="patientBreadCrumb">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href="/patient/find/">{% trans "Participants" %}</a></li>
+                {% if status == "edit" or creating %}
+                    <li class="breadcrumb-item"><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
+                {% else %}
+                    <li class="breadcrumb-item"><a href="/patient/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active">{% trans "Medical assessment" %}</li>
+            </ol>
+        </nav>
+    </div>
 
     <div class="tab-pane fade show active" id="medicalRecordTab">
 
@@ -22,16 +35,6 @@
 
     <div class="container-fluid">
 
-    <ol class="breadcrumb">
-        <li><a href="/home">{% trans "Home" %}</a></li>
-        <li><a href="/patient/find/">{% trans "Participants" %}</a></li>
-        {% if status == "edit" or creating %}
-            <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
-        {% else %}
-            <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
-        {% endif %}
-        <li class="breadcrumb-item active">{% trans "Medical assessment" %}</li>
-    </ol>
 
     {% if not creating %}
         <div class="row">
@@ -55,28 +58,6 @@
             </div>
         </div>
     {% endif %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
 
     {% if medical_record_form.errors %}
         <script type="text/javascript">

@@ -26,7 +26,7 @@
     {% block extrahead %}{% endblock extrahead %}
 </head>
 
-<body class="bg-body-tertiary">
+<body class="bg-body-secondary">
 <header>
     <form id="language_form" action="{% url 'set_language' %}" method="post">
         {% csrf_token %}
@@ -185,7 +185,7 @@
 </main>
 
 
-<footer class="footer mt-auto bg-body-secondary">
+<footer class="footer mt-auto bg-body-tertiary">
     <div class="container">
         <a href="http://ccsl.ime.usp.br">
             <img src="{% static 'imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" width="120" height="40">
@@ -203,7 +203,7 @@
 <script type="text/javascript" src="{% static 'site/masked_input/jquery.maskedinput.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/Bootstrap-Validator-Master/validator.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/toastr/toastr.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/js/quiz.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/js/nes_utils.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/js/theme_picker.js' %}"></script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 

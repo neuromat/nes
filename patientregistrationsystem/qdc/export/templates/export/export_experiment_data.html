@@ -13,27 +13,6 @@
 {% block content %}
 
     <div class="tab-content">
-        {% comment %} {% if messages %}
-            {% for message in messages %}
-
-                {% if message.tags == "success" %}
-                    <script>showSuccessMessage('{{ message }}')</script>
-                {% endif %}
-
-                {% if message.tags == "warning" %}
-                    <script>showWarningMessage('{{ message }}')</script>
-                {% endif %}
-
-                {% if message.tags == "error" %}
-                    <script>showErrorMessage('{{ message }}')</script>
-                {% endif %}
-
-                {% if message.tags == "info" %}
-                    <script>showInfoMessage('{{ message }}')</script>
-                {% endif %}
-
-            {% endfor %}
-        {% endif %} {% endcomment %}
 
         {% if export_form.errors %}
             <script type="text/javascript">
@@ -43,9 +22,9 @@
 
         <div class="tab-pane fade show active" id="selectedParticipantBreadCrumb">
             <div class="container-fluid">
-                <ol class="breadcrumb">
-                    <li><a href="/home">{% trans "Home" %}</a></li>
-                    <li><a href="/export">{% trans "Export" %}</a></li>
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="/export">{% trans "Export" %}</a></li>
                     <li class="breadcrumb-item active">{% trans "Structure and fields selection" %}</li>
                 </ol>
             </div>
