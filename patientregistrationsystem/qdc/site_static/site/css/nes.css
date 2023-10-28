@@ -1,0 +1,52 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    padding-top: 60px;
+    margin-bottom: 50px;
+    overflow-x: hidden;
+}
+.footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    font-size: 8pt;
+    font-family: Verdana;
+    font-weight: bold;
+} 
+.version_number {
+    float:right;
+    margin-right: 10px;
+    margin-top: 8px;
+}
+main > .container {
+    padding: 60px 15px 0;
+  }
+  
+.thumbnail {
+    border: 0 none;
+    box-shadow: none;
+}
+.unbuttonmize:hover, .unbuttonmize:focus {
+    background-color: white;
+    border-color: #ccc;
+    cursor: default;
+}
+.unbuttonmize:focus {
+    outline-style: none;
+}
+.unbuttonmize:active {
+    box-shadow: none;
+}
+.import-results {
+    background-color: #dff0d8;
+}
+.content {
+    margin-top:20px;
+}
+
+textarea {
+    resize: vertical;
+}

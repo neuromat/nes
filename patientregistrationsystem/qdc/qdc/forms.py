@@ -27,11 +27,18 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
             attrs={
                 "class": "form-control",
                 "required": "",
-                "data-minlength": "8",
-                "data-maxlength": "128",
-                "data-error": "Password must contain at least %d characters, "
-                "including at least one uppercase letter, digit or special character."
-                % PASSWORD_MIN_LEN,
+                "minlength": "8",
+                "maxlength": "128",
+                "data-error": _(
+                    "Password must contain at least %d characters, "
+                    "including at least one uppercase letter, digit or special character."
+                    % PASSWORD_MIN_LEN
+                ),
+                "title": _(
+                    "Password must contain at least %d characters, "
+                    "including at least one uppercase letter, digit or special character."
+                    % PASSWORD_MIN_LEN
+                ),
                 "pattern": PASSWORD_REGEX,
                 # "pattern": self._password_regex,
                 "placeholder": _("New password"),
@@ -43,9 +50,11 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
             attrs={
                 "class": "form-control",
                 "required": "",
+                "minlength": "8",
                 "data-match": "#id_new_password1",
                 "placeholder": _("Confirm new password"),
                 "data-error": _("Passwords don't match"),
+                "title": _("Passwords don't match"),
                 "autocomplete": "new-password",
             }
         )

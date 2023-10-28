@@ -4,13 +4,13 @@
 
 {% block activeAdvancedResearchProject %} active{% endblock %}
 
-{% block header %}
+{% block extrahead %}
 <link rel="stylesheet" href="{% static 'site/magnific-popup/magnific-popup.css' %}">
 {% endblock %}
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator">
+    <form id="user_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -64,28 +64,28 @@
                     {% endif %}
                 {% endif %}
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Group basic information" %}</h4>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Title" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Title" %} <b style="color: red;">*</b></label>
                             {{ group_form.title }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Description" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Description" %} <b style="color: red;">*</b></label>
                             {{ group_form.description }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -94,30 +94,30 @@
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
-                                <label class="control-label">{% trans "Other inclusion description" %}</label>
+                                <label class="form-label">{% trans "Other inclusion description" %}</label>
                                 {{ group_form.inclusion_description }}
-                                <div class="help-block with-errors"></div>
+                                <div class="form-text with-errors"></div>
                             </div>
                         </div>
                     </div>
                 {% endif %}
 
                 {% if not editing and can_change %}
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                         <a href="/experiment/group/edit/{{ group.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
             </div>
 
             {% if not editing %}
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <h4>{% trans "Inclusion criteria" %}</h4>
                     {% if can_change %}
                         <div class="row">
                             <div class="col-12 col-sm-12">
                                 <div class="form-group">
                                     <input id="group_id" value="{{ group.id }}" style="display: none;">
-                                    <div class="input-group  input-group-sm "><span class="input-group-addon">
+                                    <div class="input-group  input-group-sm "><span class="input-group-text">
                                             <span class="fa fa-edit"></span></span>
                                         <input class="form-control" id="get_diseases" type="text"
                                                placeholder="{%  trans "Inform disease diagnosis or disease code (ICD-10)" %}">
@@ -152,8 +152,8 @@
                                                 <td>
                                                     {{ classification_of_diseases.abbreviated_description }}
                                                     {% if can_change %}
-                                                        <a class="btn fa fa-remove" data-toggle="tooltip"
-                                                           data-placement="right" title="{% trans "Delete" %}" style="color: indianred;
+                                                        <a class="btn fa fa-remove" data-bs-toggle="tooltip"
+                                                           data-bs-placement="right" title="{% trans "Delete" %}" style="color: indianred;
                                                        position: relative; float: right; padding: 0"
                                                            onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a>
                                                     {% endif %}
@@ -169,15 +169,15 @@
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
-                                <label class="control-label">{% trans "Other inclusion description" %}</label>
+                                <label class="form-label">{% trans "Other inclusion description" %}</label>
                                 {{ group_form.inclusion_description }}
-                                <div class="help-block with-errors"></div>
+                                <div class="form-text with-errors"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <h4>{% trans "Questionnaires of experimental protocol" %}</h4>
                     <div class="form-group">
                         <table class="table table-striped col-12 col-lg-12">
@@ -185,14 +185,14 @@
                             <tr>
                                 <th class="col-lg-6">{% trans "Name" %}</th>
                                 {# Can't use bootstrap tooltip in the columns, because it hurts the format of the table. #}
-                                {# data-toggle="tooltip" data-placement="top" #}
-                                <th class="col-lg-2 hidden-xs"
+                                {# data-bs-toggle="tooltip" data-bs-placement="top" #}
+                                <th class="col-lg-2 d-none"
                                     title="{% trans "Quantity of fills for each participant" %}">
                                     {% trans "Needed fills by participant" %}</th>
-                                <th class="col-lg-2 hidden-xs"
+                                <th class="col-lg-2 d-none"
                                     title={% trans "Quantity of fills needed by pariticipant multiplied by quantity of participants in this group" %}>
                                     {% trans "Total fills needed" %}</th>
-                                <th class="col-lg-2 hidden-xs"
+                                <th class="col-lg-2 d-none"
                                     title={% trans "Sum of fills quantity already made by each participant" %}>
                                     {% trans "Total fills already made" %}</th>
                                 <th class="visible-xs"
@@ -217,7 +217,7 @@
                                     {% for questionnaire_configuration in questionnaires_configuration_list %}
                                         <tr>
                                             <td>
-                                                <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}"
+                                                <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}"
                                                    href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">
                                                     {{ questionnaire_configuration.survey_title }}
                                                 </a>
@@ -242,13 +242,13 @@
                     </div>
                 </div>
 
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <h4>{% trans "Participants and data collections" %}</h4>
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             {% if number_of_subjects > 0 %}
                                 <div class="form-group">
-                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "View / Edit" %}"
+                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "View / Edit" %}"
                                        href="/experiment/group/{{ group.id }}/subjects">
                                         {% if number_of_subjects == 1 %}
                                             {% blocktrans %}There is {{ number_of_subjects }} participant recorded{% endblocktrans %}
@@ -273,7 +273,7 @@
                     </div>
                 </div>
 
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <h4>{% trans "Experimental protocol" %}</h4>
                     <div class="row">
                         <div class="col-12 col-sm-12">
@@ -289,7 +289,7 @@
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}"
+                                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}"
                                                        href="/experiment/component/G{{ group.id }}-{{ group.experimental_protocol.id}}">
                                                         {{ group.experimental_protocol.identification }}
                                                     </a>
@@ -299,11 +299,11 @@
 
                                                     {% if can_change %}
                                                        {% if group_has_data_collection %}
-                                                        <a class="btn fa fa-ban" data-toggle="tooltip" data-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
+                                                        <a class="btn fa fa-ban" data-bs-toggle="tooltip" data-bs-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
                                                            title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}">
                                                         </a>
                                                        {% else %}
-                                                            <a class="btn fa fa-remove" data-toggle="tooltip" data-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
+                                                            <a class="btn fa fa-remove" data-bs-toggle="tooltip" data-bs-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
                                                                title="{% trans "UnConfigure experimental protocol" %}" onclick="show_modal_remove_experimental_protocol();">
                                                             </a>
                                                        {% endif %}
@@ -315,12 +315,12 @@
 
                                     <div class="row">
                                         <div class="col-lg-7">
-                                            <label class="control-label">{% trans "Textual description" %}</label>
+                                            <label class="form-label">{% trans "Textual description" %}</label>
                                             <textarea class="form-control" rows="25" disabled>{{ experimental_protocol_description }}</textarea>
                                         </div>
                                         <div class="col-lg-5">
 
-                                            <label class="control-label">{% trans "Graph representation" %}</label>
+                                            <label class="form-label">{% trans "Graph representation" %}</label>
 
                                             {% if experimental_protocol_image %}
 
@@ -344,7 +344,7 @@
                                 {% if can_change %}
                                     <div class="form-group">
                                         <a href="/experiment/component/G{{ group.id }}/add_new/block" class="btn btn-primary"
-                                                data-toggle="tooltip" data-placement="right"
+                                                data-bs-toggle="tooltip" data-bs-placement="right"
                                                 title="{% trans "The experimental protocol root is always a set of steps. You can create a new set or reuse some that have already been created for this experiment." %}">
                                             {% trans "Configure / Create" %}</a>
                                     </div>
@@ -356,21 +356,21 @@
             {% endif %}
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                     {% if not editing and perms.experiment.delete_experiment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="show_modal_remove_group()">{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/{% if creating %}{{ experiment.id }}{% else %}group/{{ group.id }}{% endif %}"
                            class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
@@ -386,10 +386,8 @@
                     {% trans "Are you sure you want to delete group?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disable_remove_button()" >{% trans "Cancel" %}</button>
-                    <button id="remove-group" disabled="disabled" type="submit" class="btn btn-primary" value="remove" name="action"
-                            style="background-color: indianred; color: #ffffff">{% trans "Delete" %}
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disable_remove_button()" >{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-danger" id="remove-group" disabled="disabled" value="remove" name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
         </div>
@@ -402,8 +400,8 @@
                     {% trans "Are you sure you want to delete diagnosis?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                    <a type="button" class="btn btn-primary" id="removeClassificationOfDiseases" style="background-color: indianred; color: #ffffff" href="">{% trans "Delete" %}</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <a type="button" class="btn btn-danger" id="removeClassificationOfDiseases" href="">{% trans "Delete" %}</a>
                 </div>
             </div>
         </div>
@@ -416,10 +414,8 @@
                     {% trans "Are you sure you want to unprovision experimental protocol?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-primary" value="remove_experimental_protocol" name="action"
-                            style="background-color: indianred; color: #ffffff">{% trans "Unset" %}
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-danger" value="remove_experimental_protocol" name="action">{% trans "Unset" %}</button>
                 </div>
             </div>
         </div>
@@ -433,7 +429,7 @@
                     {% trans "This experiment is in use, you can not change it! Do you want to copy this experiment?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
                 </div>
             </div>
@@ -444,10 +440,10 @@
 </a>
 
 <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog" data-dismiss="modal">
+    <div class="modal-dialog" data-bs-dismiss="modal">
         <div class="modal-content"  >
             <div class="modal-body modal-lg">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <img src="" class="imagepreview" style="width: 100%;" >
             </div>
         </div>
@@ -460,7 +456,7 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/group_register.js' %}"></script>
     <script src="{% static 'site/magnific-popup/jquery.magnific-popup.js' %}"></script>
     <script>

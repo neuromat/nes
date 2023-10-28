@@ -6,7 +6,7 @@
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -32,7 +32,7 @@
                 {% endif %}
 
             </ol>
-        </div>
+        </nav>
     </div>
 
     {% comment %} {% if messages %}
@@ -65,17 +65,17 @@
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <h4>{% trans "EMG data collection" %}</h4>
 
                 <h4></h4>
                 <div class="row">
                     <div class="col-6 col-sm-6">
-                        <div class="form-group {% if emg_data_form.errors.date %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Date" %}<b style="color: red;">*</b></label>
+                        <div class="form-group {% if emg_data_form.errors.date %}is-invalid{% endif %}">
+                            <label class="form-label">{% trans "Date" %}<b style="color: red;">*</b></label>
                             {{ emg_data_form.date }}
-                            <div class="help-block with-errors">
+                            <div class="form-text with-errors">
                                 {% for error in emg_data_form.date.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -83,10 +83,10 @@
                         </div>
                     </div>
                     <div class="col-6 col-sm-6">
-                        <div class="form-group {% if emg_data_form.errors.time %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Hour" %}</label>
+                        <div class="form-group {% if emg_data_form.errors.time %}is-invalid{% endif %}">
+                            <label class="form-label">{% trans "Hour" %}</label>
                             {{ emg_data_form.time }}
-                            <div class="help-block with-errors">
+                            <div class="form-text with-errors">
                                 {% for error in emg_data_form.time.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -98,9 +98,9 @@
                 <div class="row">
                     <div class="col-6 col-sm-6">
                         <div class="form-group">
-                            <label class="control-label">{% trans "EMG setting" %}<b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "EMG setting" %}<b style="color: red;">*</b></label>
                                 {{ emg_data_form.emg_setting }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -108,9 +108,9 @@
                 <div class="row" id="div-reason-for-change">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Reason for change the EMG setting" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Reason for change the EMG setting" %} <b style="color: red;">*</b></label>
                             {{ emg_data_form.emg_setting_reason_for_change }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -118,9 +118,9 @@
                 <div class="row">
                     <div class="col-6 col-sm-6">
                         <div class="form-group">
-                            <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "File format" %} <b style="color: red;">*</b></label>
                             {{ emg_data_form.file_format }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -128,9 +128,9 @@
                 <div class="row" id="div-file-format-description">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
                             {{ emg_data_form.file_format_description }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -138,19 +138,19 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "EMG data collection description" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "EMG data collection description" %} <b style="color: red;">*</b></label>
                             {{ emg_data_form.description }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-12 col-sm-12">
-                        <div class="form-group {% if emg_data_form.errors.file %}has-error{% endif %}">
+                        <div class="form-group {% if emg_data_form.errors.file %}is-invalid{% endif %}">
 
                             {% if creating or editing %}
-                                <label class="control-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
+                                <label class="form-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
                                 <br/>
                                 <input type="file" name="emg_files" multiple>
                                 <br/>
@@ -158,14 +158,14 @@
 
                             {% if not creating %}
                                 {% if emg_data.emg_files %}
-                                    <label class="control-label">{% trans "Uploaded files" %} <b style="color: red;">*</b></label>
+                                    <label class="form-label">{% trans "Uploaded files" %} <b style="color: red;">*</b></label>
                                     <br/>
                                     <table><tbody>
                                     {% for emg_file in emg_data.emg_files.all %}
                                         <tr>
                                         <td>{{ emg_file.file.url }}</td>
                                         <td>
-                                            <button class="btn btn-default" type="button" onclick="location.href='{{ emg_file.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                            <button class="btn btn-secondary" type="button" onclick="location.href='{{ emg_file.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
                                         </td>
                                         <td>{{ emg_file.file.size|filesizeformat }}</td>
                                         {% if editing %}
@@ -185,7 +185,7 @@
                 </div>
 
                 {% if not editing and can_change %}
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                         <a href="/experiment/emg_data/edit/{{ emg_data.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
@@ -193,16 +193,16 @@
             </div>
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                     {% if not editing and perms.experiment.delete_researchproject and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
 
                         {% if creating %}
                             <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/emg"
@@ -214,7 +214,7 @@
 
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/emg" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
@@ -229,7 +229,7 @@
                     {% trans "Are you sure you want to delete EMG data?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -242,7 +242,7 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/research_project.js' %}"></script>
     <script>
         $(document).ready(function () {

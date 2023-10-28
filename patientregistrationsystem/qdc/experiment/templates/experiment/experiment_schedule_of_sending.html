@@ -4,7 +4,7 @@
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -43,13 +43,13 @@
                 <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
                 <li class="breadcrumb-item active">{% trans "Schedule of sending" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="container-fluid">
 
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 {% if experiment.last_sending %}
                     <h4>{% trans "Resend experiment/project to Portal" %}</h4>
@@ -73,9 +73,9 @@
                         <div class="row">
                             <div class="col-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="control-label">{% trans "Reason for resending" %} <b style="color: red;">*</b></label>
+                                    <label class="form-label">{% trans "Reason for resending" %} <b style="color: red;">*</b></label>
                                     {{ resend_experiment_form.reason_for_resending }}
-                                    <div class="help-block with-errors"></div>
+                                    <div class="form-text with-errors"></div>
                                 </div>
                             </div>
                         </div>
@@ -91,11 +91,11 @@
                         <div class="card  ">
                             <div class="card-header">
                                 <h9 class="card-title">
-                                    <a data-toggle="collapse" data-parent="#accordion"
+                                    <a data-bs-toggle="collapse" data-bs-parent="#accordion"
                                        href="#collapse_{{ survey_key }}">
 
                                         <span style="background-color: #428bca" id="badge_{{ survey_key }}"
-                                              class="badge">{{ survey_value.selected_counter }} </span>
+                                              class="badge.badge-pill">{{ survey_value.selected_counter }} </span>
                                             ({{ survey_key }}) {{ survey_value.title }}
                                     </a>
 
@@ -105,10 +105,10 @@
                                 <div class="card-body">
                                     <div class="col-lg-5 col-sm-12">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "Fields available:" %} </label>
+                                            <label class="form-label">{% trans "Fields available:" %} </label>
                                                 <select class="form-control" size="13" id="multiselect_{{ survey_key }}"
                                                         name="from[]" multiple="multiple"
-                                                        data-error={% trans "Please, select a questionnaire from the list." %}>
+                                                        data-bs-error={% trans "Please, select a questionnaire from the list." %}>
                                                     {% for field in survey_value.fields %}
                                                         {% if not field.is_sensitive and not field.select_to_send %}
                                                             <option title="{{ field.text }}"
@@ -123,21 +123,21 @@
 
                                     <div class="col-lg-2 col-sm-2">
                                         <button type="button" id="multiselect_{{ survey_key }}_rightAll"
-                                                class="btn btn-default btn-block"><i
+                                                class="btn btn-secondary btn-block"><i
                                                 class="fa fa-forward"></i></button>
                                         <button type="button" id="multiselect_{{ survey_key }}_rightSelected"
-                                                class="btn btn-default btn-block"><i
+                                                class="btn btn-secondary btn-block"><i
                                                 class="fa fa-arrow-right"></i></button>
                                         <button type="button" id="multiselect_{{ survey_key }}_leftSelected"
-                                                class="btn btn-default btn-block"><i
+                                                class="btn btn-secondary btn-block"><i
                                                 class="fa fa-arrow-left"></i></button>
                                         <button type="button" id="multiselect_{{ survey_key }}_leftAll"
-                                                class="btn btn-default btn-block"><i
+                                                class="btn btn-secondary btn-block"><i
                                                 class="fa fa-backward"></i></button>
                                     </div>
 
                                     <div class="col-lg-5 col-sm-10">
-                                        <label class="control-label">{% trans "Fields chosen:" %} </label>
+                                        <label class="form-label">{% trans "Fields chosen:" %} </label>
 
                                         <select name="to[]" id="multiselect_{{ survey_key }}_to"
                                                 class="form-control" size="13"
@@ -159,7 +159,7 @@
                     {% endfor %}
                 </div>
 
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                     <button type="submit" name="action" value="send" class="btn btn-primary">{% trans "Send to Portal" %}</button>
                 </div>
             </div>
@@ -173,12 +173,7 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/multiselect/multiselect.min.js' %}"></script>
     <script src="{% static 'site/js/questionnaire_export.js' %}"></script>
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
 {% endblock %}

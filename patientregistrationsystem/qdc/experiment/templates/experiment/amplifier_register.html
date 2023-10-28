@@ -6,7 +6,7 @@
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator">
+    <form id="user_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -37,19 +37,19 @@
                     {% endif %}
                 {% endif %}
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Amplifier" %}</h4>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Manufacturer" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Manufacturer" %} <b style="color: red;">*</b></label>
                             {{ equipment_form.manufacturer }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -57,27 +57,27 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
                             {{ equipment_form.identification }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Description" %} </label>
+                            <label class="form-label">{% trans "Description" %} </label>
                             {{ equipment_form.description }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Serial number" %}</label>
+                            <label class="form-label">{% trans "Serial number" %}</label>
                             {{ equipment_form.serial_number }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -85,8 +85,8 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Category" %}</label>
-                            <div class="container-fluid card card-body bg-light">
+                            <label class="form-label">{% trans "Category" %}</label>
+                            <div class="my-3 p-3 bg-body rounded shadow-sm">
                                 <div class="form-group">
                                     <table class="table table-striped">
                                         <tbody>
@@ -116,10 +116,10 @@
 
                 <div class="row">
                     <div class="col-12 col-sm-12">
-                        <div class="form-group {% if equipment_form.gain.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Gain (times)" %}</label>
+                        <div class="form-group {% if equipment_form.gain.errors %}is-invalid{% endif %}">
+                            <label class="form-label">{% trans "Gain (times)" %}</label>
                             {{ equipment_form.gain }}
-                            <div class="help-block">
+                            <div class="form-text">
                                 {% for error in equipment_form.gain.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -129,10 +129,10 @@
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12">
-                        <div class="form-group {% if equipment_form.number_of_channels.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Maximum number of channels" %}</label>
+                        <div class="form-group {% if equipment_form.number_of_channels.errors %}is-invalid{% endif %}">
+                            <label class="form-label">{% trans "Maximum number of channels" %}</label>
                             {{ equipment_form.number_of_channels }}
-                            <div class="help-block with-errors">
+                            <div class="form-text with-errors">
                                 {% for error in equipment_form.number_of_channels.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -142,10 +142,10 @@
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12">
-                        <div class="form-group {% if equipment_form.common_mode_rejection_ratio.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Minimum Common-mode Rejection (CMR) (dB)" %}</label>
+                        <div class="form-group {% if equipment_form.common_mode_rejection_ratio.errors %}is-invalid{% endif %}">
+                            <label class="form-label">{% trans "Minimum Common-mode Rejection (CMR) (dB)" %}</label>
                             {{ equipment_form.common_mode_rejection_ratio }}
-                            <div class="help-block with-errors">
+                            <div class="form-text with-errors">
                                 {% for error in equipment_form.common_mode_rejection_ratio.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -155,10 +155,10 @@
                 </div>
                 <div class="row">
                     <div class="col-6 col-sm-6">
-                        <div class="form-group {% if equipment_form.input_impedance.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Input Impedance" %}</label>
+                        <div class="form-group {% if equipment_form.input_impedance.errors %}is-invalid{% endif %}">
+                            <label class="form-label">{% trans "Input Impedance" %}</label>
                             {{ equipment_form.input_impedance }}
-                            <div class="help-block with-errors">
+                            <div class="form-text with-errors">
                                 {% for error in equipment_form.input_impedance.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -168,32 +168,32 @@
 
                     <div class="col-6 col-sm-6">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Unit" %}</label>
+                            <label class="form-label">{% trans "Unit" %}</label>
                             {{ equipment_form.input_impedance_unit }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Tethering system" %} </label>
+                            <label class="form-label">{% trans "Tethering system" %} </label>
                             {{ equipment_form.tethering_system }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Amplifier detection type" %} </label>
+                            <label class="form-label">{% trans "Amplifier detection type" %} </label>
                             {{ equipment_form.amplifier_detection_type }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
                 {% if not editing and can_change %}
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                         <a href="/experiment/amplifier/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
@@ -204,21 +204,21 @@
             {% endif %}
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                     {% if not editing and perms.experiment.register_equipment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/amplifier/{% if creating %}list{% else %}{{ equipment.id }}{% endif %}"
                            class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/amplifier/list" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
@@ -234,7 +234,7 @@
                     {% trans "Are you sure you want to delete amplifier?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -247,6 +247,6 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
         <script src="{% static 'site/js/equipment.js' %}"></script>
 {% endblock %}

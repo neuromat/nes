@@ -6,7 +6,7 @@
 
 {% block form %}
     
-    <form id="export_form" method="post" data-toggle="validator">
+    <form id="export_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -58,48 +58,48 @@
 
                 <ul class="nav nav-tabs">
                     <li {% if tab == '1' %}class="active"{% endif %}>
-                        <a data-toggle="tab" href="#general_information">{% trans "General information" %}</a>
+                        <a data-bs-toggle="tab" href="#general_information">{% trans "General information" %}</a>
                     </li>
                     <li {% if tab == '2' %}class="active"{% endif %}>
-                        <a data-toggle="tab" href="#questionnaire_from_entrance_evaluation">{% trans "Questionnaire answered by participants" %}</a>
+                        <a data-bs-toggle="tab" href="#questionnaire_from_entrance_evaluation">{% trans "Questionnaire answered by participants" %}</a>
                     </li>
                     <li id="questionnaires_from_experiments_tab" {% if tab == '3' %}class="active"{% endif %}>
-                        <a {% if not creating %}data-toggle="tab"{% endif %} href="#questionnaires_from_experiments">{% trans "Questionnaires from experiments" %}</a>
+                        <a {% if not creating %}data-bs-toggle="tab"{% endif %} href="#questionnaires_from_experiments">{% trans "Questionnaires from experiments" %}</a>
                     </li>
                     <li {% if tab == '4' %}class="active"{% endif %}>
-                        <a {% if not creating %}data-toggle="tab"{% endif %} href="#participants_and_diagnosis">{% trans "Participants and Diagnosis" %}</a>
+                        <a {% if not creating %}data-bs-toggle="tab"{% endif %} href="#participants_and_diagnosis">{% trans "Participants and Diagnosis" %}</a>
                     </li>
                 </ul>
 
                 <div class="tab-content">
                     <div id="general_information" {% if tab == '1' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if perms.patient.export_patient %}
-                            <div class="container-fluid card card-body bg-light">
+                            <div class="my-3 p-3 bg-body rounded shadow-sm">
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
                                         <h4>{% trans "Organization of the information for exportation" %}</h4>
                                     </div>
                                 </div>
-                                <div class="container-fluid card card-body bg-light">
+                                <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                                     <div class="row">
                                         <div class="col-12 col-sm-7">
-                                            <label data-toggle="tooltip" data-placement="auto left"
+                                            <label data-bs-toggle="tooltip" data-bs-placement="auto left"
                                                    title="{% trans "At least one option must be selected" %}" for="directory_structure"
-                                                   class="control-label">{% trans "Questionnaires data" %} </label>
-                                            <div class="form-group {% if export_form.errors.per_participant %}has-error{% endif %}">
+                                                   class="form-label">{% trans "Questionnaires data" %} </label>
+                                            <div class="form-group {% if export_form.errors.per_participant %}is-invalid{% endif %}">
                                                 <div class="checkbox">
                                                     {{ export_form.per_participant }}
                                                     <label for="per_participant"
-                                                           class="control-label">{% trans "Per participant" %}</label>
-                                                    <div class="help-block with-errors"> </div>
+                                                           class="form-label">{% trans "Per participant" %}</label>
+                                                    <div class="form-text with-errors"> </div>
                                                 </div>
                                                 <div class="checkbox">
                                                     {{ export_form.per_questionnaire }}
                                                     <label for="per_questionnaire"
-                                                           class="control-label">{% trans "Per questionnaire" %}</label>
+                                                           class="form-label">{% trans "Per questionnaire" %}</label>
                                                 </div>
-                                                <div class="help-block with-errors">
+                                                <div class="form-text with-errors">
                                                     {% for error in export_form.errors.per_questionnaire %}
                                                         <div>{{ error }}</div>
                                                     {% endfor %}
@@ -109,9 +109,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-6 col-sm-6">
-                                            <label for="headings" class="control-label">{% trans "Headings" %}</label>
+                                            <label for="headings" class="form-label">{% trans "Headings" %}</label>
 
-                                            <div class="form-group {% if export_form.errors.headings %}has-error{% endif %}">
+                                            <div class="form-group {% if export_form.errors.headings %}is-invalid{% endif %}">
                                                 {% for radio in export_form.headings %}
                                                     <div class="radio">
                                                         {{ radio }}
@@ -122,7 +122,7 @@
                                         <div class="col-6 col-sm-6">
                                             <label>{% trans "Responses" %}</label>
 
-                                            <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">
+                                            <div class="form-group {% if export_form.errors.responses %}is-invalid{% endif %}">
                                                 {% for check in export_form.responses %}
                                                     <div class="checkbox">
                                                         {{ check }}
@@ -134,9 +134,9 @@
                                     <div class="row">
                                         <div class="col-12 col-sm-12">
                                             <label for="filesformat"
-                                                   class="control-label">{% trans "Files format: " %}
+                                                   class="form-label">{% trans "Files format: " %}
                                             </label>
-                                            <div class="form-group {% if export_form.errors.filesformat %}has-error{% endif %}">
+                                            <div class="form-group {% if export_form.errors.filesformat %}is-invalid{% endif %}">
                                                 {% for check in export_form.filesformat %}
                                                     <div class="checkbox">
                                                         {{ check }}
@@ -147,73 +147,73 @@
                                     </div>
                                 </div>
                                 {% if component_list %}
-                                    <div class="container-fluid card card-body bg-light">
+                                    <div class="my-3 p-3 bg-body rounded shadow-sm">
                                         <div class="row">
                                             <div class="col-12 col-sm-7">
-                                                <label data-toggle="tooltip" data-placement="auto left"
+                                                <label data-bs-toggle="tooltip" data-bs-placement="auto left"
                                                        for="experiment_data_collection"
-                                                       class="control-label">{% trans "Experiment/Project data collection" %} </label>
+                                                       class="form-label">{% trans "Experiment/Project data collection" %} </label>
                                                 {% if 'eeg' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_eeg_raw_data }}
-                                                        <label for="per_eeg_raw_data" class="control-label">{% trans "EEG Raw Data" %}</label>
-                                                        <div class="help-block with-errors"></div>
+                                                        <label for="per_eeg_raw_data" class="form-label">{% trans "EEG Raw Data" %}</label>
+                                                        <div class="form-text with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'eeg_nwb' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_eeg_nwb_data }}
-                                                        <label for="per_eeg_nwb_data" class="control-label">{% trans "EEG NWB Data" %}</label>
-                                                        <div class="help-block with-errors"></div>
+                                                        <label for="per_eeg_nwb_data" class="form-label">{% trans "EEG NWB Data" %}</label>
+                                                        <div class="form-text with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'emg' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_emg_data }}
-                                                        <label for="per_emg_data" class="control-label">{% trans "EMG Data" %}</label>
-                                                        <div class="help-block with-errors"></div>
+                                                        <label for="per_emg_data" class="form-label">{% trans "EMG Data" %}</label>
+                                                        <div class="form-text with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'tms' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_tms_data }}
-                                                        <label for="per_tms_data" class="control-label">{% trans "TMS Data" %}</label>
-                                                        <div class="help-block with-errors"></div>
+                                                        <label for="per_tms_data" class="form-label">{% trans "TMS Data" %}</label>
+                                                        <div class="form-text with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'additional_data' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_additional_data }}
-                                                        <label for="per_additional_data" class="control-label">{% trans "Additional Data" %}</label>
-                                                        <div class="help-block with-errors"></div>
+                                                        <label for="per_additional_data" class="form-label">{% trans "Additional Data" %}</label>
+                                                        <div class="form-text with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'goalkeeper_game_data' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_goalkeeper_game_data }}
-                                                        <label for="per_goalkeeper_game_data" class="control-label">{% trans "Goalkeeper game Data" %}</label>
-                                                        <div class="help-block with-errors"></div>
+                                                        <label for="per_goalkeeper_game_data" class="form-label">{% trans "Goalkeeper game Data" %}</label>
+                                                        <div class="form-text with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'stimulus_data' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_stimulus_data }}
-                                                        <label for="per_stimulus_data" class="control-label">{% trans "Stimulus Data" %}</label>
-                                                        <div class="help-block with-errors"></div>
+                                                        <label for="per_stimulus_data" class="form-label">{% trans "Stimulus Data" %}</label>
+                                                        <div class="form-text with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'generic_data' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_generic_data }}
-                                                        <label for="per_generic_data" class="control-label">{% trans "Generic Data" %}</label>
-                                                        <div class="help-block with-errors"></div>
+                                                        <label for="per_generic_data" class="form-label">{% trans "Generic Data" %}</label>
+                                                        <div class="form-text with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'media_data' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_media_data }}
-                                                        <label for="per_media_data" class="control-label">{% trans "Media Data" %}</label>
-                                                        <div class="help-block with-errors"></div>
+                                                        <label for="per_media_data" class="form-label">{% trans "Media Data" %}</label>
+                                                        <div class="form-text with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -228,8 +228,8 @@
                     <div id="questionnaire_from_entrance_evaluation" {% if tab == '2' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if perms.patient.export_patient %}
                             {% if questionnaires_fields_list %}
-                                <div class="container-fluid card card-body bg-light">
-                                    <div class="container-fluid card card-body bg-light">
+                                <div class="my-3 p-3 bg-body rounded shadow-sm">
+                                    <div class="my-3 p-3 bg-body rounded shadow-sm">
                                         <h4>{% trans "Questionnaire information" %}</h4>
                                         <div class="row">
                                             <div class="card-group" id="accordion">
@@ -237,10 +237,10 @@
                                                     <div class="card  ">
                                                         <div class="card-header">
                                                             <h9 class="card-title">
-                                                                <a data-toggle="collapse" data-parent="#accordion"
+                                                                <a data-bs-toggle="collapse" data-bs-parent="#accordion"
                                                                    href="#collapse_{{ survey.index }}">
                                                                     <span style="background-color: #428bca" id="badge_{{ survey.index }}"
-                                                                          class="badge">{{ survey.selected_counter }} </span> {{ survey.sid }}
+                                                                          class="badge.badge-pill">{{ survey.selected_counter }} </span> {{ survey.sid }}
                                                                     - {{ survey.title }} </a>
                                                             </h9>
                                                         </div>
@@ -248,12 +248,12 @@
                                                             <div class="card-body">
                                                                 <div class="col-lg-5 col-sm-12">
                                                                     <div class="form-group">
-                                                                        <label class="control-label">{% trans "Fields available:" %} </label>
+                                                                        <label class="form-label">{% trans "Fields available:" %} </label>
 
                                                                         <select class="form-control" size="13"
                                                                                 id="multiselect_{{ survey.index }}"
                                                                                 name="from[]" multiple="multiple"
-                                                                                data-error={% trans "Please, select a questionnaire from the list." %}>
+                                                                                data-bs-error={% trans "Please, select a questionnaire from the list." %}>
                                                                             {% for field in survey.output_list %}
                                                                                 {% if not field.selected %}
                                                                                     <option title="{{ field.description }}"
@@ -284,7 +284,7 @@
                                                                 </div>
 
                                                                 <div class="col-lg-5 col-sm-10">
-                                                                    <label class="control-label">{% trans "Fields chosen:" %} </label>
+                                                                    <label class="form-label">{% trans "Fields chosen:" %} </label>
 
                                                                     <select name="to[]" id="multiselect_{{ survey.index }}_to"
                                                                             class="form-control" size="13"
@@ -311,14 +311,14 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label"><b style="color: red;">
+                                        <label class="form-label"><b style="color: red;">
                                             {% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
                                             (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
                                     </div>
                                 </div>
                             {% else %}
-                                <div class="container-fluid card card-body bg-light">
-                                    <div class="container-fluid card card-body bg-light">
+                                <div class="my-3 p-3 bg-body rounded shadow-sm">
+                                    <div class="my-3 p-3 bg-body rounded shadow-sm">
                                         <h4>{% trans "There is no questionnaires for the filtered participants" %}</h4>
                                     </div>
                                 </div>
@@ -329,8 +329,8 @@
                     <div id="questionnaires_from_experiments" {% if tab == '3' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if perms.patient.export_patient %}
                             {% if questionnaires_experiment_fields_list %}
-                                <div class="container-fluid card card-body bg-light">
-                                    <div class="container-fluid card card-body bg-light">
+                                <div class="my-3 p-3 bg-body rounded shadow-sm">
+                                    <div class="my-3 p-3 bg-body rounded shadow-sm">
                                         <h4>{% trans "Questionnaire information" %}</h4>
                                         <div class="row">
                                             <div class="card-group" id="accordion">
@@ -338,11 +338,11 @@
                                                     <div class="card  ">
                                                         <div class="card-header">
                                                             <h9 class="card-title">
-                                                                <a data-toggle="collapse" data-parent="#accordion"
+                                                                <a data-bs-toggle="collapse" data-bs-parent="#accordion"
                                                                    href="#collapse_{{ survey.index }}">
                                                                     <span style="background-color: #428bca"
                                                                           id="badge_experiment_{{ survey.index }}"
-                                                                          class="badge">
+                                                                          class="badge.badge-pill">
                                                                         {{ survey.selected_field_counter }} </span>
                                                                     {{ survey.sid }}
                                                                     - {{ survey.title }} - {{ survey.group_title }} </a>
@@ -352,12 +352,12 @@
                                                             <div class="card-body">
                                                                 <div class="col-lg-5 col-sm-12">
                                                                     <div class="form-group">
-                                                                        <label class="control-label">{% trans "Fields available:" %} </label>
+                                                                        <label class="form-label">{% trans "Fields available:" %} </label>
 
                                                                         <select class="form-control" size="13"
                                                                                 id="multiselect_{{ survey.index }}"
                                                                                 name="from[]" multiple="multiple"
-                                                                                data-error={% trans "Please, select a questionnaire from the list." %}>
+                                                                                data-bs-error={% trans "Please, select a questionnaire from the list." %}>
                                                                             {% for field in survey.output_list %}
                                                                                 {% if not field.selected %}
                                                                                     <option title="{{ field.description }}"
@@ -388,7 +388,7 @@
                                                                 </div>
 
                                                                 <div class="col-lg-5 col-sm-10">
-                                                                    <label class="control-label">{% trans "Fields chosen:" %} </label>
+                                                                    <label class="form-label">{% trans "Fields chosen:" %} </label>
 
                                                                     <select name="to_experiment[]" id="multiselect_{{ survey.index }}_to"
                                                                             class="form-control" size="13"
@@ -419,7 +419,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label"><b style="color: red;">{% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                                        <label class="form-label"><b style="color: red;">{% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
                                             (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
                                     </div>
                                 </div>
@@ -429,44 +429,44 @@
                     </div>
 
                     <div id="participants_and_diagnosis" {% if tab == '4' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
-                        <div class="container-fluid card card-body bg-light">
+                        <div class="my-3 p-3 bg-body rounded shadow-sm">
                             {% if perms.patient.export_patient %}
                                 <h4>{% trans "Participants" %}</h4>
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "Participant fields" %} </label>
+                                            <label class="form-label">{% trans "Participant fields" %} </label>
                                             <select class="form-control" size="13" id="patient_selected" name="patient_selected"
                                                     multiple="multiple"
-                                                    data-error={% trans "Please, select a patient field from the list." %}>
+                                                    data-bs-error={% trans "Please, select a patient field from the list." %}>
                                                 {% for field in patient_fields %}
                                                     <option {% if field.field in selected_participant %}selected{% endif %}
                                                             value="{{ field.field }}*{{ field.header }}"> {{ field.description }} </option>
                                                 {% endfor %}
                                             </select>
-                                            <label class="control-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
+                                            <label class="form-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
                                         </div>
                                     </div>
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="container-fluid card card-body bg-light">
+                        <div class="my-3 p-3 bg-body rounded shadow-sm">
                             {% if perms.patient.export_medicalrecorddata and diagnosis_fields %}
                                 <h4>{% trans "Diagnosis" %}</h4>
 
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "Diagnosis fields" %} </label>
+                                            <label class="form-label">{% trans "Diagnosis fields" %} </label>
                                             <select class="form-control" size="13" id="diagnosis_selected" name="diagnosis_selected"
                                                     multiple="multiple"
-                                                    data-error={% trans "Please, select a diagnosis field from the list." %}>
+                                                    data-bs-error={% trans "Please, select a diagnosis field from the list." %}>
                                                 {% for field in diagnosis_fields %}
                                                     <option {% if field.field in selected_diagnosis %}selected{% endif %}
                                                             value="{{ field.field }}*{{ field.header }}"> {{ field.description }} </option>
                                                 {% endfor %}
                                             </select>
-                                            <label class="control-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
+                                            <label class="form-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
                                         </div>
                                     </div>
                                 </div>
@@ -474,7 +474,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="btn-toolbar pull-right">
+                <div class="btn-toolbar float-end">
                     <div class="btn-group">
                         <a href="/home/" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
@@ -492,12 +492,12 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/multiselect/multiselect.min.js' %}"></script>
     <script src="{% static 'site/js/questionnaire_export.js' %}"></script>
     <script>
         $(document).ready(function () {
-            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-bs-toggle="tooltip"]').tooltip();
         });
     </script>
 {% endblock %}

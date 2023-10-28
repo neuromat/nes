@@ -11,7 +11,7 @@
         </div>
         <div class="col-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Manufacturer" %} </label>
+                <label class="form-label">{% trans "Manufacturer" %} </label>
 
                 <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
@@ -20,7 +20,7 @@
                     {% endfor %}
                 </select>
 
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
@@ -30,7 +30,7 @@
         </div>
         <div class="col-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Identification" %} </label>
+                <label class="form-label">{% trans "Identification" %} </label>
 
                 <select class="form-control" name="solution_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
@@ -39,7 +39,7 @@
                     {% endfor %}
                 </select>
 
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
 
             </div>
         </div>
@@ -50,9 +50,9 @@
         </div>
         <div class="col-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Description" %} </label>
+                <label class="form-label">{% trans "Description" %} </label>
                 {{ equipment_form.components }}
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>

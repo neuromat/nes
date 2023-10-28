@@ -7,7 +7,7 @@
     <div class="tab-pane {% if currentTab == '3' %}active{% endif %}" id="tab4">
         <div class="row">
             <div class="container-fluid">
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <div class="form-group">
                         <div class="row">
                             <div class="col-sm-12" style="text-align: right; vertical-align: bottom">
@@ -56,7 +56,7 @@
                     </div>
                     {% if not inserting and editing %}
                         {% if perms.patient.add_medicalrecorddata %}
-                            <div class="btn-group pull-left">
+                            <div class="btn-group float-start">
                                 <a href="/patient/{{ patient_id }}/medical_record/new/" class="btn btn-primary">{% trans "Insert medical record" %}</a>
                             </div>
                         {% endif %}
@@ -68,7 +68,7 @@
 
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
 {{ block.super }}
     <script src="{% static 'site/js/patient_medical_record.js' %}"></script>
 {% endblock %}

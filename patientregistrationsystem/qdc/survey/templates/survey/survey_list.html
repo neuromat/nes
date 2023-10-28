@@ -11,12 +11,12 @@
                 <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item active" >{% trans "Questionnaires" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "List of questionnaires" %}</h4>
                 <div class="form-group">
                     <table class="table table-striped">
@@ -30,7 +30,7 @@
                         <tbody>
                         {% for questionnaire in questionnaires_list %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" href="/survey/{{ questionnaire.id }}" title="{% trans 'View' %}"> 
+                                <td><a data-bs-toggle="tooltip" data-bs-placement="left" href="/survey/{{ questionnaire.id }}" title="{% trans 'View' %}"> 
                                     {{ questionnaire.lime_survey_id }} - {{ questionnaire.title }} </a></td>
                                 <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="fa fa-check" style="color: royalblue"></span> {% endif %}</td>
                                 <td style="text-align: center">{% if questionnaire.is_active == True %}<span class="fa fa-check" style="color: royalblue"></span> {% else %}<span class="fa fa-remove" style="color: red"></span> {% endif %}</td>
@@ -40,21 +40,21 @@
                     </table>
                 </div>
                 <div class="form-group">
-                    <label class="control-label"><b style="color: red;"><big>!</big> {% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                    <label class="form-label"><b style="color: red;"><big>!</big> {% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
                         (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
                 </div>
                 {% if perms.survey.add_survey %}
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                         <a href="/survey/new/" class="btn btn-primary" {% if not limesurvey_available  %} disabled {% endif %}>{% trans "Insert new questionnaire" %}</a>
                     </div>
                 {% endif %}
                 {% if perms.survey.change_survey %}
                     <form id="survey_form" method="post">
                         {% csrf_token %}
-                        <div class="btn-group pull-right">
-                            <button data-toggle="tooltip" title="{% trans "Click to update questionnaire title if not displaying the title in selected NES language" %}"
+                        <div class="btn-group float-end">
+                            <button data-bs-toggle="tooltip" title="{% trans "Click to update questionnaire title if not displaying the title in selected NES language" %}"
                                     type="submit" class="btn
-                            btn-default"
+                            btn-light"
                                     name="action"
                                     value="update"
                                     {% if not limesurvey_available  %} disabled {% endif %} title={% trans "Update informations about the questionnaires" %}><i class="fa fa-refresh"></i> {% trans "Update" %}</button>
@@ -67,14 +67,10 @@
 
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script>
         {% if survey_form.errors %}
             showErrorMessage(gettext('Please, correct the highlighted fields.'))
         {% endif %}
-
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
     </script>
 {% endblock %}

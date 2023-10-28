@@ -12,7 +12,7 @@
         </div>
         <div class="row">
             <div class="container-fluid">
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <div class="row">
                         <div class="col-sm-6">
                             <h4>{% trans "Basic Information" %}</h4>
@@ -47,31 +47,31 @@
                     </div> 
                     <div class="row">
                         <div class="col-12 col-sm-6">
-                            <div id="div_name" class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
-                                <label for="name" class="control-label">{% trans "Full name" %} <b style="color: red;">*</b></label>
+                            <div id="div_name" class="form-group {% if patient_form.errors.name %}is-invalid{% endif %}">
+                                <label for="name" class="form-label">{% trans "Full name" %} <b style="color: red;">*</b></label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-user"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-user"></span></span>
                                     {% if  perms.patient.sensitive_data_patient or creating %}
                                         {{ patient_form.name }}
                                     {% else %}
                                         <input type="text" class=form-control disabled value="{% trans 'SENSITIVE DATA' %}">
                                     {% endif %}
                                 </div>
-                                <div id="div_name_message" class="help-block with-errors"></div>
+                                <div id="div_name_message" class="form-text with-errors"></div>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
-                            <div class="form-group {% if patient_form.errors.cpf %}has-error{% endif %}">
-                                <label for="cpf" class="control-label">{% trans "Security id" %}</label>
+                            <div class="form-group {% if patient_form.errors.cpf %}is-invalid{% endif %}">
+                                <label for="cpf" class="form-label">{% trans "Security id" %}</label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-id-card"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-id-card"></span></span>
                                     {% if  perms.patient.sensitive_data_patient or creating %}
                                         {{ patient_form.cpf }}
                                     {% else %}
                                         <input type="text" class=form-control disabled value="{% trans 'SENSITIVE DATA' %}">
                                     {% endif %}
                                 </div>
-                                <div class="help-block with-errors">
+                                <div class="form-text with-errors">
                                     {% if patient_form.cpf.errors %}
                                         <span>
                                         {% for error in patient_form.cpf.errors %}{{ error }}{% endfor %}
@@ -86,7 +86,7 @@
                             <div class="form-group">
                                 <label>{% trans "Origin" %}</label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-check"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-check"></span></span>
                                     {{ patient_form.origin }}
                                 </div>
                             </div>
@@ -95,7 +95,7 @@
                             <div class="form-group">
                                 <label>{% trans "Medical record" %}</label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-list-alt"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-list-alt"></span></span>
                                     {{ patient_form.medical_record }}
                                 </div>
                             </div>
@@ -103,13 +103,13 @@
                     </div>
                     <div class="row">
                         <div class="col-6 col-sm-6">
-                            <div class="form-group {% if patient_form.errors.date_birth %}has-error{% endif %}">
-                                <label for="date_birth" class="control-label">{% trans "Date of birth" %} <b style="color: red;">*</b></label>
+                            <div class="form-group {% if patient_form.errors.date_birth %}is-invalid{% endif %}">
+                                <label for="date_birth" class="form-label">{% trans "Date of birth" %} <b style="color: red;">*</b></label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-birthday-cake"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-birthday-cake"></span></span>
                                     {{ patient_form.date_birth }}
                                 </div>
-                                <div class="help-block with-errors">
+                                <div class="form-text with-errors">
                                     {% if patient_form.date_birth.errors %}
                                         <span>
                                         {% for error in patient_form.date_birth.errors %}{{ error }}{% endfor %}
@@ -120,12 +120,12 @@
                         </div>
                         <div class="col-6 col-sm-6">
                             <div class="form-group">
-                                <label for="id_gender" class="control-label">{% trans "Gender" %} <b style="color: red;">*</b></label>
+                                <label for="id_gender" class="form-label">{% trans "Gender" %} <b style="color: red;">*</b></label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-venus-mars"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-venus-mars"></span></span>
                                     {{ patient_form.gender }}
                                 </div>
-                                <div class="help-block with-errors"></div>
+                                <div class="form-text with-errors"></div>
                             </div>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                             <div class="form-group">
                                 <label>{% trans "RG" %}</label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"><span class="fa fa-user"></span></span>
+                                    <span class="input-group-text"><span class="fa fa-user"></span></span>
                                     {% if  perms.patient.sensitive_data_patient or creating %}
                                         {{ patient_form.rg }}
                                     {% else %}
@@ -147,7 +147,7 @@
                             <div class="form-group">
                                 <label>{% trans "Marital status" %}</label>
                                 <div class="input-group  input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-genderless"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-genderless"></span></span>
                                     {{ patient_form.marital_status }}
                                 </div>
                             </div>
@@ -155,14 +155,14 @@
                     </div>
                     <div class="col-lg-1"></div>
                 </div>
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <h4>{% trans "Address" %}</h4>
                     <div class="row">
                         <div class="col-6 col-sm-6">
                             <div class="form-group">
                                 <label>{% trans "Country" %}</label>
                                 <div class="input-group  input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-home"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-home"></span></span>
                                     {{ patient_form.country }}
                                 </div>
                             </div>
@@ -171,10 +171,10 @@
                             <div class="form-group">
                                 <label>{% trans "Zip code" %}</label>
                                 <div class="input-group  input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-home"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-home"></span></span>
                                     {{ patient_form.zipcode }}
                                 </div>
-                                <div class="help-block with-errors"></div>
+                                <div class="form-text with-errors"></div>
                             </div>
                         </div>
                     </div>
@@ -183,7 +183,7 @@
                             <div class="form-group">
                                 <label>{% trans "Address" %}</label>
                                 <div class="input-group  input-group-sm ">
-                                    <span class="input-group-addon"> <span class="fa fa-home"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-home"></span></span>
                                     {{ patient_form.street }}
                                 </div>
 
@@ -193,7 +193,7 @@
                             <div class="form-group">
                                 <label>{% trans "Number" %}</label>
                                 <div class="input-group  input-group-sm ">
-                                    <span class="input-group-addon"> <span class="fa fa-home"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-home"></span></span>
                                     {{ patient_form.address_number }}
                                 </div>
                             </div>
@@ -202,10 +202,10 @@
                             <div class="form-group">
                                 <label>{% trans "Complement" %}</label>
                                 <div class="input-group  input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-home"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-home"></span></span>
                                     {{ patient_form.address_complement }}
                                 </div>
-                                <div class="help-block with-errors"></div>
+                                <div class="form-text with-errors"></div>
                             </div>
                         </div>
                     </div>
@@ -214,7 +214,7 @@
                             <div class="form-group">
                                 <label>{% trans "District" %}</label>
                                 <div class="input-group  input-group-sm ">
-                                    <span class="input-group-addon"> <span class="fa fa-home"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-home"></span></span>
                                     {{ patient_form.district }}
                                 </div>
                             </div>
@@ -223,7 +223,7 @@
                             <div class="form-group">
                                 <label>{% trans "City" %}</label>
                                 <div class="input-group  input-group-sm ">
-                                    <span class="input-group-addon"> <span class="fa fa-home"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-home"></span></span>
                                     {{ patient_form.city }}
                                 </div>
                             </div>
@@ -234,25 +234,25 @@
                             <div class="form-group">
                                 <label>{% trans "State" %}</label>
                                 <div class="input-group  input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-home"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-home"></span></span>
                                     {{ patient_form.state }}
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label for="email" class="control-label">{% trans "E-mail" %}</label>
+                                <label for="email" class="form-label">{% trans "E-mail" %}</label>
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-envelope"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-envelope"></span></span>
                                     {{ patient_form.email }}
                                 </div>
-                                <div class="help-block with-errors"></div>
+                                <div class="form-text with-errors"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="container-fluid card card-body bg-light" id="telephones">
+                <div class="my-3 p-3 bg-body rounded shadow-sm" id="telephones">
                     <div class="row">
                         <div class="col-6 col-sm-6">
                             <label>
@@ -294,7 +294,7 @@
                             <div class="col-6 col-sm-3">
                                 <div class="form-group">
                                     <div class="input-group  input-group-sm">
-                                        <span class="input-group-addon"> <span class="fa fa-phone"></span></span>
+                                        <span class="input-group-text"> <span class="fa fa-phone"></span></span>
                                         {{ telephone_form.number }}
                                     </div>
                                 </div>
@@ -302,19 +302,19 @@
                             <div class="col-6 col-sm-3">
                                 <div class="form-group">
                                     <div class="input-group  input-group-sm">
-                                        <span class="input-group-addon"> <span class="fa fa-tag"></span></span>
+                                        <span class="input-group-text"> <span class="fa fa-tag"></span></span>
                                         {{ telephone_form.type }}
                                     </div>
-                                    <div class="help-block with-errors"></div>
+                                    <div class="form-text with-errors"></div>
                                 </div>
                             </div>
                             <div class="col-8 col-sm-4">
                                 <div class="form-group">
                                     <div class="input-group  input-group-sm">
-                                        <span class="input-group-addon"> <span class="fa fa-pencil"></span></span>
+                                        <span class="input-group-text"> <span class="fa fa-pencil"></span></span>
                                         {{ telephone_form.note }}
                                     </div>
-                                    <div class="help-block with-errors"></div>
+                                    <div class="form-text with-errors"></div>
                                 </div>
                             </div>
                             <div class="col-4 col-sm-2">
@@ -328,7 +328,7 @@
                     {% endfor %}
 
                     {% if editing %}
-                        <button type="button" class="btn btn-default" id="more_phones">{% trans "Save and include more phones" %}</button>
+                        <button type="button" class="btn btn-secondary" id="more_phones">{% trans "Save and include more phones" %}</button>
                     {% endif %}
                 </div>
             </div>
@@ -343,7 +343,7 @@
                     {% trans "CPF is not filled in. Would you like saving?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="button" class="btn btn-primary" id="noCPF_modal">{% trans "Save" %}</button>
                 </div>
             </div>
@@ -361,7 +361,7 @@
                 {% csrf_token %}
                 <ul id="search-results-homonym" style="list-style: none;"></ul>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" id="modalHomonymCancel">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalHomonymCancel">{% trans "Cancel" %}</button>
                 </div>
             </div>
         </div>
@@ -378,7 +378,7 @@
                 {% csrf_token %}
                 <ul id="search-results-homonym-excluded" style="list-style: none;"></ul>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" id="modalHomonymExcludedCancel">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalHomonymExcludedCancel">{% trans "Cancel" %}</button>
                 </div>
             </div>
         </div>
@@ -386,7 +386,7 @@
 
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
 {{ block.super }}
     <script src="{% static 'site/js/phone.js' %}"></script>
     <script src="{% static 'site/js/cep.js' %}"></script>

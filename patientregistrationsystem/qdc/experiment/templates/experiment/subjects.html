@@ -7,7 +7,7 @@
 
 {% block activeAdvancedResearchProject %} active{% endblock %}
 
-{% block header %}
+{% block extrahead %}
     <style>
         .participant-list{
             display: flex;
@@ -44,7 +44,7 @@
                 <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li class="breadcrumb-item active">{% trans "Participants and data collections" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     {% comment %} {% if messages %}
@@ -74,10 +74,10 @@
 
             <ul class="nav nav-tabs">
                 <li id="per_participants_tab" class="active">
-                    <a data-toggle="tab" href="#per_participants"><span class="fa fa-user"></span> {% trans "Per participant" %}</a>
+                    <a data-bs-toggle="tab" href="#per_participants"><span class="fa fa-user"></span> {% trans "Per participant" %}</a>
                 </li>
                 <li id="per_steps_tab">
-                    <a data-toggle="tab" href="#per_steps_of_experimental_protocol"><span class="fa fa-sitemap"></span> {% trans "Per steps of the experimental protocol" %}</a>
+                    <a data-bs-toggle="tab" href="#per_steps_of_experimental_protocol"><span class="fa fa-sitemap"></span> {% trans "Per steps of the experimental protocol" %}</a>
                 </li>
             </ul>
 
@@ -88,7 +88,7 @@
 
                     <br/>
                     {% if perms.experiment.add_subject and can_change %}
-                        <div class="container-fluid card card-body bg-light">
+                        <div class="my-3 p-3 bg-body rounded shadow-sm">
                             <div class="row">
                                 <div class="col-12 col-sm-12">
                                     <div class="form-group">
@@ -96,7 +96,7 @@
                                         <label>{% trans "Add participant" %}</label>
 
                                         <div class="input-group input-group-sm">
-                                            <span class="input-group-addon"> <i class="fa fa-search"></i></span>
+                                            <span class="input-group-text"> <i class="fa fa-search"></i></span>
                                             <input id="search_key" class="form-control" 
                                             {% if perms.patient.sensitive_data_patient %} placeholder="{% trans "Type participant name, CPF or code" %}"
                                             {% else %} placeholder="{% trans "Type participant code" %}"
@@ -108,8 +108,8 @@
                                             style="list-style:none;"></ul>
                                     </div>
                                     <div style="width: 200px; float:left">
-                                        <a class="btn btn-default" id="prev_btn">{% trans "Previous" %}</a>
-                                        <a class="btn btn-default" id="next_btn">{% trans "Next" %}</a>
+                                        <a class="btn btn-secondary" id="prev_btn">{% trans "Previous" %}</a>
+                                        <a class="btn btn-secondary" id="next_btn">{% trans "Next" %}</a>
                                     </div>
                                 </div>
                             </div>
@@ -126,15 +126,15 @@
                     <div class="col-12 col-sm-12">
                     <div class="row">
                         {% if experimental_protocol_info.number_of_questionnaires %}
-                        <div class="pull-right">
-                            <a onclick="$('#modalImportQuestionnaireResponses').modal('show');" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="{% trans "Import questionnaire responses" %}">
+                        <div class="float-end">
+                            <a onclick="$('#modalImportQuestionnaireResponses').modal('show');" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% trans "Import questionnaire responses" %}">
                                 <span class="fa fa-list-alt fa-fw"></span>
                             </a>
                         </div>
                         {% endif %}
                         {% if goalkeeper %}
-                        <div class="pull-right">
-                            <a href="/experiment/group/{{ group.id }}/goalkeeper_game_data" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="{% trans "Import goalkeeper game data" %}">
+                        <div class="float-end">
+                            <a href="/experiment/group/{{ group.id }}/goalkeeper_game_data" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% trans "Import goalkeeper game data" %}">
                                 <span class="fa fa-lg fa-soccer-ball-o  fa-fw"></span>
                             </a>
                         </div>
@@ -169,10 +169,10 @@
                                             <tr>
                                                 <td>
                                                     {% if perms.experiment.delete_subject and can_change %}
-                                                        <a class="btn fa fa-remove" data-toggle="tooltip" data-placement="left" title="{% trans 'Delete participant' %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                                        <a class="btn fa fa-remove" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Delete participant' %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                            onclick="show_modal_remove({{ item.subject.id }});"></a>
                                                     {% endif %}
-                                                    <a data-toggle="tooltip" data-placement="left" title="{% trans 'View Participant' %}" href="/patient/{{ item.subject.patient.id }}">
+                                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'View Participant' %}" href="/patient/{{ item.subject.patient.id }}">
                                                         {% get_name_or_code item.subject.patient.id %}
                                                     </a>
                                                     
@@ -182,7 +182,7 @@
                                                     <div class="col-2 col-sm-2" >
                                                         {% if can_change and perms.patient.sensitive_data_patient %}
                                                             <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file"
-                                                               data-toggle="tooltip" data-placement="top" title="{% trans 'Upload consent form' %}">
+                                                               data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Upload consent form' %}">
                                                                 <span class="fa fa-paperclip fa-fw"></span>
                                                             </a>
                                                         {% else %}
@@ -203,7 +203,7 @@
                                                         {% if limesurvey_available %}
                                                             <div class="col-2 col-sm-2">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/"
-                                                                   data-toggle="tooltip" data-placement="top" title="{% trans "Fill questionnaires" %}">
+                                                                   data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Fill questionnaires" %}">
                                                                     <span class="fa fa-list-alt fa-fw"></span>
                                                                 </a>
                                                             </div>
@@ -225,7 +225,7 @@
                                                         <div class="row">
                                                             <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg"
-                                                                        data-toggle="tooltip" data-placement="top" title="{% trans 'Uploaded EEG data files' %}">
+                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Uploaded EEG data files' %}">
                                                                     <span class="fa fa-flash fa-fw"></span> {% trans "EEG" %}
                                                                 </a>
                                                             </div>
@@ -243,7 +243,7 @@
                                                         <div class="row">
                                                             <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg"
-                                                                        data-toggle="tooltip" data-placement="top" title="{% trans 'Uploaded EMG data files' %}">
+                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Uploaded EMG data files' %}">
                                                                     <span class="fa fa-bar-chart fa-fw"></span> {% trans "EMG" %}
                                                                 </a>
                                                             </div>
@@ -261,7 +261,7 @@
                                                         <div class="row">
                                                             <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/tms"
-                                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded TMS data files" %}">
+                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Uploaded TMS data files" %}">
                                                                     <span class="fa fa-magnet fa-fw"></span> {% trans "TMS" %}
                                                                 </a>
                                                             </div>
@@ -279,7 +279,7 @@
                                                         <div class="row">
                                                             <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/digital_game_phase"
-                                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded goalkeeper game phase data files" %}">
+                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Uploaded goalkeeper game phase data files" %}">
                                                                     <span class="fa fa-play-circle fa-fw"></span> {% trans "Game" %}
                                                                 </a>
                                                             </div>
@@ -297,7 +297,7 @@
                                                         <div class="row">
                                                             <div class="col-4 col-sm-4">
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/generic_data_collection"
-                                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded generic collection data files" %}">
+                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Uploaded generic collection data files" %}">
                                                                     <span class="fa fa-file fa-fw"></span> {% trans "Data collection" %}
                                                                 </a>
                                                             </div>
@@ -313,8 +313,8 @@
 
                                                     <div class="row">
                                                         <div class="col-12 col-sm-12">
-                                                            <span style="background-color: steelblue" class="badge">{{ item.number_of_additional_data_uploaded }}</span>
-                                                            <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data" data-toggle="tooltip" title="{% trans "Uploaded additional data files" %}">
+                                                            <span style="background-color: steelblue" class="badge.badge-pill">{{ item.number_of_additional_data_uploaded }}</span>
+                                                            <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data" data-bs-toggle="tooltip" title="{% trans "Uploaded additional data files" %}">
                                                                 {% trans "Additional" %}
                                                             </a>
                                                         </div>
@@ -399,7 +399,7 @@
 
             <div class="btn-toolbar">
                 <br/>
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -417,7 +417,7 @@
                         {% trans "Are you sure you want to delete participant?" %}
                     </div>
                     <div class="modal-footer">
-                        <button onclick="disable_remove_button();" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button onclick="disable_remove_button();" type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                         <button disabled="disabled" type="submit" id="remove-participant" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                     </div>
                 </div>
@@ -434,7 +434,7 @@
                         {% trans "Are you sure import questionnaire responses?" %}
                     </div>
                     <div class="modal-footer">
-                        <button onclick="disable_import_questionnaire_responses_button();" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button onclick="disable_import_questionnaire_responses_button();" type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                         <a href="/experiment/group/{{ group.id }}/load_questionnaire_data" class="btn btn-primary">
                             {% trans "Import questionnaire responses" %}
                         </a>
@@ -450,7 +450,7 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/subjects.js' %}"></script>
     <script src="{% static 'site/js/search_and_table.js' %}"></script>
     <script>

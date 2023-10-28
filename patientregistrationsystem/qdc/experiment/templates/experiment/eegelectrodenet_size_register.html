@@ -6,7 +6,7 @@
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator">
+    <form id="user_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -61,28 +61,28 @@
                     {% endif %}
                 {% endif %}
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Cap Size" %}</h4>
                  <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Size" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Size" %} <b style="color: red;">*</b></label>
                             {{ equipment_form.size }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12">
-                        <div class="form-group {% if equipment_form.electrode_adjacent_distance.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Electrode adjacent distance" %}</label>
+                        <div class="form-group {% if equipment_form.electrode_adjacent_distance.errors %}is-invalid{% endif %}">
+                            <label class="form-label">{% trans "Electrode adjacent distance" %}</label>
                             {{ equipment_form.electrode_adjacent_distance }}
-                            <div class="help-block with-errors">
+                            <div class="form-text with-errors">
                                 {% for error in equipment_form.electrode_adjacent_distance.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -92,7 +92,7 @@
                 </div>
 
                 {% if not editing and can_change %}
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                         <a href="/experiment/eeg_electrode_cap_size/{{ equipment.id }}/edit/" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
@@ -103,21 +103,21 @@
             {% endif %}
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                     {% if not editing and perms.experiment.register_equipment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/{% if creating %}eegelectrodenet/{{ eeg_cap.id }}{% else %}eeg_electrode_cap_size/{{ equipment.id }}{% endif %}"
                            class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/eegelectrodenet/{{ equipment.eeg_electrode_cap.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
@@ -133,7 +133,7 @@
                     {% trans "Are you sure you want to delete cap size?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -146,6 +146,6 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/equipment.js' %}"></script>
 {% endblock %}

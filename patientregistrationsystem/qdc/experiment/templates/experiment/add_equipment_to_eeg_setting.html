@@ -5,7 +5,7 @@
 
 {% block form %}
     
-    <form id="component_form" method="post" data-toggle="validator">
+    <form id="component_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -35,12 +35,12 @@
                 {% block breadcrumb %}
                 {% endblock %}
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <h4>{% if creating %}{% trans "Add" %}{% endif %} {{ equipment_type_name }}</h4>
 
@@ -51,7 +51,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Search" %} {{ equipment_type_name }}</label>
+                            <label class="form-label">{% trans "Search" %} {{ equipment_type_name }}</label>
                         </div>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                     </div>
                     <div class="col-11 col-sm-11">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Manufacturer" %} </label>
+                            <label class="form-label">{% trans "Manufacturer" %} </label>
 
                             <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not creating %}disabled{% endif %}>
                                 {% if creating %}
@@ -72,7 +72,7 @@
                                 {% endfor %}
                             </select>
 
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                     </div>
                     <div class="col-11 col-sm-11">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Equipment identification" %} </label>
+                            <label class="form-label">{% trans "Equipment identification" %} </label>
 
                             <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not creating %}disabled{% endif %}>
                                 <option value>-------</option>
@@ -91,7 +91,7 @@
                                 {% endfor %}
                             </select>
 
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
 
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{{ equipment_type_name }} {% trans "information" %}</label>
+                            <label class="form-label">{{ equipment_type_name }} {% trans "information" %}</label>
                         </div>
                     </div>
                 </div>
@@ -110,9 +110,9 @@
                     </div>
                     <div class="col-11 col-sm-11">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Description" %} </label>
+                            <label class="form-label">{% trans "Description" %} </label>
                             {{ filter_equipment_form.description }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -122,9 +122,9 @@
                     </div>
                     <div class="col-11 col-sm-11">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Serial number" %} </label>
+                            <label class="form-label">{% trans "Serial number" %} </label>
                             {{ filter_equipment_form.serial_number }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -133,21 +133,21 @@
 
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                     {% if not editing and perms.experiment.delete_experiment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button type="submit" name="action" value="insert" class="btn btn-primary">{% trans "Insert" %}</button>
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/eeg_setting/{{ eeg_setting.id }}"
                            class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/eeg_setting/{{ eeg_setting.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
@@ -164,10 +164,8 @@
                         {% trans "Are you sure you want to delete step?" %}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-primary" value="remove" name="action"
-                                style="background-color: indianred; color: #ffffff">{% trans "Delete" %}
-                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                     </div>
                 </div>
             </div>
@@ -181,6 +179,6 @@
 </div>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
         <script src="{% static 'site/js/add_equipment_to_eeg_setting.js' %}"></script>
 {% endblock %}

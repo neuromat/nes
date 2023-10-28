@@ -28,15 +28,15 @@
     <div class="row">
         <div class="col-6 col-sm-12">
             <div class="form-group">
-                <label for="id_information_type_media" class="control-label">{% trans "Information type" %} <b style="color: red;">*</b></label>
+                <label for="id_information_type_media" class="form-label">{% trans "Information type" %} <b style="color: red;">*</b></label>
                     {{ specific_form.information_type_media }}
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
 {% endblock %}
 
 {# In case of inclusion of javascript, insert parent template scripts #}
-{#{% block script %}#}
+{#{% block extrascript %}#}
 {# Uncomment this block and insert parent template scripts #}
 {#{% endblock %}#}

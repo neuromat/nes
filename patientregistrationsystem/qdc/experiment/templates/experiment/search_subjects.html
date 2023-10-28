@@ -25,7 +25,7 @@
                 <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li class="breadcrumb-item active">{% trans "Search Participants" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     {% comment %} {% if messages %}
@@ -53,7 +53,7 @@
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="container-fluid">
 
-            <div id="participants_container" class="container-fluid card card-body bg-light">
+            <div id="participants_container" class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Add new participants" %}</h4>
 
                 <div class="form-group">
@@ -80,7 +80,7 @@
 
                         <div class="form-group" >
                             {{ participant_selection_form.gender }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
 
                         <div class="form-group">
@@ -91,7 +91,7 @@
 
                         <div class="form-group">
                             {{ participant_selection_form.marital_status }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
 
                         <div class="form-group">
@@ -110,7 +110,7 @@
                                         </div>
 
                                         <div class="input-group input-group-sm">
-                                            <span class="input-group-addon"> <span class="fa fa-search"></span></span>
+                                            <span class="input-group-text"> <span class="fa fa-search"></span></span>
                                             <div class="ui-widget">
                                               <input id="get_location" placeholder="{% trans "Enter a city" %}" class="form-control">
                                             </div>
@@ -140,7 +140,7 @@
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
                                         <div class="input-group input-group-sm">
-                                            <span class="input-group-addon"> <span class="fa fa-search"></span></span>
+                                            <span class="input-group-text"> <span class="fa fa-search"></span></span>
                                             <div class="ui-widget">
                                               <input id="get_diagnosis" placeholder="{% trans "Enter a diagnosis" %}" class="form-control">
                                             </div>
@@ -193,16 +193,16 @@
             </div>
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                 </div>
 
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <button type="submit" name="action" value="next-step-1" class="btn btn-primary">{% trans "Next" %}
                         <span class="fa fa-forward"></span>
                     </button>
                 </div>
 
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                 </div>
 
@@ -217,7 +217,7 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/subjects.js' %}"></script>
     <script src="{% static 'site/js/participant_selection.js' %}"></script>
 {% endblock %}

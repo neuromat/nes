@@ -46,13 +46,13 @@
                     {% endif %}
                 </li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="container-fluid">
 
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
             {% if research_project_id %}
                 <h3>{% trans "Import Experiment/Project" %}</h3>
             {% else %}
@@ -77,7 +77,7 @@
             </form>
         </div>
 
-            <div class="btn-group pull-right">
+            <div class="btn-group float-end">
                 <a href="/experiment/research_project/{% if research_project_id %}{{ research_project_id }}{% else %}list{% endif %}"
                    class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
             </div>
@@ -86,12 +86,7 @@
 
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/multiselect/multiselect.min.js' %}"></script>
     <script src="{% static 'site/js/participant_import.js' %}"></script>
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
 {% endblock %}

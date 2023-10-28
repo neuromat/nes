@@ -22,7 +22,7 @@
                 <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subjects">{% trans "Participant" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Term of consent" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     {% comment %} {% if messages %}
@@ -71,8 +71,8 @@
                                 <div class="col-4 col-sm-6">
                                     <div class="btn-toolbar">
                                         {% if perms.patient.sensitive_data_patient %}
-                                            <button class="btn btn-default" type="button" onclick="location.href='{{ file_list.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
-                                            <button class="btn btn-default" type="button" onclick="$('#modalRemove').modal('show')"><span class="fa fa-remove" style="color: indianred"></span></button>
+                                            <button class="btn btn-secondary" type="button" onclick="location.href='{{ file_list.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                            <button class="btn btn-secondary" type="button" onclick="$('#modalRemove').modal('show')"><span class="fa fa-remove" style="color: indianred"></span></button>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -84,13 +84,13 @@
             <div class="btn-toolbar">
                 {% if not file_list %}
                     {# This div has to exist so that the upload and cancel buttons appear separated from each other. #}
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button id="save_file"  type="submit" name="action" value="upload" class="btn btn-primary">{% trans "Upload" %}</button>
                     </div>
                 {% endif %}
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -105,9 +105,8 @@
                     {% trans "Are you sure you want to delete attachment?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-primary" value="remove" name="action"
-                        style="background-color: indianred; color: #ffffff">{% trans "Delete" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
         </div>

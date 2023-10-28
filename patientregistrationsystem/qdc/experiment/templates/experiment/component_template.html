@@ -5,7 +5,7 @@
 
 {% block form %}
     
-    <form id="component_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    <form id="component_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -65,12 +65,12 @@
                 {% block breadcrumb %}
                 {% endblock %}
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <h4>{% trans "Information about" %} {% block component_label %}{% endblock %}</h4>
@@ -80,10 +80,10 @@
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             {% if reusing %}
-                                <label class="control-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
+                                <label class="form-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
                             {% endif %}
                             <div class="dropdown">
-                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-bs-toggle="dropdown" aria-expanded="true">
                                     {% if component_form.identification.value %}
                                         {{ component_form.identification.value }}
                                     {% else %}
@@ -117,9 +117,9 @@
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label class="control-label" for="identification">{% trans "Identification" %} <b style="color: red;">*</b></label>
+                                <label class="form-label" for="identification">{% trans "Identification" %} <b style="color: red;">*</b></label>
                                 {{ component_form.identification }}
-                                <div class="help-block with-errors"></div>
+                                <div class="form-text with-errors"></div>
                             </div>
                         </div>
                         {% include "experiment/duration.html" %}
@@ -128,9 +128,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label" for="description">{% trans "Description" %}</label>
+                            <label class="form-label" for="description">{% trans "Description" %}</label>
                             {{ component_form.description }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -142,7 +142,7 @@
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
 
-                            <label for="additional_files" class="control-label">{% trans "Additional files" %}</label>
+                            <label for="additional_files" class="form-label">{% trans "Additional files" %}</label>
                             <br/>
 
                             {% if creating %}
@@ -161,7 +161,7 @@
                                         <tr>
                                         <td>{{ additional_file.file.url }}</td>
                                         <td>
-                                            <button class="btn btn-default" type="button" onclick="location.href='{{ additional_file.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                            <button class="btn btn-secondary" type="button" onclick="location.href='{{ additional_file.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
                                         </td>
                                         <td>{{ additional_file.file.size|filesizeformat }}</td>
                                         {% if not component_configuration %}
@@ -206,7 +206,7 @@
 
             {% if can_reuse or reusing %}
                 {% if not is_configuring_new_experimental_protocol %}
-                    <div class="container-fluid card card-body bg-light">
+                    <div class="my-3 p-3 bg-body rounded shadow-sm">
                         <div class="row">
                             <div class="col-12 col-sm-12">
                                 <h4>{% trans "Quantity of uses to be inserted" %} <b style="color: red;">*</b></h4>
@@ -214,7 +214,7 @@
                             <div class="col-6 col-sm-2">
                                 <div class="form-group">
                                     {{ number_of_uses_form.number_of_uses_to_insert }}
-                                    <div class="help-block with-errors"></div>
+                                    <div class="form-text with-errors"></div>
                                 </div>
                             </div>
                         </div>
@@ -223,7 +223,7 @@
             {% endif %}
 
             {% if component_configuration %}
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <h4>{% trans "Information about this use of step" %}</h4>
@@ -232,20 +232,20 @@
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label class="control-label" for="name" class="control-label">{% trans "Name" %}</label>
+                                <label class="form-label" for="name" class="form-label">{% trans "Name" %}</label>
                                     {{ configuration_form.name }}
-                                <div class="help-block with-errors"></div>
+                                <div class="form-text with-errors"></div>
                             </div>
                         </div>
                         {% if type_of_the_parent_block == "sequence" %}
-                            <div class="col-12 col-sm-5 col-sm-offset-1">
+                            <div class="col-12 col-sm-5 offset-1">
                                 <div class="form-group">
                                     <label>{% trans "Position in the set of steps" %} <b style="color: red;">*</b></label>
                                     <div class="input-group  input-group-sm">
                                         {% trans "Execution order from this sub-step does not vary" as text_1 %}
                                         {% trans "This sub-step can be performed anywhere in the parent assembly where there is not a fixed step" as text_2 %}
                                         {% for radio in configuration_form.random_position %}
-                                            <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="
+                                            <span style="margin-right: 15px;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="
                                             {% cycle text_1 text_2 %}">
                                                 <div class="radio-inline">{{ radio }}</div>
                                             </span>
@@ -258,7 +258,7 @@
                     <div class="row">
                         <div class="col-12 col-sm-3">
                             <div>
-                                <label for="unlimited_number_of_repetitions" class="control-label">{% trans "Quantity of repetitions" %} <b style="color: red;">*</b></label>
+                                <label for="unlimited_number_of_repetitions" class="form-label">{% trans "Quantity of repetitions" %} <b style="color: red;">*</b></label>
                                 <div class="radio-inline" style="margin-top: 0px">
                                     <input {% if not can_change %}disabled{% endif %} id="id_repetitions_0" name="unlimited_number_of_repetitions" type="radio" value="unlimited">
                                         {% trans "Unlimited" %}
@@ -267,14 +267,14 @@
                                     <input {% if not can_change %}disabled{% endif %} id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
                                     <div id="div_form_number_of_repetitions">
                                         {{ configuration_form.number_of_repetitions }}
-                                        <div class="help-block with-errors" id="div_for_errors_in_number_of_repetitions"></div>
+                                        <div class="form-text with-errors" id="div_for_errors_in_number_of_repetitions"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div id="interval_div">
-                            <div class="col-12 col-sm-6 col-sm-offset-1">
-                                <label for="undefined_interval" id="undefined_interval_label" class="control-label">{% trans "Interval among repetitions" %} <b style="color: red;">*</b></label>
+                            <div class="col-12 col-sm-6 offset-1">
+                                <label for="undefined_interval" id="undefined_interval_label" class="form-label">{% trans "Interval among repetitions" %} <b style="color: red;">*</b></label>
                                 <div class="radio" style="margin-top: 0px">
                                     <input {% if not can_change %}disabled{% endif %} id="id_interval_0" name="undefined_interval" type="radio" value="undefined">
                                         {% trans "Undefined" %}
@@ -284,13 +284,13 @@
                                         <div class="col-4 col-sm-4" style="padding-left: 0px">
                                             <div class="form-group" id="div_form_interval_between_repetitions_value">
                                                 {{ configuration_form.interval_between_repetitions_value }}
-                                                <div class="help-block with-errors" id="div_for_errors_in_interval_between_repetitions_value"></div>
+                                                <div class="form-text with-errors" id="div_for_errors_in_interval_between_repetitions_value"></div>
                                             </div>
                                         </div>
                                         <div class="col-4 col-sm-5" style="padding-left: 0px">
                                             <div class="form-group" id="div_form_interval_between_repetitions_unit">
                                                 {{ configuration_form.interval_between_repetitions_unit }}
-                                                <div class="help-block with-errors" id="div_for_errors_in_interval_between_repetitions_unit"></div>
+                                                <div class="form-text with-errors" id="div_for_errors_in_interval_between_repetitions_unit"></div>
                                             </div>
                                         </div>
                                 </label>
@@ -298,7 +298,7 @@
                         </div>
                         <div class="col-12 col-sm-6">
                             {{ configuration_form.requires_start_and_end_datetime }}
-                            <label class="control-label">{% trans "Requires start and end date/time" %}</label>
+                            <label class="form-label">{% trans "Requires start and end date/time" %}</label>
                         </div>
                     </div>
                 </div>
@@ -307,19 +307,19 @@
             <div class="btn-toolbar" role="toolbar">
                 {% if not component_configuration and can_change %}
                     {% if component.id in protected_steps %}
-                        <div class="btn-group pull-left" data-toggle="tooltip" data-placement="right" title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}">
+                        <div class="btn-group float-start" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}">
                             <button type="button" class="btn btn-danger" disabled="disabled">{% trans "Delete" %}</button>
                         </div>
                     {% else %}
                         {% if not creating %}
-                            <div class="btn-group pull-left">
+                            <div class="btn-group float-start">
                                 <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
                             </div>
                         {% endif %}
                     {% endif %}
                 {% endif %}
                 {% if updating or creating or component_configuration %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button id="submit_button" class="btn btn-primary" style="margin-left: 5px;" {% if not can_change %}disabled{% endif %} type="submit"
                                 name="action" value="save">
                             {% if reusing or can_reuse %}
@@ -329,11 +329,11 @@
                             {% endif %}
                         </button>
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
@@ -350,10 +350,8 @@
                         {% trans "Are you sure you want to delete step?" %}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-primary" value="remove" name="action"
-                                style="background-color: indianred; color: #ffffff">{% trans "Delete" %}
-                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                     </div>
                 </div>
             </div>
@@ -368,7 +366,7 @@
                     {% trans "This experiment/project is in use, you can not change it! Do you want to copy this experiment?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
                 </div>
             </div>
@@ -381,6 +379,6 @@
 </div>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
         <script src="{% static 'site/js/component.js' %}"></script>
 {% endblock %}

@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block header %}
+{% block extrahead %}
 <style>
     .participant-count {
         margin-bottom: 10px;
@@ -34,16 +34,16 @@
                 <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Search Participants" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuSearchTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Search participant" %}</h4>
                 <div class="form-group">
-                    <div class="text-right participant-count">{% blocktrans %} {{ number_of_patients }} registered participants{% endblocktrans %}.</div>
-                    <div class="input-group input-group-sm"><span class="input-group-addon"> <i class="fa fa-search"></i></span>
+                    <div class="text-end participant-count">{% blocktrans %} {{ number_of_patients }} registered participants{% endblocktrans %}.</div>
+                    <div class="input-group input-group-sm"><span class="input-group-text"> <i class="fa fa-search"></i></span>
                         <input id="search_key" class="form-control" type="text" placeholder="{% trans 'Type participant name, CPF or code' %}">
                     </div>
                     {% csrf_token %}
@@ -51,11 +51,11 @@
                 </div>
 
                 <div class="btn-toolbar" role="toolbar" >
-                    <div class="btn-group pull-right">
-                        <a id="prev_btn" class="btn btn-default">{% trans "Previous" %}</a>
-                        <a id="next_btn" class="btn btn-default">{% trans "Next" %}</a>
+                    <div class="btn-group float-end">
+                        <a id="prev_btn" class="btn btn-secondary">{% trans "Previous" %}</a>
+                        <a id="next_btn" class="btn btn-secondary">{% trans "Next" %}</a>
                     </div>
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                         {% if perms.patient.add_patient %}
                             <a href="/patient/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
                         {% endif %}
@@ -66,7 +66,7 @@
     </div>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/search_and_table.js' %}"></script>
     <script>
         $(document).ready(function () {

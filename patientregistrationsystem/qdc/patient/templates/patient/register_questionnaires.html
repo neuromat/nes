@@ -8,7 +8,7 @@
 
         <div class="row">
             <div class="container-fluid">
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                     <div class="row">
                         <div class="col-sm-6">
@@ -128,7 +128,7 @@
 
         <div class="row">
             <div class="container-fluid">
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                     <div class="row">
                         <div class="col-12 col-sm-12">
@@ -191,7 +191,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    <label class="control-label">{% trans "Choose a questionnaire to fill" %}</label>
+                    <label class="form-label">{% trans "Choose a questionnaire to fill" %}</label>
                     <select class="form-control" id="additional_survey_selected" name="additional_survey_selected">
                     <option selected="selected" value="">---------</option>
                     {% for additional_survey in additional_survey_list%}
@@ -200,7 +200,7 @@
                     </select>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <a href_template="/patient/{{ patient_id }}/questionnaire/{survey_id}/add_response/?origin=subject"
                        id="fill_button" disabled="" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">{% trans "New fill" %}</a>
                 </div>
@@ -210,7 +210,7 @@
 
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
 {{ block.super }}
     <script src="{% static 'site/js/patient_questinonaires.js' %}"></script>
 {% endblock %}

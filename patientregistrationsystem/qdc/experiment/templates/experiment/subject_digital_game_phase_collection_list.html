@@ -24,7 +24,7 @@
                 <li class="breadcrumb-item active">{ %get_name_or_code subject.patient.id %}</li>
                 <li class="breadcrumb-item active">{% trans "Goalkeeper game phase data files" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     {% comment %} {% if messages %}
@@ -85,7 +85,7 @@
                                                 {% for digital_game_phase_data in digital_game_phase_collection.digital_game_phase_data_list %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/digital_game_phase_data/{{ digital_game_phase_data.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                            <a href="/experiment/digital_game_phase_data/{{ digital_game_phase_data.id }}" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "See details" %}">
                                                                 {{ digital_game_phase_data.date }} - {{ digital_game_phase_data.time }}
                                                             </a>
                                                         </td>
@@ -118,7 +118,7 @@
                 </div>
             </div>
             <div class="btn-toolbar">
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -133,10 +133,3 @@
     </form>
 {% endblock %}
 
-{% block script %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
-{% endblock %}

@@ -5,7 +5,7 @@
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator">
+    <form id="user_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -26,15 +26,15 @@
                 <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
                 <li class="breadcrumb-item active">{% trans "Steps of experimental protocol" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <div class="row">
                     <div class="col-6 col-sm-6">
-                        <label class="control-label">{% trans "list of steps:" %}</label>
+                        <label class="form-label">{% trans "list of steps:" %}</label>
                     </div>
                 </div>
                 <br>
@@ -61,9 +61,9 @@
                                     {% endif %}
                                 </td>
                                 {% if component.component_type == "block" %}
-                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
+                                    <td><a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% else %}
-                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
+                                    <td><a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% endif %}
                                 <td>{{ component.description }}</td>
                             </tr>
@@ -73,7 +73,7 @@
                 </div>
                 {% if can_change %}
                     <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-bs-toggle="dropdown" aria-expanded="true">
                             {% trans "Insert new step" %}
                             <span class="caret"></span>
                         </button>
@@ -92,7 +92,7 @@
             </div>
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -107,7 +107,7 @@
                     {% trans "This experiment/project is in use, you can not change it! Do you want to copy this experiment/project?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
                 </div>
             </div>

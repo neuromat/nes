@@ -12,12 +12,12 @@
                 <li class="breadcrumb-item"><a href="/home">{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Set up" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Basic registers" %}</h4>
                 <hr class="hr-blurry " />
                 <table class="form-group table table-striped">
@@ -25,7 +25,7 @@
                     {% for basic_register in basic_register_list %}
                         <tr>
                             <td>
-                                <a data-toggle="tooltip" data-placement="left" title="{% trans 'List view' %}"
+                                <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'List view' %}"
                                     href="{{ basic_register.href }}">
                                     {{ basic_register.item }}
                                 </a>
@@ -34,7 +34,7 @@
 {#                                    {% if basic_register.warn_list %}#}
 {#                                        {% for warn in basic_register.warn_list %}#}
 {#                                            {% if warn.dependence == 0 %}#}
-{#                                                <span data-toggle="tooltip" data-placement="top" title="{% trans "Missing dependency" %}" class="label label-warning">{{ warn.item }}</span>#}
+{#                                                <span data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Missing dependency" %}" class="label label-warning">{{ warn.item }}</span>#}
 {#                                            {% endif %}#}
 {#                                        {% endfor %}#}
 {#                                    {% endif %}#}
@@ -49,7 +49,7 @@
 
             <br>
 
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Equipment / Device registers" %}</h4>
                 <hr class="hr-blurry " />
                 <table class="form-group table table-striped">
@@ -57,7 +57,7 @@
                     {% for device_register in device_register_list %}
                         <tr>
                             <td>
-                                <a data-toggle="tooltip" data-placement="left" title="{% trans "List view" %}"
+                                <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "List view" %}"
                                     href="{{ device_register.href }}">
                                     {{ device_register.item }}
                                 </a>
@@ -75,10 +75,3 @@
 
 {% endblock %}
 
-{% block script %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
-{% endblock %}

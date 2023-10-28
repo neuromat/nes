@@ -12,7 +12,7 @@
             </div>
             <div class="col-11 col-sm-11">
                 <div class="form-group">
-                    <label class="control-label">{% trans "Manufacturer" %} </label>
+                    <label class="form-label">{% trans "Manufacturer" %} </label>
 
                     <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>
@@ -21,7 +21,7 @@
                         {% endfor %}
                     </select>
 
-                    <div class="help-block with-errors"></div>
+                    <div class="form-text with-errors"></div>
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
             </div>
             <div class="col-11 col-sm-11">
                 <div class="form-group">
-                    <label class="control-label">{% trans "Equipment identification" %} </label>
+                    <label class="form-label">{% trans "Equipment identification" %} </label>
 
                     <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>
@@ -40,7 +40,7 @@
                         {% endfor %}
                     </select>
 
-                    <div class="help-block with-errors"></div>
+                    <div class="form-text with-errors"></div>
 
                 </div>
             </div>
@@ -51,9 +51,9 @@
             </div>
             <div class="col-11 col-sm-11">
                 <div class="form-group">
-                    <label class="control-label">{% trans "Description" %} </label>
+                    <label class="form-label">{% trans "Description" %} </label>
                     {{ equipment_form.description }}
-                    <div class="help-block with-errors"></div>
+                    <div class="form-text with-errors"></div>
                 </div>
             </div>
         </div>
@@ -63,7 +63,7 @@
             </div>
             <div class="col-11 col-sm-11">
                 <div class="form-group">
-                    <label class="control-label">{% trans "EEG electrode localization system" %} </label>
+                    <label class="form-label">{% trans "EEG electrode localization system" %} </label>
 
                     <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>
@@ -72,7 +72,7 @@
                         {% endfor %}
                     </select>
 
-                    <div class="help-block with-errors"></div>
+                    <div class="form-text with-errors"></div>
 
                 </div>
             </div>
@@ -80,12 +80,12 @@
 
 
         {% if not editing and not creating and can_change %}
-            <div class="btn-toolbar pull-right">
+            <div class="btn-toolbar float-end">
                 <div class="btn-group">
-                    <a disabled="" href="#" class="btn btn-default"><span class="fa fa-arrow-left"></span> {% trans "Previous" %}</a>
+                    <a disabled="" href="#" class="btn btn-secondary"><span class="fa fa-arrow-left"></span> {% trans "Previous" %}</a>
                 </div>
                 <div class="btn-group">
-                    <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-default">{% trans "Next" %} <span class="fa fa-arrow-right"></span></a>
+                    <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-secondary">{% trans "Next" %} <span class="fa fa-arrow-right"></span></a>
                 </div>
             </div>
         {% endif %}

@@ -6,7 +6,7 @@
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -58,7 +58,7 @@
                     {% endif %}
                 {% endif %}
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div style="float:left; width: 80%">
@@ -75,6 +75,6 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/mycanvas.js' %}"></script>
 {% endblock %}

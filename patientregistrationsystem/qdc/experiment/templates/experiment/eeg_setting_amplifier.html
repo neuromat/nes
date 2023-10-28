@@ -9,7 +9,7 @@
     <div class="row">
         <div class="container-fluid">
             <div class="form-group">
-                <label class="control-label">{% trans "Manufacturer" %} </label>
+                <label class="form-label">{% trans "Manufacturer" %} </label>
 
                 <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
@@ -18,7 +18,7 @@
                     {% endfor %}
                 </select>
 
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
@@ -26,7 +26,7 @@
     <div class="row">
         <div class="container-fluid">
             <div class="form-group">
-                <label class="control-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
+                <label class="form-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
 
                 <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
@@ -35,7 +35,7 @@
                     {% endfor %}
                 </select>
 
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
 
             </div>
         </div>
@@ -44,9 +44,9 @@
     <div class="row">
         <div class="container-fluid">
             <div class="form-group">
-                <label class="control-label">{% trans "Description" %} </label>
+                <label class="form-label">{% trans "Description" %} </label>
                 {{ equipment_form.description }}
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
@@ -54,9 +54,9 @@
     <div class="row">
         <div class="container-fluid">
             <div class="form-group">
-                <label class="control-label">{% trans "Gain (times)" %} </label>
+                <label class="form-label">{% trans "Gain (times)" %} </label>
                 {{ selection_form.gain }}
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
@@ -67,10 +67,10 @@
 
     <div class="row">
         <div class="container-fluid">
-            <div class="form-group {% if setting_form.gain.errors %}has-error{% endif %}">
-                <label class="control-label">{% trans "Configured gain (times)" %} </label>
+            <div class="form-group {% if setting_form.gain.errors %}is-invalid{% endif %}">
+                <label class="form-label">{% trans "Configured gain (times)" %} </label>
                 {{ setting_form.gain }}
-                <div class="help-block with-errors">
+                <div class="form-text with-errors">
                     {% for error in setting_form.gain.errors %}
                         {{ error }}
                     {% endfor %}
@@ -81,10 +81,10 @@
 
     <div class="row">
         <div class="container-fluid">
-            <div class="form-group {% if setting_form.sampling_rate.errors %}has-error{% endif %}">
-                <label class="control-label">{% trans "Sampling rate (Hz)" %} </label>
+            <div class="form-group {% if setting_form.sampling_rate.errors %}is-invalid{% endif %}">
+                <label class="form-label">{% trans "Sampling rate (Hz)" %} </label>
                 {{ setting_form.sampling_rate }}
-                <div class="help-block with-errors">
+                <div class="form-text with-errors">
                     {% for error in setting_form.sampling_rate.errors %}
                         {{ error }}
                     {% endfor %}
@@ -96,9 +96,9 @@
     <div class="row">
         <div class="container-fluid">
             <div class="form-group">
-                <label class="control-label">{% trans "Number of used channels" %} <b style="color: red;">*</b></label>
+                <label class="form-label">{% trans "Number of used channels" %} <b style="color: red;">*</b></label>
                 {{ setting_form.number_of_channels_used }}
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>

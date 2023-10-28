@@ -35,12 +35,12 @@
                 <li class="breadcrumb-item"><a href="/experiment/setup">{% trans "Set up" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Electrode model" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Electrode model List" %}</h4>
                 <div class="form-group">
                     <table class="table table-striped">
@@ -57,7 +57,7 @@
                         {% for equipment in equipments %}
                             <tr>
                                 <td>{% if perms.experiment.register_equipment %}
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
+                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}"
                                            href="/experiment/electrodemodel/{{ equipment.id }}">
                                             {{ equipment.name }}
                                         </a>
@@ -83,14 +83,14 @@
                     </table>
                 </div>
                 {% if perms.experiment.register_equipment %}
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                         <a href="/experiment/electrodemodel/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
                     </div>
                 {% endif %}
             </div>
 
             <div class="btn-toolbar">
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/setup" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -100,10 +100,5 @@
 
 {% endblock %}
 
-{% block script %}
-     <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
+{% block extrascript %}
 {% endblock %}

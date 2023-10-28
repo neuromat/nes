@@ -21,15 +21,15 @@
             </h3>
             <div class="container">
                 {% if institution_config.code %}
-                    <h4 class="text-left"><span class="fa fa-institution fa-fw"></span> {{ institution_config.code }}</h4>
+                    <h4 class="text-start"><span class="fa fa-institution fa-fw"></span> {{ institution_config.code }}</h4>
                 {% endif %}
 
                 {% if contact_config.name %}
-                    <h5 class="text-left"><span class="fa fa-user fa-fw"></span> {{ contact_config.name }}</h5>
+                    <h5 class="text-start"><span class="fa fa-user fa-fw"></span> {{ contact_config.name }}</h5>
                 {% endif %}
 
                 {% if contact_config.email %}
-                    <h5 class="text-left"><span class="fa fa-envelope fa-fw"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES">{{ contact_config.email }}</a></h5>
+                    <h5 class="text-start"><span class="fa fa-envelope fa-fw"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES">{{ contact_config.email }}</a></h5>
                 {% endif %}
             </div>
         </div>

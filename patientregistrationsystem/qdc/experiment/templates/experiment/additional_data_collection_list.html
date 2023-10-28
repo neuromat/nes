@@ -24,7 +24,7 @@
                 <li class="breadcrumb-item active">{% get_name_or_code subject.patient.id %}</li>
                 <li class="breadcrumb-item active">{% trans "Additional data files" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
@@ -57,13 +57,13 @@
                                                 {# Start/end date/time #}
                                                 <h6>
                                                     {% if data_collection.subject_step_data %}
-                                                        <a href="/experiment/subject_step_data/edit/{{ data_collection.subject_step_data.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "Set start and end date/time" %}">
+                                                        <a href="/experiment/subject_step_data/edit/{{ data_collection.subject_step_data.id }}" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Set start and end date/time" %}">
                                                             <span class="fa fa-clock-o"></span>
                                                         </a>
                                                         {% if data_collection.subject_step_data.start_time %}<i>{% trans "from" %}</i> {{ data_collection.subject_step_data.start_time }}{% endif %}
                                                         {% if data_collection.subject_step_data.end_time %}<i>{% trans "to" %}</i> {{ data_collection.subject_step_data.end_time }}{% endif %}
                                                     {% else %}
-                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/subject_step_data/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/add" data-toggle="tooltip" data-placement="left" title="{% trans "Set start and end date/time" %}">
+                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/subject_step_data/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/add" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Set start and end date/time" %}">
                                                             <span class="fa fa-clock-o"></span>
                                                             <i>{% trans "Set start and end date/time" %}</i>
                                                         </a>
@@ -89,7 +89,7 @@
                                                 {% for additional_data in data_collection.additional_data_list %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/additional_data/{{ additional_data.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                            <a href="/experiment/additional_data/{{ additional_data.id }}" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "See details" %}">
                                                                 {{ additional_data.description }}
                                                             </a>
                                                         </td>
@@ -130,7 +130,7 @@
                 </div>
             </div>
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -145,10 +145,5 @@
     </form>
 {% endblock %}
 
-{% block script %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
+{% block extrascript %}
 {% endblock %}

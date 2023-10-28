@@ -10,7 +10,7 @@
         </div>
         <div class="col-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Manufacturer" %} </label>
+                <label class="form-label">{% trans "Manufacturer" %} </label>
 
                 <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
@@ -19,7 +19,7 @@
                     {% endfor %}
                 </select>
 
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
@@ -29,7 +29,7 @@
         </div>
         <div class="col-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Identification" %} </label>
+                <label class="form-label">{% trans "Identification" %} </label>
 
                 <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
@@ -38,7 +38,7 @@
                     {% endfor %}
                 </select>
 
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
 
             </div>
         </div>
@@ -49,9 +49,9 @@
         </div>
         <div class="col-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Description" %} </label>
+                <label class="form-label">{% trans "Description" %} </label>
                 {{ equipment_form.description }}
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
@@ -62,9 +62,9 @@
         </div>
         <div class="col-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Software version" %} </label>
+                <label class="form-label">{% trans "Software version" %} </label>
                 {{ selection_form.software_version }}
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
@@ -74,9 +74,9 @@
         </div>
         <div class="col-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Number of channels" %} </label>
+                <label class="form-label">{% trans "Number of channels" %} </label>
                 {{ selection_form.number_of_channels }}
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
@@ -90,9 +90,9 @@
         </div>
         <div class="col-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Number of used channels" %} </label>
+                <label class="form-label">{% trans "Number of used channels" %} </label>
                 {{ setting_form.number_of_channels_used }}
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>

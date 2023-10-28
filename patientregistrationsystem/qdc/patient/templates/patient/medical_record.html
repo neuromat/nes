@@ -7,7 +7,7 @@
 {% block form %}
     
 
-    <form id="form_medical_record" role="form" method="post" data-toggle="validator">
+    <form id="form_medical_record" role="form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
 
 {% endblock %}
@@ -87,14 +87,14 @@
     <div class="tab-content">
         <div class="row">
             <div class="container-fluid">
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     {% if editing %}
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <input id="patient_id" value="{{ patient_id }}" style="display: none;">
                                 <input id="medical_record_id" value="{{ record_id }}" style="display: none;">
-                                <div class="input-group  input-group-sm "><span class="input-group-addon">
+                                <div class="input-group  input-group-sm "><span class="input-group-text">
                                     <span class="fa fa-edit"></span></span>
                                     <input class="form-control" placeholder="{% trans "Specify diagnosis or disease code (ICD-10)" %}"
                                            id="id_whichComplementaryExam" type="text">
@@ -129,7 +129,7 @@
                                                 <td>
                                                     <b>{{ diagnosis.classification_of_diseases }}</b>
                                                     {% if editing %}
-                                                        <a class="btn fa fa-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                                        <a class="btn fa fa-remove" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Delete" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                            onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }});"></a>
                                                     {% endif %}
                                                     <br/>
@@ -140,7 +140,7 @@
                                                         </h6></i>
 
                                                         {% if editing %}
-                                                            <a class="btn" data-toggle="tooltip" data-placement="left" style="font-size-adjust: 0.47; font-style: italic;" title="{% trans "Edit details" %}"
+                                                            <a class="btn" data-bs-toggle="tooltip" data-bs-placement="left" style="font-size-adjust: 0.47; font-style: italic;" title="{% trans "Edit details" %}"
                                                                onclick="show_modal_detail({{ diagnosis.id }});">{% trans "Details" %}
                                                             </a>
 
@@ -169,7 +169,7 @@
                                                                             {% comment %} </div> {% endcomment %}
                                                                         </div>
                                                                         <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                                                                             <button class="btn btn-primary" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}">{% trans "Save" %}</button>
                                                                         </div>
                                                                     </div>
@@ -217,7 +217,7 @@
         </div>
         <div class="col-lg-1"></div>
 
-        <div class="btn-toolbar pull-right">
+        <div class="btn-toolbar float-end">
             <div class="btn-group">
                 {% if creating %}
                     <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
@@ -251,8 +251,8 @@
                     {% trans "Are you sure you want to delete diagnosis?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                    <a type="button" class="btn btn-primary" id="removeDiagnosis" style="background-color: indianred; color: #ffffff" href="">{% trans "Delete" %}</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <a type="button" class="btn btn-danger" id="removeDiagnosis" href="">{% trans "Delete" %}</a>
                 </div>
             </div>
         </div>
@@ -264,6 +264,6 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/medical_record.js' %}"></script>
 {% endblock %}

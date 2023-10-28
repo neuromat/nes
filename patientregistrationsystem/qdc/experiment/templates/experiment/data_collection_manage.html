@@ -6,7 +6,7 @@
 
 {% block form %}
     
-    <form id="subject_form" method="post" data-toggle="validator">
+    <form id="subject_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -23,7 +23,7 @@
                 <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subjects?per_steps_tab=active">{% trans "Participants" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Manage data collection " %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
@@ -55,7 +55,7 @@
                                 {% for data_collection in data_collections %}
                                     <tr>
                                         <td>
-                                            <input class="data-collection-selection" name="data_collection_{{ data_collection.id }}" type="checkbox">
+                                            <input class="data-bs-collection-selection" name="data_collection_{{ data_collection.id }}" type="checkbox">
                                         </td>
                                         <td>
                                             {% if data_collection.subject_of_group.subject.patient.name %}
@@ -86,7 +86,7 @@
                         </input>
                     </div>
 
-                    <div class="radio" {% if number_of_steps_to_transfer == 0 %}data-toggle="tooltip" data-placement="left" title="{% trans "There is no step to transfer" %}{% endif %}">
+                    <div class="radio" {% if number_of_steps_to_transfer == 0 %}data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "There is no step to transfer" %}{% endif %}">
                         <input {% if number_of_steps_to_transfer == 0 %}disabled="disabled"{% endif %}
                                id="selection_transfer" name="action_selection" type="radio" value="transfer">
                             {% trans "Transfer selected data collections" %}
@@ -116,7 +116,7 @@
 
                                 {% endif %}
                                 {% if step_to_transfer.data_list %}
-                                    <span class="label label-info" data-toggle="tooltip" data-placement="right" title="{% trans "The old data will be kept" %}">
+                                    <span class="label label-info" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "The old data will be kept" %}">
                                         {% trans "this step contains data" %}
                                     </span>
                                 {% endif %}
@@ -127,15 +127,15 @@
                 </div>
             </div>
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                 </div>
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <button disabled="disabled" type="submit" id="button_remove" name="action" value="remove" class="btn btn-primary" onclick="return check_data_selection(false);">{% trans "Remove" %}</button>
                 </div>
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <button disabled="disabled" type="submit" id="button_transfer" name="action" value="transfer" class="btn btn-primary" onclick="return check_data_selection(true);">{% trans "Transfer" %}</button>
                 </div>
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}/subjects?per_steps_tab=active" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -150,11 +150,6 @@
     </form>
 {% endblock %}
 
-{% block script %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
+{% block extrascript %}
     <script src="{% static 'site/js/data_collection_manage.js' %}"></script>
 {% endblock %}

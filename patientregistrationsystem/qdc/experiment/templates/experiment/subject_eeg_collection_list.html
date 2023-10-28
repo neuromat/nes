@@ -24,7 +24,7 @@
                 <li class="breadcrumb-item active">{ %get_name_or_code subject.patient.id %}</li>
                 <li class="breadcrumb-item active">{% trans "EEG data files" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     {% comment %} {% if messages %}
@@ -91,7 +91,7 @@
                                                 {% for eeg_data in eeg_collection.eeg_data_list %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/eeg_data/{{ eeg_data.id }}/1" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                            <a href="/experiment/eeg_data/{{ eeg_data.id }}/1" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "See details" %}">
                                                                 {{ eeg_data.description }}
                                                             </a>
                                                         </td>
@@ -102,14 +102,14 @@
                                                                 {% for eeg_file in eeg_data.eeg_file_list %}
                                                                     <tr>
                                                                         <td>{{ eeg_file.file.size|filesizeformat }}</td>
-                                                                        <td><a href="{{ eeg_file.file.url }}" data-toggle="tooltip" data-placement="top" title="{% trans "Download file" %}"><span class="fa fa-download"></span></a></td>
+                                                                        <td><a href="{{ eeg_file.file.url }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Download file" %}"><span class="fa fa-download"></span></a></td>
                                                                         <td>
                                                                             {% if eeg_file.can_export_to_nwb %}
-                                                                                <a onclick="handle_processing();" href="/experiment/eeg_file/{{ eeg_file.id }}/export_nwb/{{ eeg_collection.eeg_configuration.id }}{{ forloop.counter }}/{{ process_requisition }}" data-toggle="tooltip" data-placement="top" title="{% trans "Export nwb file format" %}">
+                                                                                <a onclick="handle_processing();" href="/experiment/eeg_file/{{ eeg_file.id }}/export_nwb/{{ eeg_collection.eeg_configuration.id }}{{ forloop.counter }}/{{ process_requisition }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Export nwb file format" %}">
                                                                                     <span class="fa fa-upload"></span>
                                                                                 </a>
                                                                             {% else %}
-                                                                                <span data-toggle="tooltip" data-placement="top" title="{% trans "Unable to export as nwb file. The uploaded data file is not an EEG file. Its format is not valid, or the number of channels is not set." %}" style="color: grey" class="fa fa-upload"></span>
+                                                                                <span data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Unable to export as nwb file. The uploaded data file is not an EEG file. Its format is not valid, or the number of channels is not set." %}" style="color: grey" class="fa fa-upload"></span>
                                                                             {% endif %}
                                                                         </td>
                                                                     </tr>
@@ -139,7 +139,7 @@
                 </div>
             </div>
             <div class="btn-toolbar">
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -148,7 +148,7 @@
 
     </div>
 
-    <div id="pleaseWaitDialog" class="modal fade" data-backdrop="static">
+    <div id="pleaseWaitDialog" class="modal fade" data-bs-backdrop="static">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -171,6 +171,6 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/subject_eeg_collection_list.js' %}"></script>
 {% endblock %}

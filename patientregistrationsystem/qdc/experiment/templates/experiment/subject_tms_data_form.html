@@ -4,7 +4,7 @@
 {% load i18n static %}
 {% load subjects_tags %}
 
-{% block header %}
+{% block extrahead %}
     <style>
         {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
         .header-fixed {
@@ -43,7 +43,7 @@
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -68,7 +68,7 @@
                 {% endif %}
 
             </ol>
-        </div>
+        </nav>
     </div>
 
     {% comment %} {% if messages %}
@@ -101,7 +101,7 @@
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <h4>{% trans "TMS stimulation setting" %}</h4>
 
@@ -116,7 +116,7 @@
                         </li>
                     {% else %}
                         <li {% if tab == '1' %}class="active"{% endif %}>
-{#                            <a data-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>#}
+{#                            <a data-bs-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>#}
                             <a href="/experiment/tms_data/{{ tms_data.id }}">{% trans "Stimulation description" %}</a>
                         </li>
                         <li {% if tab == '2' %}class="active" {% endif %}>
@@ -136,10 +136,10 @@
                         </div>
                         <div class="row">
                             <div class="col-6 col-sm-6">
-                                <div class="form-group {% if tms_data_form.errors.date %}has-error{% endif %}">
-                                    <label class="control-label">{% trans "Date" %}<b style="color: red;">*</b></label>
+                                <div class="form-group {% if tms_data_form.errors.date %}is-invalid{% endif %}">
+                                    <label class="form-label">{% trans "Date" %}<b style="color: red;">*</b></label>
                                     {{ tms_data_form.date }}
-                                    <div class="help-block with-errors">
+                                    <div class="form-text with-errors">
                                         {% for error in tms_data_form.date.errors %}
                                             {{ error }}
                                         {% endfor %}
@@ -148,10 +148,10 @@
                             </div>
 
                             <div class="col-6 col-sm-6">
-                                <div class="form-group {% if tms_data_form.errors.time %}has-error{% endif %}">
-                                    <label class="control-label">{% trans "Hour" %}</label>
+                                <div class="form-group {% if tms_data_form.errors.time %}is-invalid{% endif %}">
+                                    <label class="form-label">{% trans "Hour" %}</label>
                                     {{ tms_data_form.time }}
-                                    <div class="help-block with-errors">
+                                    <div class="form-text with-errors">
                                         {% for error in tms_data_form.time.errors %}
                                             {{ error }}
                                         {% endfor %}
@@ -164,9 +164,9 @@
                         <div class="row">
                             <div class="col-6 col-sm-6">
                                 <div class="form-group">
-                                    <label class="control-label">{% trans "TMS setting" %}<b style="color: red;">*</b></label>
+                                    <label class="form-label">{% trans "TMS setting" %}<b style="color: red;">*</b></label>
                                         {{ tms_data_form.tms_setting }}
-                                    <div class="help-block with-errors"></div>
+                                    <div class="form-text with-errors"></div>
                                 </div>
                             </div>
                         </div>
@@ -174,9 +174,9 @@
                         <div class="row">
                             <div class="col-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="control-label">{% trans "TMS stimulation description" %} <b style="color: red;">*</b></label>
+                                    <label class="form-label">{% trans "TMS stimulation description" %} <b style="color: red;">*</b></label>
                                         {{ tms_data_form.description }}
-                                    <div class="help-block with-errors"></div>
+                                    <div class="form-text with-errors"></div>
                                 </div>
                             </div>
                         </div>
@@ -191,9 +191,9 @@
                                 <div class="row">
                                     <div class="col-6 col-sm-6">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "Resting motor threshold - RMT (%)" %}</label>
+                                            <label class="form-label">{% trans "Resting motor threshold - RMT (%)" %}</label>
                                                 {{ tms_data_form.resting_motor_threshold }}
-                                            <div class="help-block with-errors"></div>
+                                            <div class="form-text with-errors"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -201,16 +201,16 @@
                                 <div class="row">
                                     <div class="col-6 col-sm-6">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "Test pulse intensity of stimulation (% over the %RMT)" %}</label>
+                                            <label class="form-label">{% trans "Test pulse intensity of stimulation (% over the %RMT)" %}</label>
                                                 {{ tms_data_form.test_pulse_intensity_of_simulation }}
-                                            <div class="help-block with-errors"></div>
+                                            <div class="form-text with-errors"></div>
                                         </div>
                                     </div>
                                     <div id="second_pulse_intensity" class="col-6 col-sm-6">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "Second test pulse intensity of stimulation (% over the %RMT)" %}</label>
+                                            <label class="form-label">{% trans "Second test pulse intensity of stimulation (% over the %RMT)" %}</label>
                                                 {{ tms_data_form.second_test_pulse_intensity }}
-                                            <div class="help-block with-errors"></div>
+                                            <div class="form-text with-errors"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -219,17 +219,17 @@
                                     <div class="row">
                                         <div class="col-6 col-sm-6">
                                             <div class="form-group">
-                                                <label class="control-label">{% trans "Interval between pulses" %}</label>
+                                                <label class="form-label">{% trans "Interval between pulses" %}</label>
                                                     {{ tms_data_form.interval_between_pulses }}
-                                                <div class="help-block with-errors"></div>
+                                                <div class="form-text with-errors"></div>
                                             </div>
                                         </div>
 
                                         <div class="col-6 col-sm-6">
                                             <div class="form-group">
-                                                <label class="control-label">{% trans "Interval between pulses unit" %}</label>
+                                                <label class="form-label">{% trans "Interval between pulses unit" %}</label>
                                                     {{ tms_data_form.interval_between_pulses_unit }}
-                                                <div class="help-block with-errors"></div>
+                                                <div class="form-text with-errors"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -239,17 +239,17 @@
                                     <div class="row">
                                         <div class="col-6 col-sm-6">
                                             <div class="form-group">
-                                                <label class="control-label">{% trans "Time between mep trials" %}</label>
+                                                <label class="form-label">{% trans "Time between mep trials" %}</label>
                                                     {{ tms_data_form.time_between_mep_trials }}
-                                                <div class="help-block with-errors"></div>
+                                                <div class="form-text with-errors"></div>
                                             </div>
                                         </div>
 
                                         <div class="col-6 col-sm-6">
                                             <div class="form-group">
-                                                <label class="control-label">{% trans "Time between mep trials unit" %}</label>
+                                                <label class="form-label">{% trans "Time between mep trials unit" %}</label>
                                                     {{ tms_data_form.time_between_mep_trials_unit }}
-                                                <div class="help-block with-errors"></div>
+                                                <div class="form-text with-errors"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -259,9 +259,9 @@
                                     <div class="row">
                                         <div class="col-6 col-sm-6">
                                             <div class="form-group">
-                                                <label class="control-label">{% trans "Repetitive pulse frequency (Hz)" %}</label>
+                                                <label class="form-label">{% trans "Repetitive pulse frequency (Hz)" %}</label>
                                                     {{ tms_data_form.repetitive_pulse_frequency }}
-                                                <div class="help-block with-errors"></div>
+                                                <div class="form-text with-errors"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -277,17 +277,17 @@
                                 <div class="row">
                                     <div class="col-6 col-sm-6">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "Coil orientation" %}</label>
+                                            <label class="form-label">{% trans "Coil orientation" %}</label>
                                                 {{ tms_data_form.coil_orientation }}
-                                            <div class="help-block with-errors"></div>
+                                            <div class="form-text with-errors"></div>
                                         </div>
                                     </div>
 
                                     <div class="col-6 col-sm-6">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "Orientation angle" %}</label>
+                                            <label class="form-label">{% trans "Orientation angle" %}</label>
                                                 {{ tms_data_form.coil_orientation_angle }}
-                                            <div class="help-block with-errors"></div>
+                                            <div class="form-text with-errors"></div>
                                         </div>
                                      </div>
 
@@ -295,7 +295,7 @@
 
                                 <div class="row">
                                     <div class="card-body">
-                                        <img src="{% static 'imgs/coil_orientation2.svg' %}" class="img-fluid center-block" width="800" height="600" style="margin: auto" >
+                                        <img src="{% static 'imgs/coil_orientation2.svg' %}" class="img-fluid mx-auto.d-block" width="800" height="600" style="margin: auto" >
                                     </div>
                                 </div>
 
@@ -304,13 +304,13 @@
                         </div>
 
                         {% if not editing and can_change %}
-                            <div class="btn-group pull-left">
+                            <div class="btn-group float-start">
                                 <a href="/experiment/tms_data/edit/{{ tms_data.id }}/1" class="btn btn-primary">{% trans "Edit" %}</a>
                             </div>
 
-                            <div class="btn-toolbar pull-right">
+                            <div class="btn-toolbar float-end">
                                 <div class="btn-group">
-                                    <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view" class="btn btn-default">{% trans "Next" %} <span class="fa fa-arrow-right"></span></a>
+                                    <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view" class="btn btn-secondary">{% trans "Next" %} <span class="fa fa-arrow-right"></span></a>
                                 </div>
                             </div>
                         {% endif %}
@@ -326,16 +326,16 @@
             </div>
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                     {% if not editing and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
 
                         {% if creating %}
                             <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms"
@@ -353,7 +353,7 @@
 
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
@@ -369,7 +369,7 @@
                     {% trans "Are you sure you want to delete TMS data?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -382,7 +382,7 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
 {{ block.super }}
     <script src="{% static 'site/js/research_project.js' %}"></script>
     <script>

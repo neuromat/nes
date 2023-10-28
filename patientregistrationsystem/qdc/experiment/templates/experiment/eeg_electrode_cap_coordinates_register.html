@@ -4,7 +4,7 @@
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -61,7 +61,7 @@
                     {% endif %}
                 {% endif %}
             </ol>
-        </div>
+        </nav>
     </div>
 
 {% endblock %}
@@ -85,7 +85,7 @@
                     </td>
 
                     <td width="20%" valign="top">
-                        <label class="control-label" style="margin-left: 10px;">{% trans "Electrode Cap Coordinates" %}</label>
+                        <label class="form-label" style="margin-left: 10px;">{% trans "Electrode Cap Coordinates" %}</label>
                         <br/>
 
                         <table id="cap_positions" class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
@@ -121,6 +121,6 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/eeg_electrode_cap_coordinates.js' %}"></script>
 {% endblock %}

@@ -19,7 +19,7 @@
         <div class="row">
             <div class="col-8 col-sm-8">
                 <div class="form-group">
-                    <label class="control-label">{% trans "TMS localization system" %}<b style="color: red;">*</b> </label>
+                    <label class="form-label">{% trans "TMS localization system" %}<b style="color: red;">*</b> </label>
 
                     <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>
@@ -28,7 +28,7 @@
                         {% endfor %}
                     </select>
 
-                    <div class="help-block with-errors"></div>
+                    <div class="form-text with-errors"></div>
 
                </div>
             </div>
@@ -39,13 +39,13 @@
         </div>
 
     {% if not editing and can_change %}
-        <div class="btn-group pull-left">
+        <div class="btn-group float-start">
             <a href="/experiment/tms_data/edit/{{ tms_data.id }}/2" class="btn btn-primary">{% trans "Edit" %}</a>
         </div>
 
-        <div class="btn-toolbar pull-right">
+        <div class="btn-toolbar float-end">
             <div class="btn-group">
-                <a href="/experiment/tms_data/{{ tms_data.id }}/" class="btn btn-default">{% trans "Previous" %} <span class="fa fa-arrow-left"></span></a>
+                <a href="/experiment/tms_data/{{ tms_data.id }}/" class="btn btn-secondary">{% trans "Previous" %} <span class="fa fa-arrow-left"></span></a>
             </div>
         </div>
     {% endif %}
@@ -54,7 +54,7 @@
 
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
 {{ block.super }}
     <script src="{% static 'site/js/tms_position_setting.js' %}"></script>
     <script src="{% static 'site/js/research_project.js' %}"></script>

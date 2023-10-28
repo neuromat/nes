@@ -5,7 +5,7 @@
 
 {% block form %}
     
-    <form id="eeg_setting_form" role="form" method="post" data-toggle="validator">
+    <form id="eeg_setting_form" role="form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -61,12 +61,12 @@
                 {% block breadcrumb %}
                 {% endblock %}
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <div hidden="hidden">
                     <input id="eeg_setting_type" type="text" value="{{ eeg_setting_type }}">
@@ -84,7 +84,7 @@
 
                 {% if not editing and not creating and can_change %}
                     {% if not tab or tab == '0' %}
-                        <div class="btn-group pull-left">
+                        <div class="btn-group float-start">
                             <a href="/experiment/eeg_setting/{{ eeg_setting.id }}/{{ eeg_setting_type }}/edit" class="btn btn-primary">{% trans "Edit" %}</a>
                         </div>
                     {% endif %}
@@ -94,10 +94,10 @@
 
             <div class="btn-toolbar" role="toolbar">
                 {% if editing or creating%}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save setting" %}</button>
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         {% if tab == '1' or tab == '2' %}
                             <a href="/experiment/eeg_setting/eeg_electrode_position_status{% if tab == '2' %}_model{% endif %}/{{ eeg_setting.id }}{% if editing %}/{{ eeg_setting_type }}{% endif %}"
                                class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
@@ -107,7 +107,7 @@
                         {% endif %}
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/eeg_setting/{{ eeg_setting.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
@@ -122,6 +122,6 @@
 </div>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/add_equipment_to_eeg_setting.js' %}"></script>
 {% endblock %}

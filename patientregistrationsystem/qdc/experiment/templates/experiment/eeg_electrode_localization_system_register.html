@@ -6,7 +6,7 @@
 
 {% block form %}
     
-    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -59,19 +59,19 @@
                     {% endif %}
                 {% endif %}
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "EEG electrode localization system basic information" %}</h4>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Name" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
                             {{ localization_system_form.name }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -79,9 +79,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Description" %}</label>
+                            <label class="form-label">{% trans "Description" %}</label>
                             {{ localization_system_form.description }}
-                            <div class="help-block with-errors"></div>
+                            <div class="form-text with-errors"></div>
                         </div>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Map image file" %}</label>
+                            <label class="form-label">{% trans "Map image file" %}</label>
                             {% if editing %}
                                 {{ localization_system_form.map_image_file }}
                             {% else %}
@@ -101,22 +101,22 @@
                 </div>
 
                 {% if not editing %}
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                         <a href="/experiment/eeg_electrode_localization_system/edit/{{ localization_system.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
             </div>
 
 {#            {% if not editing %}#}
-{#                <div class="container-fluid card card-body bg-light">#}
+{#                <div class="my-3 p-3 bg-body rounded shadow-sm">#}
 {#                    <h4>{% trans "Register electrode coordinates using image uploaded" %}</h4>#}
 {#                    <div class="form-group">#}
-{#                        <label class="control-label">{% trans "Map image file" %}</label>#}
+{#                        <label class="form-label">{% trans "Map image file" %}</label>#}
 {#                        <br/>#}
 {#                        {{ localization_system_form.map_image_file.value }}#}
 {#                    </div>#}
 {#                    {% if perms.experiment.add_experiment %}#}
-{#                        <div class="btn-group pull-left">#}
+{#                        <div class="btn-group float-start">#}
 {#                            <a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}/new_coordinates/" class="btn btn-primary">{% trans "Insert coordinates" %}</a>#}
 {#                        </div>#}
 {#                    {% endif %}#}
@@ -124,7 +124,7 @@
 {#            {% endif %}#}
 
             {% if not editing %}
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <h4>{% trans "Positions" %}</h4>
                     <div class="form-group">
                         <table class="table table-striped">
@@ -142,7 +142,7 @@
                                 <tr>
                                     <td style="text-align: center">{{ position.channel_default_index }}</td>
                                     <td style="text-align: center">
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/eeg_electrode_position/{{ position.id }}">{{ position.name }}</a>
+                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/eeg_electrode_position/{{ position.id }}">{{ position.name }}</a>
                                     </td>
                                     <td style="text-align: center">
                                         ({{ position.coordinate_x }}, {{ position.coordinate_y }})
@@ -152,7 +152,7 @@
                                             {{ position.position_reference.eeg_electrode_localization_system.name }} / {{ position.position_reference.name }}
                                         {% endif %}
                                     </td>
-                                    <td class="text-right col-lg-1">
+                                    <td class="text-end col-lg-1">
                                         {% if not forloop.last %}
                                             <a class="btn fa fa-arrow-down" href="/experiment/eeg_electrode_position/change_the_order/{{ position.id }}/down/"></a>
                                         {% endif %}
@@ -168,11 +168,11 @@
                         </table>
                     </div>
                     {% if perms.experiment.add_experiment %}
-                        <div class="btn-group pull-left">
+                        <div class="btn-group float-start">
                             <a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}/new_position/" class="btn btn-primary">{% trans "Insert new" %}</a>
                         </div>
                         {%  if localization_system_form.map_image_file.value %}
-                            <div class="btn-group pull-right">
+                            <div class="btn-group float-end">
                                 <a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}/new_coordinates/" class="btn btn-primary">{% trans "Insert using image map" %}</a>
                             </div>
                         {% endif %}
@@ -181,21 +181,21 @@
             {% endif %}
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                     {% if not editing %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/eeg_electrode_localization_system/{% if creating %}list{% else %}{{ localization_system.id }}{% endif %}"
                            class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <a href="/experiment/eeg_electrode_localization_system/list" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
@@ -211,7 +211,7 @@
                     {% trans "Are you sure you want to delete localization system?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -224,6 +224,6 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/eeg_electrode_localization_system.js' %}"></script>
 {% endblock %}

@@ -2,25 +2,25 @@
 {% load i18n static %}
 
 
-<div class="col-12 col-sm-5 col-sm-offset-1">
+<div class="col-12 col-sm-5 offset-1">
     {% if component_form.component_type == 'block' %}
-        <div data-toggle="tooltip" data-placement="left"
+        <div data-bs-toggle="tooltip" data-bs-placement="left"
              {% if has_unlimited %}
                 title="{% trans "Calculated from sub-steps. This set has at least one use that allows unlimited reptitions. It' been considered only one execution in these cases." %}"
              {% else %}
                 title="{% trans "Calculated by sub-steps" %}"
              {% endif %}>
-            <label class="control-label">{% trans "Duration" %}</label>
+            <label class="form-label">{% trans "Duration" %}</label>
             <p>{{ block_duration }}</p>
         </div>
     {% else %}
         <div class="col-12 col-sm-12">
-            <label for="duration" class="control-label">{% trans "Duration" %} {% if component_form.component_type == 'pause' %}<b style="color: red;">*</b>{% endif %}</label>
+            <label for="duration" class="form-label">{% trans "Duration" %} {% if component_form.component_type == 'pause' %}<b style="color: red;">*</b>{% endif %}</label>
         </div>
         <div class="col-4 col-sm-4">
-            <div class="form-group {% if component_form.errors.duration_value %}has-error{% endif %}">
+            <div class="form-group {% if component_form.errors.duration_value %}is-invalid{% endif %}">
                 {{ component_form.duration_value }}
-                <div class="help-block with-errors">
+                <div class="form-text with-errors">
                     {% for error in component_form.duration_value.errors %}
                         {{ error }}
                     {% endfor %}
@@ -28,9 +28,9 @@
             </div>
         </div>
         <div class="col-8 col-sm-6">
-            <div class="form-group {% if component_form.errors.duration_unit %}has-error{% endif %}">
+            <div class="form-group {% if component_form.errors.duration_unit %}is-invalid{% endif %}">
                 {{ component_form.duration_unit }}
-                <div class="help-block with-errors">
+                <div class="form-text with-errors">
                     {% for error in component_form.duration_unit.errors %}
                         {{ error }}
                     {% endfor %}

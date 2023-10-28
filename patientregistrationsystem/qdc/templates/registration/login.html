@@ -1,42 +1,43 @@
 {% extends "base/template_registration.html" %}
 
-{% load static %}
-{% load i18n %}
+{% load i18n static %}
 {% load qdc_tags %}
 
-{% block header %}{% endblock %}
+{% block extrahead %}{% endblock %}
 
 {% block content %}
 
     <div class="container">
-        <form method="post" class="form-signin" action="{% url 'login' %}">
+        <form method="post" class="form-signin need-validation" action="{% url 'login' %}" >
             {% csrf_token %}
 
-            <h2 class="form-signin-heading">NES</h2>
+            <h1 class="mb-3 fw-normal d-flex justify-content-center">NES</h1>
 
-            <div class="row" align="center">
-                <span style="color: #428bca; font-size: 50px" class="fa fa-user-circle"></span>
-                <br/><br/>
+            <br>
+
+            <div class="mb-4 d-flex justify-content-center">
+                <span style="color: #428bca; font-size: 50px" class="fa fa-user-circle fa-fw"></span>
+                <br><br>
             </div>
 
-            <hr class="hr" />
+            <div class="form-floating">
+                <input id="id_username" type="text" class="form-control" placeholder="{% trans 'User' %}" name="username" autocomplete="username" required autofocus pattern="[A-Za-z0-9._]{1,}" title="{% trans 'Username must contain only letters, numbers and periods(.)' %}"/>
+                <label for="id_username"> {% trans 'User' %} </label>
+            </div>
 
-            <label for="id_username" class="sr-only"> {% trans 'User' %} </label>
-            <input id="id_username" type="text" class="form-control" placeholder="{% trans 'User' %}" name="username" autocomplete="username" required autofocus/>
-            
-            <label for="id_password" class="sr-only"> {% trans 'Password' %} </label>
-            <input id="id_password" type="password" class="form-control" name="password" autocomplete="current-password" placeholder="{% trans 'Password' %}" required/>
+            <div class="form-floating">
+                <input id="id_password" type="password" class="form-control" name="password" autocomplete="current-password" placeholder="{% trans 'Password' %}" required/>
+                <label for="id_password"> {% trans 'Password' %} </label>
+            </div>
 
-            <hr class="hr" />
+            <br>
 
-            <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">{% trans "Login" %}</button>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">{% trans "Login" %}</button>
 
             <input type="hidden" name="next" value="{{ next }}"/>
 
             <div class="checkbox">
-                <label>
-                    <a href="/user/password/reset">{% trans "I forgot my password" %}</a>
-                </label>
+                <a href="/user/password/reset">{% trans "I forgot my password" %}</a>
             </div>
 
             <h6 style="margin-top: 0; text-align: right; font-family: 'Comic Sans MS'; font-size: 14px; color: blueviolet;">
@@ -46,13 +47,13 @@
         </form>
 
     </div>
+    
 
-    <script src="{% static 'site/jquery/jquery-2.2.4.min.js' %}"></script>
-    <script src="{% static 'site/jquery/jquery-migrate-1.4.1.js' %}"></script>
-    <script src="{% static 'site/toastr/toastr.min.js' %}"></script>
-    <script src="{% static 'site/js/quiz.js' %}"></script>
-    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
+{% endblock %}
+
+
+{% block extrascript %}
     {% if form.non_field_errors %}
         <script type="text/javascript">
             {% for error in form.non_field_errors %}
@@ -60,5 +61,4 @@
             {% endfor %}
         </script>
     {% endif %}
-
 {% endblock %}

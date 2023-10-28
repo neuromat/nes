@@ -37,7 +37,7 @@
                                 {% endfor %}
                             </select>
                         </td>
-                        <td class="text-right col-lg-1">
+                        <td class="text-end col-lg-1">
                             {% if not forloop.last %}
                                 <a class="btn fa fa-arrow-down" href="/experiment/eeg_electrode_position_setting/change_the_order/{{ position_setting.id }}/down/"></a>
                             {% endif %}
@@ -58,19 +58,19 @@
         {% if not editing %}
 
             {% if can_change %}
-                <div class="btn-toolbar pull-left">
+                <div class="btn-toolbar float-start">
                     <div class="btn-group">
                         <a href="/experiment/eeg_setting/eeg_electrode_position_status_model/edit/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 </div>
             {% endif %}
 
-            <div class="btn-toolbar pull-right">
+            <div class="btn-toolbar float-end">
                 <div class="btn-group">
-                    <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-default"><span class="fa fa-arrow-left"></span> {% trans "Previous" %}</a>
+                    <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-secondary"><span class="fa fa-arrow-left"></span> {% trans "Previous" %}</a>
                 </div>
                 <div class="btn-group">
-                    <a disabled="" href="#" class="btn btn-default">{% trans "Next" %} <span class="fa fa-arrow-right"></span></a>
+                    <a disabled="" href="#" class="btn btn-secondary">{% trans "Next" %} <span class="fa fa-arrow-right"></span></a>
                 </div>
             </div>
 

@@ -6,7 +6,7 @@
 
 {% block form %}
     
-        <form id="form_exam" role="form" method="post" data-toggle="validator" enctype="multipart/form-data">
+        <form id="form_exam" role="form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
         {% csrf_token %}
 {% endblock %}
 
@@ -43,152 +43,138 @@
                     <li class="breadcrumb-item active">{% trans "New Exam" %}</li>
                 {% endif %}
             </ol>
+        </nav>
+    </div>
 
-            {% comment %} {% if messages %}
-                {% for message in messages %}
-                    {% if message.tags == "success" %}
-                        <script>showSuccessMessage('{{ message }}')</script>
-                    {% endif %}
-                    {% if message.tags == "warning" %}
-                        <script>showWarningMessage('{{ message }}')</script>
-                    {% endif %}
-                    {% if message.tags == "error" %}
-                        <script>showErrorMessage('{{ message }}')</script>
-                    {% endif %}
-                    {% if message.tags == "info" %}
-                        <script>showInfoMessage('{{ message }}')</script>
-                    {% endif %}
-                {% endfor %}
-            {% endif %} {% endcomment %}
 
-            {% if complementary_exam_form.errors %}
-                {% for field in complementary_exam_form %}
-                    {% if field.errors %}
-                        <script>showErrorMessage('{{ field.errors|striptags }}')</script>
-                    {% endif %}
-                {% endfor %}
-
-                <script type="text/javascript">
-                    showErrorMessage(gettext('Exam was not saved. Please, correct fields highlighted.'))
-                </script>
+    {% if complementary_exam_form.errors %}
+        {% for field in complementary_exam_form %}
+            {% if field.errors %}
+                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
             {% endif %}
+        {% endfor %}
 
-            <div class="tab-content">
-                <div class="row">
-                    <div class="container-fluid">
-                        <div class="container-fluid card card-body bg-light">
-                            <div class="row">
-                                <div class="col-5 col-sm-4">
-                                    <div class="form-group {% if complementary_exam_form.errors.date %}has-error{% endif %}">
-                                        <label>{% trans "Date" %} <b style="color: red;">*</b></label>
-                                        {{ complementary_exam_form.date }}
-                                        <div class="help-block with-errors">
-                                            {% if complementary_exam_form.date.errors %}
-                                                <span>
-                                                {% for error in complementary_exam_form.date_.errors %}{{ error }}{% endfor %}
-                                            </span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-7 col-sm-8">
-                                    <div class="form-group">
-                                        <label>{% trans "Performed in" %}</label>
-                                        {{ complementary_exam_form.exam_site }}
-                                    </div>
+        <script type="text/javascript">
+            showErrorMessage(gettext('Exam was not saved. Please, correct fields highlighted.'))
+        </script>
+    {% endif %}
+
+    <div class="tab-content">
+        <div class="row">
+            <div class="container-fluid">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
+                    <div class="row">
+                        <div class="col-5 col-sm-4">
+                            <div class="form-group {% if complementary_exam_form.errors.date %}is-invalid{% endif %}">
+                                <label>{% trans "Date" %} <b style="color: red;">*</b></label>
+                                {{ complementary_exam_form.date }}
+                                <div class="form-text with-errors">
+                                    {% if complementary_exam_form.date.errors %}
+                                        <span>
+                                        {% for error in complementary_exam_form.date_.errors %}{{ error }}{% endfor %}
+                                    </span>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-12 col-sm-12">
-                                    <div class="form-group">
-                                        <label>{% trans "Description " %}<b style="color: red;">*</b></label>
-                                        {{ complementary_exam_form.description }}
-                                        <div class="help-block with-errors"></div>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="col-7 col-sm-8">
+                            <div class="form-group">
+                                <label>{% trans "Performed in" %}</label>
+                                {{ complementary_exam_form.exam_site }}
                             </div>
-                            <div class="row">
-                                <div class="col-5 col-sm-4">
-                                    <div class="form-group">
-                                        <label>{% trans "CRM" %}</label>
-                                        {{ complementary_exam_form.doctor_register }}
-                                    </div>
-                                </div>
-                                <div class="col-7 col-sm-8">
-                                    <div class="form-group">
-                                        <label>{% trans "Doctor name" %}</label>
-                                        {{ complementary_exam_form.doctor }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 col-sm-12">
-                                    <div class="form-group">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                            <tr>
-                                                <th>{% trans "Attachments" %} <b style="color: red;">*</b></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% if not exam_file_list %}
-                                                <tr>
-                                                    <td>{% trans "(no attachments)" %}</td>
-                                                </tr>
-                                            {% else %}
-                                                {% for exam_file in exam_file_list %}
-                                                    <tr>
-                                                        <td>
-                                                            {{ exam_file.content.name }}
-                                                            <div class="btn-toolbar pull-right">
-                                                            <button class="btn btn-default pull-left" type="button" onclick="location.href='{{ exam_file.content.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
-                                                                {% if not viewing %}
-                                                                    <button class="btn btn-default pull-right" type="button" onclick="show_modal_remove({{ exam_file.id }})"><span class="fa fa-remove" style="color: indianred"></span></button>
-                                                                {% endif %}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
-                                            {% endif %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            {% if not viewing %}
-                                <div class="row">
-                                    <div class="form-group {% if file_form.errors.file %}has-error{% endif %}">
-                                         <label class="control-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
-                                         <br/>
-                                         <input type="file" name="content" multiple>
-                                         <br/>
-                                    </div>
-                                </div>
-                            {% endif %}
                         </div>
                     </div>
-                </div>
-                <div class="btn-toolbar">
-                    <div class="btn-group pull-left">
-                    {% if not creating and not viewing %}
-                        <button type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="show_modal_remove_for_complementary_exam();">{% trans "Delete" %}</button>
-                    {% endif %}
-                </div>
-                <div class="btn-group pull-right">
-                    {% if length == 0 %}
-                        <button type="button" class="btn" style="background-color: #f5f5f5" onclick="show_modal_remove_exam()">{% trans "Back" %}</button>
-                    {% else %}
-                        {% if not viewing %}
-                            <a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status={{ status }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
-                        {% else %}
-                            <a href="/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status={{ status }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
-                        {% endif %}
-                    {% endif %}
+                    <div class="row">
+                        <div class="col-12 col-sm-12">
+                            <div class="form-group">
+                                <label>{% trans "Description " %}<b style="color: red;">*</b></label>
+                                {{ complementary_exam_form.description }}
+                                <div class="form-text with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5 col-sm-4">
+                            <div class="form-group">
+                                <label>{% trans "CRM" %}</label>
+                                {{ complementary_exam_form.doctor_register }}
+                            </div>
+                        </div>
+                        <div class="col-7 col-sm-8">
+                            <div class="form-group">
+                                <label>{% trans "Doctor name" %}</label>
+                                {{ complementary_exam_form.doctor }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-sm-12">
+                            <div class="form-group">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>{% trans "Attachments" %} <b style="color: red;">*</b></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if not exam_file_list %}
+                                        <tr>
+                                            <td>{% trans "(no attachments)" %}</td>
+                                        </tr>
+                                    {% else %}
+                                        {% for exam_file in exam_file_list %}
+                                            <tr>
+                                                <td>
+                                                    {{ exam_file.content.name }}
+                                                    <div class="btn-toolbar float-end">
+                                                    <button class="btn btn-secondary float-start" type="button" onclick="location.href='{{ exam_file.content.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                                        {% if not viewing %}
+                                                            <button class="btn btn-secondary float-end" type="button" onclick="show_modal_remove({{ exam_file.id }})"><span class="fa fa-remove" style="color: indianred"></span></button>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                     {% if not viewing %}
-                        <button type="submit" name="action" value="save" id="save_exam" class="btn btn-primary">{% trans "Save" %}</button>
+                        <div class="row">
+                            <div class="form-group {% if file_form.errors.file %}is-invalid{% endif %}">
+                                    <label class="form-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
+                                    <br/>
+                                    <input type="file" name="content" multiple>
+                                    <br/>
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
-                </div>
+            </div>
+        </div>
+        <div class="btn-toolbar">
+            <div class="btn-group float-start">
+            {% if not creating and not viewing %}
+                <button type="button" class="btn btn-danger" onclick="show_modal_remove_for_complementary_exam();">{% trans "Delete" %}</button>
+            {% endif %}
+        </div>
+        <div class="btn-group float-end">
+            {% if length == 0 %}
+                <button type="button" class="btn" style="background-color: #f5f5f5" onclick="show_modal_remove_exam()">{% trans "Back" %}</button>
+            {% else %}
+                {% if not viewing %}
+                    <a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status={{ status }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                {% else %}
+                    <a href="/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status={{ status }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                {% endif %}
+            {% endif %}
+            {% if not viewing %}
+                <button type="submit" name="action" value="save" id="save_exam" class="btn btn-primary">{% trans "Save" %}</button>
+            {% endif %}
+        </div>
+        </div>
             </div>
         </div>
     </div>
@@ -201,8 +187,8 @@
                     {% trans "Are you sure you want to delete exam?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                    <a type="button" class="btn btn-primary" id="removeExam" style="background-color: indianred; color: #ffffff" href="">{% trans "Delete" %}</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <a type="button" class="btn btn-danger" id="removeExam" href="">{% trans "Delete" %}</a>
                 </div>
             </div>
         </div>
@@ -216,8 +202,8 @@
                     {% trans "As there are no attachments, the exam will be totally excluded. Do you confirm deletion?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                    <a type="button" class="btn btn-primary" id="removeExam2" style="background-color: indianred; color: #ffffff" href="">{% trans "Delete" %}</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <a type="button" class="btn btn-danger" id="removeExam2" href="">{% trans "Delete" %}</a>
                 </div>
             </div>
         </div>
@@ -229,8 +215,8 @@
     </form>
 {% endblock %}
 
-{% block script %}
-        <script>
+{% block extrascript %}
+    <script>
         function show_modal_remove(exam_file_id){
             var  modal_remove = document.getElementById('removeExam');
             modal_remove.setAttribute("href", '/patient/exam_file/delete/' + exam_file_id + "/?status={{ status }}{% if new_medical_record %}&mr=new{% endif %}" );
@@ -250,6 +236,6 @@
             modal_remove.setAttribute( "href", part[0]+'exam/remove'+part[1]);
             $('#modalRemoveExam').modal('show');
         }
-        $(function(){$("[data-toggle=tooltip]").tooltip();})
+        
     </script>
 {% endblock %}

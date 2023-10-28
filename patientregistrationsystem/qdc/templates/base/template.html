@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<html xml:lang="en" lang="en">
+<html xml:lang="en" lang="en" data-bs-theme="dark">
 
 <head>
-    {% load static %}
-    {% load i18n %}
-    {% load l10n %}
+    {% load static i18n l10n %}
     {% load qdc_tags %}
     {% load solo_tags %}
     {% load cache %}
@@ -18,81 +16,29 @@
     <meta name="author" content="">
 
     <link rel="stylesheet" href="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'site/bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'site/bootstrap-5.3.2-dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}">
     <link rel="stylesheet" href="{% static 'site/font-awesome-4.7.0/css/font-awesome.min.css' %}">
 
-    <style type="text/css">
-        html {
-            position: relative;
-            min-height: 100%;
-        }
-        body {
-            padding-top: 60px;
-            margin-bottom: 50px;
-            overflow-x: hidden;
-        }
-        .footer {
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            background-color: #f5f5f5;
-            font-size: 8pt;
-            font-family: Verdana;
-            font-weight: bold;
-        }
-        .version_number {
-            float:right;
-            margin-right: 10px;
-            margin-top: 8px;
-        }
-        .thumbnail {
-            border: 0 none;
-            box-shadow: none;
-        }
-        .unbuttonmize:hover, .unbuttonmize:focus {
-            background-color: white;
-            border-color: #ccc;
-            cursor: default;
-        }
-        .unbuttonmize:focus {
-            outline-style: none;
-        }
-        .unbuttonmize:active {
-            box-shadow: none;
-        }
-        .import-results {
-            background-color: #dff0d8;
-        }
-        .content {
-            margin-top:20px;
-        }
-        
-        textarea {
-            resize: vertical;
-        }
+    <link rel="stylesheet" href="{% static 'site/css/nes.css' %}">
 
-    </style>
 
-    {% block header %}{% endblock %}
+    {% block extrahead %}{% endblock %}
 </head>
 
-<body>
+<body class="bg-body-tertiary">
 <header>
     <form  id="language_form" action="{% url 'set_language' %}" method="post">
         {% csrf_token %}
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" role="navigation">
             <div class="container">
                 <a class="navbar-brand" href="/home/">{% trans "NES" %}</a>
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                </div>
+                <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
                 
                 <div class="navbar-collapse collapse" id="navbarCollapse">
-                    <ul class="navbar-nav ml-auto">
+                    <ul class="navbar-nav ms-auto">
                         {% if perms.configuration.upgrade_rights and if_upgrade %}
                             <li class="nav-item">
                                 <a href="/home/upgrade_nes/" class="nav-link"><span class="fa fa-download fa-fw"></span>Upgrade_nes</a>
@@ -104,11 +50,11 @@
                             {% get_language_info_list for LANGUAGES as languages %}
 
                             <input id="language" name="language" type="hidden">
-                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
                                 <span class="fa fa-globe fa-fw"></span> {{ LANGUAGE_CODE|language_name_local }}
                             </a> 
                             
-                            <div class="dropdown-menu" role="menu" name="language" aria-labelledby="navbarDropdown">
+                            <div class="dropdown-menu dropdown-menu-end" role="menu" name="language" aria-labelledby="navbarDropdown">
                                 {% for language in languages %}
                                     {% if language.code != LANGUAGE_CODE %}
                                         <a href="javascript:{}" class="dropdown-item" onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit();">
@@ -120,10 +66,10 @@
                             </div>   
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
                                 <span class="fa fa-user-circle fa-fw"></span> {{ request.user.username }}
                             </a>
-                            <div class="dropdown-menu" role="menu" aria-labelledby="navbarDropdown">
+                            <div class="dropdown-menu dropdown-menu-end" role="menu" aria-labelledby="navbarDropdown">
                                 {% if request.user.is_superuser %}
                                     <a href="/admin" class="dropdown-item"><span class="fa fa-star fa-fw"></span> {% trans "Admin" %}</a>
                                 {% endif %}
@@ -131,7 +77,15 @@
                                 <a href="https://nes.readthedocs.io/en/latest/userguide/userguide.html" class="dropdown-item"><span class="fa fa-question-circle fa-fw"></span> {% trans "Help" %}</a>
                                 <a href="{% url 'logout' %}" class="dropdown-item"><span class="fa fa-power-off fa-fw"></span> {% trans "Logout" %}</a>
                             </div>
-
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                <span class="fa fa-star-half-o fa-fw"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+                                <a class="dropdown-item" data-bs-theme-value="light" aria-pressed="false"><span class="fa fa-sun-o fa-fw"></span> {% trans "Light Theme" %}</a>
+                                <a class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false"><span class="fa fa-moon-o fa-fw"></span> {% trans "Dark Theme" %}</a>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -140,9 +94,10 @@
     </form>
 </header>
 
-{% block form %}{% endblock %}
 
-<div id="main" class="container">
+<main id="main" class="container">
+    {% block form %}{% endblock %}
+
     <div class="row content">
         <div class="col-12 col-md-3">
             <nav class="nav nav-pills flex-column flex-sm-row flex-lg-column justify-content-start">
@@ -152,49 +107,49 @@
                 </a>
 
                 {% if perms.patient.view_patient %}
-                    <a href="/patient/find/" class="nav-link {% block activePatient %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add people that participated in the experiments' %}">
+                    <a href="/patient/find/" class="nav-link {% block activePatient %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add people that participated in the experiments' %}">
                         <span class="fa fa-users fa-fw fa-lg"></span>
                         {% trans "Participants" %}
                     </a>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
-                    <a href="/experiment/research_project/list/" class="nav-link {% block activeAdvancedResearchProject %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add publications' %}">
+                    <a href="/experiment/research_project/list/" class="nav-link {% block activeAdvancedResearchProject %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add publications' %}">
                         <span class="fa fa-graduation-cap fa-fw fa-lg"></span>
                         {% trans "Studies" %}
                     </a>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
-                    <a href="/experiment/publication/list/" class="nav-link {% block activeAdvancedPublication %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add publications' %}">
+                    <a href="/experiment/publication/list/" class="nav-link {% block activeAdvancedPublication %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add publications' %}">
                         <span class="fa fa-book fa-fw fa-lg"></span>
                         {% trans "Publications" %}
                     </a>
                 {% endif %}
 
                 {% if perms.survey.view_survey %}
-                    <a href="/survey/list/" class="nav-link {% block activeAdvancedSurvey %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add users and institutions to the database' %}">
+                    <a href="/survey/list/" class="nav-link {% block activeAdvancedSurvey %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add users and institutions to the database' %}">
                         <span class="fa fa-list-alt fa-fw fa-lg"></span>
                         {% trans "Questionnaires" %}
                     </a>
                 {% endif %}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
-                    <a href="/user/list/" class="nav-link {% block activeUser %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Add users and institutions to the database' %}">
+                    <a href="/user/list/" class="nav-link {% block activeUser %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add users and institutions to the database' %}">
                         <span class="fa fa-user fa-fw fa-lg"></span>
                         {% trans "Researchers" %}
                     </a>
                 {% endif %}
 
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
-                    <a href="/export/" class="nav-link {% block activeExport %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Export your projects' %}">
+                    <a href="/export/" class="nav-link {% block activeExport %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Export your projects' %}">
                         <span class="fa fa-upload fa-fw fa-lg"></span>
                         {% trans "Export" %}
                     </a>
                 {% endif %}
 
                 {% if perms.experiment.register_equipment %}
-                    <a href="/experiment/setup/" class="nav-link {% block activeSetup %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Here you can setup the equipments used in the projects' %}">
+                    <a href="/experiment/setup/" class="nav-link {% block activeSetup %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Here you can setup the equipments used in the projects' %}">
                         <span class="fa fa-pencil fa-fw fa-lg"></span>
                         {% trans "Set up" %}
                     </a>
@@ -210,7 +165,7 @@
                     </a>
                 {% endif %}
 
-                <a href="/links/" class="nav-link {% block activeLinks %}{% endblock %}" data-toggle="tooltip" data-placement="right" title="{% trans 'Useful links of tools' %}">
+                <a href="/links/" class="nav-link {% block activeLinks %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Useful links of tools' %}">
                     <span class="fa fa-link fa-fw fa-lg"></span>
                     {% trans "Useful Links" %}
                 </a>
@@ -225,14 +180,15 @@
             </div>
         </div>
     </div>
-</div>
 
-{% block end_form %}{% endblock %}
+    {% block end_form %}{% endblock %}
+</main>
 
-<footer class="footer">
+
+<footer class="footer mt-auto bg-body-secondary">
     <div class="container">
         <a href="http://ccsl.ime.usp.br">
-            <img src="{% static 'imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" height="34px" width="96px">
+            <img src="{% static 'imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre">
         </a>
 
         <span class="version_number">v{% settings_value "VERSION" %}</span>
@@ -242,11 +198,12 @@
 
 <script type="text/javascript" src="{% static 'site/jquery/jquery-2.2.4.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/bootstrap-4.6.2-dist/js/bootstrap.bundle.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/bootstrap-5.3.2-dist/js/bootstrap.bundle.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/masked_input/jquery.maskedinput.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/Bootstrap-Validator-Master/validator.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/toastr/toastr.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'site/js/quiz.js' %}"></script>
+<script type="text/javascript" src="{% static 'site/js/theme_picker.js' %}"></script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
 <script type="text/javascript">
@@ -267,10 +224,9 @@
         {% endfor %}
     {% endif %}
 
-    $(function(){
-        $("[data-toggle=tooltip]").tooltip();
-    });
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
-{% block script %}{% endblock %}
+{% block extrascript %}{% endblock %}
 </body>
 </html>

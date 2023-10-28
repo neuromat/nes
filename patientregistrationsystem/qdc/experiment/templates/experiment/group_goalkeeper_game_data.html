@@ -23,7 +23,7 @@
                 <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Check goalkeeper game data" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     {% comment %} {% if messages %}
@@ -50,14 +50,14 @@
 
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
-            <div class="container-fluid card card-body bg-light">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <div class="row">
                     <div class="col-lg-4">
                         <label>{% trans "Institution" %}</label>
                         <br/>
                         {% if institution_code %}
                             {% if perms.user.is_superuser %}
-                                <a href="/admin/configuration/localinstitution/" data-toggle="tooltip" data-placement="left" title="{% trans "Change institution code" %}" target="_blank">{{ institution_code }}</a>
+                                <a href="/admin/configuration/localinstitution/" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Change institution code" %}" target="_blank">{{ institution_code }}</a>
                             {% else %}
                                 {{ institution_code }}
                             {% endif %}
@@ -78,7 +78,7 @@
                         <label>{% trans "Group code" %}</label>
                         <br/>
                         {% if group.code %}
-                            <a data-toggle="tooltip" data-placement="right" title="{% trans "Change group code" %}" onclick="$('#modalGroupCode').modal('show');">
+                            <a data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Change group code" %}" onclick="$('#modalGroupCode').modal('show');">
                                 {{ group.code }}
                             </a>
                         {% else %}
@@ -101,7 +101,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                                     <button class="btn btn-primary" type="submit" name="action" value="group-code">{% trans "Save" %}</button>
                                 </div>
                             </div>
@@ -146,7 +146,7 @@
                                         </td>
                                         <td>
                                             {% if digital_game_phase_collection.data_configuration_tree.code != None %}
-                                                <a data-toggle="tooltip" data-placement="right" title="{% trans "Change game and phase" %}" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">
+                                                <a data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Change game and phase" %}" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">
                                                     {{ digital_game_phase_collection.game_and_phase }}
                                                 </a>
                                             {% else %}
@@ -179,7 +179,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                                                             <button class="btn btn-primary" id="confirm-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" type="submit" name="action" value="detail-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}">{% trans "Save" %}</button>
                                                         </div>
                                                     </div>
@@ -196,12 +196,12 @@
             </div>
 
             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group pull-left">
+                <div class="btn-group float-start">
                 </div>
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a {% if not enable_upload %}disabled="disabled"{% endif %} href="/experiment/group/{{ group.id }}/load_goalkeeper_game_data" class="btn btn-primary" >{% trans "Load goalkeeper game data" %}</a>
                 </div>
-                <div class="btn-group pull-right">
+                <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -216,10 +216,5 @@
     </form>
 {% endblock %}
 
-{% block script %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
+{% block extrascript %}
 {% endblock %}

@@ -4,7 +4,7 @@
 
 {% load l10n static %}
 
-{% block header %}
+{% block extrahead %}
     <style>
         div.alert-overflow {
             display: none; /* O alerta deve iniciar oculto */
@@ -27,7 +27,7 @@
 {% block form %}
     
 
-        <form id="form_id" role="form" method="post" data-toggle="validator">
+        <form id="form_id" role="form" method="post" data-bs-toggle="validator">
         {% csrf_token %}
 {% endblock %}
 
@@ -105,7 +105,7 @@
                 {% block sub_content %}{% endblock %}
 
                 <div class="btn-toolbar">
-                    <div class="btn-group pull-left">
+                    <div class="btn-group float-start">
                         {% if not editing %}
                             {% if perms.patient.delete_patient %}
                                 <button type="button" class="btn btn-danger"
@@ -114,21 +114,21 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                    <div class="btn-group pull-right">
+                    <div class="btn-group float-end">
                         <div class="btn-group">
                             <a href="/patient/find/" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                         </div>
                         {% if editing %}
-                            <button type="button" class="btn btn-default {% if currentTab == '0' %} disabled {% endif %}" id="prevtab">{% trans "Save and show before" %}</button>
-                            <button type="button" class="btn btn-default {% if currentTab == '4' %} disabled {% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Save and show next" %}</button>
+                            <button type="button" class="btn btn-secondary {% if currentTab == '0' %} disabled {% endif %}" id="prevtab">{% trans "Save and show before" %}</button>
+                            <button type="button" class="btn btn-secondary {% if currentTab == '4' %} disabled {% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Save and show next" %}</button>
                             {% if currentTab == '0' %}
                                 <button type="button" class="btn btn-primary" id="savetab">{% trans "Save" %}</button>
                             {% else %}
                                 <button type="submit" name="action" value="save" class="btn btn-primary" id="save_submit_button">{% trans "Save" %}</button>
                             {% endif %}
                         {% else %}
-                            <button type="button" class="btn btn-default" {% if currentTab == '0' %} disabled {% endif %} id="prevtab">{% trans "Show before" %}</button>
-                            <button type="button" class="btn btn-default" {% if currentTab == '4' %} disabled {% elif currentTab == '3' and not perms.survey.view_survey %} disabled {% endif %} id="nexttab">{% trans "Show next" %}</button>
+                            <button type="button" class="btn btn-secondary" {% if currentTab == '0' %} disabled {% endif %} id="prevtab">{% trans "Show before" %}</button>
+                            <button type="button" class="btn btn-secondary" {% if currentTab == '4' %} disabled {% elif currentTab == '3' and not perms.survey.view_survey %} disabled {% endif %} id="nexttab">{% trans "Show next" %}</button>
                             {% if perms.patient.change_patient %}
                                 <button type="button" class="btn btn-primary" id="editPatient">{% trans "Edit" %}</button>
                             {% endif %}
@@ -148,8 +148,8 @@
                 {% trans "Would you like to save?" %}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                <button type="button" class="btn btn-default" id="savetab_modal_dont_save">{% trans "Do not save" %}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-secondary" id="savetab_modal_dont_save">{% trans "Do not save" %}</button>
                 <button type="button" class="btn btn-primary" id="savetab_modal_save">{% trans "Save" %}</button>
             </div>
         </div>
@@ -164,7 +164,7 @@
                 {% trans "It is necessary to save personnal data before you can access other tabs." %}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "OK" %}</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{% trans "OK" %}</button>
             </div>
         </div>
     </div>
@@ -177,7 +177,7 @@
                 {% trans "Are you sure you want to delete participant?" %}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                 <button type="button" class="btn btn-danger" id="removePatient">{% trans "Delete" %}
                 </button>
             </div>
@@ -191,7 +191,6 @@
     </div>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script type="text/javascript" src="{% static 'site/js/register.js' %}"></script>
-    <script type="text/javascript">$(function(){$("[data-toggle=tooltip]").tooltip();})</script>
 {% endblock %}

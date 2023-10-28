@@ -25,13 +25,13 @@
                 <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li class="breadcrumb-item active">{% trans "Add Participants" %}</li>
             </ol>
-        </div>
+        </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="container-fluid">
             {% if perms.experiment.add_subject and can_change %}
-                <div class="container-fluid card card-body bg-light">
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
@@ -39,7 +39,7 @@
                                 <label>{% trans "Add participant" %}</label>
 
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="fa fa-search"></span></span>
+                                    <span class="input-group-text"> <span class="fa fa-search"></span></span>
                                     <input class="form-control" {% if perms.patient.sensitive_data_patient %}
                                     placeholder="{% trans 'Type participant name, CPF or code' %}" {% else %} placeholder="{% trans 'Type participant code' %}"
                                 {% endif %} id="subject_name" type="text" autofocus="true">
@@ -102,7 +102,7 @@
     </form>
 {% endblock %}
 
-{% block script %}
+{% block extrascript %}
     <script src="{% static 'site/js/subjects.js' %}"></script>
     <script src="{% static 'site/js/participant_selection.js' %}"></script>
 {% endblock %}

@@ -28,8 +28,8 @@
     <div class="row">
         <div class="col-6 col-sm-12">
             <div class="form-group">
-                <label for="questionnaire_selected" class="control-label">{% trans "Questionnaire name at LimeSurvey" %}<b style="color: red;">*</b></label>
-                <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating or reusing %}disabled{% endif %}>
+                <label for="questionnaire_selected" class="form-label">{% trans "Questionnaire name at LimeSurvey" %}<b style="color: red;">*</b></label>
+                <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-bs-error="Por favor, selecione um questionário da lista." {% if updating or reusing %}disabled{% endif %}>
                     {% if reusing %}
                         <option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})
                     {% else %}
@@ -42,13 +42,13 @@
                         {% endif %}
                     {% endif %}
                 </select>
-                <div class="help-block with-errors"></div>
+                <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
 {% endblock %}
 
 {# In case of inclusion of javascript, insert parent template scripts #}
-{#{% block script %}#}
+{#{% block extrascript %}#}
 {# Uncomment this block and insert parent template scripts #}
 {#{% endblock %}#}
