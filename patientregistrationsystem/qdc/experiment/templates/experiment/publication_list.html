@@ -1,33 +1,10 @@
 {% extends "base/template.html" %}
 
-{% load i18n %}
+{% load static i18n %}
 
-{% block activeAdvancedPublication %} active{% endblock %}
+{% block activeAdvancedPublication %} active{% endblock activeAdvancedPublication %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
@@ -38,49 +15,46 @@
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Publication list" %}</h4>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Title" %}</th>
-                                <th>{% trans "Type" %}</th>
-                                <th>{% trans "URL" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for publication in publications %}
-                            <tr>
-                                <td>{% if perms.experiment.view_researchproject %}
-                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Visualize' %}"
-                                           href="/experiment/publication/{{ publication.id }}/">
-                                            {{ publication.title }}
-                                        </a>
-                                    {% else %}
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "Publication list" %}</h4>
+            <hr>
+            <div class="table-responsive-md">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">{% trans "Title" %}</th>
+                            <th scope="col">{% trans "Type" %}</th>
+                            <th scope="col">{% trans "URL" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                    {% for publication in publications %}
+                        <tr>
+                            <td>{% if perms.experiment.view_researchproject %}
+                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Visualize' %}"
+                                        href="/experiment/publication/{{ publication.id }}/">
                                         {{ publication.title }}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ publication.publication_type.name }}
-                                </td>
-                                <td>{{ publication.url }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% if perms.experiment.add_researchproject %}
-                    <div class="btn-group float-start">
-                        <a href="/experiment/publication/new/" class="btn btn-primary">{% trans "Insert new publication" %}</a>
-                    </div>
-                {% endif %}
+                                    </a>
+                                {% else %}
+                                    {{ publication.title }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ publication.publication_type.name }}
+                            </td>
+                            <td>{{ publication.url }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
-
+            {% if perms.experiment.add_researchproject %}
+                <br>
+                <div class="btn-group">
+                    <a href="/experiment/publication/new/" class="btn btn-primary">{% trans "Insert new publication" %}</a>
+                </div>
+            {% endif %}
         </div>
     </div>
-
-{% endblock %}
+{% endblock content %}
 

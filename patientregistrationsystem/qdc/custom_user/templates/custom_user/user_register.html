@@ -4,33 +4,9 @@
 
 {% block activeUser %} active{% endblock activeUser %}
 
-{% block extrahead %}
-    <style>
-        .right-inner-addon {
-            position: relative;
-        }
-        .right-inner-addon input {
-            padding-right: 30px;
-        }
-        .right-inner-addon div {
-            position: absolute;
-            right: 0px;
-            padding: 5px 10px;
-            pointer-events: none;
-        }
-        ul#optradio {
-            padding: 0;
-            list-style-type: none;
-        }
-        ul li label {
-            font-weight: normal !important;
-        }
-    </style>
-{% endblock %}
-
 {% block form %}
     <form id="user_form" role="form" method="post" onsubmit="return Validate()" data-bs-toggle="validator">
-    {% csrf_token %}
+        {% csrf_token %}
 {% endblock form %}
 
 {% block content %}
@@ -211,7 +187,7 @@
         <h4>{% trans "Profiles" %}</h4>
         <hr>
         <div class="row">
-            <div class="container-fluid">
+            <div class="col-12">
                 <div class="form-group">
                     <label for="check_profile" class="form-label">{% trans "In which these profiles does user identify?" %} <b style="color: red;">*</b></label>
                     <div id="check_profile" class="input-group input-group-sm checkbox">

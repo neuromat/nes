@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html xml:lang="en" lang="en" data-bs-theme="dark">
+<html xml:lang="en" lang="en" data-bs-theme="">
+
+{% load static i18n l10n %}
+{% load qdc_tags %}
+{% load solo_tags %}
+{% load cache %}
 
 <head>
-    {% load static i18n l10n %}
-    {% load qdc_tags %}
-    {% load solo_tags %}
-    {% load cache %}
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{% trans "Neuroscience Experiments System - NES" %}</title>
     <link rel="icon" type="image/x-icon" href="{% static 'imgs/favicon.ico' %}">
     <meta name="description" content="Database system for storing data related to EEG and EMG">
-    <meta name="author" content="Neuromat, Lapis">
+    <meta name="author" content="Neuromat, PEB-Lapis">
 
     {% comment %} <link rel="stylesheet" href="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.css' %}"> {% endcomment %}
     <link rel="stylesheet" href="{% static 'site/bootstrap-5.3.2-dist/css/bootstrap.min.css' %}">
@@ -21,7 +21,6 @@
     <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}">
 
     <link rel="stylesheet" href="{% static 'site/css/nes.css' %}">
-
 
     {% block extrahead %}{% endblock extrahead %}
 </head>
@@ -50,7 +49,7 @@
                             {% get_language_info_list for LANGUAGES as languages %}
 
                             <input id="language" name="language" type="hidden">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" title="Change language">
                                 <span class="fa-fw fa fa-globe"></span> {{ LANGUAGE_CODE|language_name_local }}
                             </a> 
                             
@@ -79,7 +78,7 @@
                             </div>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"  title="Change theme">
                                 <span class="fa-fw fa fa-star-half-o"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
@@ -98,9 +97,9 @@
 <main id="main" class="container">
     {% block form %}{% endblock form %}
 
-    <div class="row content">
-        <div class="col-12 col-md-2">
-            <nav class="nav nav-pills flex-column flex-sm-row flex-lg-column justify-content-start mb-auto">
+    <div class="row">
+        <div class="col-12 col-lg-3 col-xl-2 mt-0">
+            <nav class="nav nav-pills flex-column flex-sm-row flex-md-row sticky-top my-auto sticky-offset d-lg-block">
                 <a href="/home/" class="nav-link {% block activeContact %}{% endblock %}">
                     <span class="fa-fw fa fa-home fa-md"></span>
                     {% trans "Home" %}
@@ -173,13 +172,13 @@
             </nav>
         </div>
 
-        <div class="col-12 col-md-10">
-            <div id="myMenuContent" class="tab-content">
+        <div class="col-12 col-lg-9 col-xl-10 flex-column mt-3 mt-sm-2 mt-lg-0">
+            <div id="myMenuContent" class="clearfix">
                 <noscript><h1 class="center">{% trans "Please enable Javascript" %} <span style="color: red; font-weight: bold">*</span></h1></noscript>
                 {% block content %} {% endblock content %}
             </div>
         </div>
-    </div>
+    </div> 
 
     {% block end_form %}{% endblock end_form %}
 </main>

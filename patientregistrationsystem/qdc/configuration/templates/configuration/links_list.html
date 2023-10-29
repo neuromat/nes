@@ -1,24 +1,22 @@
 {% extends "base/template.html" %}
 
-{% block activeLinks %} active {% endblock activeLinks %}
-
 {% load i18n static %}
 
+{% block activeLinks %} active{% endblock activeLinks %}
+
 {% block content %}
-    <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
+    <div class="tab-pane fade show active" id="linksBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
                 <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item active">
-                    {% trans 'Useful Links' %}
-                </li>
+                <li class="breadcrumb-item active">{% trans 'Useful Links' %}</li>
             </ol>
         </nav>
     </div>
 
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <h4>{% trans "Useful Links" %}</h4>
-        <hr class="hr">
+        <hr>
         <ul class="list-group list-group-flush">
         {% for link in useful_links %}
             <li class="list-group-item">

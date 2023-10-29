@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-29 15:33-0300\n"
+"POT-Creation-Date: 2023-10-29 16:21-0300\n"
 "PO-Revision-Date: 2023-10-05 23:32-0300\n"
 "Last-Translator:   <lapis@peb.ufrj.br>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -694,7 +694,7 @@ msgstr "erro ao enviar"
 #: experiment/templates/experiment/muscle_side_register.html:48
 #: experiment/templates/experiment/muscle_subdivision_register.html:48
 #: experiment/templates/experiment/publication_add_experiment.html:18
-#: experiment/templates/experiment/publication_list.html:35
+#: experiment/templates/experiment/publication_list.html:11
 #: experiment/templates/experiment/publication_register.html:56
 #: experiment/templates/experiment/questionnaire_view.html:49
 #: experiment/templates/experiment/research_project_list.html:35
@@ -891,7 +891,7 @@ msgstr "Resolução (bits)"
 #: experiment/templates/experiment/muscle_list.html:58
 #: experiment/templates/experiment/muscle_register.html:107
 #: experiment/templates/experiment/muscle_register.html:145
-#: experiment/templates/experiment/publication_list.html:59
+#: experiment/templates/experiment/publication_list.html:34
 #: experiment/templates/experiment/publication_register.html:154
 #: experiment/templates/experiment/research_project_list.html:59
 #: experiment/templates/experiment/research_project_register.html:186
@@ -1901,7 +1901,7 @@ msgstr "Passos com posição fixa"
 #: experiment/templates/experiment/electrodemodel_register.html:130
 #: experiment/templates/experiment/emg_setting_electrode.html:215
 #: experiment/templates/experiment/emg_setting_register.html:194
-#: experiment/templates/experiment/publication_list.html:51
+#: experiment/templates/experiment/publication_list.html:26
 #: experiment/templates/experiment/standardization_system_register.html:104
 #: experiment/templates/experiment/tms_setting_register.html:104
 #: experiment/views.py:11688
@@ -3329,7 +3329,7 @@ msgstr "Informações básicas do experimento/projeto"
 #: experiment/templates/experiment/experiment_info_pdf.html:37
 #: experiment/templates/experiment/experiment_register.html:81
 #: experiment/templates/experiment/group_register.html:78
-#: experiment/templates/experiment/publication_list.html:50
+#: experiment/templates/experiment/publication_list.html:25
 #: experiment/templates/experiment/publication_register.html:80
 #: experiment/templates/experiment/publication_register.html:143
 #: experiment/templates/experiment/research_project_list.html:50
@@ -3950,7 +3950,7 @@ msgid "the pause"
 msgstr "a pausa"
 
 #: experiment/templates/experiment/publication_add_experiment.html:19
-#: experiment/templates/experiment/publication_list.html:36
+#: experiment/templates/experiment/publication_list.html:12
 #: experiment/templates/experiment/publication_register.html:57
 msgid "Publications"
 msgstr "Publicações"
@@ -3967,16 +3967,16 @@ msgstr "Seleção de experimentos"
 msgid "Experiments"
 msgstr "Experimentos"
 
-#: experiment/templates/experiment/publication_list.html:45
+#: experiment/templates/experiment/publication_list.html:19
 msgid "Publication list"
 msgstr "Lista de publicações"
 
-#: experiment/templates/experiment/publication_list.html:52
+#: experiment/templates/experiment/publication_list.html:27
 #: experiment/templates/experiment/publication_register.html:107
 msgid "URL"
 msgstr "URL"
 
-#: experiment/templates/experiment/publication_list.html:78
+#: experiment/templates/experiment/publication_list.html:53
 msgid "Insert new publication"
 msgstr "Inserir nova publicação"
 

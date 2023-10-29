@@ -1,9 +1,9 @@
 # coding=utf-8
-
 from typing import Any
 
 from django.contrib.auth.models import User
 from django.forms import (
+    ClearableFileInput,
     Form,
     IntegerField,
     ModelChoiceField,
@@ -252,7 +252,9 @@ class ComponentConfigurationForm(ModelForm):
         required=False,
         empty_value=None,
         choices=((False, _("Fixed")), (True, _("Random"))),
-        widget=RadioSelect(attrs={"class":"form-check-input","id": "id_random_position"}),
+        widget=RadioSelect(
+            attrs={"class": "form-check-input", "id": "id_random_position"}
+        ),
     )
 
     class Meta:
@@ -625,6 +627,11 @@ class PublicationForm(ModelForm):
                     "class": "form-select",
                     "required": "",
                     "data-error": _("Publication type must be filled."),
+                }
+            ),
+            "file": ClearableFileInput(
+                attrs={
+                    "class": "form-control",
                 }
             ),
         }

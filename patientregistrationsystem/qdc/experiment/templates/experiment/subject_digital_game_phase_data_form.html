@@ -232,7 +232,7 @@
 {#                </div>#}
             </div>
 
-            <div class="btn-toolbar" role="toolbar">
+            <div class="btn-toolbar justify-content-between" role="toolbar">
                 <div class="btn-group float-start">
                     {% if not editing and perms.experiment.delete_researchproject and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
@@ -246,16 +246,16 @@
 
                         {% if creating %}
                             <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/digital_game_phase"
-                               class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                               class="btn btn-light">{% trans "Cancel" %}</a>
                         {% else %}
                             <a href="/experiment/digital_game_phase_data/{{ digital_game_phase_data.id }}/{{ tab }}"
-                               class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                               class="btn btn-light">{% trans "Cancel" %}</a>
                         {% endif %}
 
                     </div>
                 {% else %}
                     <div class="btn-group float-end">
-                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/digital_game_phase" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/digital_game_phase" class="btn btn-light">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
             </div>

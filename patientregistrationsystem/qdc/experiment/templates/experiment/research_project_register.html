@@ -212,7 +212,7 @@
                 </div>
             {% endif %}
 
-            <div class="btn-toolbar" role="toolbar">
+            <div class="btn-toolbar justify-content-between" role="toolbar">
                 <div class="btn-group float-start">
                     {% if not editing and perms.experiment.delete_researchproject and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
@@ -224,11 +224,11 @@
                     </div>
                     <div class="btn-group float-end">
                         <a href="/experiment/research_project/{% if creating %}list{% else %}{{ research_project.id }}{% endif %}"
-                           class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                           class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
                     <div class="btn-group float-end">
-                        <a href="/experiment/research_project/list" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                        <a href="/experiment/research_project/list" class="btn btn-light">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
             </div>

@@ -222,7 +222,7 @@
 
             </div>
 
-            <div class="btn-toolbar" role="toolbar">
+            <div class="btn-toolbar justify-content-between" role="toolbar">
                 <div class="btn-group float-start" {% if response_is_reused_in_experiment %}data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "This response cannot be deleted because it is used in an experiment." %}{% endif %}">
                     {% if not creating and can_change %}
                         {% if origin == 'experiment_subject' and perms.experiment.delete_questionnaireresponse or origin == 'subject' and perms.patient.delete_questionnaireresponse %}
@@ -238,7 +238,7 @@
                         {% if can_change %}
                             {% if creating %}
                                 {% if perms.experiment.add_questionnaireresponse %}
-                                <div class="btn-toolbar" role="toolbar">
+                                <div class="btn-toolbar justify-content-between" role="toolbar">
                                         <div class="btn-group float-start"></div>
                                         {# NES-1041 Commented out while the issue is not resumed #}
                                         {# See the commits that starts with NES-1041 to see the progress #}
@@ -265,14 +265,14 @@
                 </div>
                 <div class="btn-group float-end">
                     {% if origin == 'subject' %}
-                        <a href="/patient{% if status == 'edit' %}/edit{% endif %}/{{ patient.id }}/?currentTab=4" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                        <a href="/patient{% if status == 'edit' %}/edit{% endif %}/{{ patient.id }}/?currentTab=4" class="btn btn-light">{% trans "Back" %}</a>
                     {% else %}
                         {% if origin == 'experiment_subject' %}
                             <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}" class="btn"
                                style="background-color: #f5f5f5">{% trans "Back" %}</a>
                         {% else %}
                             <a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}"
-                               class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                               class="btn btn-light">{% trans "Back" %}</a>
                         {% endif %}
                     {% endif %}
                 </div>
