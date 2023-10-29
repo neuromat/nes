@@ -3,20 +3,17 @@
 {% load i18n static %}
 
 {% block sub_content %}
-
     <div class="tab-pane {% if currentTab == '4' %}active{% endif %}" id="tab5">
-
         <div class="row">
             <div class="container-fluid">
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-
                     <div class="row">
                         <div class="col-sm-6">
                             <h4>{% trans "Questionnaire fills" %}</h4>
                         </div>
                         <div class="col-sm-6" style="text-align: right; vertical-align: bottom">
                             {% if perms.patient.sensitive_data_patient %}
-                                <label for="code" >{% trans "Code" %}:</label>
+                                <label class="fw-semibold" for="code" >{% trans "Code" %}:</label>
                                 <span class="disabled"> {{ code }} </span>
                             {% endif %}
                         </div>
@@ -109,19 +106,14 @@
                                     </td>
                                 </tr>
                             {% endfor %}
-
-
                             </tbody>
                         </table>
-
                         {% if editing %}
                             <button type="button" class="btn btn-primary" onclick="showAdditionalSurveyDialog()">
                                 {% trans "Choose another questionnaire to fill" %}
                             </button>
                         {% endif %}
-
                     </div>
-
                 </div>
             </div>
         </div>
@@ -129,7 +121,6 @@
         <div class="row">
             <div class="container-fluid">
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <h4>{% trans "Experiment/Project questionnaires" %}</h4>
@@ -190,6 +181,10 @@
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Questionnaire?" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
                     <label class="form-label">{% trans "Choose a questionnaire to fill" %}</label>
                     <select class="form-control" id="additional_survey_selected" name="additional_survey_selected">
@@ -200,17 +195,16 @@
                     </select>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <a href_template="/patient/{{ patient_id }}/questionnaire/{survey_id}/add_response/?origin=subject"
                        id="fill_button" disabled="" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">{% trans "New fill" %}</a>
                 </div>
             </div>
         </div>
     </div>
-
-{% endblock %}
+{% endblock sub_content %}
 
 {% block extrascript %}
 {{ block.super }}
     <script src="{% static 'site/js/patient_questinonaires.js' %}"></script>
-{% endblock %}
+{% endblock extrascript %}

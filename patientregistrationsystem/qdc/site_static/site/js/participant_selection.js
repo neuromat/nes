@@ -228,7 +228,7 @@ function add_location(location) {
 
     //criar span element
     var spannode = document.createElement('span');
-    spannode.className = "fa fa-remove";
+    spannode.className = "fa-fw fa fa-remove";
     // spannode.data-toggle("tooltip");
     spannode.style.color = "indianred";
     spannode.style.verticalAlign = "-10%";
@@ -280,7 +280,7 @@ function add_disease(id, disease) {
 
     //criar span element
     var spannode = document.createElement('span');
-    spannode.className = "fa fa-remove";
+    spannode.className = "fa-fw fa fa-remove";
     // spannode.data-toggle("tooltip");
     spannode.style.color = "indianred";
     spannode.style.verticalAlign = "-10%";

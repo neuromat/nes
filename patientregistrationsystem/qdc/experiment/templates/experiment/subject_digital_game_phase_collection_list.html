@@ -92,7 +92,7 @@
                                                         <td>{{ digital_game_phase_data.file_format.name }}</td>
                                                         <td>
                                                             {% for digital_game_phase_files in digital_game_phase_data.digital_game_phase_files.all %}
-                                                                <span><a href="{{ digital_game_phase_files.file.url }}"><span class="fa fa-download"></span></a></span>
+                                                                <span><a href="{{ digital_game_phase_files.file.url }}"><span class="fa-fw fa fa-download"></span></a></span>
                                                                 <span>{{ digital_game_phase_files.file.size|filesizeformat }}</span>
                                                                 <br>
                                                             {% endfor %}
@@ -102,7 +102,7 @@
                                                 <tr>
                                                     <td colspan="5">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/digital_game_phase/{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_digital_game_phase_data">
-                                                        <span class="fa fa-plus"></span>
+                                                        <span class="fa-fw fa fa-plus"></span>
                                                             {% trans "New goalkeeper game phase data file" %}
                                                         </a>
                                                     </td>

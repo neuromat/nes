@@ -99,7 +99,7 @@
                                                                 {% for generic_data_collection_file in generic_data_collection_data.generic_data_collection_files.all %}
                                                                     <tr>
                                                                         <td>{{ generic_data_collection_file.file.size|filesizeformat }}</td>
-                                                                        <td><a href="{{ generic_data_collection_file.file.url }}"><span class="fa fa-download"></span></a></td>
+                                                                        <td><a href="{{ generic_data_collection_file.file.url }}"><span class="fa-fw fa fa-download"></span></a></td>
                                                                     </tr>
                                                                 {% endfor %}
                                                             </table>
@@ -109,7 +109,7 @@
                                                 <tr>
                                                     <td colspan="5">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/generic_data_collection/{% for item in generic_data_collection_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_generic_data_collection_data">
-                                                        <span class="fa fa-plus"></span>
+                                                        <span class="fa-fw fa fa-plus"></span>
                                                             {% trans "New generic data collection data file" %}
                                                         </a>
                                                     </td>

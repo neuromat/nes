@@ -34,7 +34,8 @@ def get_group_permissions(user: User) -> list[dict[str, object]]:
 @login_required
 @permission_required("auth.add_user")
 def user_list(
-    request: HttpRequest, template_name: str = "custom_user/initial_page.html"
+    request: HttpRequest,
+    template_name: str = "custom_user/user_institution_list.html",
 ) -> HttpResponse:
     users = User.objects.filter(is_active=True).order_by("first_name", "last_name")
     institutions = Institution.objects.all().order_by("name")
@@ -49,7 +50,7 @@ def user_list(
 @login_required
 @permission_required("auth.add_user")
 def user_create(
-    request: HttpRequest, template_name: str = "custom_user/register_users.html"
+    request: HttpRequest, template_name: str = "custom_user/user_register.html"
 ) -> HttpResponse:
     form = UserForm(request.POST or None)
     profile_form = UserProfileForm(request.POST or None)
@@ -124,7 +125,7 @@ def user_create(
 def user_view(
     request: HttpRequest,
     user_id: int,
-    template_name: str = "custom_user/register_users.html",
+    template_name: str = "custom_user/user_register.html",
 ) -> HttpResponse:
     user: User = get_object_or_404(User, pk=user_id)
     form = UserFormUpdate(request.POST or None, instance=user)
@@ -164,7 +165,7 @@ def user_view(
 def user_update(
     request: HttpRequest,
     user_id: int,
-    template_name: str = "custom_user/register_users.html",
+    template_name: str = "custom_user/user_register.html",
 ) -> HttpResponse:
     user: User = get_object_or_404(User, pk=user_id)
 

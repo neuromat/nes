@@ -30,10 +30,10 @@ Several quick start options are available:
 	</div>
 	
 	<div class="col-xs-2">
-		<button type="button" id="multiselect_rightAll" class="btn btn-block"><i class="fa fa-forward"></i></button>
-		<button type="button" id="multiselect_rightSelected" class="btn btn-block"><i class="fa fa-chevron-right"></i></button>
-		<button type="button" id="multiselect_leftSelected" class="btn btn-block"><i class="fa fa-chevron-left"></i></button>
-		<button type="button" id="multiselect_leftAll" class="btn btn-block"><i class="fa fa-backward"></i></button>
+		<button type="button" id="multiselect_rightAll" class="btn btn-block"><i class="fa-fw fa fa-forward"></i></button>
+		<button type="button" id="multiselect_rightSelected" class="btn btn-block"><i class="fa-fw fa fa-chevron-right"></i></button>
+		<button type="button" id="multiselect_leftSelected" class="btn btn-block"><i class="fa-fw fa fa-chevron-left"></i></button>
+		<button type="button" id="multiselect_leftAll" class="btn btn-block"><i class="fa-fw fa fa-backward"></i></button>
 	</div>
 	
 	<div class="col-xs-5">

@@ -276,21 +276,21 @@ from .portal import (
 permission_required = partial(permission_required, raise_exception=True)
 
 icon_class: dict[str, str] = {
-    "block": "fa fa-th-large fa-fw",
-    "instruction": "fa fa-comment fa-fw",
-    "pause": "fa fa-clock-o fa-fw",
-    "questionnaire": "fa fa-list-alt fa-fw",
-    "stimulus": "fa fa-headphones fa-fw",
-    "task": "fa fa-check fa-fw",
-    "task_experiment": "fa fa-wrench fa-fw",
-    "eeg": "fa fa-flash fa-fw",
-    "emg": "fa fa-line-chart fa-fw",
-    "tms": "fa fa-magnet fa-fw",
-    "experimental_protocol": "fa fa-tasks fa-fw",
-    "digital_game_phase": "fa fa-play-circle fa-fw",
-    "generic_data_collection": "fa fa-file fa-fw",
-    "additional_data": "fa fa-puzzle-piece fa-fw",
-    "media_collection": "fa fa-camera fa-fw",
+    "block": "fa-fw fa fa-th-large",
+    "instruction": "fa-fw fa fa-comment",
+    "pause": "fa-fw fa fa-clock-o",
+    "questionnaire": "fa-fw fa fa-list-alt",
+    "stimulus": "fa-fw fa fa-headphones",
+    "task": "fa-fw fa fa-check",
+    "task_experiment": "fa-fw fa fa-wrench",
+    "eeg": "fa-fw fa fa-flash",
+    "emg": "fa-fw fa fa-line-chart",
+    "tms": "fa-fw fa fa-magnet",
+    "experimental_protocol": "fa-fw fa fa-tasks",
+    "digital_game_phase": "fa-fw fa fa-play-circle",
+    "generic_data_collection": "fa-fw fa fa-file",
+    "additional_data": "fa-fw fa fa-puzzle-piece",
+    "media_collection": "fa-fw fa fa-camera",
 }
 
 data_type_name: dict[str, str] = {

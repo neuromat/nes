@@ -165,7 +165,7 @@ def patient_create(
         "patient_form": patient_form,
         "telephone_formset": telephone_formset,
         "editing": True,
-        "inserting": True,
+        "creating": True,
         "currentTab": "0",
     }
 
@@ -710,19 +710,19 @@ def update_acquisition_date(limesurvey_id, token, questionnaire_response, langua
 
 @login_required
 @permission_required("patient.view_patient")
-def search_patient(request) -> HttpResponse:
+def search_patient(request: HttpRequest) -> HttpResponse:
     context = {"number_of_patients": Patient.objects.exclude(removed=True).count()}
 
     return render(request, "patient/busca.html", context)
 
 
 @login_required
-def advanced_search(request) -> HttpResponse:
+def advanced_search(request: HttpRequest) -> HttpResponse:
     return render(request, "patient/busca_avancada.html")
 
 
 @login_required
-def restore_patient(request, patient_id) -> HttpResponseRedirect:
+def restore_patient(request: HttpRequest, patient_id: int) -> HttpResponseRedirect:
     patient_restored: Patient = Patient.objects.get(id=patient_id)
     patient_restored.removed = False
     patient_restored.save()

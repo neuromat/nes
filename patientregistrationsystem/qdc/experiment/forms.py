@@ -252,7 +252,7 @@ class ComponentConfigurationForm(ModelForm):
         required=False,
         empty_value=None,
         choices=((False, _("Fixed")), (True, _("Random"))),
-        widget=RadioSelect(attrs={"id": "id_random_position"}),
+        widget=RadioSelect(attrs={"class":"form-check-input","id": "id_random_position"}),
     )
 
     class Meta:
@@ -484,6 +484,7 @@ class BlockForm(ModelForm):
         choices=(("sequence", _("Sequence")), ("parallel_block", _("Parallel"))),
         widget=RadioSelect(
             attrs={
+                "class": "form-check-input",
                 "id": "id_type",
                 "required": "",
                 "data-error": _("Organization type must be filled in."),

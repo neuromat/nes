@@ -20,12 +20,6 @@
         </nav>
     </div>
 
-    {% if export_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct the highlighted fields.'))
-        </script>
-    {% endif %}
-
     <div class="tab-pane fade show active" id="menuUserTab">
         {% if perms.patient.export_patient %}
             {% if questionnaires_fields_list %}
@@ -37,49 +31,36 @@
                             <label data-bs-toggle="tooltip" data-bs-placement="auto left"
                                     title="{% trans "At least one option must be selected" %}" for="directory_structure"
                                     class="form-label">{% trans "Information's organization for exportation of questionnaires data" %} </label>
-
                             <div class="form-group {% if export_form.errors.per_participant %}is-invalid{% endif %}">
-
-                                <div class="checkbox">
+                                <div class="form-check">
                                     {{ export_form.per_participant }}
-                                    <label for="per_participant"
-                                            class="form-label">
-                                        {% trans "Per participant" %}</label>
-                                        <div class="form-text with-errors"> </div>
+                                    <label for="per_participant" class="form-ckeck-label">{% trans "Per participant" %}</label>
+                                    <div class="form-text with-errors"></div>
                                 </div>
-
-                                    <div class="checkbox">
-                                        {{ export_form.per_questionnaire }}
-                                        <label for="per_questionnaire"
-                                                class="form-label">{% trans "Per questionnaire" %}</label>
-                                    </div>
-
-                                <div class="form-text with-errors">
-                                    {% for error in export_form.errors.per_questionnaire %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
+                                <div class="form-check">
+                                    {{ export_form.per_questionnaire }}
+                                    <label for="per_questionnaire" class="form-ckeck-label">{% trans "Per questionnaire" %}</label>
+                                    <div class="form-text with-errors"></div>
                                 </div>
-
+                                {% for error in export_form.errors.per_questionnaire %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
                             </div>
-
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-6 col-sm-6">
-                                    <label for="headings"
-                                        class="form-label">{% trans "Headings" %}</label>
-
+                            <label for="headings" class="form-label">{% trans "Headings" %}</label>
                             <div class="form-group {% if export_form.errors.headings %}is-invalid{% endif %}">
-                                    {% for radio in export_form.headings %}
-                                        <div class="radio">
-                                            {{ radio }}
-                                        </div>
-                                    {% endfor %}
+                                {% for radio in export_form.headings %}
+                                    <div class="radio">
+                                        {{ radio }}
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                         <div class="col-6 col-sm-6">
                             <label>{% trans "Responses" %}</label>
-
                             <div class="form-group {% if export_form.errors.responses %}is-invalid{% endif %}">
                                 {% for check in export_form.responses %}
                                     <div class="checkbox">
@@ -91,8 +72,7 @@
                     </div>
                     <div class="row">
                         <div class="col-6 col-sm-6">
-                            <label for="filesformat" class="form-label">{% trans "File format " %}
-                            </label>
+                            <label for="filesformat" class="form-label">{% trans "File format " %}</label>
                             <div class="form-group {% if export_form.errors.filesformat %}is-invalid{% endif %}">
                                 {% for check in export_form.filesformat %}
                                     <div class="checkbox">
@@ -116,30 +96,23 @@
                     <hr>
                     <div class="row">
                         <label class="form-label">{% trans "Questionnaire - Answered by participants" %} </label>
-
                         <div class="card-group" id="accordion">
                             {% for survey in questionnaires_fields_list %}
                                 <div class="card  ">
                                     <div class="card-header">
                                         <h9 class="card-title">
-                                            <a data-bs-toggle="collapse" data-bs-parent="#accordion"
-                                                href="#collapse_{{ survey.index }}">
-                                            <span style="background-color: #428bca" id="badge_{{ survey.index }}"
-                                                    class="badge.badge-pill">{{ survey.selected_counter }} </span> {{ survey.sid }}
-                                                - {{ survey.title }} </a>
+                                            <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_{{ survey.index }}">
+                                                <span style="background-color: #428bca" id="badge_{{ survey.index }}" class="badge.badge-pill">{{ survey.selected_counter }} </span> 
+                                                {{ survey.sid }} - {{ survey.title }} 
+                                            </a>
                                         </h9>
                                     </div>
-                                    <div id="collapse_{{ survey.index }}" class=" collapse">
+                                    <div id="collapse_{{ survey.index }}" class="collapse">
                                         <div class="card-body">
-
                                             <div class="col-lg-5 col-sm-12">
                                                 <div class="form-group">
-                                                    <label class="form-label">{% trans "Fields available:" %} </label>
-
-                                                    <select class="form-control" size="13"
-                                                            id="multiselect_{{ survey.index }}"
-                                                            name="from[]" multiple="multiple"
-                                                            data-bs-error={% trans "Please, select a questionnaire from the list." %}>
+                                                    <label class="form-label">{% trans "Fields available:" %}</label>
+                                                    <select class="form-control" size="13" id="multiselect_{{ survey.index }}" name="from[]" multiple="multiple" data-bs-error={% trans "Please, select a questionnaire from the list." %}>
                                                         {% for field in survey.output_list %}
                                                             {% if not field.selected %}
                                                                 <option title="{{ field.description }}"
@@ -147,34 +120,29 @@
                                                                     [{{ field.field }}] {{ field.description }}
                                                                 </option>
                                                             {% endif %}
-
                                                         {% endfor %}
                                                     </select>
-
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-2 col-sm-2">
                                                 <button type="button" id="multiselect_{{ survey.index }}_rightAll"
-                                                        class="btn btn-secondary btn-block"><i
-                                                        class="fa fa-forward"></i></button>
+                                                        class="btn btn-light btn-block"><i
+                                                        class="fa-fw fa fa-forward"></i></button>
                                                 <button type="button" id="multiselect_{{ survey.index }}_rightSelected"
-                                                        class="btn btn-secondary btn-block"><i
-                                                        class="fa fa-arrow-right"></i></button>
+                                                        class="btn btn-light btn-block"><i
+                                                        class="fa-fw fa fa-arrow-right"></i></button>
                                                 <button type="button" id="multiselect_{{ survey.index }}_leftSelected"
-                                                        class="btn btn-secondary btn-block"><i
-                                                        class="fa fa-arrow-left"></i></button>
+                                                        class="btn btn-light btn-block"><i
+                                                        class="fa-fw fa fa-arrow-left"></i></button>
                                                 <button type="button" id="multiselect_{{ survey.index }}_leftAll"
-                                                        class="btn btn-secondary btn-block"><i
-                                                        class="fa fa-backward"></i></button>
+                                                        class="btn btn-light btn-block"><i
+                                                        class="fa-fw fa fa-backward"></i></button>
                                             </div>
 
                                             <div class="col-lg-5 col-sm-10">
                                                 <label class="form-label">{% trans "Fields chosen:" %} </label>
-
-                                                <select name="to[]" id="multiselect_{{ survey.index }}_to"
-                                                        class="form-control" size="13"
-                                                        multiple="multiple">
+                                                <select name="to[]" id="multiselect_{{ survey.index }}_to" class="form-control" size="13" multiple="multiple">
                                                     {% for field in survey.output_list %}
                                                         {% if field.selected %}
                                                             <option title="{{ field.description }}"
@@ -183,18 +151,14 @@
                                                             </option>
                                                         {% endif %}
                                                     {% endfor %}
-
                                                 </select>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
                             {% endfor %}
                         </div>
-
                     </div>
-
                 </div>
             {% endif %}
         {% endif %}
@@ -207,15 +171,14 @@
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
                             <label class="form-label">{% trans "Participant fields" %} </label>
-                            <select class="form-control" size="13" id="patient_selected" name="patient_selected"
-                                    multiple="multiple"
+                            <select class="form-control" size="13" id="patient_selected" name="patient_selected" multiple="multiple"
                                     data-bs-error={% trans "Please, select a patient field from the list." %}>
                                 {% for field in patient_fields %}
                                     <option {% if field.field in selected_participant %}selected{% endif %}
                                             value="{{ field.field }}*{{ field.header }}"> {{ field.description }} </option>
                                 {% endfor %}
                             </select>
-                                <label class="form-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
+                            <label class="form-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %}</label>
                         </div>
                     </div>
                 </div>
@@ -229,9 +192,8 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Diagnosis fields" %} </label>
-                            <select class="form-control" size="8" id="diagnosis_selected" name="diagnosis_selected"
-                                    multiple="multiple"
+                            <label class="form-label">{% trans "Diagnosis fields" %}</label>
+                            <select class="form-control" size="8" id="diagnosis_selected" name="diagnosis_selected" multiple="multiple"
                                     data-bs-error={% trans "Please, select a diagnosis field from the list." %}>
                                 {% for field in diagnosis_fields %}
                                     <option {% if field.field in selected_diagnosis %}selected{% endif %}
@@ -245,7 +207,7 @@
             {% endif %}
         </div>
 
-        <div class="btn-toolbar justify-content-between">
+        <div class="btn-toolbar justify-content-between"  role="toolbar">
             <div class="btn-group float-start">
                 <button type="submit" class="btn btn-primary" name="action" value="run" onclick="return onClickRun();">
                     {% trans "Run" %}
@@ -265,4 +227,9 @@
 {% block extrascript %}
     <script src="{% static 'site/multiselect/multiselect.min.js' %}"></script>
     <script src="{% static 'site/js/questionnaire_export.js' %}"></script>
+    {% if export_form.errors %}
+        <script type="text/javascript">
+            showErrorMessage(gettext('Please, correct the highlighted fields.'))
+        </script>
+    {% endif %}
 {% endblock extrascript %}

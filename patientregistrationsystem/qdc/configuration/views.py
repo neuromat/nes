@@ -7,7 +7,7 @@ from .models import UsefulLink
 
 @login_required
 def useful_links_view(
-    request: HttpRequest, template_name: str = "configuration/links.html"
+    request: HttpRequest, template_name: str = "configuration/links_list.html"
 ) -> HttpResponse:
     useful_links = UsefulLink.objects.all()
 

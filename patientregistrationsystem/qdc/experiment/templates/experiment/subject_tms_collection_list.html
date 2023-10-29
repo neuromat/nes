@@ -94,13 +94,13 @@
                                                         <td>{{ tms_data_file.date }}</td>
                                                         <td>{{ tms_data_file.file_format.name }}</td>
                                                         <td>{{ tms_data_file.file.size|filesizeformat }}</td>
-                                                        <td><a href="{{ tms_data_file.file.url }}"><span class="fa fa-download"></span></a></td>
+                                                        <td><a href="{{ tms_data_file.file.url }}"><span class="fa-fw fa fa-download"></span></a></td>
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
                                                     <td colspan="5">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms/{% for item in tms_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_tms_data">
-                                                        <span class="fa fa-plus"></span>
+                                                        <span class="fa-fw fa fa-plus"></span>
                                                             {% trans "New TMS data file" %}
                                                         </a>
                                                     </td>

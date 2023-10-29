@@ -83,13 +83,13 @@ class ParticipantsSelectionForm(ModelForm):
         ]
 
         widgets = {
-            "gender": SelectMultiple(attrs={"class": "form-control", "disabled": ""}),
+            "gender": SelectMultiple(attrs={"class": "form-select", "disabled": ""}),
             "marital_status": SelectMultiple(
-                attrs={"class": "form-control", "disabled": ""}
+                attrs={"class": "form-select", "disabled": ""}
             ),
-            "country": SelectMultiple(attrs={"class": "form-control", "disabled": ""}),
-            "state": SelectMultiple(attrs={"class": "form-control", "disabled": ""}),
-            "city": SelectMultiple(attrs={"class": "form-control", "disabled": ""}),
+            "country": SelectMultiple(attrs={"class": "form-select", "disabled": ""}),
+            "state": SelectMultiple(attrs={"class": "form-select", "disabled": ""}),
+            "city": SelectMultiple(attrs={"class": "form-select", "disabled": ""}),
         }
 
     def __init__(self, *args, **kwargs) -> None:
@@ -170,6 +170,6 @@ class DiagnosisSelectionForm(ModelForm):
 
         widgets = {
             "description": SelectMultiple(
-                attrs={"class": "form-control", "required": "", "disabled": ""}
+                attrs={"class": "form-select", "required": "", "disabled": ""}
             ),
         }

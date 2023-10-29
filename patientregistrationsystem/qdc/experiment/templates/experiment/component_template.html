@@ -83,7 +83,7 @@
                                 <label class="form-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
                             {% endif %}
                             <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-bs-toggle="dropdown" aria-expanded="true">
+                                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenu1" data-bs-toggle="dropdown" aria-expanded="true">
                                     {% if component_form.identification.value %}
                                         {{ component_form.identification.value }}
                                     {% else %}
@@ -161,7 +161,7 @@
                                         <tr>
                                         <td>{{ additional_file.file.url }}</td>
                                         <td>
-                                            <button class="btn btn-secondary" type="button" onclick="location.href='{{ additional_file.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                            <button class="btn btn-light" type="button" onclick="location.href='{{ additional_file.file.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
                                         </td>
                                         <td>{{ additional_file.file.size|filesizeformat }}</td>
                                         {% if not component_configuration %}
@@ -350,7 +350,7 @@
                         {% trans "Are you sure you want to delete step?" %}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                         <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                     </div>
                 </div>
@@ -366,7 +366,7 @@
                     {% trans "This experiment/project is in use, you can not change it! Do you want to copy this experiment?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
                 </div>
             </div>

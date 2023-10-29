@@ -133,11 +133,11 @@
                                 <input id="research_project_id" value="{{ research_project.id }}" style="display: none;">
                                 <div class="form-group">
                                     {% for keyword in keywords %}
-                                        <button type="button" class="btn btn-secondary unbuttonmize">
+                                        <button type="button" class="btn btn-light unbuttonmize">
                                             {{ keyword.name }}
                                             {% if can_change %}
                                                 <a href="/experiment/keyword/remove/{{ research_project.id }}/{{keyword.id}}">
-                                                    <span class="fa fa-remove" data-bs-toggle="tooltip"
+                                                    <span class="fa-fw fa fa-remove" data-bs-toggle="tooltip"
                                                           style="color: indianred; vertical-align: -10%;" title="{% trans "Delete" %}" />
                                                 </a>
                                             {% endif %}
@@ -147,7 +147,7 @@
                                 {% if can_change %}
                                     <div class="form-group">
                                         <div class="input-group input-group-sm">
-                                            <span class="input-group-text"><span class="fa fa-search"></span></span>
+                                            <span class="input-group-text"><span class="fa-fw fa fa-search"></span></span>
                                             <input class="form-control" placeholder="
                                                     {% trans "Type a keyword to include an existent or new" %}"
                                                    id="keywords" type="text" autocomplete="off" maxlength="50">
@@ -187,13 +187,13 @@
                                         {{ experiment.title }}
                                         {% endif %}
                                     <td>{{ experiment.description }}</td>
-                                    <td style="text-align: center"><button type="submit" class="btn" name="action" value="create_pdf-{{ experiment.id }}" style="background:transparent; border:none"><i class="fa fa-file-pdf-o"></i></button></td>
+                                    <td style="text-align: center"><button type="submit" class="btn" name="action" value="create_pdf-{{ experiment.id }}" style="background:transparent; border:none"><i class="fa-fw fa fa-file-pdf-o"></i></button></td>
                                     <td style="text-align: center"><a class="btn" data-bs-toggle="modal" data-bs-experiment_id="{{ experiment.id }}"
-                                            href="#modalCopyExperiment"><i class="fa fa-copy"></i></a></td>
+                                            href="#modalCopyExperiment"><i class="fa-fw fa fa-copy"></i></a></td>
 {#                                    Commented out until a safe export/import tool is done #}
 {#                                    {% if not editing and can_change %}#}
 {#                                        <td style="text-align: center"><a class="btn" data-bs-toggle="modal" data-bs-experiment_id="{{ experiment.id }}"#}
-{#                                                                          href="/experiment/{{ experiment.id }}/export"><i class="fa fa-download"></i></a></td>#}
+{#                                                                          href="/experiment/{{ experiment.id }}/export"><i class="fa-fw fa fa-download"></i></a></td>#}
 {#                                    {% endif %}#}
                                 </tr>
                             {% endfor %}
@@ -206,7 +206,7 @@
                         </div>
 {#                        Commented out until a safe export/import tool is done #}
 {#                        <div class="tn-group float-end">#}
-{#                            <a href="/experiment/import/{{ research_project.id }}" class="btn btn-secondary"><i class="fa fa-upload"></i> {% trans "Import Experiment" %}</a>#}
+{#                            <a href="/experiment/import/{{ research_project.id }}" class="btn btn-light"><i class="fa-fw fa fa-upload"></i> {% trans "Import Experiment" %}</a>#}
 {#                        </div>#}
                     {% endif %}
                 </div>
@@ -243,7 +243,7 @@
                     {% trans "Are you sure you want to delete study?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -258,7 +258,7 @@
                     {% trans "Are you sure you want to remove this collaborator from this team?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" name="action" value="remove-" id="removeCollaborator">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -274,7 +274,7 @@
                     {% trans "Are you sure you want to change the coordinator status for this collaborator?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" name="action" value="is_coordinator-" id="changeCollIsCoordinator">{% trans "Change is_coordinator" %}</button>
                 </div>
             </div>
@@ -290,7 +290,7 @@
                     <input id="id_experiment_hidden" type="hidden" name="experiment_id">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment_with_data" name="action">{% trans "Copy experiment/project with data" %}</button>
                 </div>

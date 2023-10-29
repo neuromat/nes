@@ -4,6 +4,7 @@ from django.core.validators import EMPTY_VALUES
 from django.forms import (
     DateInput,
     ModelForm,
+    NullBooleanSelect,
     RadioSelect,
     Select,
     TextInput,
@@ -20,6 +21,8 @@ from patient.models import (
     SocialHistoryData,
     Telephone,
 )
+
+NULLBOOLEAN_CHOICE = ((True, _("Yes")), (False, _("No")), (None, _("Unknown")))
 
 
 class PatientForm(ModelForm):
@@ -74,7 +77,6 @@ class PatientForm(ModelForm):
             "medical_record": TextInput(attrs={"class": "form-control"}),
             "date_birth": TextInput(
                 # format=_("%m/%d/%Y"),
-                # format="%Y-%m-%d",
                 attrs={
                     "type": "date",
                     "pattern": r"\d{4}-\d{2}-\d{2}",
@@ -113,7 +115,6 @@ class PatientForm(ModelForm):
                     "class": "form-control",
                     "type": "email",
                     "data-error": _("Incorrect e-mail"),
-                    "pattern": r"^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$",
                 }
             ),
         }
@@ -152,7 +153,11 @@ class SocialDemographicDataForm(ModelForm):
         required=False,
         empty_value=None,
         choices=((True, _("Yes")), (False, _("No"))),
-        widget=RadioSelect,
+        widget=RadioSelect(
+            attrs={
+                "class": "form-check-input",
+            }
+        ),
     )
 
     class Meta:
@@ -194,31 +199,58 @@ class SocialDemographicDataForm(ModelForm):
             ),
             "payment": Select(attrs={"class": "form-select"}),
             "tv": RadioSelect(
-                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
+                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +"))),
+                attrs={
+                    "class": "form-check-input",
+                },
             ),
             "dvd": RadioSelect(
-                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
+                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +"))),
+                attrs={
+                    "class": "form-check-input",
+                },
             ),
             "radio": RadioSelect(
-                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
+                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +"))),
+                attrs={
+                    "class": "form-check-input",
+                },
             ),
             "bath": RadioSelect(
-                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
+                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +"))),
+                attrs={
+                    "class": "form-check-input",
+                },
             ),
             "automobile": RadioSelect(
-                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
+                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +"))),
+                attrs={
+                    "class": "form-check-input",
+                },
             ),
             "house_maid": RadioSelect(
-                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
+                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +"))),
+                attrs={
+                    "class": "form-check-input",
+                },
             ),
             "wash_machine": RadioSelect(
-                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
+                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +"))),
+                attrs={
+                    "class": "form-check-input",
+                },
             ),
             "refrigerator": RadioSelect(
-                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
+                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +"))),
+                attrs={
+                    "class": "form-check-input",
+                },
             ),
             "freezer": RadioSelect(
-                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
+                choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +"))),
+                attrs={
+                    "class": "form-check-input",
+                },
             ),
             "social_class": TextInput(attrs={"class": "form-control", "readonly": ""}),
         }
@@ -228,20 +260,34 @@ class SocialHistoryDataForm(ModelForm):
     smoker = TypedChoiceField(
         required=False,
         empty_value=None,
-        choices=((True, _("Yes")), (False, _("No"))),
-        widget=RadioSelect(attrs={"id": "id_smoker"}),
+        choices=NULLBOOLEAN_CHOICE,
+        widget=RadioSelect(
+            attrs={
+                "class": "form-check-input",
+                "id": "id_smoker",
+            }
+        ),
     )
     ex_smoker = TypedChoiceField(
         required=False,
         empty_value=None,
-        choices=((True, _("Yes")), (False, _("No"))),
-        widget=RadioSelect,
+        choices=NULLBOOLEAN_CHOICE,
+        widget=Select(
+            attrs={
+                "class": "form-select",
+            }
+        ),
     )
     alcoholic = TypedChoiceField(
         required=False,
         empty_value=None,
-        choices=((True, _("Yes")), (False, _("No"))),
-        widget=RadioSelect(attrs={"id": "id_alcoholic"}),
+        choices=NULLBOOLEAN_CHOICE,
+        widget=RadioSelect(
+            attrs={
+                "class": "form-check-input",
+                "id": "id_alcoholic",
+            }
+        ),
     )
 
     class Meta:
@@ -257,25 +303,26 @@ class SocialHistoryDataForm(ModelForm):
             "medical_drugs_history",
         ]
 
-        widgets = dict(
-            amount_cigarettes=Select(attrs={"class": "form-select"}),
-            alcohol_frequency=Select(attrs={"class": "form-select"}),
-            alcohol_period=Select(attrs={"class": "form-select"}),
-            drugs=RadioSelect(
-                attrs={"class": "radio-inline"},
+        widgets = {
+            "amount_cigarettes": Select(attrs={"class": "form-select"}),
+            "alcohol_frequency": Select(attrs={"class": "form-select"}),
+            "alcohol_period": Select(attrs={"class": "form-select"}),
+            "drugs": RadioSelect(
+                attrs={"class": "form-check-input"},
                 choices=(
                     ("ja_fez", _("Have already used")),
                     ("faz", _("It is using")),
                     ("nunca_fez", _("Have never used")),
+                    (None, _("Unknown")),
                 ),
             ),
-            medical_drugs_history=Textarea(
+            "medical_drugs_history": Textarea(
                 attrs={
                     "class": "form-control",
                     "rows": "4",
                 }
             ),
-        )
+        }
 
 
 class ComplementaryExamForm(ModelForm):

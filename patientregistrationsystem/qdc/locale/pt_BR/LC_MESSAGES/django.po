@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 18:33-0300\n"
+"POT-Creation-Date: 2023-10-29 15:33-0300\n"
 "PO-Revision-Date: 2023-10-02 12:49-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: \n"
@@ -678,6 +678,7 @@ msgstr "Pesquisador sênior"
 msgid "Administrator"
 msgstr "Administrador"
 
+#: configuration/templates/configuration/links_list.html:11
 #: htmlcov/d_1772f315d8b1e381_initial_page_html.html:118
 #: htmlcov/d_1772f315d8b1e381_institution_register_html.html:131
 #: htmlcov/d_1772f315d8b1e381_register_users_html.html:153
@@ -795,11 +796,23 @@ msgstr "Administrador"
 #: htmlcov/d_bcb2277edd30523d_tmsdevice_register_html.html:131
 #: htmlcov/d_bcb2277edd30523d_upload_consent_form_html.html:101
 #: htmlcov/d_e1554248f326aeeb_send_to_plugin_html.html:112
-#: templates/404.html:14 templates/base/template.html:178
-#: templates/registration/change_password_custom.html:70
+#: templates/base/template.html:107
+#: templates/registration/change_password_custom.html:68
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr "Home"
+
+#: configuration/templates/configuration/links_list.html:13
+#: configuration/templates/configuration/links_list.html:20
+#: templates/base/template.html:171
+msgid "Useful Links"
+msgstr ""
+
+#: configuration/templates/configuration/links_list.html:33
+#, fuzzy
+#| msgid "Add login"
+msgid "Add new link"
+msgstr "Adicionar login"
 
 #: htmlcov/d_1772f315d8b1e381_initial_page_html.html:119
 #: htmlcov/d_1772f315d8b1e381_institution_register_html.html:132
@@ -813,7 +826,7 @@ msgstr "Remover instituição"
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:304
 #: htmlcov/d_bcb2277edd30523d_experiment_info_pdf_html.html:133
 #: htmlcov/d_bcb2277edd30523d_experiment_register_html.html:321
-#: templates/base/template.html:222
+#: templates/base/template.html:141
 #, fuzzy
 #| msgid "Junior researcher"
 msgid "Researchers"
@@ -834,7 +847,7 @@ msgstr "Pesquisador júnior"
 #: htmlcov/d_1772f315d8b1e381_initial_page_html.html:144
 #: htmlcov/d_2f542d571ea58f21_password_reset_form_html.html:144
 #: htmlcov/d_46dc5d3bdba28ec2_register_personal_data_html.html:328
-#: templates/registration/password_reset_form.html:60
+#: templates/registration/password_reset_form.html:35
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -1213,7 +1226,7 @@ msgstr "Remover instituição"
 #: htmlcov/d_bcb2277edd30523d_tms_setting_register_html.html:239
 #: htmlcov/d_bcb2277edd30523d_tmsdevice_new_html.html:254
 #: htmlcov/d_bcb2277edd30523d_tmsdevice_register_html.html:217
-#: templates/registration/change_password_custom.html:65
+#: templates/registration/change_password_custom.html:63
 msgid "Save"
 msgstr "Salvar"
 
@@ -1483,7 +1496,7 @@ msgstr "Cancelar"
 #: htmlcov/d_bcb2277edd30523d_tmsdevice_new_html.html:262
 #: htmlcov/d_bcb2277edd30523d_tmsdevice_register_html.html:225
 #: htmlcov/d_bcb2277edd30523d_upload_consent_form_html.html:178
-#: templates/404.html:28
+#: templates/404.html:13
 msgid "Back"
 msgstr "Voltar"
 
@@ -1674,7 +1687,7 @@ msgstr ""
 #: htmlcov/d_1772f315d8b1e381_register_users_html.html:271
 #: htmlcov/d_2f542d571ea58f21_login_html.html:111
 #: htmlcov/d_2f542d571ea58f21_login_html.html:112
-#: templates/registration/login.html:27 templates/registration/login.html:28
+#: templates/registration/login.html:29 templates/registration/login.html:30
 msgid "Password"
 msgstr "Senha"
 
@@ -1717,9 +1730,8 @@ msgstr "Desativar"
 #: htmlcov/d_23706cd3ae827b4c_contato_html.html:123
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:98
 #: htmlcov/d_2f542d571ea58f21_password_reset_form_html.html:93
-#: templates/base/contato.html:18 templates/base/template.html:15
+#: templates/base/contato.html:17 templates/base/template.html:13
 #: templates/base/template_registration.html:13
-#: templates/registration/password_reset_form.html:9
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociência - NES"
 
@@ -1731,34 +1743,34 @@ msgid ""
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:192
-#: templates/base/template.html:109
+#: templates/base/template.html:36
 msgid "NES"
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:235
-#: templates/base/template.html:152
+#: templates/base/template.html:75
 msgid "Admin"
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:237
-#: templates/base/template.html:154
+#: templates/base/template.html:77
 msgid "Change password"
 msgstr "Alterar senha"
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:238
-#: templates/base/template.html:155
+#: templates/base/template.html:78
 msgid "Help"
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:239
 #: htmlcov/d_2f542d571ea58f21_change_password_custom_html.html:156
-#: templates/base/template.html:156
-#: templates/registration/change_password_custom.html:72
+#: templates/base/template.html:79
+#: templates/registration/change_password_custom.html:70
 msgid "Logout"
 msgstr "Logout"
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:266
-#: templates/base/template.html:184
+#: templates/base/template.html:111
 msgid "Add people that participated in the experiments"
 msgstr ""
 
@@ -1768,13 +1780,13 @@ msgstr ""
 #: htmlcov/d_bb88c438714908a8_export_data_html.html:320
 #: htmlcov/d_bb88c438714908a8_export_experiment_data_html.html:518
 #: htmlcov/d_bcb2277edd30523d_data_collection_manage_html.html:107
-#: templates/base/template.html:186
+#: templates/base/template.html:113
 msgid "Participants"
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:275
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:284
-#: templates/base/template.html:193 templates/base/template.html:202
+#: templates/base/template.html:118 templates/base/template.html:125
 msgid "Add publications"
 msgstr ""
 
@@ -1833,20 +1845,20 @@ msgstr ""
 #: htmlcov/d_bcb2277edd30523d_tms_setting_tms_device_html.html:131
 #: htmlcov/d_bcb2277edd30523d_upload_consent_form_html.html:102
 #: processing/templates/processing/file_selection.html:42
-#: templates/base/template.html:195
+#: templates/base/template.html:120
 msgid "Studies"
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:286
 #: htmlcov/d_bcb2277edd30523d_publication_list_html.html:119
 #: htmlcov/d_bcb2277edd30523d_publication_register_html.html:140
-#: templates/base/template.html:204
+#: templates/base/template.html:127
 msgid "Publications"
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:293
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:302
-#: templates/base/template.html:211 templates/base/template.html:220
+#: templates/base/template.html:132 templates/base/template.html:139
 msgid "Add users and institutions to the database"
 msgstr ""
 
@@ -1855,14 +1867,14 @@ msgstr ""
 #: htmlcov/d_42f34dee39c00e26_survey_sensitive_fields_html.html:103
 #: htmlcov/d_46dc5d3bdba28ec2_register_html.html:141
 #: htmlcov/d_46dc5d3bdba28ec2_register_html.html:154
-#: templates/base/template.html:213
+#: templates/base/template.html:134
 #, fuzzy
 #| msgid "Can add questionnaire"
 msgid "Questionnaires"
 msgstr "Pode adicionar questinário"
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:311
-#: templates/base/template.html:229
+#: templates/base/template.html:146
 msgid "Export your projects"
 msgstr ""
 
@@ -1872,12 +1884,12 @@ msgstr ""
 #: htmlcov/d_bb88c438714908a8_export_experiment_data_html.html:132
 #: htmlcov/d_bb88c438714908a8_export_menu_html.html:119
 #: htmlcov/d_bb88c438714908a8_show_selected_participants_html.html:103
-#: templates/base/template.html:231
+#: templates/base/template.html:148
 msgid "Export"
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:320
-#: templates/base/template.html:238
+#: templates/base/template.html:153
 msgid "Here you can setup the equipments used in the projects"
 msgstr ""
 
@@ -1927,31 +1939,31 @@ msgstr ""
 #: htmlcov/d_bcb2277edd30523d_tmsdevice_list_html.html:119
 #: htmlcov/d_bcb2277edd30523d_tmsdevice_new_html.html:132
 #: htmlcov/d_bcb2277edd30523d_tmsdevice_register_html.html:132
-#: templates/base/template.html:240
+#: templates/base/template.html:155
 msgid "Set up"
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:332
 #: htmlcov/d_e1554248f326aeeb_send_to_plugin_html.html:113
 #: htmlcov/d_e1554248f326aeeb_send_to_plugin_html.html:140
-#: templates/base/template.html:252
+#: templates/base/template.html:165
 msgid "Plugin"
 msgstr ""
 
 #: htmlcov/d_23706cd3ae827b4c_template_html.html:342
-#: templates/base/template.html:269
+#: templates/base/template.html:179
 msgid "Please enable Javascript"
 msgstr ""
 
 #: htmlcov/d_2f542d571ea58f21_change_password_custom_html.html:103
-#: templates/registration/change_password_custom.html:19
+#: templates/registration/change_password_custom.html:18
 msgid "Password change"
 msgstr "Alterar senha"
 
 #: htmlcov/d_2f542d571ea58f21_change_password_custom_html.html:125
 #: htmlcov/d_2f542d571ea58f21_password_reset_confirm_html.html:168
-#: templates/registration/change_password_custom.html:41
-#: templates/registration/password_reset_confirm.html:84
+#: templates/registration/change_password_custom.html:40
+#: templates/registration/password_reset_confirm.html:23
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
@@ -1976,12 +1988,12 @@ msgid "User"
 msgstr "Usuário"
 
 #: htmlcov/d_2f542d571ea58f21_login_html.html:116
-#: templates/registration/login.html:32
+#: templates/registration/login.html:35
 msgid "Login"
 msgstr "Fazer login"
 
 #: htmlcov/d_2f542d571ea58f21_login_html.html:122
-#: templates/registration/login.html:38
+#: templates/registration/login.html:40
 msgid "I forgot my password"
 msgstr "Esqueci minha senha"
 
@@ -2043,28 +2055,28 @@ msgstr "Acessar"
 
 #: htmlcov/d_2f542d571ea58f21_password_reset_confirm_html.html:165
 #: htmlcov/d_2f542d571ea58f21_password_reset_form_html.html:150
-#: templates/registration/password_reset_confirm.html:81
-#: templates/registration/password_reset_form.html:66
+#: templates/registration/password_reset_confirm.html:20
+#: templates/registration/password_reset_form.html:41
 msgid "Reset password"
 msgstr "Redefinir senha"
 
 #: htmlcov/d_2f542d571ea58f21_password_reset_confirm_html.html:169
-#: templates/registration/password_reset_confirm.html:85
+#: templates/registration/password_reset_confirm.html:24
 msgid "New password"
 msgstr "Nova senha"
 
 #: htmlcov/d_2f542d571ea58f21_password_reset_confirm_html.html:172
-#: templates/registration/password_reset_confirm.html:88
+#: templates/registration/password_reset_confirm.html:27
 msgid "Confirm password"
 msgstr "Confirmar senha"
 
 #: htmlcov/d_2f542d571ea58f21_password_reset_confirm_html.html:174
-#: templates/registration/password_reset_confirm.html:90
+#: templates/registration/password_reset_confirm.html:29
 msgid "Confirm"
 msgstr "Confirmar"
 
 #: htmlcov/d_2f542d571ea58f21_password_reset_confirm_html.html:177
-#: templates/registration/password_reset_confirm.html:93
+#: templates/registration/password_reset_confirm.html:32
 msgid "Password reset failed."
 msgstr "Redefinição de senha falhou."
 
@@ -2095,12 +2107,12 @@ msgid ""
 msgstr ""
 
 #: htmlcov/d_2f542d571ea58f21_password_reset_done_html.html:102
-#: templates/registration/password_reset_done.html:18
+#: templates/registration/password_reset_done.html:13
 msgid "You should receive it soon."
 msgstr "Você deve recebê-lo em breve."
 
 #: htmlcov/d_2f542d571ea58f21_password_reset_form_html.html:137
-#: templates/registration/password_reset_form.html:53
+#: templates/registration/password_reset_form.html:28
 msgid "Please enter your e-mail to receive instructions for password reset."
 msgstr ""
 "Especifique seu e-mail para receber as instruções para redefinição de senha."
@@ -2132,7 +2144,7 @@ msgstr "Pode adicionar questinário"
 #, fuzzy
 #| msgid "Can delete questionnaire response"
 msgid "Please, select a questionnaire from the list."
-msgstr "Pode remover respostas do questionário"
+msgstr "Por favor, selecione um questionario da lista"
 
 #: htmlcov/d_42f34dee39c00e26_survey_register_html.html:145
 msgid "Required fill"
@@ -2151,22 +2163,20 @@ msgid "See more details in"
 msgstr ""
 
 #: htmlcov/d_42f34dee39c00e26_survey_register_html.html:169
-#, fuzzy
-#| msgid "Institutions"
 msgid "Sensitive questions"
-msgstr "Instituições"
+msgstr ""
 
 #: htmlcov/d_42f34dee39c00e26_survey_register_html.html:176
 #, fuzzy
 #| msgid "Can add questionnaire"
 msgid "Question code"
-msgstr "Pode adicionar questinário"
+msgstr "Codigo de Pergunta"
 
 #: htmlcov/d_42f34dee39c00e26_survey_register_html.html:177
 #, fuzzy
 #| msgid "Can add questionnaire"
 msgid "Question"
-msgstr "Pode adicionar questinário"
+msgstr "Pergunta"
 
 #: htmlcov/d_42f34dee39c00e26_survey_register_html.html:203
 msgid "Answered by participants"
@@ -2201,7 +2211,7 @@ msgstr ""
 #: htmlcov/d_bcb2277edd30523d_subjects_html.html:235
 #: htmlcov/d_bcb2277edd30523d_upload_consent_form_html.html:106
 msgid "Participant"
-msgstr ""
+msgstr "Participante"
 
 #: htmlcov/d_42f34dee39c00e26_survey_register_html.html:211
 #: htmlcov/d_42f34dee39c00e26_survey_register_html.html:299
@@ -6622,30 +6632,38 @@ msgstr ""
 msgid "No group(s) selected!"
 msgstr ""
 
-#: templates/404.html:20
+#: templates/404.html:8
 msgid "404 Page Not Found"
 msgstr "404 Página Não Encontrada"
 
-#: templates/404.html:21
+#: templates/404.html:9
 msgid "This page does not exist yet!"
 msgstr "Esta página ainda não existe!"
 
-#: templates/base/contato.html:22
+#: templates/base/contato.html:19
 msgid ""
 "Welcome to NES! If you need help you can check the <a href='https://nes."
 "readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. "
 "<br>Please report any bug to the admin."
 msgstr ""
 
-#: templates/base/template.html:258
+#: templates/base/template.html:87
+msgid "Light Theme"
+msgstr ""
+
+#: templates/base/template.html:88
+msgid "Dark Theme"
+msgstr ""
+
+#: templates/base/template.html:169
 msgid "Useful links of tools"
 msgstr ""
 
-#: templates/base/template.html:260
-msgid "Useful Links"
+#: templates/registration/login.html:24
+msgid "Username must contain only letters, numbers and periods(.)"
 msgstr ""
 
-#: templates/registration/password_define_email.html:5
+#: templates/registration/password_define_email.html:4
 msgid ""
 "Hi, is everything ok?\n"
 "\n"
@@ -6663,7 +6681,7 @@ msgstr ""
 "    Por favor, vá para a seguinte página e entre com uma senha:\n"
 "    "
 
-#: templates/registration/password_define_email.html:16
+#: templates/registration/password_define_email.html:14
 #, python-format
 msgid ""
 "Your username: %(user.username)s\n"
@@ -6688,7 +6706,7 @@ msgstr ""
 "Sua senha foi configurada com sucesso.\n"
 "            Acesse o sistema utilizando suas novas credenciais."
 
-#: templates/registration/password_reset_confirm.html:94
+#: templates/registration/password_reset_confirm.html:33
 msgid ""
 "Invalid link for password reset, possibly because this link has already been "
 "used previously. <br/>\n"
@@ -6698,7 +6716,7 @@ msgstr ""
 "foi usado anteriormente. <br/>\n"
 "                Por favor, faça uma nova requisição de redefinição de senha."
 
-#: templates/registration/password_reset_done.html:16
+#: templates/registration/password_reset_done.html:11
 msgid ""
 "We sent you a message with instructions to set up your password\n"
 "            for the e-mail provided. "
@@ -6708,13 +6726,22 @@ msgstr ""
 "            e-mail informado. "
 
 #: templates/registration/password_reset_email.html:4
+#, fuzzy
+#| msgid ""
+#| "Hi, is everything ok?\n"
+#| "\n"
+#| "        You are receiving this e-mail because you requested a password "
+#| "reset for your user account.\n"
+#| "\n"
+#| "        Please, go to the next page and enter a new password:\n"
+#| "    "
 msgid ""
 "Hi, is everything ok?\n"
 "\n"
-"        You are receiving this e-mail because you requested a password reset "
-"for your user account.\n"
+"    You are receiving this e-mail because you requested a password reset for "
+"your user account.\n"
 "\n"
-"        Please, go to the next page and enter a new password:\n"
+"    Please, go to the next page and enter a new password:\n"
 "    "
 msgstr ""
 "Ola tudo bem?\n"

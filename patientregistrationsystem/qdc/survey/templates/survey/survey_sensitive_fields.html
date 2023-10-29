@@ -6,8 +6,8 @@
 {% block activeAdvancedSurvey %} active{% endblock activeAdvancedSurvey %}
 
 {% block form %}
-        <form id="survey_form" method="post" data-bs-toggle="validator">
-            {% csrf_token %}
+    <form id="survey_form" method="post" data-bs-toggle="validator">
+        {% csrf_token %}
 {% endblock form %}
 
 {% block content %}

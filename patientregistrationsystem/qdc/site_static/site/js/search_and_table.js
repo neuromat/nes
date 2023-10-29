@@ -14,7 +14,7 @@ function pagination(data, page) {
 
 function searchSuccessPatient(data, textStatus, jqXHR) {
     //dataResults = data.split(/<li>/).map(row => row = "<li class="list-group-item">" + row)
-    dataResults = data.split(/<li>/).map(row => row = "" + row.replace("<a", "<a class='list-group-item'").replace("</li>", ""));
+    dataResults = data.split(/<li>/).map(row => row = "" + row.replace("<a", "<a class='list-group-item list-group-item-action'").replace("</li>", ""));
     dataResults.shift();
     totalPages = Math.ceil(dataResults.length / RESULTS_PER_PAGE);
     list.html(pagination(dataResults, 1));

@@ -41,7 +41,7 @@
                     <ul class="navbar-nav ms-auto">
                         {% if perms.configuration.upgrade_rights and if_upgrade %}
                             <li class="nav-item">
-                                <a href="/home/upgrade_nes/" class="nav-link"><span class="fa fa-download fa-fw"></span>Upgrade_nes</a>
+                                <a href="/home/upgrade_nes/" class="nav-link"><span class="fa-fw fa fa-download"></span>Upgrade_nes</a>
                             </li>
                         {% endif %}
                         <li class="nav-item dropdown">
@@ -51,14 +51,14 @@
 
                             <input id="language" name="language" type="hidden">
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                <span class="fa fa-globe fa-fw"></span> {{ LANGUAGE_CODE|language_name_local }}
+                                <span class="fa-fw fa fa-globe"></span> {{ LANGUAGE_CODE|language_name_local }}
                             </a> 
                             
                             <div class="dropdown-menu dropdown-menu-end" role="menu" name="language" aria-labelledby="navbarDropdown">
                                 {% for language in languages %}
                                     {% if language.code != LANGUAGE_CODE %}
                                         <a href="javascript:{}" class="dropdown-item" onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit();">
-                                            <span  class="fa fa-globe fa-fw"></span>
+                                            <span  class="fa-fw fa fa-globe"></span>
                                             {{ language.name_local }}
                                         </a>
                                     {% endif %}
@@ -67,24 +67,24 @@
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                <span class="fa fa-user-circle fa-fw"></span> {{ request.user.username }}
+                                <span class="fa-fw fa fa-user-circle"></span> {{ request.user.username }}
                             </a>
                             <div class="dropdown-menu dropdown-menu-end" role="menu" aria-labelledby="navbarDropdown">
                                 {% if request.user.is_superuser %}
-                                    <a href="/admin" class="dropdown-item"><span class="fa fa-star fa-fw"></span> {% trans "Admin" %}</a>
+                                    <a href="/admin" class="dropdown-item"><span class="fa-fw fa fa-star"></span> {% trans "Admin" %}</a>
                                 {% endif %}
-                                <a href="/password_change" class="dropdown-item"><span class="fa fa-key fa-fw"></span> {% trans "Change password" %}</a>
-                                <a href="https://nes.readthedocs.io/en/latest/userguide/userguide.html" class="dropdown-item"><span class="fa fa-question-circle fa-fw"></span> {% trans "Help" %}</a>
-                                <a href="{% url 'logout' %}" class="dropdown-item"><span class="fa fa-power-off fa-fw"></span> {% trans "Logout" %}</a>
+                                <a href="/password_change" class="dropdown-item"><span class="fa-fw fa fa-key"></span> {% trans "Change password" %}</a>
+                                <a href="https://nes.readthedocs.io/en/latest/userguide/userguide.html" class="dropdown-item"><span class="fa-fw fa fa-question-circle"></span> {% trans "Help" %}</a>
+                                <a href="{% url 'logout' %}" class="dropdown-item"><span class="fa-fw fa fa-power-off"></span> {% trans "Logout" %}</a>
                             </div>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                <span class="fa fa-star-half-o fa-fw"></span>
+                                <span class="fa-fw fa fa-star-half-o"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
-                                <a class="dropdown-item" data-bs-theme-value="light" aria-pressed="false" href="#"><span class="fa fa-sun-o fa-fw"></span> {% trans "Light Theme" %}</a>
-                                <a class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false" href="#"><span class="fa fa-moon-o fa-fw"></span> {% trans "Dark Theme" %}</a>
+                                <a class="dropdown-item" data-bs-theme-value="light" aria-pressed="false" href="#"><span class="fa-fw fa fa-sun-o"></span> {% trans "Light Theme" %}</a>
+                                <a class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false" href="#"><span class="fa-fw fa fa-moon-o"></span> {% trans "Dark Theme" %}</a>
                             </div>
                         </li>
                     </ul>
@@ -102,55 +102,55 @@
         <div class="col-12 col-md-2">
             <nav class="nav nav-pills flex-column flex-sm-row flex-lg-column justify-content-start mb-auto">
                 <a href="/home/" class="nav-link {% block activeContact %}{% endblock %}">
-                    <span class="fa fa-home fa-fw fa-md"></span>
+                    <span class="fa-fw fa fa-home fa-md"></span>
                     {% trans "Home" %}
                 </a>
 
                 {% if perms.patient.view_patient %}
                     <a href="/patient/find/" class="nav-link {% block activePatient %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add people that participated in the experiments' %}">
-                        <span class="fa fa-users fa-fw fa-md"></span>
+                        <span class="fa-fw fa fa-users fa-md"></span>
                         {% trans "Participants" %}
                     </a>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
                     <a href="/experiment/research_project/list/" class="nav-link {% block activeAdvancedResearchProject %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add publications' %}">
-                        <span class="fa fa-graduation-cap fa-fw fa-md"></span>
+                        <span class="fa-fw fa fa-graduation-cap fa-md"></span>
                         {% trans "Studies" %}
                     </a>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
                     <a href="/experiment/publication/list/" class="nav-link {% block activeAdvancedPublication %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add publications' %}">
-                        <span class="fa fa-book fa-fw fa-md"></span>
+                        <span class="fa-fw fa fa-book fa-md"></span>
                         {% trans "Publications" %}
                     </a>
                 {% endif %}
 
                 {% if perms.survey.view_survey %}
                     <a href="/survey/list/" class="nav-link {% block activeAdvancedSurvey %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add users and institutions to the database' %}">
-                        <span class="fa fa-list-alt fa-fw fa-md"></span>
+                        <span class="fa-fw fa fa-list-alt fa-md"></span>
                         {% trans "Questionnaires" %}
                     </a>
                 {% endif %}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <a href="/user/list/" class="nav-link {% block activeUser %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add users and institutions to the database' %}">
-                        <span class="fa fa-user fa-fw fa-md"></span>
+                        <span class="fa-fw fa fa-user fa-md"></span>
                         {% trans "Researchers" %}
                     </a>
                 {% endif %}
 
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
                     <a href="/export/" class="nav-link {% block activeExport %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Export your projects' %}">
-                        <span class="fa fa-upload fa-fw fa-md"></span>
+                        <span class="fa-fw fa fa-upload fa-md"></span>
                         {% trans "Export" %}
                     </a>
                 {% endif %}
 
                 {% if perms.experiment.register_equipment %}
                     <a href="/experiment/setup/" class="nav-link {% block activeSetup %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Here you can setup the equipments used in the projects' %}">
-                        <span class="fa fa-pencil fa-fw fa-md"></span>
+                        <span class="fa-fw fa fa-pencil fa-md"></span>
                         {% trans "Set up" %}
                     </a>
                 {% endif %}
@@ -160,13 +160,13 @@
                 {% endcache %}
                 {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
                     <a href="/plugin/" class="nav-link {% block activePlugin %}{% endblock %}">
-                        <span class="fa fa-cloud-upload fa-fw fa-md"></span>
+                        <span class="fa-fw fa fa-cloud-upload fa-md"></span>
                         {% trans "Plugin" %}
                     </a>
                 {% endif %}
 
                 <a href="/links/" class="nav-link {% block activeLinks %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Useful links of tools' %}">
-                    <span class="fa fa-link fa-fw fa-md"></span>
+                    <span class="fa-fw fa fa-link fa-md"></span>
                     {% trans "Useful Links" %}
                 </a>
 

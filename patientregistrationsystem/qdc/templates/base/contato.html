@@ -13,23 +13,23 @@
     {% get_solo 'configuration.Contact' as contact_config %}
 
     <div class="tab-pane fade show active" id="mainMenuContactTab">
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-        <h1>{% trans 'Neuroscience Experiments System - NES' %}</h1>
-        <br>
-        <h3>{% trans "Welcome to NES! If you need help you can check the <a href='https://nes.readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. <br>Please report any bug to the admin." %}</h3>
-        <div class="container">
-            {% if institution_config.code %}
-            <h4 class="text-start"><span class="fa fa-institution fa-fw"></span> {{ institution_config.code }}</h4>
-            {% endif %}
+        <div class=" p-3 bg-body rounded shadow-sm">
+            <h1>{% trans 'Neuroscience Experiments System - NES' %}</h1>
+            <br>
+            <h3>{% trans "Welcome to NES! If you need help you can check the <a href='https://nes.readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. <br>Please report any bug to the admin." %}</h3>
+            <div class="container">
+                {% if institution_config.code %}
+                <h4 class="text-start"><span class="fa-fw fa fa-institution"></span> {{ institution_config.code }}</h4>
+                {% endif %}
 
-            {% if contact_config.name %}
-            <h5 class="text-start"><span class="fa fa-user fa-fw"></span> {{ contact_config.name }}</h5>
-            {% endif %}
+                {% if contact_config.name %}
+                <h5 class="text-start"><span class="fa-fw fa fa-user"></span> {{ contact_config.name }}</h5>
+                {% endif %}
 
-            {% if contact_config.email %}
-            <h5 class="text-start"><span class="fa fa-envelope fa-fw"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES">{{ contact_config.email }}</a></h5>
-            {% endif %}
-        </div>
+                {% if contact_config.email %}
+                <h5 class="text-start"><span class="fa-fw fa fa-envelope"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES">{{ contact_config.email }}</a></h5>
+                {% endif %}
+            </div>
         </div>
 
         <div class="my-3 p-3 bg-body rounded shadow-sm">

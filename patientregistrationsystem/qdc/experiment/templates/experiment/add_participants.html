@@ -39,7 +39,7 @@
                                 <label>{% trans "Add participant" %}</label>
 
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-text"> <span class="fa fa-search"></span></span>
+                                    <span class="input-group-text"> <span class="fa-fw fa fa-search"></span></span>
                                     <input class="form-control" {% if perms.patient.sensitive_data_patient %}
                                     placeholder="{% trans 'Type participant name, CPF or code' %}" {% else %} placeholder="{% trans 'Type participant code' %}"
                                 {% endif %} id="subject_name" type="text" autofocus="true">

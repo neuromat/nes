@@ -83,7 +83,7 @@
                         <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Insert new study" %}</a>
                     </div>
                     <div class="tn-group float-end">
-                        <a href="/experiment/import" class="btn btn-secondary">{% trans "Import Study/Experiment" %}</a>
+                        <a href="/experiment/import" class="btn btn-light">{% trans "Import Study/Experiment" %}</a>
                     </div>
                 {% endif %}
             </div>
@@ -91,7 +91,7 @@
             {% if can_send_to_portal and perms.experiment.add_researchproject %}
                 <div class="btn-group float-start">
                     <a href="/experiment/schedule_of_sending/list/" class="btn btn-success">
-                        <span class="fa fa-send"></span> {% trans "Send experiments/projects to Portal" %}
+                        <span class="fa-fw fa fa-send"></span> {% trans "Send experiments/projects to Portal" %}
                     </a>
                 </div>
             {% endif %}

@@ -537,7 +537,7 @@ class SocialDemographicData(models.Model):
             "car": {0: 0, 1: 4, 2: 7, 3: 9, 4: 9},
             "housemaid": {0: 0, 1: 3, 2: 4, 3: 4, 4: 4},
             "refrigerator": {0: 0, 1: 4, 2: 4, 3: 4, 4: 4},
-            "schooling": {"1": 0, "2": 1, "3": 2, "4": 4, "5": 8},
+            "schooling": {"1": 0, "2": 1, "3": 2, "4": 4, "5": 8, "6": 8},
         }
         points = 0
 
@@ -595,7 +595,7 @@ class SocialHistoryData(models.Model):
         self.changed_by = value
 
     def __str__(self) -> str:
-        return str(self.patient)
+        return str(self.patient) + " Social History Data"
 
     def clean(self) -> None:
         if self.smoker and self.ex_smoker:

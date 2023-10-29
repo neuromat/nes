@@ -154,12 +154,12 @@
                                     </td>
                                     <td class="text-end col-lg-1">
                                         {% if not forloop.last %}
-                                            <a class="btn fa fa-arrow-down" href="/experiment/eeg_electrode_position/change_the_order/{{ position.id }}/down/"></a>
+                                            <a class="btn fa-fw fa fa-arrow-down" href="/experiment/eeg_electrode_position/change_the_order/{{ position.id }}/down/"></a>
                                         {% endif %}
                                     </td>
                                     <td class="col-lg-1">
                                         {% if not forloop.first %}
-                                            <a class="btn fa fa-arrow-up" href="/experiment/eeg_electrode_position/change_the_order/{{ position.id }}/up/"></a>
+                                            <a class="btn fa-fw fa fa-arrow-up" href="/experiment/eeg_electrode_position/change_the_order/{{ position.id }}/up/"></a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -211,7 +211,7 @@
                     {% trans "Are you sure you want to delete localization system?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                 </div>
             </div>

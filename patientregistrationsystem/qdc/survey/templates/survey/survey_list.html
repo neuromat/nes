@@ -32,37 +32,38 @@
                         <tr>
                             <td><a data-bs-toggle="tooltip" data-bs-placement="left" href="/survey/{{ questionnaire.id }}" title="{% trans 'View' %}"> 
                                 {{ questionnaire.lime_survey_id }} - {{ questionnaire.title }} </a></td>
-                            <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="fa fa-check" style="color: royalblue"></span> {% endif %}</td>
-                            <td style="text-align: center">{% if questionnaire.is_active == True %}<span class="fa fa-check" style="color: royalblue"></span> {% else %}<span class="fa fa-remove" style="color: red"></span> {% endif %}</td>
+                            <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="fa-fw fa fa-check" style="color: royalblue"></span> {% endif %}</td>
+                            <td style="text-align: center">{% if questionnaire.is_active == True %}<span class="fa-fw fa fa-check" style="color: royalblue"></span> {% else %}<span class="fa-fw fa fa-remove" style="color: red"></span> {% endif %}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             </div>
             <div class="form-group">
-                <label class="form-label"><b style="color: red;"><big>!</big> {% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                <label class="form-label my-2"><b style="color: red;"><big>!</big> {% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
                     (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
             </div>
-            
-            {% if perms.survey.change_survey %}
-                <form id="survey_form" method="post">
-                    {% csrf_token %}
-                    <div class="clearfix">
-                        <button data-bs-toggle="tooltip" title="{% trans "Click to update questionnaire title if not displaying the title in selected NES language" %}"
-                                type="submit" class="btn btn-light float-end"
+
+            <div class="btn-toolbar justify-content-between">
+                {% if perms.survey.add_survey %}
+                    <div class="btn-group float-start">
+                        <a href="/survey/new/" class="btn btn-primary" {% if not limesurvey_available  %} disabled {% endif %}>{% trans "Insert new questionnaire" %}</a>
+                    </div>
+                {% endif %}
+
+                {% if perms.survey.change_survey %}
+                    <form id="survey_form" method="post">
+                        {% csrf_token %}
+                        <button data-bs-toggle="tooltip" title="{% trans "Click to update questionnaire title if not displaying the title in selected NES language" %}" type="submit" class="btn btn-light float-end"
                                 name="action"
                                 value="update"
-                                {% if not limesurvey_available  %} disabled {% endif %} title={% trans "Update informations about the questionnaires" %}><i class="fa fa-refresh fa-fw"></i> {% trans "Update" %}</button>
-                    </div>
-                </form>
-            {% endif %}
+                                {% if not limesurvey_available  %} disabled {% endif %} title={% trans "Update informations about the questionnaires" %}><i class="fa-fw fa fa-refresh"></i> {% trans "Update" %}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
 
-        {% if perms.survey.add_survey %}
-            <div class="btn-group float-start">
-                <a href="/survey/new/" class="btn btn-primary" {% if not limesurvey_available  %} disabled {% endif %}>{% trans "Insert new questionnaire" %}</a>
-            </div>
-        {% endif %}
     </div>
 {% endblock content %}
 

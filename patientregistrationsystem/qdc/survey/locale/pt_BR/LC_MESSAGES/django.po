@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 18:33-0300\n"
+"POT-Creation-Date: 2023-10-29 15:33-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,28 +30,28 @@ msgid "There's no question with name %s"
 msgstr "Não há um questionráio com o nome %s"
 
 #: survey/templates/survey/survey_list.html:11
-#: survey/templates/survey/survey_register.html:19
-#: survey/templates/survey/survey_sensitive_fields.html:18
+#: survey/templates/survey/survey_register.html:17
+#: survey/templates/survey/survey_sensitive_fields.html:17
 msgid "Home"
 msgstr "Home"
 
 #: survey/templates/survey/survey_list.html:12
-#: survey/templates/survey/survey_register.html:20
-#: survey/templates/survey/survey_sensitive_fields.html:19
+#: survey/templates/survey/survey_register.html:18
+#: survey/templates/survey/survey_sensitive_fields.html:18
 msgid "Questionnaires"
 msgstr "Questionários"
 
-#: survey/templates/survey/survey_list.html:20
+#: survey/templates/survey/survey_list.html:19
 msgid "List of questionnaires"
 msgstr "Lista de questionários"
 
 #: survey/templates/survey/survey_list.html:25
-#: survey/templates/survey/survey_register.html:43
+#: survey/templates/survey/survey_register.html:41
 msgid "Questionnaire"
 msgstr "Questionário"
 
 #: survey/templates/survey/survey_list.html:26
-#: survey/templates/survey/survey_register.html:61
+#: survey/templates/survey/survey_register.html:60
 msgid "Required fill"
 msgstr "Preenchimento obrigatório"
 
@@ -75,11 +75,11 @@ msgstr ""
 msgid "See more details in"
 msgstr "Veja mais detalhes em"
 
-#: survey/templates/survey/survey_list.html:48
+#: survey/templates/survey/survey_list.html:50
 msgid "Insert new questionnaire"
 msgstr "Inserir novo questionário"
 
-#: survey/templates/survey/survey_list.html:55
+#: survey/templates/survey/survey_list.html:57
 msgid ""
 "Click to update questionnaire title if not displaying the title in selected "
 "NES language"
@@ -95,135 +95,135 @@ msgstr "Atualizar informações sobre os questionários"
 msgid "Update"
 msgstr "Atualizar"
 
-#: survey/templates/survey/survey_register.html:23
+#: survey/templates/survey/survey_register.html:21
 msgid "New"
 msgstr "Novo"
 
-#: survey/templates/survey/survey_register.html:27
+#: survey/templates/survey/survey_register.html:25
 msgid "Editing"
 msgstr "Edição"
 
-#: survey/templates/survey/survey_register.html:39
+#: survey/templates/survey/survey_register.html:36
 msgid "Questionnaire information"
 msgstr "Informações do questionário"
 
-#: survey/templates/survey/survey_register.html:45
+#: survey/templates/survey/survey_register.html:43
 msgid "Please, select a questionnaire from the list."
 msgstr "Por favor, selecione um questionário da lista."
 
 #: survey/templates/survey/survey_register.html:73
-#: survey/templates/survey/survey_register.html:110
+#: survey/templates/survey/survey_register.html:108
 msgid "Edit"
 msgstr "Editar"
 
-#: survey/templates/survey/survey_register.html:85
+#: survey/templates/survey/survey_register.html:83
 msgid "Sensitive questions"
 msgstr "Questões sensíveis"
 
-#: survey/templates/survey/survey_register.html:92
+#: survey/templates/survey/survey_register.html:90
 msgid "Question code"
 msgstr "Código da questão"
 
-#: survey/templates/survey/survey_register.html:93
+#: survey/templates/survey/survey_register.html:91
 msgid "Question"
 msgstr "Questão"
 
-#: survey/templates/survey/survey_register.html:119
+#: survey/templates/survey/survey_register.html:117
 msgid "Answered by participants"
 msgstr "Respondido pelos participantes"
 
-#: survey/templates/survey/survey_register.html:126
-#: survey/templates/survey/survey_register.html:214
+#: survey/templates/survey/survey_register.html:124
+#: survey/templates/survey/survey_register.html:212
 msgid "Participant"
 msgstr "Participante"
 
-#: survey/templates/survey/survey_register.html:127
-#: survey/templates/survey/survey_register.html:215
+#: survey/templates/survey/survey_register.html:125
+#: survey/templates/survey/survey_register.html:213
 msgid "Fills"
 msgstr "Preenchimentos"
 
-#: survey/templates/survey/survey_register.html:131
-#: survey/templates/survey/survey_register.html:219
+#: survey/templates/survey/survey_register.html:129
+#: survey/templates/survey/survey_register.html:217
 msgid "Update LimeSurvey Fill date"
 msgstr "Atualizar data de preenchimento do LimeSurvey"
 
-#: survey/templates/survey/survey_register.html:142
+#: survey/templates/survey/survey_register.html:140
 msgid "It has to be filled"
 msgstr "Falta preencher"
 
-#: survey/templates/survey/survey_register.html:157
-#: survey/templates/survey/survey_register.html:242
+#: survey/templates/survey/survey_register.html:155
+#: survey/templates/survey/survey_register.html:240
 msgid "Complete"
 msgstr "Completo"
 
-#: survey/templates/survey/survey_register.html:159
-#: survey/templates/survey/survey_register.html:244
+#: survey/templates/survey/survey_register.html:157
+#: survey/templates/survey/survey_register.html:242
 msgid "Incomplete"
 msgstr "Incompleto"
 
-#: survey/templates/survey/survey_register.html:162
-#: survey/templates/survey/survey_register.html:247
+#: survey/templates/survey/survey_register.html:160
+#: survey/templates/survey/survey_register.html:245
 msgid "No status"
 msgstr "Sem status"
 
-#: survey/templates/survey/survey_register.html:180
+#: survey/templates/survey/survey_register.html:178
 msgid "Used in experiments"
 msgstr "Usado em experimentos"
 
-#: survey/templates/survey/survey_register.html:187
+#: survey/templates/survey/survey_register.html:185
 msgid "Experiment:"
 msgstr "Experimento:"
 
-#: survey/templates/survey/survey_register.html:191
+#: survey/templates/survey/survey_register.html:189
 msgid "Group:"
 msgstr "Grupo:"
 
-#: survey/templates/survey/survey_register.html:197
+#: survey/templates/survey/survey_register.html:195
 msgid "Set of parent steps:"
 msgstr "Conjunto de passos pai:"
 
-#: survey/templates/survey/survey_register.html:201
+#: survey/templates/survey/survey_register.html:199
 msgid "Step:"
 msgstr "Passo:"
 
-#: survey/templates/survey/survey_register.html:205
+#: survey/templates/survey/survey_register.html:203
 msgid "Name of the use:"
 msgstr "Nome do uso:"
 
-#: survey/templates/survey/survey_register.html:269
-#: survey/templates/survey/survey_register.html:300
+#: survey/templates/survey/survey_register.html:267
+#: survey/templates/survey/survey_register.html:295
 msgid "Delete"
 msgstr "Excluir"
 
-#: survey/templates/survey/survey_register.html:275
-#: survey/templates/survey/survey_sensitive_fields.html:65
+#: survey/templates/survey/survey_register.html:274
+#: survey/templates/survey/survey_sensitive_fields.html:60
 msgid "Save"
 msgstr "Salvar"
 
-#: survey/templates/survey/survey_register.html:279
-#: survey/templates/survey/survey_register.html:299
-#: survey/templates/survey/survey_sensitive_fields.html:68
+#: survey/templates/survey/survey_register.html:276
+#: survey/templates/survey/survey_register.html:294
+#: survey/templates/survey/survey_sensitive_fields.html:63
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: survey/templates/survey/survey_register.html:283
+#: survey/templates/survey/survey_register.html:281
 msgid "Back"
 msgstr "Voltar"
 
-#: survey/templates/survey/survey_register.html:296
+#: survey/templates/survey/survey_register.html:291
 msgid "Are you sure you want to delete questionnaire?"
 msgstr "Tem certeza que deseja excluir o questionário?"
 
-#: survey/templates/survey/survey_sensitive_fields.html:22
-#: survey/templates/survey/survey_sensitive_fields.html:30
+#: survey/templates/survey/survey_sensitive_fields.html:20
+#: survey/templates/survey/survey_sensitive_fields.html:27
 msgid "Sensitive fields"
 msgstr "Campos sensíveis"
 
-#: survey/templates/survey/survey_sensitive_fields.html:35
+#: survey/templates/survey/survey_sensitive_fields.html:32
 msgid "Code"
 msgstr "Código"
 
-#: survey/templates/survey/survey_sensitive_fields.html:36
+#: survey/templates/survey/survey_sensitive_fields.html:33
 msgid "Description"
 msgstr "Descrição"
 

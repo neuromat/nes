@@ -117,7 +117,7 @@
                                 {{ publication_form.file }}
                             {% else %}
                                 {{ publication_form.file.value }}
-                                <button class="btn btn-secondary" type="button" onclick="location.href='{{ publication_form.file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                <button class="btn btn-light" type="button" onclick="location.href='{{ publication_form.file.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
                             {% endif %}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -141,8 +141,8 @@
                                 <tr>
                                     <th>{% trans "Title" %}</th>
                                     <th>{% trans "Description" %}</th>
-                                    <th style="text-align: center"><span class="fa fa-share-alt"></span> {% trans "Is public" %}</th>
-                                    <th style="text-align: center"><span class="fa fa-upload"></span> {% trans "Data acquisition is concluded" %}</th>
+                                    <th style="text-align: center"><span class="fa-fw fa fa-share-alt"></span> {% trans "Is public" %}</th>
+                                    <th style="text-align: center"><span class="fa-fw fa fa-upload"></span> {% trans "Data acquisition is concluded" %}</th>
                                     <th>{% trans "Remove" %}</th>
                                 </tr>
                             </thead>
@@ -159,10 +159,10 @@
                                         {% endif %}
                                     </td>
                                     <td>{{ experiment.description }}</td>
-                                    <td style="text-align: center">{% if experiment.is_public %}<span class="fa fa-check" style="color: royalblue"></span> {% endif %}</td>
-                                    <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="fa fa-check" style="color: royalblue"></span> {% endif %}</td>
+                                    <td style="text-align: center">{% if experiment.is_public %}<span class="fa-fw fa fa-check" style="color: royalblue"></span> {% endif %}</td>
+                                    <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="fa-fw fa fa-check" style="color: royalblue"></span> {% endif %}</td>
                                     <td class="text-center col-lg-1">
-                                        <a class="btn fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_experiment_from_publication('{{ experiment.id }}');" title="{% trans 'Remove experiment/project from list' %}"></a>
+                                        <a class="btn fa-fw fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_experiment_from_publication('{{ experiment.id }}');" title="{% trans 'Remove experiment/project from list' %}"></a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -207,7 +207,7 @@
                     {% trans "Are you sure you want to delete this publication?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -222,7 +222,7 @@
                     {% trans "Are you sure you want to remove experiment/project from list?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" id="remove-experiment" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                 </div>
             </div>

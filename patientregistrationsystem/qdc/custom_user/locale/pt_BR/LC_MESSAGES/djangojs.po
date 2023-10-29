@@ -45,7 +45,7 @@ msgstr "Entre com o email"
 msgid "E-mail is not registered"
 msgstr "Email não está registrado"
 
-#: custom_user/templates/custom_user/register_users.html:34
+#: custom_user/templates/custom_user/user_register.html:34
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
@@ -53,15 +53,15 @@ msgstr ""
 "Senha deve contar pelo menos 8 caracteres, incluindo ao menos 1 maiúsculo, "
 "digito ou caractere especial."
 
-#: custom_user/templates/custom_user/register_users.html:42
+#: custom_user/templates/custom_user/user_register.html:42
 msgid "You have to choose at least one user profile!"
 msgstr "É necessário escolher pelo menos um perfil de usuário!"
 
-#: custom_user/templates/custom_user/register_users.html:67
+#: custom_user/templates/custom_user/user_register.html:67
 msgid "E-mail have to be filled!"
 msgstr "E-mail deve ser preenchido!"
 
-#: custom_user/templates/custom_user/register_users.html:109
+#: custom_user/templates/custom_user/user_register.html:109
 msgid "Please, correct the fields highlighted."
 msgstr "Por favor, corrija os campos em destaque."
 

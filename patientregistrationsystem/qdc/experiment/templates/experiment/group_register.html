@@ -118,7 +118,7 @@
                                 <div class="form-group">
                                     <input id="group_id" value="{{ group.id }}" style="display: none;">
                                     <div class="input-group  input-group-sm "><span class="input-group-text">
-                                            <span class="fa fa-edit"></span></span>
+                                            <span class="fa-fw fa fa-edit"></span></span>
                                         <input class="form-control" id="get_diseases" type="text"
                                                placeholder="{%  trans "Inform disease diagnosis or disease code (ICD-10)" %}">
                                     </div>
@@ -152,7 +152,7 @@
                                                 <td>
                                                     {{ classification_of_diseases.abbreviated_description }}
                                                     {% if can_change %}
-                                                        <a class="btn fa fa-remove" data-bs-toggle="tooltip"
+                                                        <a class="btn fa-fw fa fa-remove" data-bs-toggle="tooltip"
                                                            data-bs-placement="right" title="{% trans "Delete" %}" style="color: indianred;
                                                        position: relative; float: right; padding: 0"
                                                            onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a>
@@ -299,11 +299,11 @@
 
                                                     {% if can_change %}
                                                        {% if group_has_data_collection %}
-                                                        <a class="btn fa fa-ban" data-bs-toggle="tooltip" data-bs-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
+                                                        <a class="btn fa-fw fa fa-ban" data-bs-toggle="tooltip" data-bs-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
                                                            title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}">
                                                         </a>
                                                        {% else %}
-                                                            <a class="btn fa fa-remove" data-bs-toggle="tooltip" data-bs-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
+                                                            <a class="btn fa-fw fa fa-remove" data-bs-toggle="tooltip" data-bs-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
                                                                title="{% trans "UnConfigure experimental protocol" %}" onclick="show_modal_remove_experimental_protocol();">
                                                             </a>
                                                        {% endif %}
@@ -386,7 +386,7 @@
                     {% trans "Are you sure you want to delete group?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disable_remove_button()" >{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disable_remove_button()" >{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove-group" disabled="disabled" value="remove" name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -400,7 +400,7 @@
                     {% trans "Are you sure you want to delete diagnosis?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <a type="button" class="btn btn-danger" id="removeClassificationOfDiseases" href="">{% trans "Delete" %}</a>
                 </div>
             </div>
@@ -414,7 +414,7 @@
                     {% trans "Are you sure you want to unprovision experimental protocol?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" value="remove_experimental_protocol" name="action">{% trans "Unset" %}</button>
                 </div>
             </div>
@@ -429,7 +429,7 @@
                     {% trans "This experiment is in use, you can not change it! Do you want to copy this experiment?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
                 </div>
             </div>

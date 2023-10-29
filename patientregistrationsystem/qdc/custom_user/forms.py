@@ -211,7 +211,7 @@ class ResearcherForm(ModelForm):
                     "placeholder": _("Type last name"),
                     "data-error": _("Only use letters and spaces"),
                     "oninput": "this.value = this.value.toUpperCase()",
-                    "data-maxlength": "1150",
+                    "data-maxlength": "150",
                 }
             ),
             "email": TextInput(

@@ -64,7 +64,7 @@
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4><span class="fa fa-info-circle fa-fw"></span> {% trans "Basic experiment/project information" %}</h4>
+                <h4><span class="fa-fw fa fa-info-circle"></span> {% trans "Basic experiment/project information" %}</h4>
                 <div class="row" {% if creating %}style="display: none;"{% endif %}>
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
@@ -125,7 +125,7 @@
                                     {{ experiment_form.ethics_committee_project_file }}
                                 {% else %}
                                     {{ experiment_form.ethics_committee_project_file.value }}
-                                    <button class="btn btn-secondary" type="button" onclick="location.href='{{ experiment.ethics_committee_project_file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                    <button class="btn btn-light" type="button" onclick="location.href='{{ experiment.ethics_committee_project_file.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
                                 {% endif %}
                                 <div class="form-text with-errors"></div>
                             </div>
@@ -138,7 +138,7 @@
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 {{ experiment_form.is_public }}
-                                <span class="fa fa-share-alt"></span> <label for="id_is_public" class="form-label">{% trans "Is public" %}</label>
+                                <span class="fa-fw fa fa-share-alt"></span> <label for="id_is_public" class="form-label">{% trans "Is public" %}</label>
                                 <div class="form-text with-errors"></div>
                             </div>
                         </div>
@@ -147,7 +147,7 @@
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 {{ experiment_form.data_acquisition_is_concluded }}
-                                <span class="fa fa-upload"></span> <label for="id_data_acquisition_is_concluded" class="form-label">{% trans "Data acquisition is concluded" %}</label>
+                                <span class="fa-fw fa fa-upload"></span> <label for="id_data_acquisition_is_concluded" class="form-label">{% trans "Data acquisition is concluded" %}</label>
                                 <div class="form-text with-errors"></div>
                             </div>
                         </div>
@@ -167,13 +167,13 @@
 
                     <div class="my-3 p-3 bg-body rounded shadow-sm">
 
-                        <h4><span class="fa fa-database"></span> {% trans "NeuroMat Portal - Experimental data sending " %}</h4>
+                        <h4><span class="fa-fw fa fa-database"></span> {% trans "NeuroMat Portal - Experimental data sending " %}</h4>
 
                         <div class="container-fluid">
 
                             <div class="row">
                                 <div class="col-lg-4">
-                                    <span class="fa fa-refresh"> </span>
+                                    <span class="fa-fw fa fa-refresh"> </span>
                                     <label for="id_last_update" class="form-label">{% trans "Last update of the experiment:" %}</label>
                                 </div>
                                 <div class="col-lg-8">
@@ -183,7 +183,7 @@
 
                             <div class="row">
                                 <div class="col-lg-4">
-                                    <span class="fa fa-send"> </span>
+                                    <span class="fa-fw fa fa-send"> </span>
                                     <label class="form-label">{% trans "Last sending status:" %}</label>
                                 </div>
                                 <div class="col-lg-8">
@@ -234,7 +234,7 @@
                 {% endif %}
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa fa-user fa-fw"></span> {% trans "Researchers" %}</h4>
+                    <h4><span class="fa-fw fa fa-user"></span> {% trans "Researchers" %}</h4>
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
@@ -261,19 +261,19 @@
                                     </td>
                                     <td class="text-end col-lg-1">
                                         {% if not forloop.last %}
-                                            <a class="btn fa fa-arrow-down"
+                                            <a class="btn fa-fw fa fa-arrow-down"
                                                href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/down/"></a>
                                         {% endif %}
                                     </td>
                                     <td class="col-lg-1">
                                         {% if not forloop.first %}
-                                            <a class="btn fa fa-arrow-up"
+                                            <a class="btn fa-fw fa fa-arrow-up"
                                                href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/up/"></a>
                                         {% endif %}
                                     </td>
                                     <td style="text-align: right">
                                         {% if can_change %}
-                                            <a class="btn fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove researcher" %}"></a>
+                                            <a class="btn fa-fw fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove researcher" %}"></a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -289,7 +289,7 @@
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa fa-users fa-fw"></span> {% trans "Groups" %}</h4>
+                    <h4><span class="fa-fw fa fa-users"></span> {% trans "Groups" %}</h4>
                     {% if group_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -329,7 +329,7 @@
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa fa-file-code-o fa-fw"></span> {% trans "Source Code" %}</h4>
+                    <h4><span class="fa-fw fa fa-file-code-o"></span> {% trans "Source Code" %}</h4>
     
                     {% if source_code_list %}
                         <div class="form-group">
@@ -363,7 +363,7 @@
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa fa-microchip fa-fw"></span> {% trans "Stimuli Equipment" %}</h4>
+                    <h4><span class="fa-fw fa fa-microchip"></span> {% trans "Stimuli Equipment" %}</h4>
                         {% if stimuli_eq_setting_list %}
                             <div class="form-group">
                                 <table class="table table-striped">
@@ -400,7 +400,7 @@
                     </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa fa-flash fa-fw"></span> {% trans "EEG Settings" %}</h4>
+                    <h4><span class="fa-fw fa fa-flash"></span> {% trans "EEG Settings" %}</h4>
 
                     {% if eeg_setting_list %}
                         <div class="form-group">
@@ -434,7 +434,7 @@
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4><span class="fa fa-bar-chart fa-fw"></span> {% trans "EMG Settings" %}</h4>
+                <h4><span class="fa-fw fa fa-bar-chart"></span> {% trans "EMG Settings" %}</h4>
                     {% if emg_setting_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -467,7 +467,7 @@
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4><span class="fa fa-magnet fa-fw"></span> {% trans "TMS Settings" %}</h4>
+                <h4><span class="fa-fw fa fa-magnet"></span> {% trans "TMS Settings" %}</h4>
                     {% if tms_setting_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -500,7 +500,7 @@
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4><span class="fa fa-tree fa-fw"></span> {% trans "Context trees" %}</h4>
+                <h4><span class="fa-fw fa fa-tree"></span> {% trans "Context trees" %}</h4>
                     {% if context_tree_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -535,7 +535,7 @@
 
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa fa-tasks fa-fw"></span> {% trans "Steps of experimental protocol" %}</h4>
+                    <h4><span class="fa-fw fa fa-tasks"></span> {% trans "Steps of experimental protocol" %}</h4>
                     <div class="row">
                         <div class="col-6 col-sm-12">
                             <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary">{% trans "Manage" %}</a>
@@ -581,7 +581,7 @@
                     {% trans "Are you sure you want to delete experiment?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -595,7 +595,7 @@
                     {% trans "Are you sure you want to remove this researcher?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" name="action" value="remove-" id="removeCollaborator">{% trans "Delete" %}</button>
                 </div>
             </div>

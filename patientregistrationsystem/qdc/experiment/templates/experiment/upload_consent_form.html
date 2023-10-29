@@ -49,8 +49,8 @@
                                 <div class="col-4 col-sm-6">
                                     <div class="btn-toolbar">
                                         {% if perms.patient.sensitive_data_patient %}
-                                            <button class="btn btn-secondary" type="button" onclick="location.href='{{ file_list.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
-                                            <button class="btn btn-secondary" type="button" onclick="$('#modalRemove').modal('show')"><span class="fa fa-remove" style="color: indianred"></span></button>
+                                            <button class="btn btn-light" type="button" onclick="location.href='{{ file_list.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
+                                            <button class="btn btn-light" type="button" onclick="$('#modalRemove').modal('show')"><span class="fa-fw fa fa-remove" style="color: indianred"></span></button>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -83,7 +83,7 @@
                     {% trans "Are you sure you want to delete attachment?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                 </div>
             </div>

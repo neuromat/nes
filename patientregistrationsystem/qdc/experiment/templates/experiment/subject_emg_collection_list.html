@@ -99,7 +99,7 @@
                                                                 {% for emg_file in emg_data.emg_files.all %}
                                                                     <tr>
                                                                         <td>{{ emg_file.file.size|filesizeformat }}</td>
-                                                                        <td><a href="{{ emg_file.file.url }}"><span class="fa fa-download"></span></a></td>
+                                                                        <td><a href="{{ emg_file.file.url }}"><span class="fa-fw fa fa-download"></span></a></td>
                                                                     </tr>
                                                                 {% endfor %}
 
@@ -111,7 +111,7 @@
                                                 <tr>
                                                     <td colspan="5">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/emg/{% for item in emg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_emg_data">
-                                                        <span class="fa fa-plus"></span>
+                                                        <span class="fa-fw fa fa-plus"></span>
                                                             {% trans "New EMG data file" %}
                                                         </a>
                                                     </td>

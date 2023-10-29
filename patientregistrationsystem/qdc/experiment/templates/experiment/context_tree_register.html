@@ -66,7 +66,7 @@
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="container-fluid">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4><span class="fa fa-tree"></span> {% trans "Context tree register" %}</h4>
+                <h4><span class="fa-fw fa fa-tree"></span> {% trans "Context tree register" %}</h4>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
@@ -104,7 +104,7 @@
                             {% else %}
                                 {% if context_tree_form.setting_file.value %}
                                     {{ context_tree_form.setting_file.value }}
-                                    <button class="btn btn-secondary" type="button" onclick="location.href='{{ context_tree.setting_file.url }}'"><span class="fa fa-download-alt" style="color: royalblue"></span></button>
+                                    <button class="btn btn-light" type="button" onclick="location.href='{{ context_tree.setting_file.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
                                 {% else %}
                                     {% trans "There is no setting file associated." %}
                                 {% endif %}
@@ -157,7 +157,7 @@
                     {% trans "Are you sure you want to delete this context tree?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -172,7 +172,7 @@
                     {% trans "Are you sure you want to delete this setting from list?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" id="remove-setting" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                 </div>
             </div>

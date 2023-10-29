@@ -146,7 +146,7 @@
                                                                 <tr>
                                                                     <td colspan="2">
                                                                         <a data-bs-toggle="collapse" href="#collapse_{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}">
-                                                                            {% trans "Reuse questionnaire response" %} <span class="fa fa-arrow-right"></span>
+                                                                            {% trans "Reuse questionnaire response" %} <span class="fa-fw fa fa-arrow-right"></span>
                                                                         </a>
                                                                         <div id="collapse_{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}"
                                                                              class=" collapse out" role="tabcard">
@@ -154,7 +154,7 @@
                                                                             {% for patient_questionnaire_response in subject_questionnaire.patient_questionnaire_responses %}
 
                                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/reuse_fill/{{ patient_questionnaire_response.patient_questionnaire_response.id }}" class="{% if not limesurvey_available %} disabled {% endif %}">
-                                                                                    <span class="fa fa-square-o"></span>
+                                                                                    <span class="fa-fw fa fa-square-o"></span>
                                                                                 </a>
 
                                                                                 {{ patient_questionnaire_response.patient_questionnaire_response.date }}

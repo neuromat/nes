@@ -132,7 +132,7 @@
 {#                            {% for tms_position in localization_system.tms_positions.all %}#}
 {#                                <tr>#}
 {#                                    <td>#}
-{#                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/tms_localization_system/{{ localization_system.id }}/tms_position/{{ tms_position.id }}"><span class="fa fa-edit"></span></a>#}
+{#                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/tms_localization_system/{{ localization_system.id }}/tms_position/{{ tms_position.id }}"><span class="fa-fw fa fa-edit"></span></a>#}
 {#                                    </td>#}
 {#                                    <td>#}
 {#                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/tms_localization_system/{{ localization_system.id }}/tms_position/{{ tms_position.id }}">{{ tms_position.name }}</a>#}
@@ -182,7 +182,7 @@
                     {% trans "Are you sure you want to delete localization system?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                 </div>
             </div>

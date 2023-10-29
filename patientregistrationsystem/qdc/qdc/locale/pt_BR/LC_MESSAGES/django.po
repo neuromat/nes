@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 18:33-0300\n"
+"POT-Creation-Date: 2023-10-29 15:33-0300\n"
 "PO-Revision-Date: 2023-10-02 12:31-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,15 +21,22 @@ msgstr ""
 msgid "Current password"
 msgstr "Senha atual"
 
-#: qdc/forms.py:37
+#: qdc/forms.py:33 qdc/forms.py:38
+#, python-format
+msgid ""
+"Password must contain at least %d characters, including at least one "
+"uppercase letter, digit or special character."
+msgstr ""
+
+#: qdc/forms.py:44
 msgid "New password"
 msgstr "Nova senha"
 
-#: qdc/forms.py:47
+#: qdc/forms.py:55
 msgid "Confirm new password"
 msgstr "Confirmar nova senha"
 
-#: qdc/forms.py:48
+#: qdc/forms.py:56 qdc/forms.py:57
 msgid "Passwords don't match"
 msgstr "Senhas diferentes"
 
@@ -46,14 +53,14 @@ msgstr "Português"
 msgid "English"
 msgstr "English"
 
-#: qdc/views.py:50
+#: qdc/views.py:52
 msgid ""
 "There is a new version, please contact your NES administrator to update !"
 msgstr ""
 "Há uma nova versão, por favor contacte o Administrador do NES para atualizar "
 "o sistema."
 
-#: qdc/views.py:72
+#: qdc/views.py:74
 msgid "Password changed successfully."
 msgstr "Senha alterada com sucesso."
 

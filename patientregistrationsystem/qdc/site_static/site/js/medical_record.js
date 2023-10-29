@@ -2,9 +2,6 @@
  * Created by diogopedrosa on 3/19/15.
  */
 
-$(function(){
-    $("[data-toggle=tooltip]").tooltip();
-});
 function show_modal_remove (patient_id, diagnosis_id){
     var  modal_remove = document.getElementById('removeDiagnosis');
     modal_remove.setAttribute( "href", '/patient/diagnosis/delete/' + patient_id + '/' + diagnosis_id);

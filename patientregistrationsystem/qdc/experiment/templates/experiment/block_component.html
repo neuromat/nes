@@ -122,32 +122,32 @@
                                                                                 </td>
                                                                                 {% if component.type == "sequence" %}
                                                                                     <td class="col-lg-3">
-                                                                                        <span class="fa fa-arrow-right btn-link"></span>
+                                                                                        <span class="fa-fw fa fa-arrow-right btn-link"></span>
                                                                                         {{ accordion|length }} {% trans "uses grouped" %}
                                                                                     </td>
                                                                                     <td  class="text-end col-lg-1">
                                                                                         {% if accordion != configuration_list|last %}
                                                                                             {# onclick is needed because if we use href nothing happens, because of the collapse and expand actions of the accordion. #}
-                                                                                            <a class="btn fa fa-arrow-down" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/down/');"></a>
+                                                                                            <a class="btn fa-fw fa fa-arrow-down" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/down/');"></a>
                                                                                         {% endif %}
                                                                                     </td>
                                                                                     <td class="col-lg-1">
                                                                                         {% if accordion != configuration_list|first %}
                                                                                             {# onclick is needed because if we use href nothing happens, because of the collapse and expand actions of the accordion. #}
-                                                                                            <a class="btn fa fa-arrow-up" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/up/');"></a>
+                                                                                            <a class="btn fa-fw fa fa-arrow-up" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/up/');"></a>
                                                                                         {% endif %}
                                                                                     </td>
                                                                                 {% else %}
                                                                                     <td class="col-lg-5">
-                                                                                        <span class="fa fa-arrow-right btn-link"></span>
+                                                                                        <span class="fa-fw fa fa-arrow-right btn-link"></span>
                                                                                         {{ accordion|length }} {% trans "uses grouped" %}
                                                                                     </td>
                                                                                 {% endif %}
                                                                                 <td class="text-center col-lg-1">
                                                                                     {% if accordion.0.id in protected_uses_of_step %}
-                                                                                        <a class="btn fa fa-ban" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
+                                                                                        <a class="btn fa-fw fa fa-ban" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
                                                                                     {% else %}
-                                                                                        <a class="btn fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
+                                                                                        <a class="btn fa-fw fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
                                                                                     {% endif %}
                                                                                 </td>
                                                                             {% else %}
@@ -155,14 +155,14 @@
                                                                                     {{ accordion.0.component.identification }}
                                                                                 </td>
                                                                                 <td class="col-lg-5">
-                                                                                    <span class="fa fa-arrow-right btn-link"></span>
+                                                                                    <span class="fa-fw fa fa-arrow-right btn-link"></span>
                                                                                     {{ accordion|length }} {% trans "uses grouped" %}
                                                                                 </td>
                                                                             {% endif %}
                                                                         </tr>
                                                                     {% else %}
                                                                         <td class="text-center" colspan="{% if not component_configuration and can_change %}6{% else %}3{% endif %}">
-                                                                            <span class="fa fa-arrow-right btn-link"></span>
+                                                                            <span class="fa-fw fa fa-arrow-right btn-link"></span>
                                                                             {{ accordion|length }} {% trans "positions for random step grouped" %}
                                                                         </td>
                                                                     {% endif %}
@@ -263,15 +263,15 @@
                                                                                 {{ accordion.0.component.identification }}
                                                                             </td>
                                                                             <td class="col-lg-5">
-                                                                                <span class="fa fa-arrow-right btn-link"></span>
+                                                                                <span class="fa-fw fa fa-arrow-right btn-link"></span>
                                                                                 {{ accordion|length }} {% trans "uses grouped" %}
                                                                             </td>
                                                                             {% if not component_configuration and can_change %}
                                                                                 <td class="text-center col-lg-1">
                                                                                     {% if accordion.0.id in protected_uses_of_step %}
-                                                                                        <a class="btn fa fa-ban" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
+                                                                                        <a class="btn fa-fw fa fa-ban" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
                                                                                     {% else %}
-                                                                                        <a class="btn fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
+                                                                                        <a class="btn fa-fw fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
                                                                                     {% endif %}
                                                                                 </td>
                                                                             {% endif %}
@@ -348,7 +348,7 @@
 {#                    This message is set in block_component.js #}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button class="btn btn-danger" type="submit" name="action" value="remove-" id="removeComponentConfiguration">{% trans "Delete" %}</button>
                 </div>
             </div>
@@ -363,7 +363,7 @@
                     {% trans "This experiment/project is in use, you can not change it! Do you want to copy this experiment/project?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment_with_data" name="action">{% trans "Copy experiment/project with data" %}</button>
                 </div>

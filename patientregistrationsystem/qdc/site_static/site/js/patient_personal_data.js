@@ -25,7 +25,7 @@ $(document).ready(function () {
         // }
     });
 
-    // Disable fields that identify a person when inserting an anonymous user
+    // Disable fields that identify a person when creating an anonymous user
     anonymous.change(function() {
         if($(this).is(":checked")) {
             $("#id_name").prop('disabled', true);

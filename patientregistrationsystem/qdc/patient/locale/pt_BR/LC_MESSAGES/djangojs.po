@@ -204,7 +204,7 @@ msgstr ""
 
 #: patient/views.py:78
 msgid "Participant with this CPF has already removed."
-msgstr ""
+msgstr "Participante com esse CPF ja foi removido"
 
 #: patient/views.py:80
 msgid "There is already registered participant with this CPF."
