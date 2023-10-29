@@ -776,7 +776,7 @@ def export_view(request, template_name="export/export_data.html"):
     # Experiments export
     if "group_selected_list" in request.session:
         group_list = request.session["group_selected_list"]
-        component_list = {}
+        component_list = []
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:

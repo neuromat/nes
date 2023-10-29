@@ -23,12 +23,14 @@
         {% for link in useful_links %}
             <li class="list-group-item">
                 {{ link.name }}
-                <a href="{{ link.url }}">
-                    {{ link.url }}
-                </a>
+                <a href="{{ link.url }}">{{ link.url }}</a>
             </li>
         {% endfor %}
         </ul>
     </div>
+
+    {% if request.user.is_superuser %}
+        <a href="/admin/configuration/usefullink/" class="btn btn-info"><span class="fa fa-link fa-fw"></span> {% trans "Add new link" %}</a>
+    {% endif %}
 
 {% endblock content %}

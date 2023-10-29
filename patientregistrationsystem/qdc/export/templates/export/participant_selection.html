@@ -2,191 +2,162 @@
 
 {% load i18n %}
 
-{% block activeExport %} active{% endblock %}
+{% block activeExport %} active{% endblock activeExport %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
-{% endblock %}
+{% endblock form %}
 
 {% block content %}
-
     <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
                 <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/export">{% trans "Export" %}</a></li>
+                <li class="breadcrumb-item"><a href="/export/">{% trans "Export" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Participants selection" %}</li>
             </ol>
         </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-            <div id="participants_container" class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Participants selection" %}</h4>
+        <div id="participants_container" class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "Participants selection" %}</h4>
+            <hr>
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" id="id_type_of_selection_radio_0" name="type_of_selection_radio" type="radio" value="all" checked>
+                    <label class="form-check-label" for="id_type_of_selection_radio_0">{% trans "All participants" %}</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" id="id_type_of_selection_radio_1" name="type_of_selection_radio" type="radio" value="selected">
+                    <label class="form-check-label" for="id_type_of_selection_radio_1">{% trans "Selected participants" %}</label>
+                </div>
 
-                <div class="form-group">
-                    <div class="radio" style="margin-top: 0px">
+                <div class="col-lg-12 collapse" id="participants_filter_div" style="visibility: hidden">
+
+                    <div class="form-check pt-2">
                         <label>
-                            <input id="id_type_of_selection_radio_0" name="type_of_selection_radio" type="radio" value="all" checked> {% trans "All participants" %}
+                            <input class="form-check-input" id="id_gender_checkbox" name="gender_checkbox" type="checkbox" value="gender_selected"> {% trans "Gender" %}
                         </label>
                     </div>
-
-                    <div class="radio">
-                        <label>
-                            <input id="id_type_of_selection_radio_1" name="type_of_selection_radio" type="radio" value="selected"> {% trans "Selected participants" %}
-                        </label>
+                    <div class="form-group" >
+                        {{ participant_selection_form.gender }}
+                        <div class="form-text with-errors"></div>
                     </div>
 
-                    <div class="col-lg-1"></div>
-                    <div class="col-lg-12 collapse" id="participants_filter_div" style="visibility: hidden">
+                    <div class="form-check pt-2">
+                        <label>
+                            <input class="form-check-input" id="id_marital_status_checkbox" name="marital_status_checkbox" type="checkbox" value="marital_status_selected">{% trans "Marital status" %}
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        {{ participant_selection_form.marital_status }}
+                        <div class="form-text with-errors"></div>
+                    </div>
 
-                        <div class="form-group pt-2">
-                            <label>
-                                <input id="id_gender_checkbox" name="gender_checkbox" type="checkbox" value="gender_selected"> {% trans "Gender" %}
-                            </label>
-                        </div>
-
-                        <div class="form-group" >
-                            {{ participant_selection_form.gender }}
-                            <div class="form-text with-errors"></div>
-                        </div>
-
-                        <div class="form-group pt-2">
-                            <label>
-                                <input id="id_marital_status_checkbox" name="marital_status_checkbox" type="checkbox" value="marital_status_selected">{% trans "Marital status" %}
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            {{ participant_selection_form.marital_status }}
-                            <div class="form-text with-errors"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>
-                                <input id="id_location_checkbox" name="location_checkbox" type="checkbox" value="location_selected">{% trans "Locations" %}
-                            </label>
-                        </div>
-
-                        <div id="id_locations" class="card  " style="border:1px solid lightgray;">
-                            <div class="card-body">
-
-                                <div class="row">
-                                    <div id="div-search-locations" class="col-12 col-sm-12">
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text"> <span class="fa fa-search"></span></span>
-                                            <div class="ui-widget">
-                                              <input id="get_location" placeholder="{% trans 'Enter a city' %}" class="form-control">
-                                            </div>
-                                        </div>
-
-                                        <ul id="search-results-locations" style="list-style: none;">
-                                        </ul>
+                    <div class="form-check pt-2">
+                        <label>
+                            <input class="form-check-input" id="id_location_checkbox" name="location_checkbox" type="checkbox" value="location_selected">{% trans "Locations" %}
+                        </label>
+                    </div>
+                    <div id="id_locations" class="card" style="border:1px solid lightgray;">
+                        <div class="card-body">
+                            <div class="row">
+                                <div id="div-search-locations" class="col-12 col-sm-12">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"> <span class="fa fa-search fa-fw"></span></span>
+                                        <input id="get_location" type="search" placeholder="{% trans 'Enter a city' %}" class="form-control">
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12 col-sm-12">
-                                        <div id="localization_list" class="form-group">
 
-                                        </div>
-                                    </div>
+                                    <ul id="search-results-locations" style="list-style: none;">
+                                    </ul>
                                 </div>
-
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>
-                                <input id="id_diagnosis_checkbox" name="diagnosis_checkbox" type="checkbox" value="diagnosis_selected"> {% trans "Diagnosis" %}
-                            </label>
-                        </div>
-
-                        <div id="id_diagnosis" class="card  " style="border:1px solid lightgray;">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-12 col-sm-12">
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text"> <span class="fa fa-search"></span></span>
-                                            <div class="ui-widget">
-                                              <input id="get_diagnosis" placeholder="{% trans "Enter a diagnosis" %}" class="form-control">
-                                            </div>
-                                        </div>
-                                        <ul id="search-results-locations" style="list-style: none;">
-                                        </ul>
-
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-12 col-sm-12">
-                                        <div id="diagnosis_list" class="form-group">
-
-                                        </div>
+                            <div class="row">
+                                <div class="col-12 col-sm-12">
+                                    <div id="localization_list" class="form-group">
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-
-                        <div class="form-group">
-                            <label>
-                                <input id="id_age_checkbox" name="age_checkbox" type="checkbox" value="age_selected"> {% trans "Age" %}
-                            </label>
+                    <div class="form-check pt-2">
+                        <label>
+                            <input class="form-check-input" id="id_diagnosis_checkbox" name="diagnosis_checkbox" type="checkbox" value="diagnosis_selected"> {% trans "Diagnosis" %}
+                        </label>
+                    </div>
+                    <div id="id_diagnosis" class="card" style="border:1px solid lightgray;">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-sm-12">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"> <span class="fa fa-search fa-fw"></span></span>
+                                        <input id="get_diagnosis" type="search" placeholder="{% trans "Enter a diagnosis" %}" class="form-control">
+                                    </div>
+                                    <ul id="search-results-diagnosis" style="list-style: none;">
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-sm-12">
+                                    <div id="diagnosis_list" class="form-group">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                        <div id="id_age" class="card  " style="border:1px solid lightgray;">
-                            <div class="card-body">
-                                <div class="col-6 col-sm-2">
+                    <div class="form-check pt-2">
+                        <label>
+                            <input class="form-check-input" id="id_age_checkbox" name="age_checkbox" type="checkbox" value="age_selected"> {% trans "Age" %}
+                        </label>
+                    </div>
+                    <div id="id_age" class="card" style="border:1px solid lightgray;">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-auto">
                                     <div class="form-group">
                                         {{ age_interval_form.min_age }}
                                     </div>
                                 </div>
-                                <div class="col-1">
+                                <div class="col-auto">
                                     <span>{% trans "to" %}</span>
                                 </div>
-                                <div class="col-6 col-sm-2">
+                                <div class="col-auto">
                                     <div class="form-group">
                                         {{ age_interval_form.max_age }}
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
-
             </div>
+        </div>
 
-            <div class="btn-toolbar">
-
+        <div class="">
+            <div class="btn-toolbar justify-content-between">
                 <div class="btn-group float-start">
-                </div>
-
-                <div class="btn-group float-end">
                     <button type="submit" name="action" value="next-step-1" class="btn btn-primary">{% trans "Next" %}
-                        <span class="fa fa-forward"></span>
+                        <span class="fa fa-forward fa-fw"></span>
                     </button>
                 </div>
-                <div class="btn-group float-end">
-                    <a href="/export" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+
+                <div class="btn-group">
+                    <a href="/export" class="btn btn-light">{% trans "Cancel" %}</a>
                 </div>
-
             </div>
-
         </div>
     </div>
-
-{% endblock %}
+{% endblock content %}
 
 {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
     {% load static %}
     <script src="{% static 'site/js/participant_selection.js' %}"></script>
-{% endblock %}
+{% endblock extrascript %}

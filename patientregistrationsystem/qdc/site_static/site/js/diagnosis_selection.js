@@ -21,7 +21,7 @@ $(document).ready(function(){
     });
 
     function searchSuccessDiagnoses(data, textStatus, jqXHR) {
-        $('#search-results-diagnoses').html(data);
+        $('#search-results-diagnosis').html(data);
     }
 
     $('#get_diseases').autocomplete({

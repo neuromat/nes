@@ -2,32 +2,9 @@
 
 {% load i18n %}
 
-{% block activeExport %} active{% endblock %}
+{% block activeExport %} active{% endblock activeExport %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
     <div class="tab-pane fade show active" id="breadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
@@ -38,29 +15,18 @@
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Select the type of export " %}</h4>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <tbody>
-                        {% for export_type in export_type_list %}
-                            <tr>
-                                <td>
-                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "List view" %}"
-                                       href="{{ export_type.href }}">
-                                        {{ export_type.item }}
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "Select the type of export " %}</h4>
+            <hr>
+            <ol class="list-group list-group-flush">
+                {% for export_type in export_type_list %}
+                    <li class="list-group-item list-group-item-action">
+                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "List view" %}" href="{{ export_type.href }}">
+                            {{ export_type.item }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ol>
         </div>
     </div>
-
-{% endblock %}
+{% endblock content %}

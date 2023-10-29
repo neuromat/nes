@@ -178,7 +178,7 @@ $(document).ready(function () {
     });
 
     function searchSuccessDiseases(data, textStatus, jqXHR) {
-        $('#search-results-diagnoses').html(data);
+        $('#search-results-diagnosis').html(data);
     }
 
 
@@ -254,7 +254,7 @@ function add_location(location) {
 function add_disease(id, disease) {
     // alert("id: " + id + "class of diseases: " + disease);
     //remove um item da lista de resultados
-    var ul_search_diagnoses = document.getElementById('search-results-diagnoses');
+    var ul_search_diagnoses = document.getElementById('search-results-diagnosis');
     var ul_diagnosis_list = document.getElementById('ul-diagnosis-list');
     if (ul_diagnosis_list != null) ul_search_diagnoses.removeChild(ul_diagnosis_list);
 

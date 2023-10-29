@@ -4,7 +4,7 @@
 
 {% block activeUser %}
   active
-{% endblock %}
+{% endblock activeUser %}
 
 {% block content %}
   <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
@@ -23,7 +23,7 @@
       <div class="container">
         <h4>{% trans 'Researchers' %}</h4>
         <hr class="hr" />
-        <div class="accordion accordion-flush" id="accordion">
+        <div class="accordion accordion-flush overflow-x-auto" id="accordion">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">{% trans 'Show/Hide researchers' %}</button></h2>
 
@@ -102,7 +102,7 @@
       <div class="container">
         <h4>{% trans 'Institutions' %}</h4>
         <hr class="hr" />
-        <div class="accordion accordion-flush" id="accordion2">
+        <div class="accordion accordion-flush overflow-x-auto" id="accordion2">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">{% trans 'Show/Hide institutions' %}</button></h2>
             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordion2">
@@ -154,4 +154,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
+{% endblock content %}
