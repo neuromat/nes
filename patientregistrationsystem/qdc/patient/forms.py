@@ -86,7 +86,7 @@ class PatientForm(ModelForm):
             ),
             "gender": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Gender must be filled"),
                 }
@@ -97,8 +97,8 @@ class PatientForm(ModelForm):
                     "maxlength": "15",
                 }
             ),
-            "marital_status": Select(attrs={"class": "form-control"}),
-            "country": Select(attrs={"class": "form-control"}),
+            "marital_status": Select(attrs={"class": "form-select"}),
+            "country": Select(attrs={"class": "form-select"}),
             "zipcode": TextInput(
                 attrs={"class": "form-control", "pattern": r"\d{5}-?\d{3}"}
             ),
@@ -142,7 +142,7 @@ class TelephoneForm(ModelForm):
                     "pattern": r"^[- ()0-9]+",
                 }
             ),
-            "type": Select(attrs={"class": "form-control"}),
+            "type": Select(attrs={"class": "form-select"}),
             "note": TextInput(attrs={"class": "form-control"}),
         }
 
@@ -181,18 +181,18 @@ class SocialDemographicDataForm(ModelForm):
         ]
         widgets = {
             "natural_of": TextInput(attrs={"class": "form-control"}),
-            "citizenship": Select(attrs={"class": "form-control"}),
-            "patient_schooling": Select(attrs={"class": "form-control"}),
-            "schooling": Select(attrs={"class": "form-control"}),
-            "flesh_tone": Select(attrs={"class": "form-control"}),
-            "religion": Select(attrs={"class": "form-control"}),
+            "citizenship": Select(attrs={"class": "form-select"}),
+            "patient_schooling": Select(attrs={"class": "form-select"}),
+            "schooling": Select(attrs={"class": "form-select"}),
+            "flesh_tone": Select(attrs={"class": "form-select"}),
+            "religion": Select(attrs={"class": "form-select"}),
             "profession": TextInput(
                 attrs={"class": "form-control", "placeholder": _("Type in profession")}
             ),
             "occupation": TextInput(
                 attrs={"class": "form-control", "placeholder": _("Inform occupation")}
             ),
-            "payment": Select(attrs={"class": "form-control"}),
+            "payment": Select(attrs={"class": "form-select"}),
             "tv": RadioSelect(
                 choices=((0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, _("4 or +")))
             ),
@@ -258,9 +258,9 @@ class SocialHistoryDataForm(ModelForm):
         ]
 
         widgets = dict(
-            amount_cigarettes=Select(attrs={"class": "form-control"}),
-            alcohol_frequency=Select(attrs={"class": "form-control"}),
-            alcohol_period=Select(attrs={"class": "form-control"}),
+            amount_cigarettes=Select(attrs={"class": "form-select"}),
+            alcohol_frequency=Select(attrs={"class": "form-select"}),
+            alcohol_period=Select(attrs={"class": "form-select"}),
             drugs=RadioSelect(
                 attrs={"class": "radio-inline"},
                 choices=(

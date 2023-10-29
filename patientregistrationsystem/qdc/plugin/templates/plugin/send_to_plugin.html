@@ -16,16 +16,16 @@
             align-items: center;
         }
     </style>
-{% endblock %}
+{% endblock extrahead %}
 
-{% block activePlugin %} active{% endblock %}
+{% block activePlugin %} active{% endblock activePlugin %}
 
 {% block content %}
     <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/">{% trans "Home" %}</a></li>
-                <li class="breadcrumb-item"><a href="/plugin">{% trans "Plugin" %}</a></li>
+                <li class="breadcrumb-item"><a href="/home/">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="/plugin/">{% trans "Plugin" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Participants selection" %}</li>
             </ol>
         </nav>
@@ -248,24 +248,20 @@
                         <option id="gender_field" value="gender__name*gender" selected="">
                             Gender </option>
                     </select>
-
-                    <div class="btn-toolbar float-end">
-                        <div class="btn-group">
-                            <input type="submit" class="btn btn-primary" value="{% trans 'Send' %}"
-                                   onclick="return validate_plugin_form()">
-                        </div>
-                    </div>
                 </div>
-                <div class="btn-toolbar float-end">
-                    <div class="btn-group">
-                        <a href="/" class="btn" style="background-color: #f5f5f5">{% trans 'Cancel' %}</a>
-                    </div>
 
+                <div class="btn-toolbar justify-content-between">
+                    <div class="btn-group">
+                        <input type="submit" class="btn btn-primary" value="{% trans 'Send' %}" onclick="return validate_plugin_form()">
+                    </div>
+                    <div class="btn-group">
+                        <a href="/" class="btn btn-light">{% trans 'Cancel' %}</a>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
 
 {% block extrascript %}
     <script src="{% static 'site/js/experiment_selection.js' %}"></script>
@@ -293,4 +289,4 @@
             window.open("{{ plugin_url | escapejs }}", "_blank");
         {% endif %}
     </script>
-{% endblock %}
+{% endblock extrascript %}

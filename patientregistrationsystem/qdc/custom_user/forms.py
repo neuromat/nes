@@ -175,7 +175,7 @@ class UserProfileForm(ModelForm):
         fields = ["institution", "login_enabled", "citation_name"]
 
         widgets = {
-            "institution": Select(attrs={"class": "form-control"}),
+            "institution": Select(attrs={"class": "form-select"}),
             "login_enabled": RadioSelect(),
             "citation_name": TextInput(
                 attrs={"class": "form-control", "placeholder": _("Type citation name")}
@@ -260,8 +260,8 @@ class InstitutionForm(ModelForm):
                     "maxlength": "30",
                 }
             ),
-            "country": Select(attrs={"class": "form-control"}),
-            "parent": Select(attrs={"class": "form-control"}),
+            "country": Select(attrs={"class": "form-select"}),
+            "parent": Select(attrs={"class": "form-select"}),
         }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

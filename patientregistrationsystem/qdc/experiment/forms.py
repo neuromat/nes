@@ -115,7 +115,7 @@ class ExperimentForm(ModelForm):
         ]
 
         widgets = {
-            "research_project": Select(attrs={"class": "form-control"}),
+            "research_project": Select(attrs={"class": "form-select"}),
             "title": TextInput(
                 attrs={
                     "class": "form-control",
@@ -226,7 +226,7 @@ class ComponentForm(ModelForm):
                     "placeholder": _("Time"),
                 }
             ),
-            "duration_unit": Select(attrs={"class": "form-control"}),
+            "duration_unit": Select(attrs={"class": "form-select"}),
         }
 
     def clean_duration_value(self):
@@ -292,7 +292,7 @@ class ComponentConfigurationForm(ModelForm):
             ),
             "interval_between_repetitions_unit": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Interval unit must be filled."),
                 }
@@ -326,7 +326,7 @@ class StimulusForm(ModelForm):
         widgets = {
             "stimulus_type": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Stimulus type must be filled."),
                 }
@@ -344,7 +344,7 @@ class EEGForm(ModelForm):
         widgets = {
             "eeg_setting": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("EEG setting type must be filled."),
                 }
@@ -370,7 +370,7 @@ class EMGForm(ModelForm):
         widgets = {
             "emg_setting": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("EMG setting type must be filled."),
                 }
@@ -396,7 +396,7 @@ class TMSForm(ModelForm):
         widgets = {
             "tms_setting": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("TMS setting type must be filled."),
                 }
@@ -422,14 +422,14 @@ class DigitalGamePhaseForm(ModelForm):
         widgets = {
             "software_version": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Software version must be filled."),
                 }
             ),
             "context_tree": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Context tree must be filled."),
                 }
@@ -453,7 +453,7 @@ class GenericDataCollectionForm(ModelForm):
         widgets = {
             "information_type": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Information type must be filled."),
                 }
@@ -469,7 +469,7 @@ class MediaCollectionForm(ModelForm):
         widgets = {
             "information_type_media": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Information type must be filled."),
                 }
@@ -516,7 +516,7 @@ class UserFullnameChoiceField(ModelChoiceField):
 class ResearchProjectOwnerForm(ModelForm):
     owner = UserFullnameChoiceField(
         queryset=User.objects.all(),
-        widget=Select(attrs={"class": "form-control", "required": ""}),
+        widget=Select(attrs={"class": "form-select", "required": ""}),
     )
 
     class Meta:
@@ -621,7 +621,7 @@ class PublicationForm(ModelForm):
             "url": URLInput(attrs={"class": "form-control"}),
             "publication_type": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Publication type must be filled."),
                 }
@@ -687,21 +687,21 @@ class EEGDataForm(ModelForm):
             ),
             "eeg_setting": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("EEG setting type must be filled."),
                 }
             ),
             "eeg_cap_size": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Cap size type must be filled."),
                 }
             ),
             "file_format": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("File format must be chosen."),
                 }
@@ -793,7 +793,7 @@ class SourceCodeForm(ModelForm):
                     "data-error": _("Description must be filled."),
                 }
             ),
-            "source_code_data": Select(attrs={"class": "form-control", "required": ""}),
+            "source_code_data": Select(attrs={"class": "form-select", "required": ""}),
         }
 
 
@@ -970,7 +970,7 @@ class TMSLocalizationSystemForm(ModelForm):
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
-            "brain_area": Select(attrs={"class": "form-control", "required": ""}),
+            "brain_area": Select(attrs={"class": "form-select", "required": ""}),
         }
 
 
@@ -992,7 +992,7 @@ class EEGElectrodePositionForm(ModelForm):
             ),
             "coordinate_x": NumberInput(attrs={"class": "form-control"}),
             "coordinate_y": NumberInput(attrs={"class": "form-control"}),
-            "position_reference": Select(attrs={"class": "form-control"}),
+            "position_reference": Select(attrs={"class": "form-select"}),
         }
 
 
@@ -1035,7 +1035,7 @@ class AmplifierRegisterForm(ModelForm):
         widgets = {
             "manufacturer": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Manufacturer must be filled."),
                 }
@@ -1053,9 +1053,9 @@ class AmplifierRegisterForm(ModelForm):
             "number_of_channels": NumberInput(attrs={"class": "form-control"}),
             "common_mode_rejection_ratio": TextInput(attrs={"class": "form-control"}),
             "input_impedance": TextInput(attrs={"class": "form-control"}),
-            "input_impedance_unit": Select(attrs={"class": "form-control"}),
-            "tethering_system": Select(attrs={"class": "form-control"}),
-            "amplifier_detection_type": Select(attrs={"class": "form-control"}),
+            "input_impedance_unit": Select(attrs={"class": "form-select"}),
+            "tethering_system": Select(attrs={"class": "form-select"}),
+            "amplifier_detection_type": Select(attrs={"class": "form-select"}),
         }
 
 
@@ -1078,7 +1078,7 @@ class EEGSolutionRegisterForm(ModelForm):
             ),
             "manufacturer": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Manufacturer must be filled."),
                 }
@@ -1128,13 +1128,13 @@ class ElectrodeModelRegisterForm(ModelForm):
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
-            "material": Select(attrs={"class": "form-control"}),
-            "usability": Select(attrs={"class": "form-control"}),
+            "material": Select(attrs={"class": "form-select"}),
+            "usability": Select(attrs={"class": "form-select"}),
             "impedance": TextInput(attrs={"class": "form-control"}),
-            "impedance_unit": Select(attrs={"class": "form-control"}),
+            "impedance_unit": Select(attrs={"class": "form-select"}),
             "electrode_type": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Electrode type is required"),
                 }
@@ -1175,15 +1175,15 @@ class CoilModelRegisterForm(ModelForm):
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
-            "material": Select(attrs={"class": "form-control"}),
+            "material": Select(attrs={"class": "form-select"}),
             "coil_shape": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Coil shape must be filled."),
                 }
             ),
-            "coil_design": Select(attrs={"class": "form-control"}),
+            "coil_design": Select(attrs={"class": "form-select"}),
         }
 
 
@@ -1201,7 +1201,7 @@ class StimuliEqRegisterForm(ModelForm):
         widgets = {
             "manufacturer": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Manufacturer must be filled."),
                 }
@@ -1233,7 +1233,7 @@ class TMSDeviceRegisterForm(ModelForm):
         widgets = {
             "manufacturer": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Manufacturer must be filled."),
                 }
@@ -1246,9 +1246,9 @@ class TMSDeviceRegisterForm(ModelForm):
                 }
             ),
             "description": Textarea(attrs={"class": "form-control", "rows": "4"}),
-            # 'coil_model': Select(attrs={'class': 'form-control', 'required': "",
+            # 'coil_model': Select(attrs={'class': 'form-select', 'required': "",
             #                             'data-error': _('Coil model must be filled.')}),
-            "pulse_type": Select(attrs={"class": "form-control"}),
+            "pulse_type": Select(attrs={"class": "form-select"}),
             "serial_number": TextInput(attrs={"class": "form-control"}),
         }
 
@@ -1269,7 +1269,7 @@ class EEGElectrodeNETRegisterForm(ModelForm):
         widgets = {
             "manufacturer": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Manufacturer must be filled."),
                 }
@@ -1285,7 +1285,7 @@ class EEGElectrodeNETRegisterForm(ModelForm):
             "serial_number": TextInput(attrs={"class": "form-control"}),
             "electrode_model_default": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Electrode model default must be filled in."),
                 }
@@ -1307,7 +1307,7 @@ class EEGElectrodeCapRegisterForm(ModelForm):
         widgets = {
             "material": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Material must be filled."),
                 }
@@ -1355,7 +1355,7 @@ class ADConverterRegisterForm(ModelForm):
         widgets = {
             "manufacturer": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Manufacturer must be filled."),
                 }
@@ -1411,7 +1411,7 @@ class EMGSurfacePlacementRegisterForm(ModelForm):
         widgets = {
             "muscle_subdivision": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Muscle subdivision is required."),
                 }
@@ -1444,7 +1444,7 @@ class EMGIntramuscularPlacementRegisterForm(ModelForm):
         widgets = {
             "muscle_subdivision": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Muscle subdivision is required."),
                 }
@@ -1468,7 +1468,7 @@ class EMGNeedlePlacementRegisterForm(ModelForm):
         widgets = {
             "muscle_subdivision": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Muscle subdivision is required."),
                 }
@@ -1542,7 +1542,7 @@ class SoftwareRegisterForm(ModelForm):
         widgets = {
             "manufacturer": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Manufacturer must be filled."),
                 }
@@ -1616,14 +1616,14 @@ class EMGDataForm(ModelForm):
             ),
             "emg_setting": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("EMG setting type must be filled."),
                 }
             ),
             "file_format": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("File format must be chosen."),
                 }
@@ -1700,7 +1700,7 @@ class AdditionalDataForm(ModelForm):
             ),
             "file_format": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("File format must be chosen."),
                 }
@@ -1829,7 +1829,7 @@ class EMGDigitalFilterSettingForm(ModelForm):
         widgets = {
             "filter_type": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Filter type is required"),
                 }
@@ -1853,7 +1853,7 @@ class EMGADConverterSettingForm(ModelForm):
         widgets = {
             "ad_converter": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("AD converter is required"),
                 }
@@ -1873,7 +1873,7 @@ class EMGElectrodeSettingForm(ModelForm):
         widgets = {
             "electrode": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Electrode is required"),
                 }
@@ -1897,7 +1897,7 @@ class EMGElectrodePlacementSettingForm(ModelForm):
         widgets = {
             "emg_electrode_placement": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Electrode placement is required"),
                 }
@@ -1905,7 +1905,7 @@ class EMGElectrodePlacementSettingForm(ModelForm):
             "remarks": Textarea(attrs={"class": "form-control", "rows": "4"}),
             "muscle_side": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Muscle side is required"),
                 }
@@ -1924,7 +1924,7 @@ class EMGPreamplifierSettingForm(ModelForm):
         widgets = {
             "amplifier": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Amplifier is required"),
                 }
@@ -1983,7 +1983,7 @@ class EMGAmplifierSettingForm(ModelForm):
         widgets = {
             "amplifier": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Amplifier is required"),
                 }
@@ -2055,7 +2055,7 @@ class ElectrodeModelForm(ModelForm):
             ),
             "electrode_type": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Electrode type is required"),
                 }
@@ -2170,23 +2170,23 @@ class TMSDataForm(ModelForm):
             ),
             "tms_setting": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("TMS setting type must be filled."),
                 }
             ),
-            "coil_orientation": Select(attrs={"class": "form-control"}),
+            "coil_orientation": Select(attrs={"class": "form-select"}),
             "coil_orientation_angle": TextInput(attrs={"class": "form-control"}),
-            "direction_of_induced_current": Select(attrs={"class": "form-control"}),
+            "direction_of_induced_current": Select(attrs={"class": "form-select"}),
             "resting_motor_threshold": TextInput(attrs={"class": "form-control"}),
             "test_pulse_intensity_of_simulation": TextInput(
                 attrs={"class": "form-control"}
             ),
             "second_test_pulse_intensity": TextInput(attrs={"class": "form-control"}),
             "interval_between_pulses": TextInput(attrs={"class": "form-control"}),
-            "interval_between_pulses_unit": Select(attrs={"class": "form-control"}),
+            "interval_between_pulses_unit": Select(attrs={"class": "form-select"}),
             "time_between_mep_trials": TextInput(attrs={"class": "form-control"}),
-            "time_between_mep_trials_unit": Select(attrs={"class": "form-control"}),
+            "time_between_mep_trials_unit": Select(attrs={"class": "form-select"}),
             "repetitive_pulse_frequency": TextInput(attrs={"class": "form-control"}),
             "description": Textarea(
                 attrs={
@@ -2263,7 +2263,7 @@ class StimuliEqSettingForm(ModelForm):
             ),
             "stimuli_eq": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Stimuli Equipment must be filled."),
                 }
@@ -2317,19 +2317,19 @@ class TMSDeviceSettingForm(ModelForm):
         widgets = {
             "tms_device": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("TMS device is required"),
                 }
             ),
             "coil_model": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("Coil model is required"),
                 }
             ),
-            "pulse_stimulus_type": Select(attrs={"class": "form-control"}),
+            "pulse_stimulus_type": Select(attrs={"class": "form-select"}),
         }
 
 
@@ -2419,7 +2419,7 @@ class DigitalGamePhaseDataForm(ModelForm):
             ),
             "file_format": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("File format must be chosen."),
                 }
@@ -2491,7 +2491,7 @@ class GenericDataCollectionDataForm(ModelForm):
             ),
             "file_format": Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "form-select",
                     "required": "",
                     "data-error": _("File format must be chosen."),
                 }
