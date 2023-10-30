@@ -1,8 +1,9 @@
 {% extends "experiment/eeg_setting_eeg_electrode_net_system_template.html" %}
+
 {% load i18n static %}
 
 {% block extrahead %}
-{{ block.super }}
+    {{ block.super }}
     <style>
         {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
         .header-fixed {
@@ -37,23 +38,22 @@
             float: left;
         }
     </style>
-{% endblock %}
+{% endblock extrahead %}
 
 {% block subcontent %}
-{{ block.super }}
+    {{ block.super }}
     <div id="electrode_position" class="tab-pane fade show active">
-
         <h4>{% trans "Step 2 of 3" %}</h4>
-
+        <hr>
         <div hidden="hidden">
             <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
-            <input id="map_file" type="text"
-                {% if eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file %}
-                    value="{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}"
-               {% else %}
-                   value=""
-               {% endif %}
-            >
+            <input id="map_file"
+                   type="text"
+                   {% if eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file %}
+                       value="{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}"
+                   {% else %}
+                       value=""
+                   {% endif %}>
         </div>
 
         <div style="width:100%;">
@@ -69,9 +69,15 @@
                     <td width="20%" valign="top">
 
                         <label class="form-label" style="margin-left: 10px;">{% trans "Used positions:" %}</label>
-                        <br/>
+                        <br />
 
-                        <input type="text" id="used_positions" value="{{ number_of_used_electrodes }}" disabled size="4" style="text-align: center; margin-left: 10px;">
+                        <input type="text"
+                               id="used_positions"
+                               value="{{ number_of_used_electrodes }}"
+                               disabled
+                               size="4"
+                               style="text-align: center;
+                                      margin-left: 10px">
                         {% trans "of" %} {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.electrode_positions.count }}
 
                         <table class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
@@ -83,27 +89,30 @@
                             </thead>
                             <tbody>
                                 {% for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all|dictsort:"channel_index" %}
-                                <tr>
-                                    <td>
-                                        {{ position_setting.eeg_electrode_position.name }}
-                                    </td>
-                                    <td>
-                                        <input {% if not editing %}disabled{% endif %} type="checkbox" name="position_status_{{ position_setting.id }}" id="position_status_{{ position_setting.id }}" {% if position_setting.used %}checked="checked"{% endif %} onclick="used();" />
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ position_setting.eeg_electrode_position.name }}</td>
+                                        <td>
+                                            <input {% if not editing %}disabled{% endif %}
+                                                   type="checkbox"
+                                                   name="position_status_{{ position_setting.id }}"
+                                                   id="position_status_{{ position_setting.id }}"
+                                                   {% if position_setting.used %}checked="checked"{% endif %}
+                                                   onclick="used();" />
+                                        </td>
+                                    </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </td>
                 </tr>
             </table>
-
         </div>
     </div>
 
     {% if not editing %}
         {% if can_change %}
-            <div class="btn-toolbar float-start">
+            <br>
+            <div class="btn-toolbar">
                 <div class="btn-group">
                     <a href="/experiment/eeg_setting/eeg_electrode_position_status/edit/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                 </div>
@@ -113,18 +122,13 @@
         <div class="btn-toolbar float-end">
             <div class="btn-group">
                 <a href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system" class="btn btn-secondary"><span class="fa-fw fa fa-arrow-left"></span> {% trans "Previous" %}</a>
-            </div>
-            <div class="btn-group">
                 <a href="/experiment/eeg_setting/eeg_electrode_position_status_model/{{ eeg_setting.id }}" class="btn btn-secondary">{% trans "Next" %} <span class="fa-fw fa fa-arrow-right"></span></a>
             </div>
         </div>
-
     {% endif %}
-
-{% endblock %}
+{% endblock subcontent %}
 
 {% block extrascript %}
-{{ block.super }}
-    <script src="{% static 'site/js/eeg_electrode_position_map.js' %}"></script>
-{% endblock %}
-
+    {{ block.super }}
+    <script src={% static "site/js/eeg_electrode_position_map.js" %}></script>
+{% endblock extrascript %}

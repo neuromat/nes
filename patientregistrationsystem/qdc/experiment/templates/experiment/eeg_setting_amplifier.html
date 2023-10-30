@@ -1,106 +1,92 @@
 {% extends "experiment/eeg_setting_type_template.html" %}
+
 {% load i18n static %}
 
 {% block selection %}
-{{ block.super }}
-
+    {{ block.super }}
     <h4>{% trans "EEG amplifier settings" %}</h4>
-
+    <hr>
     <div class="row">
-        <div class="container-fluid">
-            <div class="form-group">
-                <label class="form-label">{% trans "Manufacturer" %} </label>
+        <div class="form-group">
+            <label class="form-label">{% trans "Manufacturer" %}</label>
 
-                <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
-                    <option value>-------</option>
-                    {% for manufacturer in manufacturer_list %}
-                        <option {% if manufacturer.id == equipment_selected.manufacturer.id %}selected="selected"{% endif %} value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
-                    {% endfor %}
-                </select>
-
-                <div class="form-text with-errors"></div>
-            </div>
+            <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
+                <option value>-------</option>
+                {% for manufacturer in manufacturer_list %}
+                    <option {% if manufacturer.id == equipment_selected.manufacturer.id %}selected="selected"{% endif %}
+                            value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+                {% endfor %}
+            </select>
+            <div class="form-text with-errors"></div>
         </div>
     </div>
 
     <div class="row">
-        <div class="container-fluid">
-            <div class="form-group">
-                <label class="form-label">{% trans "Identification" %} <b class="text-danger">*</b></label>
+        <div class="form-group">
+            <label class="form-label">
+                {% trans "Identification" %} <b class="text-danger">*</b>
+            </label>
 
-                <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
-                    <option value>-------</option>
-                    {% for equipment in equipment_list %}
-                        <option {% if not creating and equipment_selected.id == equipment.id %}selected="selected"{% endif %} value="{{ equipment.id }}">{{ equipment.identification }}</option>
-                    {% endfor %}
-                </select>
-
-                <div class="form-text with-errors"></div>
-
-            </div>
+            <select class="form-control"
+                    name="equipment_selection"
+                    id="id_equipment_selection"
+                    required
+                    {% if not editing and not creating %}disabled{% endif %}>
+                <option value>-------</option>
+                {% for equipment in equipment_list %}
+                    <option {% if not creating and equipment_selected.id == equipment.id %}selected="selected"{% endif %}
+                            value="{{ equipment.id }}">{{ equipment.identification }}</option>
+                {% endfor %}
+            </select>
+            <div class="form-text with-errors"></div>
         </div>
     </div>
 
     <div class="row">
-        <div class="container-fluid">
-            <div class="form-group">
-                <label class="form-label">{% trans "Description" %} </label>
-                {{ equipment_form.description }}
-                <div class="form-text with-errors"></div>
-            </div>
+        <div class="form-group">
+            <label class="form-label">{% trans "Description" %}</label>
+            {{ equipment_form.description }}
+            <div class="form-text with-errors"></div>
         </div>
     </div>
 
     <div class="row">
-        <div class="container-fluid">
-            <div class="form-group">
-                <label class="form-label">{% trans "Gain (times)" %} </label>
-                {{ selection_form.gain }}
-                <div class="form-text with-errors"></div>
-            </div>
+        <div class="form-group">
+            <label class="form-label">{% trans "Gain (times)" %}</label>
+            {{ selection_form.gain }}
+            <div class="form-text with-errors"></div>
         </div>
     </div>
-
-{% endblock %}
+{% endblock selection %}
 
 {% block settings %}
-
     <div class="row">
-        <div class="container-fluid">
-            <div class="form-group {% if setting_form.gain.errors %}is-invalid{% endif %}">
-                <label class="form-label">{% trans "Configured gain (times)" %} </label>
-                {{ setting_form.gain }}
-                <div class="form-text with-errors">
-                    {% for error in setting_form.gain.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
+        <div class="form-group {% if setting_form.gain.errors %}is-invalid{% endif %}">
+            <label class="form-label">{% trans "Configured gain (times)" %}</label>
+            {{ setting_form.gain }}
+            <div class="form-text with-errors">
+                {% for error in setting_form.gain.errors %}{{ error }}{% endfor %}
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="container-fluid">
-            <div class="form-group {% if setting_form.sampling_rate.errors %}is-invalid{% endif %}">
-                <label class="form-label">{% trans "Sampling rate (Hz)" %} </label>
-                {{ setting_form.sampling_rate }}
-                <div class="form-text with-errors">
-                    {% for error in setting_form.sampling_rate.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
+        <div class="form-group {% if setting_form.sampling_rate.errors %}is-invalid{% endif %}">
+            <label class="form-label">{% trans "Sampling rate (Hz)" %}</label>
+            {{ setting_form.sampling_rate }}
+            <div class="form-text with-errors">
+                {% for error in setting_form.sampling_rate.errors %}{{ error }}{% endfor %}
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="container-fluid">
-            <div class="form-group">
-                <label class="form-label">{% trans "Number of used channels" %} <b class="text-danger">*</b></label>
-                {{ setting_form.number_of_channels_used }}
-                <div class="form-text with-errors"></div>
-            </div>
+        <div class="form-group">
+            <label class="form-label">
+                {% trans "Number of used channels" %} <b class="text-danger">*</b>
+            </label>
+            {{ setting_form.number_of_channels_used }}
+            <div class="form-text with-errors"></div>
         </div>
     </div>
-
-{% endblock %}
+{% endblock settings %}

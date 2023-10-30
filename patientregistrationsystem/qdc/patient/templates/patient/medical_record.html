@@ -2,230 +2,273 @@
 
 {% load i18n static %}
 
-{% block activePatient %} active{% endblock activePatient %}
+{% block activePatient %}
+    active
+{% endblock activePatient %}
 
 {% block form %}
     <form id="form_medical_record" role="form" method="post" data-bs-toggle="validator">
         {% csrf_token %}
-{% endblock form %}
+    {% endblock form %}
 
+    {% block content %}
+        <div class="tab-pane fade show active" id="patientBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/patient/find/">{% trans "Participants" %}</a>
+                    </li>
+                    {% if status == "edit" or creating %}
+                        <li class="breadcrumb-item">
+                            <a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ patient }}</a>
+                        </li>
+                    {% else %}
+                        <li class="breadcrumb-item">
+                            <a href="/patient/{{ patient_id }}/?currentTab=3">{{ patient }}</a>
+                        </li>
+                    {% endif %}
+                    <li class="breadcrumb-item active">{% trans "Medical assessment" %}</li>
+                </ol>
+            </nav>
+        </div>
 
-{% block content %}
-    <div class="tab-pane fade show active" id="patientBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/patient/find/">{% trans "Participants" %}</a></li>
-                {% if status == "edit" or creating %}
-                    <li class="breadcrumb-item"><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
-                {% else %}
-                    <li class="breadcrumb-item"><a href="/patient/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
-                {% endif %}
-                <li class="breadcrumb-item active">{% trans "Medical assessment" %}</li>
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="medicalRecordTab">
-        {% if not creating %}
-            <div class="row">
-                <div class="col-1 col-lg-1">
-                </div>
-                <div class="col-11 col-lg-4">
-                    <div class="input-group  input-group-sm ">
-                        <div class="form-group">
-                            <label>{% trans "Date:" %}</label> {{ record_date|date:'' }}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-1 col-lg-1">
-                </div>
-                <div class="col-11 col-lg-6">
-                    <div class="input-group  input-group-sm ">
-                        <div class="form-group">
-                            <label>{% trans "Responsible:" %}</label> {{ record_responsible }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-            {% if editing %}
+        <div class="tab-pane fade show active" id="medicalRecordTab">
+            {% if not creating %}
                 <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <div class="form-group">
-                            <input id="patient_id" value="{{ patient_id }}" style="display: none;">
-                            <input id="medical_record_id" value="{{ record_id }}" style="display: none;">
-                            <div class="input-group  input-group-sm "><span class="input-group-text">
-                                <span class="fa-fw fa fa-edit"></span></span>
-                                <input type="search" class="form-control" placeholder="{% trans "Specify diagnosis or disease code (ICD-10)" %}" id="id_whichComplementaryExam" type="text">
+                    <div class="col-1 col-lg-1"></div>
+                    <div class="col-11 col-lg-4">
+                        <div class="input-group  input-group-sm ">
+                            <div class="form-group">
+                                <label>{% trans "Date:" %}</label>
+                                {{ record_date|date:'' }}
                             </div>
-                            {% csrf_token %}
-                            <ul id="search-results-diseases" style="list-style: none;"></ul>
+                        </div>
+                    </div>
+                    <div class="col-1 col-lg-1"></div>
+                    <div class="col-11 col-lg-6">
+                        <div class="input-group  input-group-sm ">
+                            <div class="form-group">
+                                <label>{% trans "Responsible:" %}</label>
+                                {{ record_responsible }}
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endif %}
 
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <div class="form-group">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>{% trans "Diagnosis" %}</th>
-                                    <th>{% trans "Exams" %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% if not object_list %}
-                                <tr>
-                                    <td>{% trans "(no diagnosis)" %}</td>
-                                    <td></td>
-                                </tr>
-                            {% else %}
-                                {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
-                                    <tr>
-                                        <td>
-                                            <b>{{ diagnosis.classification_of_diseases }}</b>
-                                            {% if editing %}
-                                                <a class="btn fa-fw fa fa-remove" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Delete" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                                    onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }});"></a>
-                                            {% endif %}
-                                            <br/>
-                                            <blockquote>
-                                                <i><h6>
-                                                {% if diagnosis.date %}{% trans "On " %}{{ diagnosis.date }}<br/>{% endif %}
-                                                {% if diagnosis.description %}{{ diagnosis.description }}<br/>{% endif %}
-                                                </h6></i>
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                {% if editing %}
+                    <div class="row">
+                        <div class="col-12 col-sm-12">
+                            <div class="form-group">
+                                <input id="patient_id" value="{{ patient_id }}" class="d-none">
+                                <input id="medical_record_id" value="{{ record_id }}" class="d-none">
+                                <div class="input-group  input-group-sm ">
+                                    <span class="input-group-text">
+                                        <span class="fa-fw fa fa-edit"></span></span>
+                                        <input type="search"
+                                               class="form-control"
+                                               placeholder="{% trans "Specify diagnosis or disease code (ICD-10)" %}"
+                                               id="id_whichComplementaryExam">
+                                    </div>
+                                    {% csrf_token %}
+                                    <ul id="search-results-diseases" class="list-group list-group-flush">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
 
-                                                {% if editing %}
-                                                    <a class="btn" data-bs-toggle="tooltip" data-bs-placement="left" style="font-size-adjust: 0.47; font-style: italic;" title="{% trans "Edit details" %}"
-                                                        onclick="show_modal_detail({{ diagnosis.id }});">{% trans "Details" %}
-                                                    </a>
+                    <div class="row">
+                        <div class="col-12 col-sm-12">
+                            <div class="form-group">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>{% trans "Diagnosis" %}</th>
+                                            <th>{% trans "Exams" %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if not object_list %}
+                                            <tr>
+                                                <td>{% trans "(no diagnosis)" %}</td>
+                                                <td></td>
+                                            </tr>
+                                        {% else %}
+                                            {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
+                                                <tr>
+                                                    <td>
+                                                        <b>{{ diagnosis.classification_of_diseases }}</b>
+                                                        {% if editing %}
+                                                            <a class="btn fa-fw fa fa-remove ps-0 text-danger"
+                                                               data-bs-toggle="tooltip"
+                                                               data-bs-placement="right"
+                                                               title="{% trans "Delete" %}"
+                                                               onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }});"></a>
+                                                        {% endif %}
+                                                        <br />
+                                                        <blockquote>
+                                                            <i>
+                                                                <h6>
+                                                                    {% if diagnosis.date %}
+                                                                        {% trans "On " %}{{ diagnosis.date }}
+                                                                        <br />
+                                                                    {% endif %}
+                                                                    {% if diagnosis.description %}
+                                                                        {{ diagnosis.description }}
+                                                                        <br />
+                                                                    {% endif %}
+                                                                </h6>
+                                                            </i>
 
-                                                    <div class="modal fade" id="modalDetail{{ diagnosis.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">{{ diagnosis.classification_of_diseases }}</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    {% comment %} <div class="row"> {% endcomment %}
-                                                                        <div class="form-group">
-                                                                            <label id="description-label-{{ diagnosis.id }}">{% trans "Observation" %}</label>
-                                                                            <textarea class="form-control" cols="100" rows="3" id="diagnosis_description" name="description-{{ diagnosis.id }}" placeholder="{% trans 'Observation' %}">{% if diagnosis.description %}{{ diagnosis.description }}{% endif %}</textarea>
-                                                                        </div>
-                                                                    {% comment %} </div> {% endcomment %}
-                                                                    {% comment %} <div class="row"> {% endcomment %}
-                                                                        <div class="form-group">
-                                                                            <label id="date-label-{{ diagnosis.id }}">{% trans "Date" %}</label>
-                                                                            <div class="input-group  input-group-sm">
-                                                                                <input value="{{ diagnosis.date|date:'d/m/Y' }}" class="form-control" id="diagnosis_date-{{ diagnosis.id }}" name="date-{{ diagnosis.id }}" placeholder="{% trans 'Date' %}" >
+                                                            {% if editing %}
+                                                                <a class="btn"
+                                                                   data-bs-toggle="tooltip"
+                                                                   data-bs-placement="left"
+                                                                   style="font-size-adjust: 0.47;
+                                                                          font-style: italic"
+                                                                   title="{% trans "Edit details" %}"
+                                                                   onclick="show_modal_detail({{ diagnosis.id }});">{% trans "Details" %}</a>
+
+                                                                <div class="modal fade"
+                                                                     id="modalDetail{{ diagnosis.id }}"
+                                                                     tabindex="-1"
+                                                                     role="dialog"
+                                                                     aria-labelledby="myModalLabel"
+                                                                     aria-hidden="true">
+                                                                    <div class="modal-dialog">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title">{{ diagnosis.classification_of_diseases }}</h5>
+                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                {% comment %} <div class="row"> {% endcomment %}
+                                                                                <div class="form-group">
+                                                                                    <label id="description-label-{{ diagnosis.id }}">{% trans "Observation" %}</label>
+                                                                                    <textarea class="form-control"
+                                                                                              cols="100"
+                                                                                              rows="3"
+                                                                                              id="diagnosis_description"
+                                                                                              name="description-{{ diagnosis.id }}"
+                                                                                              placeholder="{% trans "Observation" %}">{% if diagnosis.description %}{{ diagnosis.description }}{% endif %}</textarea>
+                                                                                </div>
+                                                                                {% comment %} </div> {% endcomment %}
+                                                                                {% comment %} <div class="row"> {% endcomment %}
+                                                                                <div class="form-group">
+                                                                                    <label id="date-label-{{ diagnosis.id }}">{% trans "Date" %}</label>
+                                                                                    <div class="input-group  input-group-sm">
+                                                                                        <input value="{{ diagnosis.date|date:'d/m/Y' }}"
+                                                                                               class="form-control"
+                                                                                               id="diagnosis_date-{{ diagnosis.id }}"
+                                                                                               name="date-{{ diagnosis.id }}"
+                                                                                               placeholder="{% trans "Date" %}">
+                                                                                    </div>
+                                                                                </div>
+                                                                                {% comment %} </div> {% endcomment %}
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                                                                <button class="btn btn-primary" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}">{% trans "Save" %}</button>
                                                                             </div>
                                                                         </div>
-                                                                    {% comment %} </div> {% endcomment %}
+                                                                    </div>
                                                                 </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                                                                    <button class="btn btn-primary" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}">{% trans "Save" %}</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </blockquote>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <table>
-                                                {% if diagnosis_exams %}
-                                                    {% for exams in diagnosis_exams %}
-                                                        <tr>
-                                                            <td>
-                                                                {% if editing %}
-                                                                    <a href="exam/edit/{{ exams.id }}/?status={{ status }}&mr=new">{{ exams.description }}</a>
-                                                                {% else %}
-                                                                    <a href="exam/{{ exams.id }}/?status={{ status }}">{{ exams.description }}</a>
-                                                                {% endif %}
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                {% endif %}
-                                                {% if editing %}
-                                                    <tr><td>
-                                                        <a href="diagnosis/{{ diagnosis.id }}/exam/new/?status={{ status }}&mr=new" class="btn btn-primary">{% trans "Insert exam" %}</a>
-                                                    </td></tr>
-                                                {% else %}
-                                                    <tr><td>
-                                                        <a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/diagnosis/{{ diagnosis.id }}/exam/new/?status={{ status }}" class="btn btn-primary">{% trans "Insert exam" %}</a>
-                                                    </td></tr>
-                                                {% endif %}
-                                            </table>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            {% endif %}
-                            </tbody>
-                        </table>
+                                                            </blockquote>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <table>
+                                                            {% if diagnosis_exams %}
+                                                                {% for exams in diagnosis_exams %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            {% if editing %}
+                                                                                <a href="exam/edit/{{ exams.id }}/?status={{ status }}&mr=new">{{ exams.description }}</a>
+                                                                            {% else %}
+                                                                                <a href="exam/{{ exams.id }}/?status={{ status }}">{{ exams.description }}</a>
+                                                                            {% endif %}
+                                                                        </td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                            {% if editing %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <a href="diagnosis/{{ diagnosis.id }}/exam/new/?status={{ status }}&mr=new" class="btn btn-primary">{% trans "Insert exam" %}</a>
+                                                                    </td>
+                                                                </tr>
+                                                            {% else %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/diagnosis/{{ diagnosis.id }}/exam/new/?status={{ status }}"
+                                                                           class="btn btn-primary">{% trans "Insert exam" %}</a>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endif %}
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="btn-toolbar float-end">
-        <div class="btn-group">
-            {% if creating %}
-                <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn btn-light">{% trans "Cancel" %}</a>
-            {% else %}
-                {% if status == "edit" %}
-                    <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn btn-light">{% trans "Back" %}</a>
-                {% else %}
-                    <a href="/patient/{{ patient_id }}/?currentTab=3" class="btn btn-light">{% trans "Back" %}</a>
-                {% endif %}
-            {% endif %}
-        </div>
-        <div class="btn-group">
-            {% if not object_list %}
-                <button type="submit" name="action" value="finish" class="btn btn-primary" disabled>{% trans "Finalize evaluation" %}</button>
-            {% elif creating or editing %}
-                <button type="submit" name="action" value="finish" class="btn btn-primary">{% trans "Finalize evaluation" %}</button>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{% trans "Delete?" %}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="btn-toolbar float-end">
+                <div class="btn-group">
+                    {% if creating %}
+                        <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn btn-light">{% trans "Cancel" %}</a>
+                    {% else %}
+                        {% if status == "edit" %}
+                            <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn btn-light">{% trans "Back" %}</a>
+                        {% else %}
+                            <a href="/patient/{{ patient_id }}/?currentTab=3" class="btn btn-light">{% trans "Back" %}</a>
+                        {% endif %}
+                    {% endif %}
                 </div>
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete diagnosis?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <a type="button" class="btn btn-danger" id="removeDiagnosis" href="">{% trans "Delete" %}</a>
+                <div class="btn-group">
+                    {% if not object_list %}
+                        <button type="submit" name="action" value="finish" class="btn btn-primary" disabled>{% trans "Finalize evaluation" %}</button>
+                    {% elif creating or editing %}
+                        <button type="submit" name="action" value="finish" class="btn btn-primary">{% trans "Finalize evaluation" %}</button>
+                    {% endif %}
                 </div>
             </div>
-        </div>
-    </div>
-{% endblock content %}
 
-{% block end_form %}
-    </form>
-{% endblock end_form %}
+            <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{% trans "Delete?" %}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">{% trans "Are you sure you want to delete diagnosis?" %}</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                            <a type="button" class="btn btn-danger" id="removeDiagnosis" href="">{% trans "Delete" %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endblock content %}
 
-{% block extrascript %}
-    <script src="{% static 'site/js/medical_record.js' %}"></script>
+        {% block end_form %}
+        </form>
+    {% endblock end_form %}
 
-    {% if medical_record_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Medical evaluation was not saved. Fields with (*) are obligatory.'))
-        </script>
-    {% endif %}
-{% endblock extrascript %}
+    {% block extrascript %}
+        <script src={% static "site/js/medical_record.js" %}></script>
+
+        {% if medical_record_form.errors %}
+            <script type="text/javascript">showErrorMessage(gettext('Medical evaluation was not saved. Fields with (*) are obligatory.'))</script>
+        {% endif %}
+    {% endblock extrascript %}

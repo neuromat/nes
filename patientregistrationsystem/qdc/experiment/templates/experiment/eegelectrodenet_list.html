@@ -8,7 +8,7 @@
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/setup">{% trans "Set up" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "EEG Electrode net" %}</li>
             </ol>
@@ -43,7 +43,7 @@
                                 {% endif %}
                             </td>
                             <td>{{ equipment.manufacturer.name }}</td>
-                            <td>{% if equipment.eegelectrodecap %}<span class="fa-fw fa fa-check" style="color: royalblue"></span>{% endif %}</td>
+                            <td>{% if equipment.eegelectrodecap %}<span class="fa-fw fa fa-check text-info"></span>{% endif %}</td>
                             <td>
                                 {{ equipment.serial_number }}
                             </td>

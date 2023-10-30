@@ -1,67 +1,52 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
+
 {% load subjects_tags %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
+        <div class="tab-pane fade show active" id="breadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}">{{ group.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data">{% get_name_or_code subject.patient.id %}</a>
+                    </li>
+                    <li class="breadcrumb-item active">{% trans "Subject step data" %}</li>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="breadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+        {% if subject_step_data_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data">{% get_name_or_code subject.patient.id %}</a></li>
-
-                <li class="breadcrumb-item active">{% trans "Subject step data" %}</li>
-
-            </ol>
-        </nav>
-    </div>
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    {% if subject_step_data_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
-
                 <h4>{% trans "Subject step data" %}</h4>
                 <hr>
                 <div class="row">
@@ -70,9 +55,7 @@
                             <label class="form-label">{% trans "Start date" %}</label>
                             {{ subject_step_data_form.start_date }}
                             <div class="form-text with-errors">
-                                {% for error in subject_step_data_form.start_date.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in subject_step_data_form.start_date.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -81,9 +64,7 @@
                             <label class="form-label">{% trans "time" %}</label>
                             {{ subject_step_data_form.start_time }}
                             <div class="form-text with-errors">
-                                {% for error in subject_step_data_form.start_time.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in subject_step_data_form.start_time.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -95,9 +76,7 @@
                             <label class="form-label">{% trans "End date" %}</label>
                             {{ subject_step_data_form.end_date }}
                             <div class="form-text with-errors">
-                                {% for error in subject_step_data_form.end_date.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in subject_step_data_form.end_date.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -106,14 +85,11 @@
                             <label class="form-label">{% trans "time" %}</label>
                             {{ subject_step_data_form.end_time }}
                             <div class="form-text with-errors">
-                                {% for error in subject_step_data_form.end_time.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in subject_step_data_form.end_time.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
@@ -125,8 +101,7 @@
                 {% if editing %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data"
-                           class="btn btn-light">{% trans "Cancel" %}</a>
+                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data" class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
                     <div class="btn-group float-end">
@@ -135,14 +110,12 @@
                 {% endif %}
             </div>
         </div>
-    </div>
+    {% endblock content %}
 
-{% endblock %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/research_project.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/js/research_project.js" %}></script>
+{% endblock extrascript %}

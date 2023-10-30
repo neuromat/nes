@@ -3,22 +3,24 @@
 {% load i18n static %}
 
 {% block breadcrumb %}
-
     {% if creating %}
         <li class="breadcrumb-item active">{% trans "New set of steps" %}</li>
     {% else %}
         {% if updating and not component_configuration %}
-            <li class="active"> {% trans "Editing" %} </li>
+            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
         {% endif %}
     {% endif %}
+{% endblock breadcrumb %}
 
-{% endblock %}
-
-{% block component_label %}{% trans "the set of steps" %}{% endblock %}
+{% block component_label %}
+    {% trans "the set of steps" %}
+{% endblock component_label %}
 
 {% block component_add_new %}
     <li role="presentation">
-        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/block?position={{ position }}')">
+        <a role="menuitem"
+           tabindex="-1"
+           onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/block?position={{ position }}')">
             << {% trans "New set of steps" %} >>
         </a>
     </li>
@@ -26,13 +28,15 @@
 
 {% block component_button_label %}
     {% trans "New set of steps" %}
-{% endblock %}
+{% endblock component_button_label %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-12 col-sm-6">
             <div class="form-group">
-                <label class="form-label" for="type">{% trans "Organization of sub-steps" %} <b class="text-danger">*</b></label>
+                <label class="form-label" for="type">
+                    {% trans "Organization of sub-steps" %} <b class="text-danger">*</b>
+                </label>
 
                 <div class="input-group  input-group-sm">
                     {% trans "Sub-steps will be executed one after another" as text_1 %}
@@ -42,33 +46,41 @@
                             <div class="radio-inline">{{ radio }}</div>
                         </span>
                     {% endfor %}
-                 </div>
+                </div>
 
                 <div class="form-text with-errors"></div>
             </div>
         </div>
         <div class="col-12 col-sm-6">
-            <label for="unlimited_number_of_repetitions" class="form-label">{% trans "Quantity of steps obligatory." %} <b class="text-danger">*</b></label>
+            <label for="unlimited_number_of_repetitions" class="form-label">
+                {% trans "Quantity of steps obligatory." %} <b class="text-danger">*</b>
+            </label>
             <div>
                 <div class="radio-inline" style="vertical-align: top">
-                    <input id="id_all_mandatory" name="radio_number_of_mandatory_components" type="radio" value="all"
-                            {% if not updating and not creating or reusing or component_configuration %} disabled="True" {% endif %}>
-                    <label for="id_all_mandatory" class="form-label"> {% trans "All" %}</label>
+                    <input id="id_all_mandatory"
+                           name="radio_number_of_mandatory_components"
+                           type="radio"
+                           value="all"
+                           {% if not updating and not creating or reusing or component_configuration %}disabled="True"{% endif %}>
+                    <label for="id_all_mandatory" class="form-label">{% trans "All" %}</label>
                 </div>
                 <div class="radio-inline">
-                    <input id="id_not_all_mandatory" name="radio_number_of_mandatory_components" type="radio" value="not_all"
-                            {% if not updating and not creating or reusing or component_configuration %} disabled="True" {% endif %}>
-                        <div class="col-9 col-sm-9" style="padding-start: 0px">
-                            <div class="form-group" id="div_form_number_of_mandatory_components">
-                                {{ specific_form.number_of_mandatory_components }}
-                                <div class="form-text with-errors" id="div_for_errors_in_number_of_mandatory_components"></div>
-                            </div>
+                    <input id="id_not_all_mandatory"
+                           name="radio_number_of_mandatory_components"
+                           type="radio"
+                           value="not_all"
+                           {% if not updating and not creating or reusing or component_configuration %}disabled="True"{% endif %}>
+                    <div class="col-9 col-sm-9" style="padding-start: 0px">
+                        <div class="form-group" id="div_form_number_of_mandatory_components">
+                            {{ specific_form.number_of_mandatory_components }}
+                            <div class="form-text with-errors" id="div_for_errors_in_number_of_mandatory_components"></div>
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock extra_fields %}
 
 {% block extra_fields_bellow_edit %}
     {% if not updating and not creating %}
@@ -83,22 +95,22 @@
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
-                            <tr>
-                                <th class="col-lg-2">{% trans "Type" %}</th>
-                                {% if not component_configuration and can_change %}
-                                    <th class="col-lg-4">{% trans "Step" %}</th>
-                                    {% if component.type == "sequence" %}
-                                        <th class="col-lg-3">{% trans "Name of use" %}</th>
-                                        <th class="text-center col-lg-2" colspan="2">{% trans "Order" %}</th>
+                                <tr>
+                                    <th class="col-lg-2">{% trans "Type" %}</th>
+                                    {% if not component_configuration and can_change %}
+                                        <th class="col-lg-4">{% trans "Step" %}</th>
+                                        {% if component.type == "sequence" %}
+                                            <th class="col-lg-3">{% trans "Name of use" %}</th>
+                                            <th class="text-center col-lg-2" colspan="2">{% trans "Order" %}</th>
+                                        {% else %}
+                                            <th class="col-lg-5">{% trans "Name of use" %}</th>
+                                        {% endif %}
+                                        <th class="col-lg-1">{% trans "Delete" %}</th>
                                     {% else %}
+                                        <th class="col-lg-5">{% trans "Step" %}</th>
                                         <th class="col-lg-5">{% trans "Name of use" %}</th>
                                     {% endif %}
-                                    <th class="col-lg-1">{% trans "Delete" %}</th>
-                                {% else %}
-                                    <th class="col-lg-5">{% trans "Step" %}</th>
-                                    <th class="col-lg-5">{% trans "Name of use" %}</th>
-                                {% endif %}
-                            </tr>
+                                </tr>
                             </thead>
                             <tbody>
                                 {% if configuration_list|length > 0 %}
@@ -107,34 +119,47 @@
                                             <tr>
                                                 <td colspan="6" style="padding: 0px;">
                                                     <div class="card   collapsed" style="margin: 0px;">
-                                                        <div class="card-header" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Expand" %}">
-                                                            <table class="table" style="margin: 0px;" role="button" data-bs-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                                        <div class="card-header"
+                                                             role="tab"
+                                                             id="heading{{ forloop.counter }}"
+                                                             style="padding: 0px"
+                                                             data-bs-toggle="tooltip"
+                                                             data-bs-placement="left"
+                                                             title="{% trans "Expand" %}">
+                                                            <table class="table"
+                                                                   style="margin: 0px"
+                                                                   role="button"
+                                                                   data-bs-toggle="collapse"
+                                                                   href="#collapse{{ forloop.counter }}"
+                                                                   aria-expanded="false"
+                                                                   aria-controls="collapse{{ forloop.counter }}">
                                                                 <tbody>
-                                                                    {% if not accordion.0.random_position %}  {# If the first is random, all confs from this accordeon will be random. #}
+                                                                    {% if not accordion.0.random_position %}
+                                                                        {# If the first is random, all confs from this accordeon will be random. #}
                                                                         <tr>
                                                                             <td class="col-lg-2">
                                                                                 <span class="{{ accordion.0.component.icon_class }}"></span>
                                                                                 {{ accordion.0.component.get_component_type_display }}
                                                                             </td>
                                                                             {% if not component_configuration and can_change %}
-                                                                                <td class="col-lg-4">
-                                                                                    {{ accordion.0.component.identification }}
-                                                                                </td>
+                                                                                <td class="col-lg-4">{{ accordion.0.component.identification }}</td>
                                                                                 {% if component.type == "sequence" %}
                                                                                     <td class="col-lg-3">
                                                                                         <span class="fa-fw fa fa-arrow-right btn-link"></span>
                                                                                         {{ accordion|length }} {% trans "uses grouped" %}
                                                                                     </td>
-                                                                                    <td  class="text-end col-lg-1">
+                                                                                    <td class="text-end col-lg-1">
                                                                                         {% if accordion != configuration_list|last %}
                                                                                             {# onclick is needed because if we use href nothing happens, because of the collapse and expand actions of the accordion. #}
-                                                                                            <a class="btn fa-fw fa fa-arrow-down" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/down/');"></a>
+                                                                                            <a class="btn fa-fw fa fa-arrow-down"
+                                                                                               onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/down/');"></a>
                                                                                         {% endif %}
                                                                                     </td>
                                                                                     <td class="col-lg-1">
                                                                                         {% if accordion != configuration_list|first %}
                                                                                             {# onclick is needed because if we use href nothing happens, because of the collapse and expand actions of the accordion. #}
-                                                                                            <a class="btn fa-fw fa fa-arrow-up" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/up/');"></a>
+                                                                                            <a class="btn fa-fw fa fa-arrow-up"
+                                                                                               onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/up/');"></a>
                                                                                         {% endif %}
                                                                                     </td>
                                                                                 {% else %}
@@ -145,15 +170,22 @@
                                                                                 {% endif %}
                                                                                 <td class="text-center col-lg-1">
                                                                                     {% if accordion.0.id in protected_uses_of_step %}
-                                                                                        <a class="btn fa-fw fa fa-ban" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
+                                                                                        <a class="btn fa-fw fa fa-ban"
+                                                                                           style="color: indianred"
+                                                                                           data-bs-toggle="tooltip"
+                                                                                           data-bs-placement="right"
+                                                                                           title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
                                                                                     {% else %}
-                                                                                        <a class="btn fa-fw fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
+                                                                                        <a class="btn fa-fw fa fa-remove"
+                                                                                           style="color: indianred"
+                                                                                           data-bs-toggle="tooltip"
+                                                                                           data-bs-placement="right"
+                                                                                           onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});"
+                                                                                           title="{% trans "Delete uses from list" %}"></a>
                                                                                     {% endif %}
                                                                                 </td>
                                                                             {% else %}
-                                                                                <td class="col-lg-5">
-                                                                                    {{ accordion.0.component.identification }}
-                                                                                </td>
+                                                                                <td class="col-lg-5">{{ accordion.0.component.identification }}</td>
                                                                                 <td class="col-lg-5">
                                                                                     <span class="fa-fw fa fa-arrow-right btn-link"></span>
                                                                                     {{ accordion|length }} {% trans "uses grouped" %}
@@ -170,13 +202,14 @@
                                                             </table>
                                                         </div>
 
-
                                                         <div id="collapse{{ forloop.counter }}" class=" collapse" role="tabcard" aria-labelledby="heading{{ forloop.counter }}">
                                                             <div class="card-body">
                                                                 <table class="table table-striped" style="margin: 0px;">
                                                                     <tbody>
                                                                         {% for configuration in accordion %}
+
                                                                             {% include "experiment/configuration_line.html" %}
+
                                                                         {% endfor %}
                                                                     </tbody>
                                                                 </table>
@@ -187,16 +220,17 @@
                                             </tr>
 
                                         {% else %}
-                                            {% for configuration in accordion %}  {# There will be only one #}
+                                            {% for configuration in accordion %}
+                                                {# There will be only one #}
+
                                                 {% include "experiment/configuration_line.html" %}
+
                                             {% endfor %}
                                         {% endif %}
                                     {% endfor %}
                                 {% else %}
                                     <tr>
-                                        <td class="text-center" colspan="6">
-                                            {% trans "It does not have" %}
-                                        </td>
+                                        <td class="text-center" colspan="6">{% trans "It does not have" %}</td>
                                     </tr>
                                 {% endif %}
                             </tbody>
@@ -212,8 +246,16 @@
                             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                 {% for type, type_name, icon in component_type_choices %}
                                     <li {% if type == "questionnaire" and not limesurvey_available %}class="disabled"{% endif %} role="presentation">
-                                        <a role="menuitem" tabindex="-1" {% if type == "questionnaire" and not limesurvey_available %}href="#"{% else %}href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}{% if component.type == "sequence" %}?position=fixed{% endif %}"{% endif %}> 
-                                            <span  class="{{ icon }}"> </span>
+                                        <a class="dropdown-item" role="menuitem"
+                                           tabindex="-1"
+                                           {% if type == "questionnaire" and not limesurvey_available %}
+                                               href="#"
+                                           {% else %}
+                                               href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}
+                                               {% if component.type == "sequence" %}?position=fixed{% endif %}
+                                           "
+                                           {% endif %}>
+                                            <span class="{{ icon }}"></span>
                                             {{ type_name }}
                                         </a>
                                     </li>
@@ -232,17 +274,17 @@
 
                             <table class="table table-striped">
                                 <thead>
-                                <tr>
-                                    <th class="col-lg-2">{% trans "Type" %}</th>
-                                    {% if not component_configuration and can_change %}
-                                        <th class="col-lg-4">{% trans "Step" %}</th>
-                                        <th class="col-lg-5">{% trans "Name of use" %}</th>
-                                        <th class="col-lg-1">{% trans "Delete" %}</th>
-                                    {% else %}
-                                        <th class="col-lg-5">{% trans "Step" %}</th>
-                                        <th class="col-lg-5">{% trans "Name of use" %}</th>
-                                    {% endif %}
-                                </tr>
+                                    <tr>
+                                        <th class="col-lg-2">{% trans "Type" %}</th>
+                                        {% if not component_configuration and can_change %}
+                                            <th class="col-lg-4">{% trans "Step" %}</th>
+                                            <th class="col-lg-5">{% trans "Name of use" %}</th>
+                                            <th class="col-lg-1">{% trans "Delete" %}</th>
+                                        {% else %}
+                                            <th class="col-lg-5">{% trans "Step" %}</th>
+                                            <th class="col-lg-5">{% trans "Name of use" %}</th>
+                                        {% endif %}
+                                    </tr>
                                 </thead>
                                 <tbody>
                                     {% if configuration_list_of_random_components|length > 0 %}
@@ -251,17 +293,27 @@
                                                 <tr>
                                                     <td colspan="4" style="padding: 0px;">
                                                         <div class="card   collapsed" style="margin: 0px;">
-                                                            <div class="card-header" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-bs-toggle="tooltip" data-bs-placement="left" title="{%  trans "Expand" %}">
-                                                                <table class="table" style="margin: 0px;" role="button" data-bs-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                                            <div class="card-header"
+                                                                 role="tab"
+                                                                 id="heading{{ forloop.counter }}"
+                                                                 style="padding: 0px"
+                                                                 data-bs-toggle="tooltip"
+                                                                 data-bs-placement="left"
+                                                                 title="{% trans "Expand" %}">
+                                                                <table class="table"
+                                                                       style="margin: 0px"
+                                                                       role="button"
+                                                                       data-bs-toggle="collapse"
+                                                                       href="#collapse{{ forloop.counter }}"
+                                                                       aria-expanded="false"
+                                                                       aria-controls="collapse{{ forloop.counter }}">
                                                                     <tbody>
                                                                         <tr>
                                                                             <td class="col-lg-2">
                                                                                 <span class="{{ accordion.0.component.icon_class }}"></span>
                                                                                 {{ accordion.0.component.get_component_type_display }}
                                                                             </td>
-                                                                            <td class="col-lg-4">
-                                                                                {{ accordion.0.component.identification }}
-                                                                            </td>
+                                                                            <td class="col-lg-4">{{ accordion.0.component.identification }}</td>
                                                                             <td class="col-lg-5">
                                                                                 <span class="fa-fw fa fa-arrow-right btn-link"></span>
                                                                                 {{ accordion|length }} {% trans "uses grouped" %}
@@ -269,9 +321,18 @@
                                                                             {% if not component_configuration and can_change %}
                                                                                 <td class="text-center col-lg-1">
                                                                                     {% if accordion.0.id in protected_uses_of_step %}
-                                                                                        <a class="btn fa-fw fa fa-ban" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
+                                                                                        <a class="btn fa-fw fa fa-ban"
+                                                                                           style="color: indianred"
+                                                                                           data-bs-toggle="tooltip"
+                                                                                           data-bs-placement="right"
+                                                                                           title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
                                                                                     {% else %}
-                                                                                        <a class="btn fa-fw fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
+                                                                                        <a class="btn fa-fw fa fa-remove"
+                                                                                           style="color: indianred"
+                                                                                           data-bs-toggle="tooltip"
+                                                                                           data-bs-placement="right"
+                                                                                           onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});"
+                                                                                           title="{% trans "Delete uses from list" %}"></a>
                                                                                     {% endif %}
                                                                                 </td>
                                                                             {% endif %}
@@ -280,13 +341,14 @@
                                                                 </table>
                                                             </div>
 
-
                                                             <div id="collapse{{ forloop.counter }}" class=" collapse" role="tabcard" aria-labelledby="heading{{ forloop.counter }}">
                                                                 <div class="card-body">
                                                                     <table class="table table-striped" style="margin: 0px;">
                                                                         <tbody>
                                                                             {% for configuration in accordion %}
+
                                                                                 {% include "experiment/randon_configuration_line.html" %}
+
                                                                             {% endfor %}
                                                                         </tbody>
                                                                     </table>
@@ -297,16 +359,17 @@
                                                 </tr>
 
                                             {% else %}
-                                                {% for configuration in accordion %}  {# There will be only one #}
+                                                {% for configuration in accordion %}
+                                                    {# There will be only one #}
+
                                                     {% include "experiment/randon_configuration_line.html" %}
+
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
                                     {% else %}
                                         <tr>
-                                            <td class="text-center" colspan="{% if not component_configuration and can_change %}4{% else %}3{% endif %}">
-                                                {% trans "It does not have" %}
-                                            </td>
+                                            <td class="text-center" colspan="{% if not component_configuration and can_change %}4{% else %}3{% endif %}">{% trans "It does not have" %}</td>
                                         </tr>
                                     {% endif %}
 
@@ -323,7 +386,13 @@
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                     {% for type, type_name, icon in component_type_choices %}
                                         <li {% if type == "questionnaire" and not limesurvey_available %}class="disabled"{% endif %} role="presentation">
-                                            <a role="menuitem" tabindex="-1" {% if type == "questionnaire" and not limesurvey_available %}href="#"{% else %}href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}?position=random"{% endif %}> 
+                                            <a class="dropdown-item" role="menuitem"
+                                               tabindex="-1"
+                                               {% if type == "questionnaire" and not limesurvey_available %}
+                                                   href="#"
+                                               {% else %}
+                                                   href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}?position=random"
+                                               {% endif %}>
                                                 <span class="{{ icon }}"></span>
                                                 {{ type_name }}
                                             </a>
@@ -339,14 +408,15 @@
         </div>
     {% endif %}
 
-
-    <div class="modal fade" id="modalComponentConfigurationRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    <div class="modal fade"
+         id="modalComponentConfigurationRemove"
+         tabindex="-1"
+         role="dialog"
+         aria-labelledby="myModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-body" id="modalRemoveMessage">
-{#                    This message is set in block_component.js #}
-                </div>
+                <div class="modal-body" id="modalRemoveMessage">{#                    This message is set in block_component.js #}</div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button class="btn btn-danger" type="submit" name="action" value="remove-" id="removeComponentConfiguration">{% trans "Delete" %}</button>
@@ -355,13 +425,15 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    <div class="modal fade"
+         id="modalCopyExperiment"
+         tabindex="-1"
+         role="dialog"
+         aria-labelledby="myModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "This experiment/project is in use, you can not change it! Do you want to copy this experiment/project?" %}
-                </div>
+                <div class="modal-body">{% trans "This experiment/project is in use, you can not change it! Do you want to copy this experiment/project?" %}</div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
@@ -370,9 +442,9 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock extra_fields_bellow_edit %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/component.js' %}"></script>
-    <script src="{% static 'site/js/block_component.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/js/component.js" %}></script>
+    <script src={% static "site/js/block_component.js" %}></script>
+{% endblock extrascript %}

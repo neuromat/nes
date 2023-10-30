@@ -2,9 +2,7 @@
  * Created by evandro on 6/9/16.
  */
 
-$(function(){
-    $("[data-toggle=tooltip]").tooltip();
-});
+"use strict";
 
 $(document).ready(function () {
 

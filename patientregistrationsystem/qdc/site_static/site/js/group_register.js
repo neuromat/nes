@@ -2,9 +2,7 @@
  * Created by diogopedrosa on 3/19/15.
  */
 
-$(function(){
-    $("[data-toggle=tooltip]").tooltip();
-});
+"use strict";
 
 function show_modal_remove_group(){
     var  modal_remove = document.getElementById('remove-group');

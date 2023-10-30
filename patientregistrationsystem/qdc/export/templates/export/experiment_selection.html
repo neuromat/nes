@@ -13,7 +13,7 @@
     <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/export/">{% trans "Export" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Experiment/Project selection" %}</li>
             </ol>
@@ -98,5 +98,5 @@
 
 {% block extrascript %}
     {% load static %}
-    <script src="{% static 'site/js/experiment_selection.js' %}"></script>
+    <script src={% static "site/js/experiment_selection.js" %}></script>
 {% endblock extrascript %}

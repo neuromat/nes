@@ -5,17 +5,16 @@
 {% block activeExport %} active{% endblock %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
-{% endblock %}
+{% endblock form %}
 
 {% block content %}
 
     <div class="tab-pane fade show active" id="selectedParticipantBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
@@ -88,7 +87,7 @@
                 </div>
 
                 <div class="btn-group float-end">
-                    <a href="/home" class="btn btn-light">{% trans "Cancel" %}</a>
+                    <a href={% url "home" %} class="btn btn-light">{% trans "Cancel" %}</a>
                 </div>
 
             </div>
@@ -119,5 +118,5 @@
 
 {% block extrascript %}
     {% load static %}
-    <script src="{% static 'site/js/participant_selection.js' %}"></script>
+    <script src={% static "site/js/participant_selection.js" %}></script>
 {% endblock %}

@@ -9,140 +9,130 @@
 {% block form %}
     <form id="user_form" role="form" method="post" data-bs-toggle="validator">
         {% csrf_token %}
-{% endblock form %}
+    {% endblock form %}
 
-{% block content %}
-    <div class="tab-pane fade show active" id="equipmentBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/user/list/">{% trans "Researchers and Institutions" %}</a></li>
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New institution" %}</li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item">
-                            <a href="/user/institution/{{ institution.id }}">{{ institution_form.name.value }}</a>
-                        </li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+    {% block content %}
+        <div class="tab-pane fade show active" id="equipmentBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/user/list/">{% trans "Researchers and Institutions" %}</a>
+                    </li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "New institution" %}</li>
                     {% else %}
-                        <li class="breadcrumb-item active">{{ institution_form.name.value }}</li>
+                        {% if editing %}
+                            <li class="breadcrumb-item">
+                                <a href="/user/institution/{{ institution.id }}">{{ institution_form.name.value }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                        {% else %}
+                            <li class="breadcrumb-item active">{{ institution_form.name.value }}</li>
+                        {% endif %}
                     {% endif %}
+                </ol>
+            </nav>
+        </div>
+
+        <div class="tab-pane fade show active" id="menuUserTab">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                <h4>{% trans "Institution" %}</h4>
+                <hr class="hr">
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group has-feedback {% if institution_form.name.errors %}is-invalid{% endif %}">
+                            <label for="id_name" class="form-label">
+                                {% trans "Name" %} <b class="text-danger">*</b>
+                            </label>
+                            {{ institution_form.name }}
+                            <div class="form-text with-errors">
+                                {% for error in institution_form.name.errors %}{{ error }}{% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group {% if institution_form.acronym.errors %}is-invalid{% endif %}">
+                            <label class="form-label">
+                                {% trans "Acronym" %} <b class="text-danger">*</b>
+                            </label>
+                            {{ institution_form.acronym }}
+                            <div class="form-text with-errors">
+                                {% for error in institution_form.acronym.errors %}{{ error }}{% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group {% if institution_form.country.errors %}is-invalid{% endif %}">
+                            <label class="form-label">
+                                {% trans "Country" %} <b class="text-danger">*</b>
+                            </label>
+                            {{ institution_form.country }}
+                            <div class="form-text with-errors">
+                                {% for error in institution_form.country.errors %}{{ error }}{% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group {% if institution_form.parent.errors %}is-invalid{% endif %}">
+                            <label class="form-label">{% trans "Parent" %}</label>
+                            {{ institution_form.parent }}
+                            <div class="form-text with-errors">
+                                {% for error in institution_form.parent.errors %}{{ error }}{% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+            <div class="btn-group">
+                {% if not editing and perms.auth.add_user and can_change %}
+                    <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete institution" %}</button>
                 {% endif %}
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-            <h4>{% trans "Institution" %}</h4>
-            <hr class="hr">
-            <div class="row">
-                <div class="col-12 col-sm-6">
-                    <div class="form-group has-feedback {% if institution_form.name.errors %}is-invalid{% endif %}">
-                        <label for="id_name" class="form-label">
-                            {% trans "Name" %} <b class="text-danger">*</b>
-                        </label>
-                        {{ institution_form.name }}
-                        <div class="form-text with-errors">
-                            {% for error in institution_form.name.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6">
-                    <div class="form-group {% if institution_form.acronym.errors %}is-invalid{% endif %}">
-                        <label class="form-label">
-                            {% trans "Acronym" %} <b class="text-danger">*</b>
-                        </label>
-                        {{ institution_form.acronym }}
-                        <div class="form-text with-errors">
-                            {% for error in institution_form.acronym.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
             </div>
-            <div class="row">
-                <div class="col-12 col-sm-6">
-                    <div class="form-group {% if institution_form.country.errors %}is-invalid{% endif %}">
-                        <label class="form-label">
-                            {% trans "Country" %} <b class="text-danger">*</b>
-                        </label>
-                        {{ institution_form.country }}
-                        <div class="form-text with-errors">
-                            {% for error in institution_form.country.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
+            <div class="btn-group" role="group">
+                {% if editing %}
+                    <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                {% elif can_change %}
+                    <a href="/user/institution/edit/{{ institution.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                {% endif %}
+
+                {% if editing %}
+                    <a href="{% if creating %}/user/list{% else %}/user/institution/{{ institution.id }}{% endif %}" class="btn btn-light">{% trans "Cancel" %}</a>
+                {% else %}
+                    <a href="/user/list/" class="btn btn-light">{% trans "Back" %}</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{% trans "Delete?" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
-                <div class="col-12 col-sm-6">
-                    <div class="form-group {% if institution_form.parent.errors %}is-invalid{% endif %}">
-                        <label class="form-label">{% trans "Parent" %}</label>
-                        {{ institution_form.parent }}
-                        <div class="form-text with-errors">
-                            {% for error in institution_form.parent.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
+                    <div class="modal-body">{% trans "Are you sure you want to delete this institution?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()" aria-label="Cancel">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endblock content %}
 
-    <div class="btn-toolbar justify-content-between" role="toolbar">
-        <div class="btn-group">
-            {% if not editing and perms.auth.add_user and can_change %}
-                <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">
-                    {% trans "Delete institution" %}
-                </button>
-            {% endif %}
-        </div>
-        <div class="btn-group" role="group">
-            {% if editing %}
-                <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-            {% elif can_change %}
-                <a href="/user/institution/edit/{{ institution.id }}" 
-                    class="btn btn-primary">{% trans "Edit" %}</a>
-            {% endif %}
-
-            {% if editing %}
-                <a href="{% if creating %}/user/list{% else %}/user/institution/{{ institution.id }}{% endif %}"
-                    class="btn btn-light">{% trans "Cancel" %}</a>
-            {% else %}
-                <a href="/user/list/" class="btn btn-light">{% trans "Back" %}</a>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{% trans "Delete?" %}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">{% trans "Are you sure you want to delete this institution?" %}</div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()" aria-label="Cancel">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" src="{% static 'site/js/custom_user_validation.js' %}"></script>
-    {% if institution_form.errors %}
-        <script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>
-    {% endif %}
+    <script type="text/javascript" src={% static "site/js/custom_user_validation.js" %}></script>
+    {% if institution_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 {% endblock extrascript %}

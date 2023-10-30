@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -52,7 +52,7 @@
     <div class="tab-pane fade show active" id="digitalGamePhaseDataProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
@@ -195,7 +195,7 @@
                                             <tr>
                                             <td>{{ digital_game_phase_file.file.url }}</td>
                                             <td>
-                                                <button class="btn btn-light" type="button" onclick="location.href='{{ digital_game_phase_file.file.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
+                                                <button class="btn btn-light" type="button" onclick="location.href='{{ digital_game_phase_file.file.url }}'"><span class="fa-fw fa fa-download-alt  text-info"></span></button>
                                             </td>
                                             <td>{{ digital_game_phase_file.file.size|filesizeformat }}</td>
                                             {% if editing %}
@@ -281,9 +281,9 @@
 {% endblock %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/research_project.js' %}"></script>
-    <script src="{% static 'site/js/subject_digital_game_phase_data_form.js' %}"></script>
-    <script src="{% static 'site/js/digital_game_phase_electrode_worked_setted.js' %}"></script>
+    <script src={% static "site/js/research_project.js" %}></script>
+    <script src={% static "site/js/subject_digital_game_phase_data_form.js" %}></script>
+    <script src={% static "site/js/digital_game_phase_electrode_worked_setted.js" %}></script>
     <script>
         $(document).ready(function () {
             var $id_file_format = $("#id_file_format");
@@ -306,12 +306,12 @@
 
             {% if file_format_list %}
                 {% for item in file_format_list %}
-                    {% if item.code == 'other' %}
+                    {% if item.code == "other" %}
                         $other_code = {{ item.id }};
-                    {% elif item.code == 'txt' %}
+                    {% elif item.code == "txt" %}
                         $txt_code = {{ item.id }};
                         $txt_extension = "{{ item.extension }}";
-                    {% elif item.code == 'NEO-RawBinarySignalIO' %}
+                    {% elif item.code == "NEO-RawBinarySignalIO" %}
                         $raw_code = {{ item.id }};
                         $raw_extension = "{{ item.extension }}";
                     {% endif %}

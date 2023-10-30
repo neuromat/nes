@@ -1,74 +1,61 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
+        {% if experiment_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
+        <div class="tab-pane fade show active" id="experimentBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ research_project.id }}">{{ research_project.title }}</a>
+                    </li>
 
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    {% if experiment_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-
-
-    <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ research_project.id }}">{{ research_project.title }}</a></li>
-
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New experiment/project" %}</li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment_form.title.value }}</a></li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "New experiment/project" %}</li>
                     {% else %}
-                        <li class="breadcrumb-item active"> {{ experiment_form.title.value }} </li>
+                        {% if editing %}
+                            <li class="breadcrumb-item">
+                                <a href="/experiment/{{ experiment.id }}">{{ experiment_form.title.value }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                        {% else %}
+                            <li class="breadcrumb-item active">{{ experiment_form.title.value }}</li>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4><span class="fa-fw fa fa-info-circle"></span> {% trans "Basic experiment/project information" %}</h4>
+                <h4>
+                    <span class="fa-fw fa fa-info-circle"></span> {% trans "Basic experiment/project information" %}
+                </h4>
+                <hr>
                 <div class="row" {% if creating %}style="display: none;"{% endif %}>
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label for="id_research_project" class="form-label">{% trans "Study" %} <b class="text-danger">*</b></label>
+                            <label for="id_research_project" class="form-label">
+                                {% trans "Study" %} <b class="text-danger">*</b>
+                            </label>
                             {{ experiment_form.research_project }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -77,7 +64,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label for="id_title" class="form-label">{% trans "Title" %} <b class="text-danger">*</b></label>
+                            <label for="id_title" class="form-label">
+                                {% trans "Title" %} <b class="text-danger">*</b>
+                            </label>
                             {{ experiment_form.title }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -86,7 +75,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label for="id_description" class="form-label">{% trans "Description" %} <b class="text-danger">*</b></label>
+                            <label for="id_description" class="form-label">
+                                {% trans "Description" %} <b class="text-danger">*</b>
+                            </label>
                             {{ experiment_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -120,12 +111,14 @@
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <label for="id_ethics_committee_project_file" class="form-label">{% trans "Project file approved by the ethics committee" %}</label>
-                                <br/>
+                                <br />
                                 {% if editing %}
                                     {{ experiment_form.ethics_committee_project_file }}
                                 {% else %}
                                     {{ experiment_form.ethics_committee_project_file.value }}
-                                    <button class="btn btn-light" type="button" onclick="location.href='{{ experiment.ethics_committee_project_file.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
+                                    <button class="btn btn-light" type="button" onclick="location.href='{{ experiment.ethics_committee_project_file.url }}'">
+                                        <span class="fa-fw fa fa-download-alt text-info"></span>
+                                    </button>
                                 {% endif %}
                                 <div class="form-text with-errors"></div>
                             </div>
@@ -133,12 +126,13 @@
                     </div>
                 {% endif %}
 
-                {% if portal != '' %}
+                {% if portal != "" %}
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 {{ experiment_form.is_public }}
-                                <span class="fa-fw fa fa-share-alt"></span> <label for="id_is_public" class="form-label">{% trans "Is public" %}</label>
+                                <span class="fa-fw fa fa-share-alt"></span>
+                                <label for="id_is_public" class="form-label">{% trans "Is public" %}</label>
                                 <div class="form-text with-errors"></div>
                             </div>
                         </div>
@@ -147,7 +141,8 @@
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 {{ experiment_form.data_acquisition_is_concluded }}
-                                <span class="fa-fw fa fa-upload"></span> <label for="id_data_acquisition_is_concluded" class="form-label">{% trans "Data acquisition is concluded" %}</label>
+                                <span class="fa-fw fa fa-upload"></span>
+                                <label for="id_data_acquisition_is_concluded" class="form-label">{% trans "Data acquisition is concluded" %}</label>
                                 <div class="form-text with-errors"></div>
                             </div>
                         </div>
@@ -163,126 +158,123 @@
             </div>
 
             {% if not editing %}
-
-                {% if experiment.is_public and portal != '' or experiment.last_sending and portal != '' %}
+                {% if experiment.is_public and portal != '' or experiment.last_sending and portal != "" %}
+                    "
 
                     <div class="my-3 p-3 bg-body rounded shadow-sm">
+                        <h4>
+                            <span class="fa-fw fa fa-database"></span> {% trans "NeuroMat Portal - Experimental data sending " %}
+                        </h4>
+                        <hr>
 
-                        <h4><span class="fa-fw fa fa-database"></span> {% trans "NeuroMat Portal - Experimental data sending " %}</h4>
-
-                        <div class="container-fluid">
-
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fa-fw fa fa-refresh"> </span>
-                                    <label for="id_last_update" class="form-label">{% trans "Last update of the experiment:" %}</label>
-                                </div>
-                                <div class="col-lg-8">
-                                    {{ experiment.last_update }}
-                                </div>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <span class="fa-fw fa fa-refresh"></span>
+                                <label for="id_last_update" class="form-label">{% trans "Last update of the experiment:" %}</label>
                             </div>
-
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fa-fw fa fa-send"> </span>
-                                    <label class="form-label">{% trans "Last sending status:" %}</label>
-                                </div>
-                                <div class="col-lg-8">
-                                    {% if not last_schedule_of_sending %}
-                                        <span class="label label-info">{% trans "never sent" %}</span>
+                            <div class="col-lg-8">{{ experiment.last_update }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <span class="fa-fw fa fa-send"></span>
+                                <label class="form-label">{% trans "Last sending status:" %}</label>
+                            </div>
+                            <div class="col-lg-8">
+                                {% if not last_schedule_of_sending %}
+                                    <span class="label label-info">{% trans "never sent" %}</span>
+                                {% else %}
+                                    <span class="label label-info">{{ last_schedule_of_sending.status }}</span>
+                                    {% if last_schedule_of_sending.status == "sent" %}
+                                        {{ last_schedule_of_sending.sending_datetime }}
                                     {% else %}
-                                        <span class="label label-info">{{ last_schedule_of_sending.status }}</span>
-                                        {% if last_schedule_of_sending.status == "sent" %}
-                                            {{ last_schedule_of_sending.sending_datetime }}
+                                        {{ last_schedule_of_sending.schedule_datetime }}
+                                    {% endif %}
+
+                                    {% if experiment_status_portal %}
+                                        <br />
+                                        {% if experiment_status_portal == "to_be_approved" %}
+                                            <span class="label label-warning">{{ experiment_status_portal }}</span>
                                         {% else %}
-                                            {{ last_schedule_of_sending.schedule_datetime }}
-                                        {% endif %}
-
-
-                                        {% if experiment_status_portal %}
-                                            <br/>
-
-                                            {% if experiment_status_portal == "to_be_approved" %}
-                                                <span class="label label-warning">{{ experiment_status_portal }}</span>
+                                            {% if experiment_status_portal == "rejected" %}
+                                                <span class="label label-danger">{{ experiment_status_portal }}</span>
                                             {% else %}
-                                                {% if experiment_status_portal == "rejected" %}
-                                                    <span class="label label-danger">{{ experiment_status_portal }}</span>
+                                                {% if experiment_status_portal == "approved" %}
+                                                    <span class="label label-success">{{ experiment_status_portal }}</span>
                                                 {% else %}
-                                                    {% if experiment_status_portal == "approved" %}
-                                                        <span class="label label-success">{{ experiment_status_portal }}</span>
-                                                    {% else %}
-                                                        <span class="label label-info">{{ experiment_status_portal }}</span>
-                                                    {% endif %}
+                                                    <span class="label label-info">{{ experiment_status_portal }}</span>
                                                 {% endif %}
                                             {% endif %}
-
-                                            ({% trans "Portal status" %})
                                         {% endif %}
 
+                                        ({% trans "Portal status" %})
                                     {% endif %}
-                                </div>
-                            </div>
-
-                            {% if experiment.is_public and can_change and last_schedule_of_sending.status != "scheduled" %}
-                                {% if not experiment.last_sending or experiment.last_update > experiment.last_sending %}
-                                    <a href="/experiment/schedule_of_sending/{{ experiment.id }}" class="btn btn-warning">
-                                        {% if not experiment.last_sending %}{% trans "Send to Portal" %}{% else %}{% trans "Resend to Portal" %}{% endif %}
-                                    </a>
                                 {% endif %}
-                            {% endif %}
+                            </div>
                         </div>
+
+                        {% if experiment.is_public and can_change and last_schedule_of_sending.status != "scheduled" %}
+                            {% if not experiment.last_sending or experiment.last_update > experiment.last_sending %}
+                                <a href="/experiment/schedule_of_sending/{{ experiment.id }}" class="btn btn-warning">
+                                    {% if not experiment.last_sending %}
+                                        {% trans "Send to Portal" %}
+                                    {% else %}
+                                        {% trans "Resend to Portal" %}
+                                    {% endif %}
+                                </a>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 {% endif %}
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa-fw fa fa-user"></span> {% trans "Researchers" %}</h4>
+                    <h4>
+                        <span class="fa-fw fa fa-user"></span> {% trans "Researchers" %}
+                    </h4>
+                    <hr>
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th style="text-align: left">{% trans "Person" %}</th>
-                                    <th style="text-align: left">{% trans "Institution" %}</th>
-                                    <th style="text-align: right">{% trans "Order" %}</th>
+                                    <th class="text-start">{% trans "Person" %}</th>
+                                    <th class="text-start">{% trans "Institution" %}</th>
+                                    <th class="text-end">{% trans "Order" %}</th>
                                     <th></th>
-                                    <th style="text-align: right">{% trans "Remove" %}</th>
+                                    <th class="text-end">{% trans "Remove" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            {% for collaborator in collaborators.all|dictsort:"channel_index" %}
-                                <tr>
-                                    <td style="text-align: left">
-                                        {{ collaborator.researcher.first_name }} {{ collaborator.researcher.last_name }}
-                                    </td>
-                                    <td style="text-align: left">
-                                        {% if collaborator.researcher.user_profile.institution.acronym %}
-                                            {{ collaborator.researcher.user_profile.institution.acronym }}
-                                        {% else %}
-                                            <em>{% trans "Not registered" %}</em>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-end col-lg-1">
-                                        {% if not forloop.last %}
-                                            <a class="btn fa-fw fa fa-arrow-down"
-                                               href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/down/"></a>
-                                        {% endif %}
-                                    </td>
-                                    <td class="col-lg-1">
-                                        {% if not forloop.first %}
-                                            <a class="btn fa-fw fa fa-arrow-up"
-                                               href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/up/"></a>
-                                        {% endif %}
-                                    </td>
-                                    <td style="text-align: right">
-                                        {% if can_change %}
-                                            <a class="btn fa-fw fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove researcher" %}"></a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
+                                {% for collaborator in collaborators.all|dictsort:"channel_index" %}
+                                    <tr>
+                                        <td class="text-start">{{ collaborator.researcher.first_name }} {{ collaborator.researcher.last_name }}</td>
+                                        <td class="text-start">
+                                            {% if collaborator.researcher.user_profile.institution.acronym %}
+                                                {{ collaborator.researcher.user_profile.institution.acronym }}
+                                            {% else %}
+                                                <em>{% trans "Not registered" %}</em>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end col-lg-1">
+                                            {% if not forloop.last %}<a class="btn fa-fw fa fa-arrow-down" href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/down/"></a>{% endif %}
+                                        </td>
+                                        <td class="col-lg-1">
+                                            {% if not forloop.first %}<a class="btn fa-fw fa fa-arrow-up" href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/up/"></a>{% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            {% if can_change %}
+                                                <a class="btn fa-fw fa fa-remove text-danger"
+                                                   data-bs-toggle="tooltip"
+                                                   data-bs-placement="right"
+                                                   onclick="show_modal_remove_collaborator({{ collaborator.id }});"
+                                                   title="{% trans "Remove researcher" %}"></a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     {% if perms.experiment.add_experiment and can_change %}
+                        <br>
                         <div class="btn-group">
                             <a href="/experiment/researchers/{{ experiment.id }}/new_researcher/" class="btn btn-primary">{% trans "Insert new" %}</a>
                         </div>
@@ -290,255 +282,273 @@
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa-fw fa fa-users"></span> {% trans "Groups" %}</h4>
+                    <h4>
+                        <span class="fa-fw fa fa-users"></span> {% trans "Groups" %}
+                    </h4>
+                    <hr>
                     {% if group_list %}
                         <div class="form-group">
                             <table class="table table-striped">
                                 <thead>
-                                <tr>
-                                    <th>{% trans "Name" %}</th>
-                                    <th>{% trans "Description" %}</th>
-                                    <th>{% trans "Details" %}</th>
-                                </tr>
+                                    <tr>
+                                        <th>{% trans "Name" %}</th>
+                                        <th>{% trans "Description" %}</th>
+                                        <th>{% trans "Details" %}</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {% for group in group_list %}
-                                    <tr>
-                                        <td>
-                                            <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/group/{{ group.id }}">
-                                            {{ group.title }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {{ group.description }}
-                                        </td>
-                                        <td>
-                                            {{ group.subjectofgroup_set.all.count }} {% trans "participants" %}
-                                            {% if not group.experimental_protocol %}
-                                                <span class="label label-warning"><br/>{% trans "missing experimental protocol" %}</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
+                                    {% for group in group_list %}
+                                        <tr>
+                                            <td>
+                                                <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/group/{{ group.id }}">{{ group.title }}</a>
+                                            </td>
+                                            <td>{{ group.description }}</td>
+                                            <td>
+                                                {{ group.subjectofgroup_set.all.count }} {% trans "participants" %}
+                                                {% if not group.experimental_protocol %}
+                                                    <span class="label label-warning">
+                                                        <br />
+                                                    {% trans "missing experimental protocol" %}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     {% endif %}
                     {% if perms.experiment.add_subject and can_change %}
+                        <br>
                         <a href="/experiment/{{ experiment.id }}/group/new" class="btn btn-primary">{% trans "Insert new" %}</a>
                     {% endif %}
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa-fw fa fa-file-code-o"></span> {% trans "Source Code" %}</h4>
-    
+                    <h4>
+                        <span class="fa-fw fa fa-file-code-o"></span> {% trans "Source Code" %}
+                    </h4>
+                    <hr>
                     {% if source_code_list %}
                         <div class="form-group">
                             <table class="table table-striped">
                                 <thead>
-                                <tr>
-                                    <th>{% trans "Name" %}</th>
-                                    <th>{% trans "Description" %}</th>
-                                </tr>
+                                    <tr>
+                                        <th>{% trans "Name" %}</th>
+                                        <th>{% trans "Description" %}</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {% for source_code in source_code_list %}
-                                    <tr>
-                                        <td>
-                                            <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Edit' %}" href="/experiment/source_code/{{ source_code.id }}">
-                                            {{ source_code.name }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {{ source_code.description }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
+                                    {% for source_code in source_code_list %}
+                                        <tr>
+                                            <td>
+                                                <a data-bs-toggle="tooltip"
+                                                   data-bs-placement="left"
+                                                   title="{% trans "Edit" %}"
+                                                   href="/experiment/source_code/{{ source_code.id }}">{{ source_code.name }}</a>
+                                            </td>
+                                            <td>{{ source_code.description }}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     {% endif %}
                     {% if perms.experiment.add_subject and can_change %}
+                        <br>
                         <a href="/experiment/{{ experiment.id }}/source_code/new" class="btn btn-primary">{% trans "Insert new" %}</a>
                     {% endif %}
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa-fw fa fa-microchip"></span> {% trans "Stimuli Equipment" %}</h4>
-                        {% if stimuli_eq_setting_list %}
-                            <div class="form-group">
-                                <table class="table table-striped">
-                                    <thead>
+                    <h4>
+                        <span class="fa-fw fa fa-microchip"></span> {% trans "Stimuli Equipment" %}
+                    </h4>
+                    <hr>
+                    {% if stimuli_eq_setting_list %}
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
                                     <tr>
                                         <th>{% trans "Name" %}</th>
                                         <th>{% trans "Identification" %}</th>
                                         <th>{% trans "Description" %}</th>
                                     </tr>
-                                    </thead>
-                                    <tbody>
+                                </thead>
+                                <tbody>
                                     {% for stimuli_eq_setting in stimuli_eq_setting_list %}
                                         <tr>
                                             <td>
-                                                <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Edit' %}" href="/experiment/stimuli_eq_setting/{{ stimuli_eq_setting.id }}">
-                                                    {{ stimuli_eq_setting.name }}
-                                                </a>
+                                                <a data-bs-toggle="tooltip"
+                                                   data-bs-placement="left"
+                                                   title="{% trans "Edit" %}"
+                                                   href="/experiment/stimuli_eq_setting/{{ stimuli_eq_setting.id }}">{{ stimuli_eq_setting.name }}</a>
                                             </td>
-                                            <td>
-                                                {{ stimuli_eq_setting.stimuli_eq.identification }}
-                                            </td>
-                                            <td>
-                                                {{ stimuli_eq_setting.description }}
-                                            </td>
+                                            <td>{{ stimuli_eq_setting.stimuli_eq.identification }}</td>
+                                            <td>{{ stimuli_eq_setting.description }}</td>
                                         </tr>
                                     {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% endif %}
-                        {% if perms.experiment.add_subject and can_change %}
-                            <a href="/experiment/{{ experiment.id }}/stimuli_eq_setting/new" class="btn btn-primary">{% trans "Insert new" %}</a>
-                        {% endif %}
-                    </div>
-
-                <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa-fw fa fa-flash"></span> {% trans "EEG Settings" %}</h4>
-
-                    {% if eeg_setting_list %}
-                        <div class="form-group">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>{% trans "Name" %}</th>
-                                    <th>{% trans "Description" %}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for eeg_setting in eeg_setting_list %}
-                                    <tr>
-                                        <td>
-                                            <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/eeg_setting/{{ eeg_setting.id }}">
-                                            {{ eeg_setting.name }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {{ eeg_setting.description }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     {% endif %}
                     {% if perms.experiment.add_subject and can_change %}
+                        <br>
+                        <a href="/experiment/{{ experiment.id }}/stimuli_eq_setting/new" class="btn btn-primary">{% trans "Insert new" %}</a>
+                    {% endif %}
+                </div>
+
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
+                    <h4>
+                        <span class="fa-fw fa fa-flash"></span> {% trans "EEG Settings" %}
+                    </h4>
+                    <hr>
+                    {% if eeg_setting_list %}
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Name" %}</th>
+                                        <th>{% trans "Description" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for eeg_setting in eeg_setting_list %}
+                                        <tr>
+                                            <td>
+                                                <a data-bs-toggle="tooltip"
+                                                   data-bs-placement="left"
+                                                   title="{% trans "Edit" %}"
+                                                   href="/experiment/eeg_setting/{{ eeg_setting.id }}">{{ eeg_setting.name }}</a>
+                                            </td>
+                                            <td>{{ eeg_setting.description }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {% if perms.experiment.add_subject and can_change %}
+                        <br>
                         <a href="/experiment/{{ experiment.id }}/eeg_setting/new" class="btn btn-primary">{% trans "Insert new" %}</a>
                     {% endif %}
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4><span class="fa-fw fa fa-bar-chart"></span> {% trans "EMG Settings" %}</h4>
+                    <h4>
+                        <span class="fa-fw fa fa-bar-chart"></span> {% trans "EMG Settings" %}
+                    </h4>
+                    <hr>
                     {% if emg_setting_list %}
                         <div class="form-group">
                             <table class="table table-striped">
                                 <thead>
-                                <tr>
-                                    <th>{% trans "Name" %}</th>
-                                    <th>{% trans "Description" %}</th>
-                                </tr>
+                                    <tr>
+                                        <th>{% trans "Name" %}</th>
+                                        <th>{% trans "Description" %}</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {% for emg_setting in emg_setting_list %}
-                                    <tr>
-                                        <td>
-                                            <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/emg_setting/{{ emg_setting.id }}">
-                                            {{ emg_setting.name }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {{ emg_setting.description }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
+                                    {% for emg_setting in emg_setting_list %}
+                                        <tr>
+                                            <td>
+                                                <a data-bs-toggle="tooltip"
+                                                   data-bs-placement="left"
+                                                   title="{% trans "Edit" %}"
+                                                   href="/experiment/emg_setting/{{ emg_setting.id }}">{{ emg_setting.name }}</a>
+                                            </td>
+                                            <td>{{ emg_setting.description }}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     {% endif %}
                     {% if perms.experiment.add_subject and can_change %}
+                        <br>
                         <a href="/experiment/{{ experiment.id }}/emg_setting/new" class="btn btn-primary">{% trans "Insert new" %}</a>
                     {% endif %}
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4><span class="fa-fw fa fa-magnet"></span> {% trans "TMS Settings" %}</h4>
+                    <h4>
+                        <span class="fa-fw fa fa-magnet"></span> {% trans "TMS Settings" %}
+                    </h4>
+                    <hr>
                     {% if tms_setting_list %}
                         <div class="form-group">
                             <table class="table table-striped">
                                 <thead>
-                                <tr>
-                                    <th>{% trans "Name" %}</th>
-                                    <th>{% trans "Description" %}</th>
-                                </tr>
+                                    <tr>
+                                        <th>{% trans "Name" %}</th>
+                                        <th>{% trans "Description" %}</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {% for tms_setting in tms_setting_list %}
-                                    <tr>
-                                        <td>
-                                            <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/tms_setting/{{ tms_setting.id }}">
-                                            {{ tms_setting.name }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {{ tms_setting.description }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
+                                    {% for tms_setting in tms_setting_list %}
+                                        <tr>
+                                            <td>
+                                                <a data-bs-toggle="tooltip"
+                                                   data-bs-placement="left"
+                                                   title="{% trans "Edit" %}"
+                                                   href="/experiment/tms_setting/{{ tms_setting.id }}">{{ tms_setting.name }}</a>
+                                            </td>
+                                            <td>{{ tms_setting.description }}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     {% endif %}
                     {% if perms.experiment.add_subject and can_change %}
+                        <br>
                         <a href="/experiment/{{ experiment.id }}/tms_setting/new" class="btn btn-primary">{% trans "Insert new" %}</a>
                     {% endif %}
                 </div>
 
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4><span class="fa-fw fa fa-tree"></span> {% trans "Context trees" %}</h4>
+                    <h4>
+                        <span class="fa-fw fa fa-tree"></span> {% trans "Context trees" %}
+                    </h4>
+                    <hr>
                     {% if context_tree_list %}
                         <div class="form-group">
                             <table class="table table-striped">
                                 <thead>
-                                <tr>
-                                    <th>{% trans "Name" %}</th>
-                                    <th>{% trans "Description" %}</th>
-                                </tr>
+                                    <tr>
+                                        <th>{% trans "Name" %}</th>
+                                        <th>{% trans "Description" %}</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {% for context_tree in context_tree_list %}
-                                    <tr>
-                                        <td>
-                                            <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/context_tree/{{ context_tree.id }}">
-                                            {{ context_tree.name }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {{ context_tree.description }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
+                                    {% for context_tree in context_tree_list %}
+                                        <tr>
+                                            <td>
+                                                <a data-bs-toggle="tooltip"
+                                                   data-bs-placement="left"
+                                                   title="{% trans "Edit" %}"
+                                                   href="/experiment/context_tree/{{ context_tree.id }}">{{ context_tree.name }}</a>
+                                            </td>
+                                            <td>{{ context_tree.description }}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     {% endif %}
                     {% if perms.experiment.add_subject and can_change %}
+                        <br>
                         <a href="/experiment/{{ experiment.id }}/context_tree/new" class="btn btn-primary">{% trans "Insert new" %}</a>
                     {% endif %}
                 </div>
 
-
-
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4><span class="fa-fw fa fa-tasks"></span> {% trans "Steps of experimental protocol" %}</h4>
+                    <h4>
+                        <span class="fa-fw fa fa-tasks"></span> {% trans "Steps of experimental protocol" %}
+                    </h4>
+                    <hr>
                     <div class="row">
                         <div class="col-6 col-sm-12">
+                            <br>
                             <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary">{% trans "Manage" %}</a>
                         </div>
                     </div>
@@ -558,56 +568,54 @@
                            class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
-{#                    Commented out until a safe export/import tool is done #}
-{#                    {% if not editing and can_change %}#}
-{#                        <div class="btn-group float-end">#}
-{#                            <a href="/experiment/{{ experiment.id }}/export" class="btn btn-primary">{% trans "Export" %}</a>#}
-{#                        </div>#}
-{#                    {% endif %}#}
+                    {#                    Commented out until a safe export/import tool is done #}
+                    {#                    {% if not editing and can_change %}#}
+                    {#                        <div class="btn-group float-end">#}
+                    {#                            <a href="/experiment/{{ experiment.id }}/export" class="btn btn-primary">{% trans "Export" %}</a>#}
+                    {#                        </div>#}
+                    {#                    {% endif %}#}
                     <div class="btn-group float-end">
                         <a href="/experiment/research_project/{{ research_project.id }}" class="btn btn-light">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete experiment?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">{% trans "Are you sure you want to delete experiment?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalCollaboratorRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body" id="modalRemoveMessage">
-                    {% trans "Are you sure you want to remove this researcher?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" name="action" value="remove-" id="removeCollaborator">{% trans "Delete" %}</button>
+        <div class="modal fade"
+             id="modalCollaboratorRemove"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body" id="modalRemoveMessage">{% trans "Are you sure you want to remove this researcher?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" name="action" value="remove-" id="removeCollaborator">{% trans "Delete" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endblock content %}
 
-{% endblock %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/collaborators.js' %}"></script>
-    <script src="{% static 'site/js/block_component.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/js/collaborators.js" %}></script>
+    <script src={% static "site/js/block_component.js" %}></script>
+{% endblock extrascript %}

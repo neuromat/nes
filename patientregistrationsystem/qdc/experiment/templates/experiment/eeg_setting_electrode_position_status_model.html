@@ -1,12 +1,14 @@
 {% extends "experiment/eeg_setting_eeg_electrode_net_system_template.html" %}
+
 {% load i18n static %}
 
-{% block subcontent %}
-{{ block.super }}
-    <div id="electrode_model" class="tab-pane fade show active">
 
+{% block subcontent %}
+    {{ block.super }}
+    <div id="electrode_model" class="tab-pane fade show active">
         <div style="width:100%;">
             <h4>{% trans "Step 3 of 3" %}</h4>
+            <hr>
             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                 <thead>
                     <tr>
@@ -14,51 +16,57 @@
                         <th>{% trans "Position" %}</th>
                         <th>{% trans "Used" %}</th>
                         <th>{% trans "Electrode Model" %}</th>
-                        <th colspan="2" style="text-align: center">{% trans "Order" %}</th>
+                        <th colspan="2" class="text-center">{% trans "Order" %}</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all|dictsort:"channel_index" %}
-                    <tr>
-                        <td>
-                            {{ position_setting.channel_index }}
-                        </td>
-                        <td>
-                            {{ position_setting.eeg_electrode_position.name }}
-                        </td>
-                        <td>
-                            <input disabled type="checkbox" name="position_status_{{ position_setting.id }}" id="position_status_{{ position_setting.id }}" {% if position_setting.used %}checked="checked"{% endif %} onclick="used();" />
-                        </td>
-                        <td>
-                            <select {% if not editing %}disabled{% endif %} class="form-control" name="electrode_model_{{ position_setting.id }}" id="electrode_model_{{ position_setting.id }}">
-                                {% for eeg_electrode_model in eeg_electrode_model_list %}
-                                    <option {% if eeg_electrode_model.id == position_setting.electrode_model.id %}selected="selected"{% endif %} value="{{ eeg_electrode_model.id }}">{{ eeg_electrode_model.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td class="text-end col-lg-1">
-                            {% if not forloop.last %}
-                                <a class="btn fa-fw fa fa-arrow-down" href="/experiment/eeg_electrode_position_setting/change_the_order/{{ position_setting.id }}/down/"></a>
-                            {% endif %}
-                        </td>
-                        <td class="col-lg-1">
-                            {% if not forloop.first %}
-                                <a class="btn fa-fw fa fa-arrow-up" href="/experiment/eeg_electrode_position_setting/change_the_order/{{ position_setting.id }}/up/"></a>
-                            {% endif %}
-                        </td>
+                        <tr>
+                            <td>{{ position_setting.channel_index }}</td>
+                            <td>{{ position_setting.eeg_electrode_position.name }}</td>
+                            <td>
+                                <input disabled
+                                       type="checkbox"
+                                       name="position_status_{{ position_setting.id }}"
+                                       id="position_status_{{ position_setting.id }}"
+                                       {% if position_setting.used %}checked="checked"{% endif %}
+                                       onclick="used();" />
+                            </td>
+                            <td>
+                                <select {% if not editing %}disabled{% endif %}
+                                        class="form-control"
+                                        name="electrode_model_{{ position_setting.id }}"
+                                        id="electrode_model_{{ position_setting.id }}">
+                                    {% for eeg_electrode_model in eeg_electrode_model_list %}
+                                        <option {% if eeg_electrode_model.id == position_setting.electrode_model.id %}selected="selected"{% endif %}
+                                                value="{{ eeg_electrode_model.id }}">{{ eeg_electrode_model.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class="text-end col-lg-1">
+                                {% if not forloop.last %}
+                                    <a class="btn fa-fw fa fa-arrow-down"
+                                       href="/experiment/eeg_electrode_position_setting/change_the_order/{{ position_setting.id }}/down/"></a>
+                                {% endif %}
+                            </td>
+                            <td class="col-lg-1">
+                                {% if not forloop.first %}
+                                    <a class="btn fa-fw fa fa-arrow-up"
+                                       href="/experiment/eeg_electrode_position_setting/change_the_order/{{ position_setting.id }}/up/"></a>
+                                {% endif %}
+                            </td>
 
-                    </tr>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
-
         </div>
 
         {% if not editing %}
-
             {% if can_change %}
-                <div class="btn-toolbar float-start">
+                <br>
+                <div class="btn-toolbar">
                     <div class="btn-group">
                         <a href="/experiment/eeg_setting/eeg_electrode_position_status_model/edit/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
@@ -68,15 +76,9 @@
             <div class="btn-toolbar float-end">
                 <div class="btn-group">
                     <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-secondary"><span class="fa-fw fa fa-arrow-left"></span> {% trans "Previous" %}</a>
-                </div>
-                <div class="btn-group">
                     <a disabled="" href="#" class="btn btn-secondary">{% trans "Next" %} <span class="fa-fw fa fa-arrow-right"></span></a>
                 </div>
             </div>
-
         {% endif %}
-
     </div>
-
 {% endblock %}
-

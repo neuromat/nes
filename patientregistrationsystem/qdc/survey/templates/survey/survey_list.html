@@ -2,14 +2,18 @@
 
 {% load i18n static %}
 
-{% block activeAdvancedSurvey %} active{% endblock %}
+{% block activeAdvancedSurvey %}
+    active
+{% endblock activeAdvancedSurvey %}
 
 {% block content %}
     <div class="tab-pane fade show active" id="surveyBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item active" >{% trans "Questionnaires" %}</li>
+                <li class="breadcrumb-item">
+                    <a href={% url "home" %}>{% trans "Home" %}</a>
+                </li>
+                <li class="breadcrumb-item active">{% trans "Questionnaires" %}</li>
             </ol>
         </nav>
     </div>
@@ -21,43 +25,61 @@
             <div class="form-group">
                 <table class="table table-striped">
                     <thead>
-                    <tr>
-                        <th>{% trans "Questionnaire" %}</th>
-                        <th style="text-align: center">{% trans "Required fill" %}</th>
-                        <th style="text-align: center">{% trans "Is active?" %}</th>
-                    </tr>
+                        <tr>
+                            <th>{% trans "Questionnaire" %}</th>
+                            <th class="text-center">{% trans "Required fill" %}</th>
+                            <th class="text-center">{% trans "Is active?" %}</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {% for questionnaire in questionnaires_list %}
-                        <tr>
-                            <td><a data-bs-toggle="tooltip" data-bs-placement="left" href="/survey/{{ questionnaire.id }}" title="{% trans 'View' %}"> 
-                                {{ questionnaire.lime_survey_id }} - {{ questionnaire.title }} </a></td>
-                            <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="fa-fw fa fa-check" style="color: royalblue"></span> {% endif %}</td>
-                            <td style="text-align: center">{% if questionnaire.is_active == True %}<span class="fa-fw fa fa-check" style="color: royalblue"></span> {% else %}<span class="fa-fw fa fa-remove" style="color: red"></span> {% endif %}</td>
-                        </tr>
-                    {% endfor %}
+                        {% for questionnaire in questionnaires_list %}
+                            <tr>
+                                <td>
+                                    <a data-bs-toggle="tooltip" data-bs-placement="left" href="/survey/{{ questionnaire.id }}" title={% trans "View" %}>
+                                    {{ questionnaire.lime_survey_id }} - {{ questionnaire.title }} </a>
+                                </td>
+                                <td class="text-center">
+                                    {% if questionnaire.is_initial_evaluation %}<span class="fa-fw fa fa-check text-info"></span>{% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if questionnaire.is_active == True %}
+                                        <span class="fa-fw fa fa-check text-info"></span>
+                                    {% else %}
+                                        <span class="fa-fw fa fa-remove text-danger"></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
             <div class="form-group">
-                <label class="form-label my-2"><b style="color: red;"><big>!</big> {% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
-                    (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
+                <label class="form-label my-2">
+                    <b class="text-danger"><big>!</big> {% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                    (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b>
+                </label>
             </div>
 
             <div class="btn-toolbar justify-content-between">
                 {% if perms.survey.add_survey %}
+
                     <div class="btn-group">
-                        <a href="/survey/new/" class="btn btn-primary" {% if not limesurvey_available  %} disabled {% endif %}>{% trans "Insert new questionnaire" %}</a>
+                        <a href="/survey/new/" class="btn btn-primary" {% if not limesurvey_available %}disabled{% endif %}>{% trans "Insert new questionnaire" %}</a>
                     </div>
                 {% endif %}
 
                 {% if perms.survey.change_survey %}
                     <form id="survey_form" method="post">
                         {% csrf_token %}
-                        <button data-bs-toggle="tooltip" title="{% trans "Click to update questionnaire title if not displaying the title in selected NES language" %}" type="submit" class="btn btn-light float-end"
+                        <button data-bs-toggle="tooltip"
+                                title="{% trans "Click to update questionnaire title if not displaying the title in selected NES language" %}"
+                                type="submit"
+                                class="btn btn-light float-end"
                                 name="action"
                                 value="update"
-                                {% if not limesurvey_available  %} disabled {% endif %} title={% trans "Update informations about the questionnaires" %}><i class="fa-fw fa fa-refresh"></i> {% trans "Update" %}
+                                {% if not limesurvey_available %}disabled{% endif %}
+                                title="{% trans "Update informations about the questionnaires" %}">
+                            <i class="fa-fw fa fa-refresh"></i> {% trans "Update" %}
                         </button>
                     </form>
                 {% endif %}
@@ -68,9 +90,5 @@
 {% endblock content %}
 
 {% block extrascript %}
-    <script>
-        {% if survey_form.errors %}
-            showErrorMessage(gettext('Please, correct the highlighted fields.'))
-        {% endif %}
-    </script>
+    <script>{% if survey_form.errors %}showErrorMessage(gettext('Please, correct the highlighted fields.')){% endif %}</script>
 {% endblock extrascript %}

@@ -1,36 +1,40 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
+        {% if experiment_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-    {% if experiment_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
+        <div class="tab-pane fade show active" id="experimentBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item active">{% trans "Steps of experimental protocol" %}</li>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li class="breadcrumb-item active">{% trans "Steps of experimental protocol" %}</li>
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <div class="row">
                     <div class="col-6 col-sm-6">
@@ -49,24 +53,34 @@
                         </thead>
                         <tbody>
                             {% for component in component_list %}
-                            <tr>
-                                <td>
-                                    <span class="{{ component.icon_class }}"></span>
-                                    {{ component.get_component_type_display }}
-                                    {% if component.is_root %}
-                                        <span class="label label-info">{% trans "root" %}</span>
+                                <tr>
+                                    <td>
+                                        <span class="{{ component.icon_class }}"></span>
+                                        {{ component.get_component_type_display }}
+                                        {% if component.is_root %}
+                                            <span class="label label-info">{% trans "root" %}</span>
+                                        {% endif %}
+                                        {% if component.is_unused %}
+                                            <span class="label label-warning">{% trans "not used" %}</span>
+                                        {% endif %}
+                                    </td>
+                                    {% if component.component_type == "block" %}
+                                        <td>
+                                            <a data-bs-toggle="tooltip"
+                                               data-bs-placement="left"
+                                               title="{% trans "Edit" %}"
+                                               href="/experiment/component/{{ component.id }}">{{ component.identification }}</a>
+                                        </td>
+                                    {% else %}
+                                        <td>
+                                            <a data-bs-toggle="tooltip"
+                                               data-bs-placement="left"
+                                               title="{% trans "Edit" %}"
+                                               href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a>
+                                        </td>
                                     {% endif %}
-                                    {% if component.is_unused %}
-                                        <span class="label label-warning">{% trans "not used" %}</span>
-                                    {% endif %}
-                                </td>
-                                {% if component.component_type == "block" %}
-                                    <td><a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
-                                {% else %}
-                                    <td><a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
-                                {% endif %}
-                                <td>{{ component.description }}</td>
-                            </tr>
+                                    <td>{{ component.description }}</td>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -80,8 +94,8 @@
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                             {% for type, type_name, icon in component_type_choices %}
                                 <li role="presentation">
-                                    <a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/{{ type }}"> 
-                                        <span class="{{ icon }}"></span> 
+                                    <a class="dropdown-item" role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/{{ type }}">
+                                        <span class="{{ icon }}"></span>
                                         {{ type_name }}
                                     </a>
                                 </li>
@@ -97,25 +111,25 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "This experiment/project is in use, you can not change it! Do you want to copy this experiment/project?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
+        <div class="modal fade"
+             id="modalCopyExperiment"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">{% trans "This experiment/project is in use, you can not change it! Do you want to copy this experiment/project?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endblock content %}
 
-{% endblock %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}

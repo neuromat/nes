@@ -2,74 +2,55 @@
 
 {% load i18n static %}
 
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
+        {% if research_project_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
+        <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
 
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    {% if research_project_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-
-
-    <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New" %}</li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item"><a href="/experiment/research_project/{{ research_project.id }}">{{ research_project_form.title.value }}</a></li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "New" %}</li>
                     {% else %}
-                        <li class="breadcrumb-item active">{{ research_project_form.title.value }} </li>
+                        {% if editing %}
+                            <li class="breadcrumb-item">
+                                <a href="/experiment/research_project/{{ research_project.id }}">{{ research_project_form.title.value }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                        {% else %}
+                            <li class="breadcrumb-item active">{{ research_project_form.title.value }}</li>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Study basic information" %}</h4>
-<hr>
+                <hr>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Title" %} <b class="text-danger">*</b></label>
+                            <label class="form-label">
+                                {% trans "Title" %} <b class="text-danger">*</b>
+                            </label>
                             {{ research_project_form.title }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -78,12 +59,12 @@
                 <div class="row">
                     <div class="col-6 col-sm-6">
                         <div class="form-group {% if research_project_form.errors.start_date %}is-invalid{% endif %}">
-                            <label class="form-label">{% trans "Initial date" %}<b class="text-danger">*</b></label>
+                            <label class="form-label">
+                                {% trans "Initial date" %}<b class="text-danger">*</b>
+                            </label>
                             {{ research_project_form.start_date }}
                             <div class="form-text with-errors">
-                                {% for error in research_project_form.start_date.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in research_project_form.start_date.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -92,9 +73,7 @@
                             <label class="form-label">{% trans "End date" %}</label>
                             {{ research_project_form.end_date }}
                             <div class="form-text with-errors">
-                                {% for error in research_project_form.end_date.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in research_project_form.end_date.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -102,7 +81,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Description" %} <b class="text-danger">*</b></label>
+                            <label class="form-label">
+                                {% trans "Description" %} <b class="text-danger">*</b>
+                            </label>
                             {{ research_project_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -138,9 +119,12 @@
                                         <button type="button" class="btn btn-light unbuttonmize">
                                             {{ keyword.name }}
                                             {% if can_change %}
-                                                <a href="/experiment/keyword/remove/{{ research_project.id }}/{{keyword.id}}">
-                                                    <span class="fa-fw fa fa-remove" data-bs-toggle="tooltip"
-                                                          style="color: indianred; vertical-align: -10%;" title="{% trans "Delete" %}" />
+                                                <a href="/experiment/keyword/remove/{{ research_project.id }}/{{ keyword.id }}">
+                                                    <span class="fa-fw fa fa-remove"
+                                                          data-bs-toggle="tooltip"
+                                                          style="color: indianred;
+                                                                 vertical-align: -10%"
+                                                          title="{% trans "Delete" %}" />
                                                 </a>
                                             {% endif %}
                                         </button>
@@ -150,16 +134,19 @@
                                     <div class="form-group">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text"><span class="fa-fw fa fa-search"></span></span>
-                                            <input class="form-control" placeholder="
-                                                    {% trans "Type a keyword to include an existent or new" %}"
-                                                   id="keywords" type="text" autocomplete="off" maxlength="50">
+                                            <input class="form-control"
+                                                   placeholder="{% trans "Type a keyword to include an existent or new" %}"
+                                                   id="keywords"
+                                                   type="search"
+                                                   autocomplete="off"
+                                                   maxlength="50">
                                         </div>
                                         {% csrf_token %}
                                         <ul id="search-results-keywords" style="list-style: none;">
                                         </ul>
-                                     </div>
+                                    </div>
                                 {% endif %}
-                             </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -172,33 +159,48 @@
                                 <tr>
                                     <th>{% trans "Title" %}</th>
                                     <th>{% trans "Description" %}</th>
-                                    <th style="text-align: center">{% trans "Create PDF" %}</th>
-                                    <th style="text-align: center">{% trans 'Copy experiment' %}</th>
-{#                                    Commented out until a safe export/import tool is done #}
-{#                                    {% if not editing and can_change %}#}
-{#                                        <th style="text-align: center">{% trans 'Export experiment' %}</th>#}
-{#                                    {% endif %}#}
+                                    <th class="text-center">{% trans "Create PDF" %}</th>
+                                    <th class="text-center">{% trans "Copy experiment" %}</th>
+                                    {#                                    Commented out until a safe export/import tool is done #}
+                                    {#                                    {% if not editing and can_change %}#}
+                                    {#                                        <th class="text-center">{% trans "Export experiment" %}</th>#}
+                                    {#                                    {% endif %}#}
                                 </tr>
                             </thead>
                             <tbody>
-                            {% for experiment in experiments %}
-                                <tr>
-                                    <td>{% if perms.experiment.change_experiment %}
-                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></td>
+                                {% for experiment in experiments %}
+                                    <tr>
+                                        <td>
+                                            {% if perms.experiment.change_experiment %}
+                                                <a data-bs-toggle="tooltip"
+                                                   data-bs-placement="left"
+                                                   title="{% trans "Visualize" %}"
+                                                   href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a>
+                                            </td>
                                         {% else %}
-                                        {{ experiment.title }}
+                                            {{ experiment.title }}
                                         {% endif %}
-                                    <td>{{ experiment.description }}</td>
-                                    <td style="text-align: center"><button type="submit" class="btn" name="action" value="create_pdf-{{ experiment.id }}" style="background:transparent; border:none"><i class="fa-fw fa fa-file-pdf-o"></i></button></td>
-                                    <td style="text-align: center"><a class="btn" data-bs-toggle="modal" data-bs-experiment_id="{{ experiment.id }}"
-                                            href="#modalCopyExperiment"><i class="fa-fw fa fa-copy"></i></a></td>
-{#                                    Commented out until a safe export/import tool is done #}
-{#                                    {% if not editing and can_change %}#}
-{#                                        <td style="text-align: center"><a class="btn" data-bs-toggle="modal" data-bs-experiment_id="{{ experiment.id }}"#}
-{#                                                                          href="/experiment/{{ experiment.id }}/export"><i class="fa-fw fa fa-download"></i></a></td>#}
-{#                                    {% endif %}#}
-                                </tr>
-                            {% endfor %}
+                                        <td>{{ experiment.description }}</td>
+                                        <td class="text-center">
+                                            <button type="submit"
+                                                    class="btn"
+                                                    name="action"
+                                                    value="create_pdf-{{ experiment.id }}"
+                                                    style="background:transparent;
+                                                           border:none">
+                                                <i class="fa-fw fa fa-file-pdf-o"></i>
+                                            </button>
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="btn" data-bs-toggle="modal" data-bs-experiment_id="{{ experiment.id }}" href="#modalCopyExperiment"><i class="fa-fw fa fa-copy"></i></a>
+                                        </td>
+                                        {#                                    Commented out until a safe export/import tool is done #}
+                                        {#                                    {% if not editing and can_change %}#}
+                                        {#                                        <td class="text-center"><a class="btn" data-bs-toggle="modal" data-bs-experiment_id="{{ experiment.id }}"#}
+                                        {#                                                                          href="/experiment/{{ experiment.id }}/export"><i class="fa-fw fa fa-download"></i></a></td>#}
+                                        {#                                    {% endif %}#}
+                                    </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -206,10 +208,10 @@
                         <div class="btn-group">
                             <a href="/experiment/research_project/{{ research_project.id }}/new_experiment/" class="btn btn-primary">{% trans "Insert new" %}</a>
                         </div>
-{#                        Commented out until a safe export/import tool is done #}
-{#                        <div class="tn-group float-end">#}
-{#                            <a href="/experiment/import/{{ research_project.id }}" class="btn btn-light"><i class="fa-fw fa fa-upload"></i> {% trans "Import Experiment" %}</a>#}
-{#                        </div>#}
+                        {#                        Commented out until a safe export/import tool is done #}
+                        {#                        <div class="btn-group float-end">#}
+                        {#                            <a href="/experiment/import/{{ research_project.id }}" class="btn btn-light"><i class="fa-fw fa fa-upload"></i> {% trans "Import Experiment" %}</a>#}
+                        {#                        </div>#}
                     {% endif %}
                 </div>
             {% endif %}
@@ -233,76 +235,78 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete study?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">{% trans "Are you sure you want to delete study?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalCollaboratorRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body" id="modalRemoveMessage">
-                    {% trans "Are you sure you want to remove this collaborator from this team?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" name="action" value="remove-" id="removeCollaborator">{% trans "Delete" %}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="modal fade" id="modalComponent_coll_Is_coordinator" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body" id="modalCollIs_coordinatorMessage">
-                    {% trans "Are you sure you want to change the coordinator status for this collaborator?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" name="action" value="is_coordinator-" id="changeCollIsCoordinator">{% trans "Change is_coordinator" %}</button>
+        <div class="modal fade"
+             id="modalCollaboratorRemove"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body" id="modalRemoveMessage">{% trans "Are you sure you want to remove this collaborator from this team?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" name="action" value="remove-" id="removeCollaborator">{% trans "Delete" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Do you want to copy this experiment?" %}
-                    <input id="id_experiment_hidden" type="hidden" name="experiment_id">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
-                    <button type="submit" class="btn btn-primary" value="copy_experiment_with_data" name="action">{% trans "Copy experiment/project with data" %}</button>
+        <div class="modal fade"
+             id="modalComponent_coll_Is_coordinator"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body" id="modalCollIs_coordinatorMessage">{% trans "Are you sure you want to change the coordinator status for this collaborator?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" name="action" value="is_coordinator-" id="changeCollIsCoordinator">{% trans "Change is_coordinator" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-{% endblock %}
+        <div class="modal fade"
+             id="modalCopyExperiment"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        {% trans "Do you want to copy this experiment?" %}
+                        <input id="id_experiment_hidden" type="hidden" name="experiment_id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
+                        <button type="submit" class="btn btn-primary" value="copy_experiment_with_data" name="action">{% trans "Copy experiment/project with data" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock content %}
 
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
     <script>
@@ -313,5 +317,5 @@
             modal.find('#id_experiment_hidden').attr('value', experiment_id);
         });
     </script>
-    <script src="{% static 'site/js/research_project.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/js/research_project.js" %}></script>
+{% endblock extrascript %}

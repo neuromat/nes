@@ -8,7 +8,7 @@
     <div class="tab-pane fade show active" id="breadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item active">{% trans "Set up" %}</li>
             </ol>
         </nav>
@@ -23,7 +23,7 @@
                 {% for basic_register in basic_register_list %}
                     <tr>
                         <td>
-                            <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'List view' %}" href="{{ basic_register.href }}">
+                            <a data-bs-toggle="tooltip" data-bs-placement="left" title={% trans "List view" %} href="{{ basic_register.href }}">
                                 {{ basic_register.item }}
                             </a>
                         </td>

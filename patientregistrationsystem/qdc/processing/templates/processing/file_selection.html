@@ -5,10 +5,9 @@
 {% block activeExport %} active{% endblock %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
-{% endblock %}
+{% endblock form %}
 
 {% block content %}
             
@@ -102,5 +101,5 @@
 
 {% block extrascript %}
     {% load static %}
-    <script src="{% static 'site/js/file_selection.js' %}"></script>
+    <script src={% static "site/js/file_selection.js" %}></script>
 {% endblock %}

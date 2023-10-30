@@ -1,9 +1,9 @@
 /**
  * Created by diogopedrosa on 3/10/15.
  */
+"use strict";
 
 $(function(){
-    $("[data-toggle=tooltip]").tooltip();
     $( "form" ).submit(function( event ) {
         if(checkPass())
             event.preventDefault();

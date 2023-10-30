@@ -2,71 +2,50 @@
 
 {% load i18n %}
 
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item">
+                    <a href={% url "home" %}>{% trans "Home" %}</a>
+                </li>
                 <li class="breadcrumb-item active">{% trans "Studies" %}</li>
             </ol>
         </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-            <div class="container-fluid wellimport-results">
-                <h1 class="text-center">{% trans 'Results' %}</h1>
-                <hr>
-                <p>
-                    {% if research_project_id %}
-                        {% trans '1 Study imported' %}: <a href="/experiment/research_project/{{ research_project_id }}/">{{ research_project_title }}</a><br>
-                    {% endif %}
-                    {% trans '1 Experiment/Project imported' %}: <a href="/experiment/{{ experiment_id }}/">{{ experiment_title }}</a><br>
-                    {% if groups_count %}
-                        {% blocktrans count count=groups_count %}
+        <div class="container-fluid wellimport-results">
+            <h1 class="text-center">{% trans "Results" %}</h1>
+            <hr>
+            <p>
+                {% if research_project_id %}
+                    {% trans "1 Study imported" %}: <a href="/experiment/research_project/{{ research_project_id }}/">{{ research_project_title }}</a>
+                    <br>
+                {% endif %}
+                {% trans "1 Experiment/Project imported" %}: <a href="/experiment/{{ experiment_id }}/">{{ experiment_title }}</a>
+                <br>
+                {% if groups_count %}
+                    {% blocktrans count count=groups_count %}
                             {{ count }} Group imported
                         {% plural %}
                             {{ count }} Groups imported
                         {% endblocktrans %}
-                        <br>
-                    {% endif %}
-                    {% for component in components %}
-                        {% blocktrans with human_readable=component.human_readable count count=component.count %}
+                    <br>
+                {% endif %}
+                {% for component in components %}
+                    {% blocktrans with human_readable=component.human_readable count count=component.count %}
                             {{ count }} <em>{{ human_readable }}</em> step imported
                         {% plural %}
                             {{ count }} <em>{{ human_readable }}</em> steps imported
                         {% endblocktrans %}
-                        <br>
-                    {% endfor %}
-                </p>
-            </div>
+                    <br>
+                {% endfor %}
+            </p>
         </div>
     </div>
-
-{% endblock %}
-
+{% endblock content %}

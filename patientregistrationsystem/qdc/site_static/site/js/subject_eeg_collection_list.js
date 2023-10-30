@@ -2,9 +2,7 @@
  * Created by evandro on 8/25/16.
  */
 
-$(function(){
-    $("[data-toggle=tooltip]").tooltip();
-});
+"use strict";
 
 var requisition_id = 0;
 

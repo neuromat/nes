@@ -2,9 +2,7 @@
  * Created by evandro on 14/03/17.
  */
 
-$(function(){
-    $("[data-toggle=tooltip]").tooltip();
-});
+"use strict";
 
 function showDialogAndEnableRemoveButton () {
     $('#remove_button').prop('disabled', false);

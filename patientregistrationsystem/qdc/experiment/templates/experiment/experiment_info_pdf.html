@@ -1,6 +1,7 @@
 {% load i18n static %}
+
 <!DOCTYPE HTML>
-<html>
+<html lang={{ get_current_language }}>
     <head>
         <title>Experiment</title>
         <style type="text/css">
@@ -28,29 +29,45 @@
     </head>
     <body>
         <div>
+
             {% block content %}
                 {% if experiment %}
-                    <h1 style="text-align: center">NES - Neuroscience Experiments System</h1>
+                    <h1 class="text-center">NES - Neuroscience Experiments System</h1>
                     <br>
 
                     <h3>1- {% trans "Basic experiment/project information" %}</h3>
-                    <p><strong>{% trans "Title" %}:</strong> {{ experiment.title }}</p>
-                    <p><strong>{% trans "Description" %}:</strong> {{ experiment.description }}</p>
-                    <p><strong>{% trans "Study" %}:</strong> {{ experiment.research_project }}</p>
+                    <p>
+                        <strong>{% trans "Title" %}:</strong> {{ experiment.title }}
+                    </p>
+                    <p>
+                        <strong>{% trans "Description" %}:</strong> {{ experiment.description }}
+                    </p>
+                    <p>
+                        <strong>{% trans "Study" %}:</strong> {{ experiment.research_project }}
+                    </p>
                     {% if experiment.ethics_committee_project_url %}
-                        <p><strong>{% trans "URL of the project approved by the ethics committee" %}:</strong> {{ experiment.ethics_committee_project_url }}</p>
+                        <p>
+                            <strong>{% trans "URL of the project approved by the ethics committee" %}:</strong> {{ experiment.ethics_committee_project_url }}
+                        </p>
                     {% endif %}
                     {% if experiment.ethics_committee_project_file %}
-                        <p><strong>{% trans "Project file approved by the ethics committee" %}:</strong> {{ experiment.ethics_committee_project_file }}</p>
+                        <p>
+                            <strong>{% trans "Project file approved by the ethics committee" %}:</strong> {{ experiment.ethics_committee_project_file }}
+                        </p>
                     {% endif %}
-                    <p><strong>{% trans "Last update" %}:</strong> {{ experiment.last_update }}</p>
+                    <p>
+                        <strong>{% trans "Last update" %}:</strong> {{ experiment.last_update }}
+                    </p>
 
                     <br>
                     <h3>2- {% trans "Researchers" %}</h3>
                     {% if researchers %}
                         <ul>
-                            {% for reseacher in  researchers %}
-                                <li>{{ reseacher.researcher.get_full_name }} {% if reseacher.researcher.user_profile.institution %}- {{ reseacher.researcher.user_profile.institution }}{% endif %}</li>
+                            {% for reseacher in researchers %}
+                                <li>
+                                    {{ reseacher.researcher.get_full_name }}
+                                    {% if reseacher.researcher.user_profile.institution %}- {{ reseacher.researcher.user_profile.institution }}{% endif %}
+                                </li>
                             {% endfor %}
                         </ul>
                     {% else %}
@@ -61,9 +78,7 @@
                     <h3>3- {% trans "Groups" %}</h3>
                     {% if groups %}
                         <ul>
-                            {% for group in  groups %}
-                                <li>{{ group.title }}: {{ group.description }}</li>
-                            {% endfor %}
+                            {% for group in groups %}<li>{{ group.title }}: {{ group.description }}</li>{% endfor %}
                         </ul>
                     {% else %}
                         {% trans "No registered group" %}
@@ -72,10 +87,12 @@
                     <br>
                     <h3>4- {% trans "Experimental protocol" %}</h3>
                     {% if experimental_protocol_image %}
-                        {% for image in  experimental_protocol_image %}
+                        {% for image in experimental_protocol_image %}
                             <div>{% trans "Group" %}: {{ image.0 }}</div>
                             <div class="imgbox">
-                                <a class="center-fit" href="{{ image.1 }}"><img src="{{ image.1 }}" /></a>
+                                <a class="center-fit" href="{{ image.1 }}">
+                                    <img src="{{ image.1 }}" />
+                                </a>
                             </div>
                             <br>
                         {% endfor %}
@@ -86,7 +103,8 @@
                 {% else %}
                     {% trans "No experiment/project found." %}
                 {% endif %}
-            {% endblock %}
+            {% endblock content %}
+
         </div>
     </body>
 </html>

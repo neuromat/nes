@@ -11,7 +11,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
                 <li class="breadcrumb-item">
-                    <a href="/home/">{% trans 'Home' %}</a>
+                    <a href={% url "home" %}>{% trans "Home" %}</a>
                 </li>
                 <li class="breadcrumb-item">
                     <a href="/experiment/setup/">{% trans "Set up" %}</a>
@@ -41,7 +41,7 @@
                             <tr>
                                 <td>
                                     {% if perms.experiment.register_equipment %}
-                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Visualize' %}" href="/experiment/coil/{{ equipment.id }}">{{ equipment.name }}</a>
+                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title={% trans "Visualize" %} href="/experiment/coil/{{ equipment.id }}">{{ equipment.name }}</a>
                                     {% else %}
                                         {{ equipment.name }}
                                     {% endif %}

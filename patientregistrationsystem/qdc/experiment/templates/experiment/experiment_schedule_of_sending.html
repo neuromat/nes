@@ -3,177 +3,157 @@
 {% load i18n static %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block activeAdvancedResearchProject %} active{% endblock %}
+    {% block activeAdvancedResearchProject %}
+        active
+    {% endblock activeAdvancedResearchProject %}
 
-{% block content %}
+    {% block content %}
+        <div class="tab-pane fade show active">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item active">{% trans "Schedule of sending" %}</li>
+                </ol>
+            </nav>
+        </div>
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
+        <div class="tab-pane fade show active" id="mainMenuUserTab">
+            <div class="container-fluid">
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    <div class="tab-pane fade show active">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li class="breadcrumb-item active">{% trans "Schedule of sending" %}</li>
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-
-                {% if experiment.last_sending %}
-                    <h4>{% trans "Resend experiment/project to Portal" %}</h4>
-                {% else %}
-                    <h4>{% trans "Send experiment/project to Portal" %}</h4>
-                {% endif %}
-
-                <div class="form-group">
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">{% trans "Committee responsible for the Portal" %}</h3>
-                        </div>
-                        <div class="card-body">
-                            {% trans "When the experiment/project is sent to the Portal, its information is verified by a committee before it is publicly available." %}
-                            {% trans "Then, after be approved, an email will be sent to the experiment/project owner." %}
-                        </div>
-                    </div>
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                     {% if experiment.last_sending %}
-                        <div class="row">
-                            <div class="col-12 col-sm-12">
-                                <div class="form-group">
-                                    <label class="form-label">{% trans "Reason for resending" %} <b class="text-danger">*</b></label>
-                                    {{ resend_experiment_form.reason_for_resending }}
-                                    <div class="form-text with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
+                        <h4>{% trans "Resend experiment/project to Portal" %}</h4>
+                    {% else %}
+                        <h4>{% trans "Send experiment/project to Portal" %}</h4>
                     {% endif %}
 
-                </div>
-                <div>
-                    <input id="id_send_age" type="checkbox" name="send_age"checked><label for="id_send_age">&nbsp;{% trans 'send patient age' %}</label>
-                </div>
-                <h5>{% trans "Questionnaires and questions to send" %}</h5>
-                <div class="card-group" id="accordion">
-                    {% for survey_key, survey_value in experiment_questionnaires.items %}
-                        <div class="card  ">
-                            <div class="card-header">
-                                <h9 class="card-title">
-                                    <a data-bs-toggle="collapse" data-bs-parent="#accordion"
-                                       href="#collapse_{{ survey_key }}">
+                    <div class="form-group">
 
-                                        <span style="background-color: #428bca" id="badge_{{ survey_key }}"
-                                              class="badge.badge-pill">{{ survey_value.selected_counter }} </span>
-                                            ({{ survey_key }}) {{ survey_value.title }}
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">{% trans "Committee responsible for the Portal" %}</h3>
+                            </div>
+                            <div class="card-body">
+                                {% trans "When the experiment/project is sent to the Portal, its information is verified by a committee before it is publicly available." %}
+                                {% trans "Then, after be approved, an email will be sent to the experiment/project owner." %}
+                            </div>
+                        </div>
+
+                        {% if experiment.last_sending %}
+                            <div class="row">
+                                <div class="col-12 col-sm-12">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            {% trans "Reason for resending" %} <b class="text-danger">*</b>
+                                        </label>
+                                        {{ resend_experiment_form.reason_for_resending }}
+                                        <div class="form-text with-errors"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                    <div>
+                        <input id="id_send_age" type="checkbox" name="send_age"checked>
+                        <label for="id_send_age">&nbsp;{% trans "send patient age" %}</label>
+                    </div>
+                    <h5>{% trans "Questionnaires and questions to send" %}</h5>
+                    <div class="card-group" id="accordion">
+                        {% for survey_key, survey_value in experiment_questionnaires.items %}
+                            <div class="card  ">
+                                <div class="card-header">
+                                    <h9 class="card-title">
+                                    <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_{{ survey_key }}">
+
+                                        <span style="background-color: #428bca" id="badge_{{ survey_key }}" class="badge.badge-pill">{{ survey_value.selected_counter }}</span>
+                                        ({{ survey_key }}) {{ survey_value.title }}
                                     </a>
 
-                                </h9>
-                            </div>
-                            <div id="collapse_{{ survey_key }}" class=" collapse">
-                                <div class="card-body">
-                                    <div class="col-lg-5 col-sm-12">
-                                        <div class="form-group">
-                                            <label class="form-label">{% trans "Fields available:" %} </label>
-                                                <select class="form-control" size="13" id="multiselect_{{ survey_key }}"
-                                                        name="from[]" multiple="multiple"
-                                                        data-bs-error={% trans "Please, select a questionnaire from the list." %}>
+                                    </h9>
+                                </div>
+                                <div id="collapse_{{ survey_key }}" class=" collapse">
+                                    <div class="card-body">
+                                        <div class="col-lg-5 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label">{% trans "Fields available:" %}</label>
+                                                <select class="form-control"
+                                                        size="13"
+                                                        id="multiselect_{{ survey_key }}"
+                                                        name="from[]"
+                                                        multiple="multiple"
+                                                        data-bs-error="{% trans "Please, select a questionnaire from the list." %}">
                                                     {% for field in survey_value.fields %}
                                                         {% if not field.is_sensitive and not field.select_to_send %}
-                                                            <option title="{{ field.text }}"
-                                                                    value="{{ survey_key }}*{{ field.code }}">
-                                                                [{{ field.code }}] {{ field.text }}
-                                                            </option>
+                                                            <option title="{{ field.text }}" value="{{ survey_key }}*{{ field.code }}">[{{ field.code }}] {{ field.text }}</option>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </select>
+                                            </div>
                                         </div>
+
+                                        <div class="col-lg-2 col-sm-2">
+                                            <button type="button" id="multiselect_{{ survey_key }}_rightAll" class="btn btn-light btn-block">
+                                                <i class="fa-fw fa fa-forward"></i>
+                                            </button>
+                                            <button type="button" id="multiselect_{{ survey_key }}_rightSelected" class="btn btn-light btn-block">
+                                                <i class="fa-fw fa fa-arrow-right"></i>
+                                            </button>
+                                            <button type="button" id="multiselect_{{ survey_key }}_leftSelected" class="btn btn-light btn-block">
+                                                <i class="fa-fw fa fa-arrow-left"></i>
+                                            </button>
+                                            <button type="button" id="multiselect_{{ survey_key }}_leftAll" class="btn btn-light btn-block">
+                                                <i class="fa-fw fa fa-backward"></i>
+                                            </button>
+                                        </div>
+
+                                        <div class="col-lg-5 col-sm-10">
+                                            <label class="form-label">{% trans "Fields chosen:" %}</label>
+
+                                            <select name="to[]" id="multiselect_{{ survey_key }}_to" class="form-control" size="13" multiple="multiple">
+                                                {% for field in survey_value.fields %}
+                                                    {% if field.select_to_send %}<option title="{{ field.text }}" value="{{ survey_key }}*{{ field.code }}">[{{ field.code }}] {{ field.text }}</option>{% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
                                     </div>
-
-                                    <div class="col-lg-2 col-sm-2">
-                                        <button type="button" id="multiselect_{{ survey_key }}_rightAll"
-                                                class="btn btn-light btn-block"><i
-                                                class="fa-fw fa fa-forward"></i></button>
-                                        <button type="button" id="multiselect_{{ survey_key }}_rightSelected"
-                                                class="btn btn-light btn-block"><i
-                                                class="fa-fw fa fa-arrow-right"></i></button>
-                                        <button type="button" id="multiselect_{{ survey_key }}_leftSelected"
-                                                class="btn btn-light btn-block"><i
-                                                class="fa-fw fa fa-arrow-left"></i></button>
-                                        <button type="button" id="multiselect_{{ survey_key }}_leftAll"
-                                                class="btn btn-light btn-block"><i
-                                                class="fa-fw fa fa-backward"></i></button>
-                                    </div>
-
-                                    <div class="col-lg-5 col-sm-10">
-                                        <label class="form-label">{% trans "Fields chosen:" %} </label>
-
-                                        <select name="to[]" id="multiselect_{{ survey_key }}_to"
-                                                class="form-control" size="13"
-                                                multiple="multiple">
-                                            {% for field in survey_value.fields %}
-                                                {% if field.select_to_send %}
-                                                    <option title="{{ field.text }}"
-                                                            value="{{ survey_key }}*{{ field.code }}">
-                                                        [{{ field.code }}] {{ field.text }}
-                                                    </option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" name="action" value="send" class="btn btn-primary">{% trans "Send to Portal" %}</button>
+                    </div>
                 </div>
 
-                <div class="btn-group">
-                    <button type="submit" name="action" value="send" class="btn btn-primary">{% trans "Send to Portal" %}</button>
-                </div>
             </div>
-
         </div>
-    </div>
 
-{% endblock %}
+    {% endblock content %}
 
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/multiselect/multiselect.min.js' %}"></script>
-    <script src="{% static 'site/js/questionnaire_export.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/multiselect/multiselect.min.js" %}></script>
+    <script src={% static "site/js/questionnaire_export.js" %}></script>
+{% endblock extrascript %}

@@ -1,45 +1,50 @@
 {% extends "experiment/eeg_setting_type_template.html" %}
+
 {% load i18n static %}
 
 {% block selection %}
-{{ block.super }}
+    {{ block.super }}
     <h4>{% trans "EEG electrode layout setting" %}</h4>
-
+    <hr>
     <ul class="nav nav-tabs">
-
         {% if creating or editing %}
-            <li {% if tab == '0' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrode net setting" %}</a></li>
-            <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrode position setting" %}</a></li>
-            <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrode model setting" %}</a></li>
+            <li class="nav-item">
+                <a class="nav-link {% if tab == "0" %}active{% else %}disabled{% endif %}" href="#">{% trans "Electrode net setting" %}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if tab == "1" %}active{% else %}disabled{% endif %}" href="#">{% trans "Electrode position setting" %}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if tab == "2" %}active{% else %}disabled{% endif %}" href="#">{% trans "Electrode model setting" %}</a>
+            </li>
         {% else %}
-
-            <li {% if tab == '0' %}class="active"{% endif %}>
-                <a href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system">
-                    {% trans "Electrode net setting" %}</a>
+            <li class="nav-item">
+                <a class="nav-link
+                          {% if tab == "0" %}active{% endif %}"
+                   href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system">{% trans "Electrode net setting" %}</a>
             </li>
-            <li {% if tab == '1' %}class="active"{% endif %}>
-                <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}">
-                    {% trans "Electrode position setting" %}</a>
+            <li class="nav-item">
+                <a class="nav-link
+                          {% if tab == "1" %}active{% endif %}"
+                   href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}">{% trans "Electrode position setting" %}</a>
             </li>
-            <li {% if tab == '2' %}class="active"{% endif %}>
-                <a href="/experiment/eeg_setting/eeg_electrode_position_status_model/{{ eeg_setting.id }}">
-                    {% trans "Electrode model setting" %}</a>
+            <li class="nav-item">
+                <a class="nav-link
+                          {% if tab == "2" %}active{% endif %}"
+                   href="/experiment/eeg_setting/eeg_electrode_position_status_model/{{ eeg_setting.id }}">{% trans "Electrode model setting" %}</a>
             </li>
-
         {% endif %}
-
     </ul>
-
+    <br>
     <div class="tab-content">
 
         {% block subcontent %}
-        {{ block_super }}
-        {% endblock %}
+            {{ block_super }}
+        {% endblock subcontent %}
 
     </div>
-
-{% endblock %}
+{% endblock selection %}
 
 {% block settings %}
-{{ block.super }}
-{% endblock %}
+    {{ block.super }}
+{% endblock settings %}

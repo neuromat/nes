@@ -2,63 +2,44 @@
 
 {% load i18n %}
 
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item">
+                    <a href={% url "home" %}>{% trans "Home" %}</a>
+                </li>
                 <li class="breadcrumb-item active">{% trans "Studies" %}</li>
             </ol>
         </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Studies list" %}</h4>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Title" %}</th>
-                                <th>{% trans "Term" %}</th>
-                                <th>{% trans "Responsible" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "Studies list" %}</h4>
+            <hr>
+            <div class="form-group">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Title" %}</th>
+                            <th>{% trans "Term" %}</th>
+                            <th>{% trans "Responsible" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {% for research_project in research_projects %}
                             <tr>
-                                <td>{% if perms.experiment.view_researchproject %}
-                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}"
-                                           href="/experiment/research_project/{{ research_project.id }}">
-                                            {{ research_project.title }}
-                                        </a>
+                                <td>
+                                    {% if perms.experiment.view_researchproject %}
+                                        <a data-bs-toggle="tooltip"
+                                           data-bs-placement="left"
+                                           title="{% trans "Visualize" %}"
+                                           href="/experiment/research_project/{{ research_project.id }}">{{ research_project.title }}</a>
                                     {% else %}
                                         {{ research_project.title }}
                                     {% endif %}
@@ -66,38 +47,41 @@
                                 <td>
                                     {% if research_project.end_date %}
                                         {{ research_project.start_date }}
-                                        <br>{% trans "to" %}<br>
+                                        <br>
+                                        {% trans "to" %}
+                                        <br>
                                         {{ research_project.end_date }}
                                     {% else %}
-                                        {% trans "From" %}<br>{{ research_project.start_date }}
+                                        {% trans "From" %}
+                                        <br>
+                                        {{ research_project.start_date }}
                                     {% endif %}
                                 </td>
                                 <td>{{ research_project.owner.first_name }} {{ research_project.owner.last_name }}</td>
                             </tr>
                         {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% if perms.experiment.add_researchproject %}
+                    </tbody>
+                </table>
+            </div>
+            {% if perms.experiment.add_researchproject %}
+                <div class="btn-toolbar justify-content-between" role="toolbar">
                     <div class="btn-group">
                         <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Insert new study" %}</a>
                     </div>
-                    <div class="tn-group float-end">
+                    <div class="btn-group">
                         <a href="/experiment/import" class="btn btn-light">{% trans "Import Study/Experiment" %}</a>
                     </div>
-                {% endif %}
-            </div>
-
-            {% if can_send_to_portal and perms.experiment.add_researchproject %}
-                <div class="btn-group">
-                    <a href="/experiment/schedule_of_sending/list/" class="btn btn-success">
-                        <span class="fa-fw fa fa-send"></span> {% trans "Send experiments/projects to Portal" %}
-                    </a>
                 </div>
             {% endif %}
-
         </div>
+
+        {% if can_send_to_portal and perms.experiment.add_researchproject %}
+            <br>
+            <div class="btn-group">
+                <a href="/experiment/schedule_of_sending/list/" class="btn btn-success">
+                    <span class="fa-fw fa fa-send"></span> {% trans "Send experiments/projects to Portal" %}
+                </a>
+            </div>
+        {% endif %}
     </div>
-
-{% endblock %}
-
+{% endblock content %}

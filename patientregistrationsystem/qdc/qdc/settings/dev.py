@@ -10,6 +10,8 @@ DEBUG = True
 DEBUG404 = True
 IS_TESTING = True
 
+COMPRESS_ENABLED = True
+
 AXES_ENABLED = True
 
 

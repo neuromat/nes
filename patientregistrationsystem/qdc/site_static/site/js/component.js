@@ -1,6 +1,7 @@
 /**
  * Created by diogopedrosa on 4/17/15.
  */
+"use strict";
 
 $(document).ready(function () {
     var unlimited_number_of_repetitions = $("#id_repetitions_0");
@@ -117,9 +118,6 @@ $(document).ready(function () {
         id_interval_between_repetitions_value.focus();
     });
 
-    $(function(){
-        $("[data-toggle=tooltip]").tooltip();
-    });
 });
 
 function redirect_with_number_of_uses(url) {

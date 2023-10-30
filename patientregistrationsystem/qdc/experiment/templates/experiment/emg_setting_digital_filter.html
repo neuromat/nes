@@ -1,70 +1,56 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
 
 {% block form %}
-    
     <form id="emg_setting_form" method="post" data-bs-toggle="validator">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
+        {% if emg_digital_filter_setting_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
+        <div class="tab-pane fade show active" id="experimentBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ emg_setting.experiment.research_project.id }}">{{ emg_setting.experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ emg_setting.experiment.id }}">{{ emg_setting.experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/emg_setting/{{ emg_setting.id }}">{{ emg_setting.name }}</a>
+                    </li>
 
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    {% if emg_digital_filter_setting_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-
-
-    <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ emg_setting.experiment.research_project.id }}">{{ emg_setting.experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ emg_setting.experiment.id }}">{{ emg_setting.experiment.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/emg_setting/{{ emg_setting.id }}">{{ emg_setting.name }}</a></li>
-
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "Add digital filter setting" %} </li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item"><a href="/experiment/emg_setting/{{ emg_setting.id }}/digital_filter">{{ emg_setting.emg_digital_filter_setting.filter_type.name }}</a></li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "Add digital filter setting" %}</li>
                     {% else %}
-                        <li class="breadcrumb-item active"> {{ emg_setting.emg_digital_filter_setting.filter_type.name }} </li>
+                        {% if editing %}
+                            <li class="breadcrumb-item">
+                                <a href="/experiment/emg_setting/{{ emg_setting.id }}/digital_filter">{{ emg_setting.emg_digital_filter_setting.filter_type.name }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                        {% else %}
+                            <li class="breadcrumb-item active">{{ emg_setting.emg_digital_filter_setting.filter_type.name }}</li>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <h4>{% trans "EMG digital filter settings" %}</h4>
@@ -72,7 +58,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Filter type" %} </label>
+                            <label class="form-label">{% trans "Filter type" %}</label>
                             {{ emg_digital_filter_setting_form.filter_type }}
                             <div class="form-text with-errors"></div>
 
@@ -83,7 +69,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Description" %} </label>
+                            <label class="form-label">{% trans "Description" %}</label>
                             {{ equipment_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -93,12 +79,10 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group {% if emg_digital_filter_setting_form.low_pass.errors %}is-invalid{% endif %}">
-                            <label class="form-label">{% trans "Low pass (Hz)" %} </label>
+                            <label class="form-label">{% trans "Low pass (Hz)" %}</label>
                             {{ emg_digital_filter_setting_form.low_pass }}
                             <div class="form-text with-errors">
-                                {% for error in emg_digital_filter_setting_form.low_pass.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in emg_digital_filter_setting_form.low_pass.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -107,12 +91,10 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group {% if emg_digital_filter_setting_form.high_pass.errors %}is-invalid{% endif %}">
-                            <label class="form-label">{% trans "High pass (Hz)" %} </label>
+                            <label class="form-label">{% trans "High pass (Hz)" %}</label>
                             {{ emg_digital_filter_setting_form.high_pass }}
                             <div class="form-text with-errors">
-                                {% for error in emg_digital_filter_setting_form.high_pass.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in emg_digital_filter_setting_form.high_pass.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -124,9 +106,7 @@
                             <label class="form-label">{% trans "Low band pass (Hz)" %}</label>
                             {{ emg_digital_filter_setting_form.low_band_pass }}
                             <div class="form-text with-errors">
-                                {% for error in emg_digital_filter_setting_form.low_band_pass.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in emg_digital_filter_setting_form.low_band_pass.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -136,9 +116,7 @@
                             <label class="form-label">{% trans "High band pass (Hz)" %}</label>
                             {{ emg_digital_filter_setting_form.high_band_pass }}
                             <div class="form-text with-errors">
-                                {% for error in emg_digital_filter_setting_form.high_band_pass.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in emg_digital_filter_setting_form.high_band_pass.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -150,9 +128,7 @@
                             <label class="form-label">{% trans "Low notch (Hz)" %}</label>
                             {{ emg_digital_filter_setting_form.low_notch }}
                             <div class="form-text with-errors">
-                                {% for error in emg_digital_filter_setting_form.low_notch.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in emg_digital_filter_setting_form.low_notch.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -162,9 +138,7 @@
                             <label class="form-label">{% trans "High notch (Hz)" %}</label>
                             {{ emg_digital_filter_setting_form.high_notch }}
                             <div class="form-text with-errors">
-                                {% for error in emg_digital_filter_setting_form.high_notch.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in emg_digital_filter_setting_form.high_notch.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -173,12 +147,10 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group {% if emg_digital_filter_setting_form.order.errors %}is-invalid{% endif %}">
-                            <label class="form-label">{% trans "Order" %} </label>
+                            <label class="form-label">{% trans "Order" %}</label>
                             {{ emg_digital_filter_setting_form.order }}
                             <div class="form-text with-errors">
-                                {% for error in emg_digital_filter_setting_form.order.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in emg_digital_filter_setting_form.order.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -193,11 +165,10 @@
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                {% if editing or creating%}
+                {% if editing or creating %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save setting" %}</button>
-                        <a href="/experiment/emg_setting/{{ emg_setting.id }}{% if editing %}/digital_filter{% endif %}"
-                           class="btn btn-light">{% trans "Cancel" %}</a>
+                        <a href="/experiment/emg_setting/{{ emg_setting.id }}{% if editing %}/digital_filter{% endif %}" class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
                     <div class="btn-group float-end">
@@ -207,14 +178,13 @@
             </div>
         </div>
     </div>
-
-{% endblock %}
+{% endblock content %}
 
 {% block end_form %}
-    </form>
+</form>
 </div>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/add_description_to_emg_setting.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/js/add_description_to_emg_setting.js" %}></script>
+{% endblock extrascript %}

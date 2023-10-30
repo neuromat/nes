@@ -1,23 +1,23 @@
 {% extends "experiment/eeg_setting_eeg_electrode_net_system_template.html" %}
+
 {% load i18n static %}
 
 {% block subcontent %}
-{{ block.super }}
+    {{ block.super }}
     <div id="electrode_net" class="tab-pane fade show active">
-
         <h4>{% trans "Step 1 of 3" %}</h4>
-
+        <hr>
         <div class="row">
-            <div class="col-1 col-sm-1">
-            </div>
+            <div class="col-1 col-sm-1"></div>
             <div class="col-11 col-sm-11">
                 <div class="form-group">
-                    <label class="form-label">{% trans "Manufacturer" %} </label>
+                    <label class="form-label">{% trans "Manufacturer" %}</label>
 
                     <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>
                         {% for manufacturer in manufacturer_list %}
-                            <option {% if manufacturer.id == equipment_selected.manufacturer.id %}selected="selected"{% endif %} value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+                            <option {% if manufacturer.id == equipment_selected.manufacturer.id %}selected="selected"{% endif %}
+                                    value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
                         {% endfor %}
                     </select>
 
@@ -27,31 +27,33 @@
         </div>
 
         <div class="row">
-            <div class="col-1 col-sm-1">
-            </div>
+            <div class="col-1 col-sm-1"></div>
             <div class="col-11 col-sm-11">
                 <div class="form-group">
-                    <label class="form-label">{% trans "Equipment identification" %} </label>
+                    <label class="form-label">{% trans "Equipment identification" %}</label>
 
-                    <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
+                    <select class="form-control"
+                            name="equipment_selection"
+                            id="id_equipment_selection"
+                            required
+                            {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>
                         {% for equipment in equipment_list %}
-                            <option {% if not creating and equipment_selected.id == equipment.id %}selected="selected"{% endif %} value="{{ equipment.id }}">{{ equipment.identification }}</option>
+                            <option {% if not creating and equipment_selected.id == equipment.id %}selected="selected"{% endif %}
+                                    value="{{ equipment.id }}">{{ equipment.identification }}</option>
                         {% endfor %}
                     </select>
 
                     <div class="form-text with-errors"></div>
-
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-1 col-sm-1">
-            </div>
+            <div class="col-1 col-sm-1"></div>
             <div class="col-11 col-sm-11">
                 <div class="form-group">
-                    <label class="form-label">{% trans "Description" %} </label>
+                    <label class="form-label">{% trans "Description" %}</label>
                     {{ equipment_form.description }}
                     <div class="form-text with-errors"></div>
                 </div>
@@ -59,37 +61,35 @@
         </div>
 
         <div class="row">
-            <div class="col-1 col-sm-1">
-            </div>
+            <div class="col-1 col-sm-1"></div>
             <div class="col-11 col-sm-11">
                 <div class="form-group">
-                    <label class="form-label">{% trans "EEG electrode localization system" %} </label>
+                    <label class="form-label">{% trans "EEG electrode localization system" %}</label>
 
-                    <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
+                    <select class="form-control"
+                            name="localization_system_selection"
+                            id="id_localization_system_selection"
+                            required
+                            {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>
                         {% for localization_system in localization_system_list %}
-                            <option {% if not creating and localization_system_selected.id == localization_system.id %}selected="selected"{% endif %} value="{{ localization_system.id }}">{{ localization_system.name }}</option>
+                            <option {% if not creating and localization_system_selected.id == localization_system.id %}selected="selected"{% endif %}
+                                    value="{{ localization_system.id }}">{{ localization_system.name }}</option>
                         {% endfor %}
                     </select>
 
                     <div class="form-text with-errors"></div>
-
                 </div>
             </div>
         </div>
-
 
         {% if not editing and not creating and can_change %}
             <div class="btn-toolbar float-end">
                 <div class="btn-group">
                     <a disabled="" href="#" class="btn btn-secondary"><span class="fa-fw fa fa-arrow-left"></span> {% trans "Previous" %}</a>
-                </div>
-                <div class="btn-group">
                     <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-secondary">{% trans "Next" %} <span class="fa-fw fa fa-arrow-right"></span></a>
                 </div>
             </div>
         {% endif %}
-
     </div>
-
-{% endblock %}
+{% endblock subcontent %}

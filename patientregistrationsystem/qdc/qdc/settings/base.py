@@ -70,6 +70,7 @@ INSTALLED_APPS: list[str] = [
     "rosetta",
     "axes",
     "django_extensions",
+    "compressor",
 ]
 
 PROJECT_APPS: list[str] = [
@@ -156,6 +157,8 @@ CACHES: dict[str, Any] = {
         "LOCATION": "redis://127.0.0.1:6379",
     },
 }
+
+COMPRESS_CACHE_BACKEND = "redis"
 
 ROOT_URLCONF = "qdc.urls"
 
@@ -253,6 +256,13 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 STATICFILES_DIRS: list[str] = [
     os.path.join(BASE_DIR, "site_static"),
 ]
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    # other finders..
+    "compressor.finders.CompressorFinder",
+)
 
 STATIC_ROOT: str = os.path.join(BASE_DIR, "static")
 STATIC_URL = "static/"

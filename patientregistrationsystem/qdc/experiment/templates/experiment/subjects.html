@@ -2,10 +2,11 @@
 
 {% load i18n static %}
 
-{#information from http://stackoverflow.com/questions/6451304/django-simple-custom-template-tag-example#}
 {% load subjects_tags %}
 
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% block extrahead %}
     <style>
@@ -25,120 +26,116 @@
             background: #f5e79e;
         }
     </style>
-{% endblock %}
+{% endblock extrahead %}
 
 {% block form %}
     <form id="subject_form" method="post">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
-    <div class="tab-pane fade show active" id="subjectBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li class="breadcrumb-item active">{% trans "Participants and data collections" %}</li>
-            </ol>
-        </nav>
-    </div>
+    {% block content %}
+        <div class="tab-pane fade show active" id="subjectBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}">{{ group.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item active">{% trans "Participants and data collections" %}</li>
+                </ol>
+            </nav>
+        </div>
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
-
+        <div class="tab-pane fade show active" id="menuUserTab">
             <ul class="nav nav-tabs">
-                <li id="per_participants_tab" class="active">
-                    <a data-bs-toggle="tab" href="#per_participants"><span class="fa-fw fa fa-user"></span> {% trans "Per participant" %}</a>
+                <li id="per_participants_tab" class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#per_participants"><span class="fa-fw fa fa-user"></span> {% trans "Per participant" %}</a>
                 </li>
-                <li id="per_steps_tab">
-                    <a data-bs-toggle="tab" href="#per_steps_of_experimental_protocol"><span class="fa-fw fa fa-sitemap"></span> {% trans "Per steps of the experimental protocol" %}</a>
+                <li id="per_steps_tab" class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#per_steps_of_experimental_protocol"><span class="fa-fw fa fa-sitemap"></span> {% trans "Per steps of the experimental protocol" %}</a>
                 </li>
             </ul>
 
             <div class="tab-content">
-
                 {# tab 'Per participant' #}
                 <div id="per_participants" class="tab-pane fade show active">
-
-                    <br/>
                     {% if perms.experiment.add_subject and can_change %}
                         <div class="my-3 p-3 bg-body rounded shadow-sm">
                             <div class="row">
                                 <div class="col-12 col-sm-12">
                                     <div class="form-group">
-                                        <input id="group_id" value="{{ group.id }}" style="display: none;">
+                                        <input id="group_id" value="{{ group.id }}" class="d-none">
                                         <label>{% trans "Add participant" %}</label>
 
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text"> <i class="fa-fw fa fa-search"></i></span>
-                                            <input id="search_key" class="form-control" 
-                                            {% if perms.patient.sensitive_data_patient %} placeholder="{% trans "Type participant name, CPF or code" %}"
-                                            {% else %} placeholder="{% trans "Type participant code" %}"
-                                        {% endif %} 
-                                        type="text" autofocus="true">
+                                            <input id="search_key"
+                                                   class="form-control"
+                                                   {% if perms.patient.sensitive_data_patient %}
+                                                       placeholder="{% trans "Type participant name, CPF or code" %}"
+                                                   {% else %}
+                                                       placeholder="{% trans "Type participant code" %}"
+                                                   {% endif %}
+                                                   type="text"
+                                                   autofocus="true">
                                         </div>
                                         {% csrf_token %}
-                                        <ul id="list_results" class="participant-list"
-                                            style="list-style:none;"></ul>
+                                        <ul id="list_results" class="list-group list-group-flush my-1 participant-list">
+                                        </ul>
                                     </div>
-                                    <div style="width: 200px; float:left">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 toolbar mt-3">
+                                    <div class="btn-group">
                                         <a class="btn btn-secondary" id="prev_btn">{% trans "Previous" %}</a>
                                         <a class="btn btn-secondary" id="next_btn">{% trans "Next" %}</a>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row" align="right">
-                                <div class="container-fluid">
-                                    <a href="/experiment/group/{{ group.id }}/search_subjects">
-                                        {% trans "Advanced search" %}
-                                    </a>
+
+                                <div class="col-6 toolbar mt-3 text-end align-text-bottom">
+                                    <a href="/experiment/group/{{ group.id }}/search_subjects">{% trans "Advanced search" %}</a>
                                 </div>
                             </div>
                         </div>
                     {% endif %}
 
                     <div class="col-12 col-sm-12">
-                    <div class="row">
-                        {% if experimental_protocol_info.number_of_questionnaires %}
-                        <div class="float-end">
-                            <a onclick="$('#modalImportQuestionnaireResponses').modal('show');" class="btn btn-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% trans "Import questionnaire responses" %}">
-                                <span class="fa-fw fa fa-list-alt"></span>
-                            </a>
+                        <div class="row">
+                            {% if experimental_protocol_info.number_of_questionnaires %}
+                                <div class="float-end">
+                                    <a onclick="$('#modalImportQuestionnaireResponses').modal('show');"
+                                       class="btn btn-light"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       title="{% trans "Import questionnaire responses" %}">
+                                        <span class="fa-fw fa fa-list-alt"></span>
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if goalkeeper %}
+                                <div class="float-end">
+                                    <a href="/experiment/group/{{ group.id }}/goalkeeper_game_data"
+                                       class="btn btn-light"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       title="{% trans "Import goalkeeper game data" %}">
+                                        <span class="fa-fw fa fa-lg fa-soccer-ball-o "></span>
+                                    </a>
+                                </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
-                        {% if goalkeeper %}
-                        <div class="float-end">
-                            <a href="/experiment/group/{{ group.id }}/goalkeeper_game_data" class="btn btn-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% trans "Import goalkeeper game data" %}">
-                                <span class="fa-fw fa fa-lg fa-soccer-ball-o "></span>
-                            </a>
-                        </div>
-                        {% endif %}
-                    </div>
                     </div>
 
                     <div class="row">
@@ -146,182 +143,265 @@
                             <div class="form-group">
                                 <table class="table table-striped">
                                     <thead>
-                                    <tr>
-                                        <th>{% trans "Participant" %}</th>
-                                        <th>{% trans "Term of consent" %}</th>
-                                        {% if experimental_protocol_info.number_of_questionnaires %}
-                                            <th>{% trans "Completed questionnaires" %}</th>
-                                        {% endif %}
-                                        <th class="col-lg-6">{% trans "Data files uploaded" %}</th>
-                                    </tr>
+                                        <tr>
+                                            <th>{% trans "Participant" %}</th>
+                                            <th>{% trans "Term of consent" %}</th>
+                                            {% if experimental_protocol_info.number_of_questionnaires %}
+                                                <th>{% trans "Completed questionnaires" %}</th>
+                                            {% endif %}
+                                            <th class="col-lg-6">{% trans "Data files uploaded" %}</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    {% if subject_list|length == 0 %}
-                                        <tr>
-                                            <td>{% trans "(No participant inserted)" %}</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    {% else %}
-                                        {% for item in subject_list %}
+                                        {% if subject_list|length == 0 %}
                                             <tr>
-                                                <td>
-                                                    {% if perms.experiment.delete_subject and can_change %}
-                                                        <a class="btn fa-fw fa fa-remove" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Delete participant' %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                                           onclick="show_modal_remove({{ item.subject.id }});"></a>
-                                                    {% endif %}
-                                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'View Participant' %}" href="/patient/{{ item.subject.patient.id }}">
-                                                        {% get_name_or_code item.subject.patient.id %}
-                                                    </a>
-                                                    
-
-                                                </td>
-                                                <td>
-                                                    <div class="col-2 col-sm-2" >
-                                                        {% if can_change and perms.patient.sensitive_data_patient %}
-                                                            <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file"
-                                                               data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Upload consent form' %}">
-                                                                <span class="fa-fw fa fa-paperclip"></span>
-                                                            </a>
-                                                        {% else %}
-                                                            <span class="fa-fw fa fa-paperclip"></span>
-                                                        {% endif %}
-                                                    </div>
-                                                    <div class="col-10 col-sm-10" >
-                                                        {% if item.consent %}
-                                                            <span class="label label-success">{% trans "Attached" %}</span>
-                                                        {% else %}
-                                                            <span class="label label-warning">{% trans "No attachments" %}</span>
-                                                        {% endif %}
-                                                    </div>
-                                                </td>
-                                                {% if experimental_protocol_info.number_of_questionnaires %}
-                                                <td>
-                                                    <div class="row">
-                                                        {% if limesurvey_available %}
-                                                            <div class="col-2 col-sm-2">
-                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/"
-                                                                   data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Fill questionnaires" %}">
-                                                                    <span class="fa-fw fa fa-list-alt"></span>
-                                                                </a>
-                                                            </div>
-                                                            <div class="col-10 col-sm-10" >
-                                                                <div class="progress">
-                                                                    <div class="progress-bar {% if item.percentage_of_questionnaires == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage_of_questionnaires }}%;">
-                                                                        <span>{{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        {% else %}
-                                                            <span class="label label-default">{% trans "No status" %}</span>
-                                                        {% endif %}
-                                                    </div>
-                                                </td>
-                                                {% endif %}
-                                                <td>
-                                                    {% if experimental_protocol_info.number_of_eeg_data %}
-                                                        <div class="row">
-                                                            <div class="col-4 col-sm-4">
-                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Uploaded EEG data files' %}">
-                                                                    <span class="fa-fw fa fa-flash"></span> {% trans "EEG" %}
-                                                                </a>
-                                                            </div>
-                                                            <div class="col-8 col-sm-8">
-                                                                <div class="progress">
-                                                                    <div class="progress-bar {% if item.percentage_of_eeg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_eeg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_eeg_data_files }}" style="color: #000000; width: {{ item.percentage_of_eeg_data_files_uploaded }}%;">
-                                                                        <span>{{ item.number_of_eeg_data_files_uploaded }}/{{ item.total_of_eeg_data_files }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-
-                                                    {% if experimental_protocol_info.number_of_emg_data %}
-                                                        <div class="row">
-                                                            <div class="col-4 col-sm-4">
-                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Uploaded EMG data files' %}">
-                                                                    <span class="fa-fw fa fa-bar-chart"></span> {% trans "EMG" %}
-                                                                </a>
-                                                            </div>
-                                                            <div class="col-8 col-sm-8">
-                                                                <div class="progress">
-                                                                    <div class="progress-bar {% if item.percentage_of_emg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_emg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_emg_data_files }}" style="color: #000000; width: {{ item.percentage_of_emg_data_files_uploaded }}%;">
-                                                                        <span>{{ item.number_of_emg_data_files_uploaded }}/{{ item.total_of_emg_data_files }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-
-                                                    {% if experimental_protocol_info.number_of_tms_data %}
-                                                        <div class="row">
-                                                            <div class="col-4 col-sm-4">
-                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/tms"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Uploaded TMS data files" %}">
-                                                                    <span class="fa-fw fa fa-magnet"></span> {% trans "TMS" %}
-                                                                </a>
-                                                            </div>
-                                                            <div class="col-8 col-sm-8">
-                                                                <div class="progress">
-                                                                    <div class="progress-bar {% if item.percentage_of_tms_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_tms_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_tms_data_files }}" style="color: #000000; width: {{ item.percentage_of_tms_data_files_uploaded }}%;">
-                                                                        <span>{{ item.number_of_tms_data_files_uploaded }}/{{ item.total_of_tms_data_files }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-
-                                                    {% if experimental_protocol_info.number_of_digital_game_phase_data %}
-                                                        <div class="row">
-                                                            <div class="col-4 col-sm-4">
-                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/digital_game_phase"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Uploaded goalkeeper game phase data files" %}">
-                                                                    <span class="fa-fw fa fa-play-circle"></span> {% trans "Game" %}
-                                                                </a>
-                                                            </div>
-                                                            <div class="col-8 col-sm-8">
-                                                                <div class="progress">
-                                                                    <div class="progress-bar {% if item.percentage_of_digital_game_phase_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_digital_game_phase_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_digital_game_phase_data_files }}" style="color: #000000; width: {{ item.percentage_of_digital_game_phase_data_files_uploaded }}%;">
-                                                                        <span>{{ item.number_of_digital_game_phase_data_files_uploaded }}/{{ item.total_of_digital_game_phase_data_files }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-
-                                                    {% if experimental_protocol_info.number_of_generic_data_collection_data %}
-                                                        <div class="row">
-                                                            <div class="col-4 col-sm-4">
-                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/generic_data_collection"
-                                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Uploaded generic collection data files" %}">
-                                                                    <span class="fa-fw fa fa-file"></span> {% trans "Data collection" %}
-                                                                </a>
-                                                            </div>
-                                                            <div class="col-8 col-sm-8">
-                                                                <div class="progress">
-                                                                    <div class="progress-bar {% if item.percentage_of_generic_data_collection_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_generic_data_collection_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_generic_data_collection_data_files }}" style="color: #000000; width: {{ item.percentage_of_generic_data_collection_data_files_uploaded }}%;">
-                                                                        <span>{{ item.number_of_generic_data_collection_data_files_uploaded }}/{{ item.total_of_generic_data_collection_data_files }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-
-                                                    <div class="row">
-                                                        <div class="col-12 col-sm-12">
-                                                            <span style="background-color: steelblue" class="badge.badge-pill">{{ item.number_of_additional_data_uploaded }}</span>
-                                                            <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data" data-bs-toggle="tooltip" title="{% trans "Uploaded additional data files" %}">
-                                                                {% trans "Additional" %}
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </td>
+                                                <td>{% trans "(No participant inserted)" %}</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
                                             </tr>
-                                        {% endfor %}
-                                    {% endif %}
+                                        {% else %}
+                                            {% for item in subject_list %}
+                                                <tr>
+                                                    <td>
+                                                        {% if perms.experiment.delete_subject and can_change %}
+                                                            <a class="btn fa-fw fa fa-remove ps-0 text-danger"
+                                                               data-bs-toggle="tooltip"
+                                                               data-bs-placement="left"
+                                                               title="{% trans "Delete participant" %}"
+                                                               onclick="show_modal_remove({{ item.subject.id }});"></a>
+                                                        {% endif %}
+                                                        <a data-bs-toggle="tooltip"
+                                                           data-bs-placement="left"
+                                                           title="{% trans "View Participant" %}"
+                                                           href="/patient/{{ item.subject.patient.id }}">{% get_name_or_code item.subject.patient.id %}</a>
+
+                                                    </td>
+                                                    <td>
+                                                        <div class="col-2 col-sm-2">
+                                                            {% if can_change and perms.patient.sensitive_data_patient %}
+                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file"
+                                                                   data-bs-toggle="tooltip"
+                                                                   data-bs-placement="top"
+                                                                   title="{% trans "Upload consent form" %}">
+                                                                    <span class="fa-fw fa fa-paperclip"></span>
+                                                                </a>
+                                                            {% else %}
+                                                                <span class="fa-fw fa fa-paperclip"></span>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="col-10 col-sm-10">
+                                                            {% if item.consent %}
+                                                                <span class="label label-success">{% trans "Attached" %}</span>
+                                                            {% else %}
+                                                                <span class="label label-warning">{% trans "No attachments" %}</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                    {% if experimental_protocol_info.number_of_questionnaires %}
+                                                        <td>
+                                                            <div class="row">
+                                                                {% if limesurvey_available %}
+                                                                    <div class="col-2 col-sm-2">
+                                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/"
+                                                                           data-bs-toggle="tooltip"
+                                                                           data-bs-placement="top"
+                                                                           title="{% trans "Fill questionnaires" %}">
+                                                                            <span class="fa-fw fa fa-list-alt"></span>
+                                                                        </a>
+                                                                    </div>
+                                                                    <div class="col-10 col-sm-10">
+                                                                        <div class="progress">
+                                                                            <div class="progress-bar
+                                                                                        {% if item.percentage_of_questionnaires == 100.0 %}
+                                                                                            progress-bar-success
+                                                                                        {% else %}
+                                                                                            progress-bar-warning
+                                                                                        {% endif %}"
+                                                                                 role="progressbar"
+                                                                                 aria-valuenow="{{ item.number_of_questionnaires_filled }}"
+                                                                                 aria-valuemin="0"
+                                                                                 aria-valuemax="{{ item.total_of_questionnaires }}"
+                                                                                 style="color: #000000;
+                                                                                        width: {{ item.percentage_of_questionnaires }}%">
+                                                                                <span>{{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {% else %}
+                                                                    <span class="label label-default">{% trans "No status" %}</span>
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                    {% endif %}
+                                                    <td>
+                                                        {% if experimental_protocol_info.number_of_eeg_data %}
+                                                            <div class="row">
+                                                                <div class="col-4 col-sm-4">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg"
+                                                                       data-bs-toggle="tooltip"
+                                                                       data-bs-placement="top"
+                                                                       title="{% trans "Uploaded EEG data files" %}">
+                                                                        <span class="fa-fw fa fa-flash"></span> {% trans "EEG" %}
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-8 col-sm-8">
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar
+                                                                                    {% if item.percentage_of_eeg_data_files_uploaded == 100.0 %}
+                                                                                        progress-bar-success
+                                                                                    {% else %}
+                                                                                        progress-bar-warning
+                                                                                    {% endif %}"
+                                                                             role="progressbar"
+                                                                             aria-valuenow="{{ item.number_of_eeg_data_files_uploaded }}"
+                                                                             aria-valuemin="0"
+                                                                             aria-valuemax="{{ item.total_of_eeg_data_files }}"
+                                                                             style="color: #000000;
+                                                                                    width: {{ item.percentage_of_eeg_data_files_uploaded }}%">
+                                                                            <span>{{ item.number_of_eeg_data_files_uploaded }}/{{ item.total_of_eeg_data_files }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+
+                                                        {% if experimental_protocol_info.number_of_emg_data %}
+                                                            <div class="row">
+                                                                <div class="col-4 col-sm-4">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg"
+                                                                       data-bs-toggle="tooltip"
+                                                                       data-bs-placement="top"
+                                                                       title="{% trans "Uploaded EMG data files" %}">
+                                                                        <span class="fa-fw fa fa-bar-chart"></span> {% trans "EMG" %}
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-8 col-sm-8">
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar
+                                                                                    {% if item.percentage_of_emg_data_files_uploaded == 100.0 %}
+                                                                                        progress-bar-success
+                                                                                    {% else %}
+                                                                                        progress-bar-warning
+                                                                                    {% endif %}"
+                                                                             role="progressbar"
+                                                                             aria-valuenow="{{ item.number_of_emg_data_files_uploaded }}"
+                                                                             aria-valuemin="0"
+                                                                             aria-valuemax="{{ item.total_of_emg_data_files }}"
+                                                                             style="color: #000000;
+                                                                                    width: {{ item.percentage_of_emg_data_files_uploaded }}%">
+                                                                            <span>{{ item.number_of_emg_data_files_uploaded }}/{{ item.total_of_emg_data_files }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+
+                                                        {% if experimental_protocol_info.number_of_tms_data %}
+                                                            <div class="row">
+                                                                <div class="col-4 col-sm-4">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/tms"
+                                                                       data-bs-toggle="tooltip"
+                                                                       data-bs-placement="top"
+                                                                       title="{% trans "Uploaded TMS data files" %}">
+                                                                        <span class="fa-fw fa fa-magnet"></span> {% trans "TMS" %}
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-8 col-sm-8">
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar
+                                                                                    {% if item.percentage_of_tms_data_files_uploaded == 100.0 %}
+                                                                                        progress-bar-success
+                                                                                    {% else %}
+                                                                                        progress-bar-warning
+                                                                                    {% endif %}"
+                                                                             role="progressbar"
+                                                                             aria-valuenow="{{ item.number_of_tms_data_files_uploaded }}"
+                                                                             aria-valuemin="0"
+                                                                             aria-valuemax="{{ item.total_of_tms_data_files }}"
+                                                                             style="color: #000000;
+                                                                                    width: {{ item.percentage_of_tms_data_files_uploaded }}%">
+                                                                            <span>{{ item.number_of_tms_data_files_uploaded }}/{{ item.total_of_tms_data_files }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+
+                                                        {% if experimental_protocol_info.number_of_digital_game_phase_data %}
+                                                            <div class="row">
+                                                                <div class="col-4 col-sm-4">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/digital_game_phase"
+                                                                       data-bs-toggle="tooltip"
+                                                                       data-bs-placement="top"
+                                                                       title="{% trans "Uploaded goalkeeper game phase data files" %}">
+                                                                        <span class="fa-fw fa fa-play-circle"></span> {% trans "Game" %}
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-8 col-sm-8">
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar
+                                                                                    {% if item.percentage_of_digital_game_phase_data_files_uploaded == 100.0 %}
+                                                                                        progress-bar-success
+                                                                                    {% else %}
+                                                                                        progress-bar-warning
+                                                                                    {% endif %}"
+                                                                             role="progressbar"
+                                                                             aria-valuenow="{{ item.number_of_digital_game_phase_data_files_uploaded }}"
+                                                                             aria-valuemin="0"
+                                                                             aria-valuemax="{{ item.total_of_digital_game_phase_data_files }}"
+                                                                             style="color: #000000;
+                                                                                    width: {{ item.percentage_of_digital_game_phase_data_files_uploaded }}%">
+                                                                            <span>{{ item.number_of_digital_game_phase_data_files_uploaded }}/{{ item.total_of_digital_game_phase_data_files }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+
+                                                        {% if experimental_protocol_info.number_of_generic_data_collection_data %}
+                                                            <div class="row">
+                                                                <div class="col-4 col-sm-4">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/generic_data_collection"
+                                                                       data-bs-toggle="tooltip"
+                                                                       data-bs-placement="top"
+                                                                       title="{% trans "Uploaded generic collection data files" %}">
+                                                                        <span class="fa-fw fa fa-file"></span> {% trans "Data collection" %}
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-8 col-sm-8">
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar
+                                                                                    {% if item.percentage_of_generic_data_collection_data_files_uploaded == 100.0 %}
+                                                                                        progress-bar-success
+                                                                                    {% else %}
+                                                                                        progress-bar-warning
+                                                                                    {% endif %}"
+                                                                             role="progressbar"
+                                                                             aria-valuenow="{{ item.number_of_generic_data_collection_data_files_uploaded }}"
+                                                                             aria-valuemin="0"
+                                                                             aria-valuemax="{{ item.total_of_generic_data_collection_data_files }}"
+                                                                             style="color: #000000;
+                                                                                    width: {{ item.percentage_of_generic_data_collection_data_files_uploaded }}%">
+                                                                            <span>{{ item.number_of_generic_data_collection_data_files_uploaded }}/{{ item.total_of_generic_data_collection_data_files }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+
+                                                        <div class="row">
+                                                            <div class="col-12 col-sm-12">
+                                                                <span style="background-color: steelblue" class="badge.badge-pill">{{ item.number_of_additional_data_uploaded }}</span>
+                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data"
+                                                                   data-bs-toggle="tooltip"
+                                                                   title="{% trans "Uploaded additional data files" %}">{% trans "Additional" %}</a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
                                     </tbody>
                                 </table>
                             </div>
@@ -332,23 +412,22 @@
 
                 {# tab 'per steps of the experimental protocol' #}
                 <div id="per_steps_of_experimental_protocol" class="tab-pane fade">
-
                     <div class="row">
-                        <br/>
+                        <br />
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <table class="table table-striped">
                                     <thead>
-                                    <tr>
-                                        <th>{% trans "Data colletion path" %}</th>
-                                        <th>{% trans "Data type" %}</th>
-                                        <th>{% trans "Number of participants" %}</th>
-                                    </tr>
+                                        <tr>
+                                            <th>{% trans "Data colletion path" %}</th>
+                                            <th>{% trans "Data type" %}</th>
+                                            <th>{% trans "Number of participants" %}</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         {% for data_collection in data_collections %}
                                             <tr>
-                                                <td {% if data_collection.data_list|length > 1 %}rowspan="{{ data_collection.data_list|length }}" {% endif %}>
+                                                <td {% if data_collection.data_list|length > 1 %}rowspan="{{ data_collection.data_list|length }}"{% endif %}>
                                                     {# Identification #}
                                                     <span class="{{ data_collection.icon_class }}"></span>
 
@@ -360,29 +439,40 @@
 
                                                     <blockquote>
                                                         {# Path #}
-                                                        <i><h6>
-                                                            {% for item in data_collection.path %}
-                                                                {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
-                                                            {% endfor %}
-                                                        </h6></i>
+                                                        <i>
+                                                            <h6>
+                                                                {% for item in data_collection.path %}
+                                                                    {{ item.1 }} >
+                                                                    {% if item.2 %}{{ item.2 }} >{% endif %}
+
+                                                                    {% if forloop.last %}{{ item.3 }}{% endif %}
+                                                                {% endfor %}
+                                                            </h6>
+                                                        </i>
                                                     </blockquote>
 
                                                 </td>
                                                 {% if data_collection.data_list %}
                                                     {% for item_data in data_collection.data_list %}
                                                         {% if forloop.counter0 != 0 %}<tr>{% endif %}
-                                                        <td>
-                                                            <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}">
-                                                               <span class="{{ item_data.icon_class }}"></span> {{ item_data.description }}</a>
-                                                        </td>
-                                                        <td>{{ item_data.count }} {% if item_data.count == 1 %}{% trans "participant" %}{% else %}{% trans "participants" %}{% endif %}</td>
-                                                        {% if forloop.counter0 != 0 %}</tr>{% endif %}
+                                                            <td>
+                                                                <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}">
+                                                                    <span class="{{ item_data.icon_class }}"></span> {{ item_data.description }}</a>
+                                                            </td>
+                                                            <td>
+                                                                {{ item_data.count }}
+                                                                {% if item_data.count == 1 %}
+                                                                    {% trans "participant" %}
+                                                                {% else %}
+                                                                    {% trans "participants" %}
+                                                                {% endif %}
+                                                            </td>
+                                                            {% if forloop.counter0 != 0 %}</tr>{% endif %}
                                                     {% endfor %}
                                                 {% else %}
                                                     <td></td>
                                                     <td></td>
                                                 {% endif %}
-
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -390,31 +480,23 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
-
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <br/>
+                <br />
                 <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}" class="btn btn-light">{% trans "Back" %}</a>
                 </div>
             </div>
-
         </div>
-
     </div>
 
     {% if perms.experiment.delete_subject and can_change %}
-        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-             aria-hidden="true">
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-body">
-                        {% trans "Are you sure you want to delete participant?" %}
-                    </div>
+                    <div class="modal-body">{% trans "Are you sure you want to delete participant?" %}</div>
                     <div class="modal-footer">
                         <button onclick="disable_remove_button();" type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                         <button disabled="disabled" type="submit" id="remove-participant" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
@@ -425,33 +507,33 @@
     {% endif %}
 
     {% if experimental_protocol_info.number_of_questionnaires %}
-        <div class="modal fade" id="modalImportQuestionnaireResponses"
-             tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal fade"
+             id="modalImportQuestionnaireResponses"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="myModalLabel"
+             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-body">
-                        {% trans "Are you sure import questionnaire responses?" %}
-                    </div>
+                    <div class="modal-body">{% trans "Are you sure import questionnaire responses?" %}</div>
                     <div class="modal-footer">
                         <button onclick="disable_import_questionnaire_responses_button();" type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                        <a href="/experiment/group/{{ group.id }}/load_questionnaire_data" class="btn btn-primary">
-                            {% trans "Import questionnaire responses" %}
-                        </a>
+                        <a href="/experiment/group/{{ group.id }}/load_questionnaire_data" class="btn btn-primary">{% trans "Import questionnaire responses" %}</a>
                     </div>
                 </div>
             </div>
         </div>
     {% endif %}
 
-{% endblock %}
+{% endblock content %}
 
 {% block end_form %}
-    </form>
-{% endblock %}
+</form>
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/subjects.js' %}"></script>
-    <script src="{% static 'site/js/search_and_table.js' %}"></script>
+    <script src={% static "site/js/subjects.js" %}></script>
+    <script src={% static "site/js/search_and_table.js" %}></script>
     <script>
         $(document).ready(function () {
             searchAndTable("/experiment/subject/search/", {"group_id": $("#group_id").val()});
@@ -470,4 +552,4 @@
             window.history.replaceState({}, document.title, currURL.substring(0, currURL.lastIndexOf('/')));
         }
     </script>
-{% endblock %}
+{% endblock extrascript %}

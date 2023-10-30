@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -52,7 +52,7 @@
     <div class="tab-pane fade show active" id="eegDataProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
@@ -108,18 +108,18 @@
                 <ul class="nav nav-tabs">
 
                     {% if creating or editing %}
-                        <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Data collection" %}</a></li>
-                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrodes position status" %}</a></li>
-                        <li {% if tab == '3' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">
+                        <li {% if tab == "1" %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Data collection" %}</a></li>
+                        <li {% if tab == "2" %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrodes position status" %}</a></li>
+                        <li {% if tab == "3" %}class="active"{% else %}class="disabled"{% endif %}><a href="#">
                             {% trans "Image of the position of the electrodes" %}</a></li>
                     {% else %}
-                        <li {% if tab == '1' %}class="active"{% endif %}>
+                        <li {% if tab == "1" %}class="active"{% endif %}>
                             <a data-bs-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>
                         </li>
-                        <li {% if tab == '2' %}class="active"{% endif %}>
+                        <li {% if tab == "2" %}class="active"{% endif %}>
                             <a {% if not creating %}data-bs-toggle="tab"{% endif %} href="#electrode_position_status">{% trans "Electrodes position status" %}</a>
                         </li>
-                        <li {% if tab == '3' %}class="active"{% endif %}>
+                        <li {% if tab == "3" %}class="active"{% endif %}>
                             <a {% if not creating %}data-bs-toggle="tab"{% endif %}
                                href="#electrodes_operating_status">{% trans "Image of the position of the electrodes" %}</a>
                         </li>
@@ -129,7 +129,7 @@
 
                 <div class="tab-content">
 
-                    <div id="data_collection" {% if tab == '1' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="data_collection" {% if tab == "1" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
 
                         <h4></h4>
                         <div class="row">
@@ -242,7 +242,7 @@
                                                 <tr>
                                                 <td>{{ eeg_file.file.url }}</td>
                                                 <td>
-                                                    <button class="btn btn-light" type="button" onclick="location.href='{{ eeg_file.file.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
+                                                    <button class="btn btn-light" type="button" onclick="location.href='{{ eeg_file.file.url }}'"><span class="fa-fw fa fa-download-alt  text-info"></span></button>
                                                 </td>
                                                 <td>{{ eeg_file.file.size|filesizeformat }}</td>
                                                 {% if editing %}
@@ -269,7 +269,7 @@
 
                     </div>
 
-                    <div id="electrode_position_status" {% if tab == '2' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="electrode_position_status" {% if tab == "2" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if image %}
                             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                                 <thead>
@@ -278,7 +278,7 @@
                                         <th>{% trans "Position" %}</th>
                                         <th>{% trans "Used" %}</th>
                                         <th>{% trans "Worked" %}</th>
-                                        <th colspan="2" style="text-align: center">{% trans "Order" %}</th>
+                                        <th colspan="2" class="text-center">{% trans "Order" %}</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -327,7 +327,7 @@
                         {% endif %}
                     </div>
 
-                    <div id="electrodes_operating_status" {% if tab == '3' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="electrodes_operating_status" {% if tab == "3" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if sensors_image != None and not creating %}
                             <div class="row">
                                 <div class="card-body">
@@ -462,9 +462,9 @@
 {% endblock %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/research_project.js' %}"></script>
-    <script src="{% static 'site/js/subject_eeg_data_form.js' %}"></script>
-    <script src="{% static 'site/js/eeg_electrode_worked_setted.js' %}"></script>
+    <script src={% static "site/js/research_project.js" %}></script>
+    <script src={% static "site/js/subject_eeg_data_form.js" %}></script>
+    <script src={% static "site/js/eeg_electrode_worked_setted.js" %}></script>
     <script>
         $(document).ready(function () {
             var $id_file_format = $("#id_file_format");
@@ -488,12 +488,12 @@
 
             {% if file_format_list %}
                 {% for item in file_format_list %}
-                    {% if item.code == 'other' %}
+                    {% if item.code == "other" %}
                         $other_code = {{ item.id }};
-                    {% elif item.code == 'txt' %}
+                    {% elif item.code == "txt" %}
                         $txt_code = {{ item.id }};
                         $txt_extension = "{{ item.extension }}";
-                    {% elif item.code == 'MNE-RawFromBrainVision' %}
+                    {% elif item.code == "MNE-RawFromBrainVision" %}
                         $raw_code = {{ item.id }};
                         $raw_extension = "{{ item.extension }}";
                     {% endif %}

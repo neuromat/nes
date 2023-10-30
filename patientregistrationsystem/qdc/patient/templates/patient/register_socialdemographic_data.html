@@ -3,7 +3,7 @@
 {% load i18n static %}
 
 {% block sub_content %}
-    <div class="tab-pane {% if currentTab == '1' %}active{% endif %}" id="tab2">
+    <div class="tab-pane {% if currentTab == "1" %}active{% endif %}" id="tab2">
         <div class="row">
             <div class="container-fluid">
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
@@ -11,14 +11,14 @@
                         <div class="col-sm-6">
                             <h4>{% trans "Basic Information" %}</h4>
                         </div>
-                        <div class="col-sm-6" style="text-align: right; vertical-align: bottom">
-                            {% if perms.patient.sensitive_data_patient %}
-                                <label class="fw-semibold" for="code" >{% trans "Code" %}:</label>
-                                <span class="disabled"> {{ code }} </span>
+                        <div class="col col-6 text-end">
+                            {% if perms.patient.sensitive_data_patient and code %}
+                                <label class="fw-semibold" for="code">{% trans "Code" %}:</label>
+                                <span class="disabled user-select-all">{{ code }}</span>
                             {% endif %}
                         </div>
                     </div>
-                    <br/>
+                    <br />
                     <div class="row">
                         <div class="col-6 col-sm-6">
                             <div class="form-group">
@@ -69,11 +69,7 @@
                                 <label>{% trans "Do you receive some benefit from the municipal level, state or federal government?" %}</label>
 
                                 <div class="input-group input-group-sm">
-                                    {% for radio in social_demographic_form.benefit_government %}
-                                        <div class="form-check form-check-inline">
-                                            {{ radio }}
-                                        </div>
-                                    {% endfor %}
+                                    {% for radio in social_demographic_form.benefit_government %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -83,9 +79,7 @@
                             <div class="form-group">
                                 <label>{% trans "What form of payment of the treatment performed?" %}</label>
 
-                                <div class="input-group  input-group-sm">
-                                    {{ social_demographic_form.payment }}
-                                </div>
+                                <div class="input-group  input-group-sm">{{ social_demographic_form.payment }}</div>
                             </div>
                         </div>
                     </div>
@@ -94,18 +88,14 @@
                             <div class="form-group">
                                 <label>{% trans "Religion" %}</label>
 
-                                <div class="input-group  input-group-sm">
-                                    {{ social_demographic_form.religion }}
-                                </div>
+                                <div class="input-group  input-group-sm">{{ social_demographic_form.religion }}</div>
                             </div>
                         </div>
                         <div class="col-6 col-sm-6">
                             <div class="form-group">
                                 <label for="skin_color">{% trans "Flesh tone" %}</label>
 
-                                <div class="input-group  input-group-sm">
-                                    {{ social_demographic_form.flesh_tone }}
-                                </div>
+                                <div class="input-group  input-group-sm">{{ social_demographic_form.flesh_tone }}</div>
                             </div>
                         </div>
                     </div>
@@ -115,25 +105,21 @@
                             <div class="form-group">
                                 <label>{% trans "Level of education (schooling)" %}</label>
 
-                                <div class="input-group input-group-sm">
-                                    {{ social_demographic_form.patient_schooling }}
-                                </div>
+                                <div class="input-group input-group-sm">{{ social_demographic_form.patient_schooling }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <h4>{% trans "Social class" %}</h4>
-                    <br/>
+                    <br />
                     <div class="row">
                         <div class="col-6 col-sm-6">
 
                             <div class="form-group">
                                 <label>{% trans "Level of education of the householder - Criterion Brazil 2013" %}</label>
 
-                                <div class="input-group input-group-sm">
-                                    {{ social_demographic_form.schooling }}
-                                </div>
+                                <div class="input-group input-group-sm">{{ social_demographic_form.schooling }}</div>
                             </div>
                         </div>
                     </div>
@@ -146,99 +132,63 @@
                                     <label class="col-sm-5 form-label">{% trans "TV" %}</label>
 
                                     <div class="col-sm-7">
-                                        {% for radio in social_demographic_form.tv %}
-                                            <div class="form-check form-check-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
+                                        {% for radio in social_demographic_form.tv %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                     </div>
                                 </div>
                                 <div class="form-group mt-2">
                                     <label class="col-sm-5 form-label">{% trans "DVD" %}</label>
 
                                     <div class="col-sm-7 ">
-                                        {% for radio in social_demographic_form.dvd %}
-                                            <div class="form-check form-check-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
+                                        {% for radio in social_demographic_form.dvd %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                     </div>
                                 </div>
                                 <div class="form-group mt-2">
                                     <label class="col-sm-5 form-label">{% trans "Radio" %}</label>
 
                                     <div class="col-sm-7">
-                                        {% for radio in social_demographic_form.radio %}
-                                            <div class="form-check form-check-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
+                                        {% for radio in social_demographic_form.radio %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                     </div>
                                 </div>
                                 <div class="form-group mt-2">
                                     <label class="col-sm-5 form-label">{% trans "Bath" %}</label>
 
                                     <div class="col-sm-7">
-                                        {% for radio in social_demographic_form.bath %}
-                                            <div class="form-check form-check-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
+                                        {% for radio in social_demographic_form.bath %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                     </div>
                                 </div>
                                 <div class="form-group mt-2">
                                     <label class="col-sm-5 form-label">{% trans "Automobile" %}</label>
 
                                     <div class="col-sm-7">
-                                        {% for radio in social_demographic_form.automobile %}
-                                            <div class="form-check form-check-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
+                                        {% for radio in social_demographic_form.automobile %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                     </div>
                                 </div>
                                 <div class="form-group mt-2">
                                     <label class="col-sm-5 form-label">{% trans "Employed salaried" %}</label>
 
                                     <div class="col-sm-7">
-                                        {% for radio in social_demographic_form.house_maid %}
-                                            <div class="form-check form-check-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
+                                        {% for radio in social_demographic_form.house_maid %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                     </div>
                                 </div>
                                 <div class="form-group mt-2">
                                     <label class="col-sm-5 form-label">{% trans "Wash machine" %}</label>
 
                                     <div class="col-sm-7">
-                                        {% for radio in social_demographic_form.wash_machine %}
-                                            <div class="form-check form-check-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
+                                        {% for radio in social_demographic_form.wash_machine %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                     </div>
                                 </div>
                                 <div class="form-group mt-2">
                                     <label class="col-sm-5 form-label">{% trans "Refrigerator" %}</label>
 
                                     <div class="col-sm-7">
-                                        {% for radio in social_demographic_form.refrigerator %}
-                                            <div class="form-check form-check-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
+                                        {% for radio in social_demographic_form.refrigerator %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                     </div>
                                 </div>
                                 <div class="form-group mt-2">
                                     <label class="col-sm-5 form-label">{% trans "Freezer*" %}</label>
 
                                     <div class="col-sm-7">
-                                        {% for radio in social_demographic_form.freezer %}
-                                            <div class="form-check form-check-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
+                                        {% for radio in social_demographic_form.freezer %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                     </div>
                                 </div>
                             </div>
@@ -252,11 +202,9 @@
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
-                                <br/>
+                                <br />
                                 <label>{% trans "Calculated social class" %}</label>
-                                <div class="input-group">
-                                    {{ social_demographic_form.social_class }}
-                                </div>
+                                <div class="input-group">{{ social_demographic_form.social_class }}</div>
                             </div>
                         </div>
                     </div>
@@ -265,4 +213,4 @@
         </div>
     </div>
 
-{% endblock %}
+{% endblock sub_content %}

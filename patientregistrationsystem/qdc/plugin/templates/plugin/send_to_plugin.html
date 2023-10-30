@@ -18,255 +18,268 @@
     </style>
 {% endblock extrahead %}
 
-{% block activePlugin %} active{% endblock activePlugin %}
+{% block activePlugin %}
+    active
+{% endblock activePlugin %}
 
 {% block content %}
     <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans "Home" %}</a></li>
-                <li class="breadcrumb-item"><a href="/plugin/">{% trans "Plugin" %}</a></li>
+                <li class="breadcrumb-item">
+                    <a href={% url "home" %}>{% trans "Home" %}</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/plugin/">{% trans "Plugin" %}</a>
+                </li>
                 <li class="breadcrumb-item active">{% trans "Participants selection" %}</li>
             </ol>
         </nav>
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                {% if perms.patient.export_patient %}
-                    <h4>{% trans "Plugin" %}</h4>
-                    <div class="row">
-                        <div class="col-12 col-sm-12">
-                            <div class="form-group">
-                                <div class="radio">
-                                    <label><input type="radio" name="opt_floresta" checked>Floresta</label>
-                                    {# For Floresta plugin it's needed "headings" input with value "code" #}
-                                    <input type="hidden" name="headings" value="code">
-                                </div>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            {% if perms.patient.export_patient %}
+                <h4>{% trans "Plugin" %}</h4>
+                <hr>
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="opt_floresta" checked>
+                                    Floresta
+                                </label>
+                                {# For Floresta plugin it's needed "headings" input with value "code" #}
+                                <input type="hidden" name="headings" value="code">
                             </div>
                         </div>
                     </div>
-                {% endif %}
-            </div>
-            {# Questionnaires Info Section #}
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Questionnaires data to be sent" %}</h4>
-                <div class="card-body">
-                    <div class="col-lg-5 col-sm-12">
-                        <ul>
-                            {% if not admission_title %}
-                                <li><em>{% trans 'Questionnaire title for Unified Admission Assessment not available in en' %}</em></li>
-                            {% else %}
-                                <li><strong>{{ admission_title }}</strong></li>
-                            {% endif %}
-                            {% if not surgical_title %}
-                                <li><em>{% trans 'Questionnaire title for Surgical Assessment not available in en' %}</em></li>
-                            {% else %}
-                                <li><strong>{{ surgical_title }}</strong></li>
-                            {% endif %}
-                            {% if not followup_title %}
-                                <li><em>
-                                    {% trans 'Questionnaire title for Follow-Up Assessment not available in en' %}</em></li>
-                            {% else %}
-                                <li><strong>{{ followup_title }}</strong></li>
-                            {% endif %}
-                        </ul>
-                    </div>
+                </div>
+            {% endif %}
+        </div>
+        {# Questionnaires Info Section #}
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "Questionnaires data to be sent" %}</h4>
+            <hr>
+            <div class="card-body">
+                <div class="col-lg-5 col-sm-12">
+                    <ul>
+                        {% if not admission_title %}
+                            <li>
+                                <em>{% trans "Questionnaire title for Unified Admission Assessment not available in en" %}</em>
+                            </li>
+                        {% else %}
+                            <li>
+                                <strong>{{ admission_title }}</strong>
+                            </li>
+                        {% endif %}
+                        {% if not surgical_title %}
+                            <li>
+                                <em>{% trans "Questionnaire title for Surgical Assessment not available in en" %}</em>
+                            </li>
+                        {% else %}
+                            <li>
+                                <strong>{{ surgical_title }}</strong>
+                            </li>
+                        {% endif %}
+                        {% if not followup_title %}
+                            <li>
+                                <em>{% trans "Questionnaire title for Follow-Up Assessment not available in en" %}</em>
+                            </li>
+                        {% else %}
+                            <li>
+                                <strong>{{ followup_title }}</strong>
+                            </li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
-            {# Send by experiment #}
-            <form id="user_form" method="post" data-bs-toggle="validator">
-                {# For Floresta plugin it's needed "headings" input with value "code" #}
-                <input type="hidden" name="headings" value="code">
-                {% csrf_token %}
-                <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <div class="row">
-                        <div class="card-group" id="accordion">
-                            <div class="card-header">
-                                <h4><a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_experiment"
-                                       aria-expanded="true">
-                                    {% trans 'Per Experiment' %} </a></h4>
-                            </div>
-                            <div id="collapse_experiment" class=" collapse in">
-                                <div id="studies_container" class="my-3 p-3 bg-body rounded shadow-sm">
-                                    <h4>{% trans "Filters selection" %}</h4>
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-12 col-12">
-                                                <label for="id_experiments" class="form-label">{% trans "Experiments" %} <b class="text-danger">*</b></label>
-                                                <select class="form-control" id="id_experiments" name="experiment_selected">
-                                                    <option value>-------</option>
-                                                    {% for experiment in experiments %}
-                                                        <option
-                                                                {% if not creating and experiment.id == experiment_selected_id %}
-                                                                    selected="selected"{% endif %} value="{{ experiment.id }}">
-                                                            {{ experiment.title }} - ({{ experiment.research_project }})</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
+        </div>
+        {# Send by experiment #}
+        <form id="user_form" method="post" data-bs-toggle="validator">
+            {# For Floresta plugin it's needed "headings" input with value "code" #}
+            <input type="hidden" name="headings" value="code">
+            {% csrf_token %}
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                <div class="row">
+                    <div class="card-group" id="accordion">
+                        <div class="card-header">
+                            <h4>
+                                <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_experiment" aria-expanded="true">{% trans "Per Experiment" %}"</a>
+                            </h4>
+                        </div>
+                        <div id="collapse_experiment" class=" collapse in">
+                            <div id="studies_container" class="my-3 p-3 bg-body rounded shadow-sm">
+                                <h4>{% trans "Filters selection" %}</h4>
+                                <hr>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-12 col-12">
+                                            <label for="id_experiments" class="form-label">
+                                                {% trans "Experiments" %} <b class="text-danger">*</b>
+                                            </label>
+                                            <select class="form-control" id="id_experiments" name="experiment_selected">
+                                                <option value>-------</option>
+                                                {% for experiment in experiments %}
+                                                    <option {% if not creating and experiment.id == experiment_selected_id %}selected="selected"{% endif %}
+                                                            value="{{ experiment.id }}">{{ experiment.title }} - ({{ experiment.research_project }})</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
-                                    <div class="my-3 p-3 bg-body rounded shadow-sm">
+                                </div>
+                                <div class="my-3 p-3 bg-body rounded shadow-sm">
                                     <h4>{% trans "List of participants" %}</h4>
                                     <div class="card-body">
                                         <div class="col-lg-5 col-sm-12">
                                             <div class="form-group" style="position: relative;">
                                                 <div id="loading_box" class="loading-box">
+
                                                     {% load static %}
-                                                    <img src="{% static 'plugin/ajax-loader.gif' %}" alt="Loading...">
+
+                                                    <img src={% static "plugin/ajax-loader.gif" %} alt="Loading...">
                                                 </div>
-                                                <label for="multiselect_2" class="form-label"
-                                                >{% trans "Participants available:" %} </label>
-                                                <select class="form-control" size="13" id="multiselect_2"
-                                                        name="from[]"
-                                                        multiple="multiple">
-                                                    {% for key, value in participants_from.items %}
-                                                        <option value="{{ key }}">{{ value }}</option>
-                                                    {% endfor %}
+                                                <label for="multiselect_2" class="form-label">{% trans "Participants available:" %}</label>
+                                                <select class="form-control" size="13" id="multiselect_2" name="from[]" multiple="multiple">
+                                                    {% for key, value in participants_from.items %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-lg-2 col-sm-2" style="margin-top: 30px">
-                                            <button type="button" id="multiselect_2_rightAll"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-forward"></i></button>
-                                            <button type="button" id="multiselect_2_rightSelected"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-arrow-right"></i></button>
-                                            <button type="button" id="multiselect_2_leftSelected"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-arrow-left"></i></button>
-                                            <button type="button" id="multiselect_2_leftAll"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-backward"></i></button>
+                                            <button type="button" id="multiselect_2_rightAll" class="btn btn-block">
+                                                <i class="fa-fw fa fa-forward"></i>
+                                            </button>
+                                            <button type="button" id="multiselect_2_rightSelected" class="btn btn-block">
+                                                <i class="fa-fw fa fa-arrow-right"></i>
+                                            </button>
+                                            <button type="button" id="multiselect_2_leftSelected" class="btn btn-block">
+                                                <i class="fa-fw fa fa-arrow-left"></i>
+                                            </button>
+                                            <button type="button" id="multiselect_2_leftAll" class="btn btn-block">
+                                                <i class="fa-fw fa fa-backward"></i>
+                                            </button>
                                         </div>
                                         <div class="col-lg-5 col-sm-10">
-                                                <label for="multiselect_2_to" class="form-label"
-                                            >{% trans "Participants chosen:" %} </label>
-                                            <select name="patients_selected[]" id="multiselect_2_to"
-                                                    class="form-control" size="13" multiple="multiple">
-                                                {% for key, value in participants_to.items %}
-                                                    <option value="{{ key }}">{{ value }}</option>
-                                                {% endfor %}
+                                            <label for="multiselect_2_to" class="form-label">{% trans "Participants chosen:" %}</label>
+                                            <select name="patients_selected[]" id="multiselect_2_to" class="form-control" size="13" multiple="multiple">
+                                                {% for key, value in participants_to.items %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
                                             </select>
                                         </div>
                                     </div>
                                 </div>
 
-                                </div>
                             </div>
                         </div>
                     </div>
-                    {# Hidden fields with default options #}
-                    <select class="form-control" size="13" id="patient_selected" name="patient_selected"
-                            multiple="multiple" data-bs-error="Please, select a patient field from the list."
-                            style="opacity: 0; height: 1px">
-                        <option id="gender_field" value="gender__name*gender" selected="">
-                            Gender </option>
-                    </select>
-                    {# Identify Per experiment post #}
-                    <input type="hidden" name="per_experiment" value="true">
-
-                    <div class="btn-toolbar float-end">
-                        <div class="btn-group">
-                            <input type="submit" class="btn btn-primary" value="{% trans 'Send' %}"
-                                   onclick="return validate_plugin_form()">
-                        </div>
-                    </div>
-
                 </div>
-            </form>
-            {# Send by participants #}
-            <form id="user_form" method="post" data-bs-toggle="validator">
-                {% csrf_token %}
-                {# For Floresta plugin it's needed "headings" input with value "code" #}
-                <input type="hidden" name="headings" value="code">
-                <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <div class="row">
-                        <div class="card-group" id="accordion">
-                            <div class="card-header">
-                                <h4><a data-bs-toggle="collapse" data-bs-parent="#accordion"
-                                            href="#collapse_participant">
-                                    {% trans 'Per Participant' %} </a></h4>
-                            </div>
-                            <div id="collapse_participant" class=" collapse">
-                                {# List of Participants Section #}
-                                <div class="my-3 p-3 bg-body rounded shadow-sm">
-                                    <h4>{% trans "List of participants" %}</h4>
-                                    <div class="card-body">
-                                        <div class="col-lg-5 col-sm-12">
-                                            <div class="form-group">
-                                                <label for="multiselect_" class="form-label">{% trans "Participants available:" %} </label>
-                                                <select class="form-control" size="13" id="multiselect_" name="from[]"
-                                                        multiple="multiple">
-                                                    {% for field in participants %}
-                                                        {% if not field.selected %}
-                                                            <option value="{{ field.patient_id }}">
-                                                                {{ field.patient_name }}
-                                                            </option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-2 col-sm-2" style="margin-top: 30px">
-                                            <button type="button" id="multiselect__rightAll"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-forward"></i></button>
-                                            <button type="button" id="multiselect__rightSelected"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-arrow-right"></i></button>
-                                            <button type="button" id="multiselect__leftSelected"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-arrow-left"></i></button>
-                                            <button type="button" id="multiselect__leftAll"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-backward"></i></button>
-                                        </div>
-                                        <div class="col-lg-5 col-sm-10">
-                                            <label for="multiselect__to" class="form-label">{% trans "Participants chosen:" %} </label>
-                                            <select name="patients_selected[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">
+                {# Hidden fields with default options #}
+                <select class="form-control"
+                        size="13"
+                        id="patient_selected"
+                        name="patient_selected"
+                        multiple="multiple"
+                        data-bs-error="Please, select a patient field from the list."
+                        style="opacity: 0;
+                               height: 1px">
+                    <option id="gender_field" value="gender__name*gender" selected="">Gender</option>
+                </select>
+                {# Identify Per experiment post #}
+                <input type="hidden" name="per_experiment" value="true">
+
+                <div class="btn-toolbar float-end">
+                    <div class="btn-group">
+                        <input type="submit" class="btn btn-primary" value={% trans "Send" %} onclick="return validate_plugin_form()">
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        {# Send by participants #}
+        <form id="user_form" method="post" data-bs-toggle="validator">
+            {% csrf_token %}
+            {# For Floresta plugin it's needed "headings" input with value "code" #}
+            <input type="hidden" name="headings" value="code">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                <div class="row">
+                    <div class="card-group" id="accordion">
+                        <div class="card-header">
+                            <h4>
+                                <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_participant">{% trans "Per Participant" %}"</a>
+                            </h4>
+                        </div>
+                        <div id="collapse_participant" class=" collapse">
+                            {# List of Participants Section #}
+                            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                                <h4>{% trans "List of participants" %}</h4>
+                                <hr>
+                                <div class="card-body">
+                                    <div class="col-lg-5 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="multiselect_" class="form-label">{% trans "Participants available:" %}</label>
+                                            <select class="form-control" size="13" id="multiselect_" name="from[]" multiple="multiple">
                                                 {% for field in participants %}
-                                                    {% if field.selected %}
-                                                        <option value="{{ field.patient_id }}">
-                                                            {{ field.patient_name }}
-                                                        </option>
-                                                    {% endif %}
+                                                    {% if not field.selected %}<option value="{{ field.patient_id }}">{{ field.patient_name }}</option>{% endif %}
                                                 {% endfor %}
                                             </select>
                                         </div>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-2" style="margin-top: 30px">
+                                        <button type="button" id="multiselect__rightAll" class="btn btn-block">
+                                            <i class="fa-fw fa fa-forward"></i>
+                                        </button>
+                                        <button type="button" id="multiselect__rightSelected" class="btn btn-block">
+                                            <i class="fa-fw fa fa-arrow-right"></i>
+                                        </button>
+                                        <button type="button" id="multiselect__leftSelected" class="btn btn-block">
+                                            <i class="fa-fw fa fa-arrow-left"></i>
+                                        </button>
+                                        <button type="button" id="multiselect__leftAll" class="btn btn-block">
+                                            <i class="fa-fw fa fa-backward"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col-lg-5 col-sm-10">
+                                        <label for="multiselect__to" class="form-label">{% trans "Participants chosen:" %}</label>
+                                        <select name="patients_selected[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">
+                                            {% for field in participants %}
+                                                {% if field.selected %}<option value="{{ field.patient_id }}">{{ field.patient_name }}</option>{% endif %}
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                     {# Hiddens fields with default options #}
-                    <select class="form-control" size="13" id="patient_selected" name="patient_selected"
-                            multiple="multiple" data-bs-error="Please, select a patient field from the list."
-                            style="opacity: 0; height: 1px">
-                        <option id="gender_field" value="gender__name*gender" selected="">
-                            Gender </option>
-                    </select>
                 </div>
+                {# Hiddens fields with default options #}
+                <select class="form-control"
+                        size="13"
+                        id="patient_selected"
+                        name="patient_selected"
+                        multiple="multiple"
+                        data-bs-error="Please, select a patient field from the list."
+                        style="opacity: 0;
+                               height: 1px">
+                    <option id="gender_field" value="gender__name*gender" selected="">Gender</option>
+                </select>
+            </div>
 
-                <div class="btn-toolbar justify-content-between">
-                    <div class="btn-group">
-                        <input type="submit" class="btn btn-primary" value="{% trans 'Send' %}" onclick="return validate_plugin_form()">
-                    </div>
-                    <div class="btn-group">
-                        <a href="/" class="btn btn-light">{% trans 'Cancel' %}</a>
-                    </div>
+            <div class="btn-toolbar justify-content-between">
+                <div class="btn-group">
+                    <input type="submit" class="btn btn-primary" value={% trans "Send" %} onclick="return validate_plugin_form()">
                 </div>
-            </form>
-        </div>
+                <div class="btn-group">
+                    <a href="/" class="btn btn-light">{% trans "Cancel" %}</a>
+                </div>
+            </div>
+        </form>
     </div>
 {% endblock content %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/experiment_selection.js' %}"></script>
-    <script src="{% static 'site/multiselect/multiselect.min.js' %}"></script>
-    <script src="{% static 'site/js/participant_import.js' %}"></script>
+    <script src={% static "site/js/experiment_selection.js" %}></script>
+    <script src={% static "site/multiselect/multiselect.min.js" %}></script>
+    <script src={% static "site/js/participant_import.js" %}></script>
     <script>
         function validate_plugin_form() {
             if (!$("select[name='patients_selected\\[\\]'] option").length) {
@@ -285,8 +298,6 @@
         });
 
         {# If redirected, open url plugin #}
-        {% if plugin_url %}
-            window.open("{{ plugin_url | escapejs }}", "_blank");
-        {% endif %}
+        {% if plugin_url %}window.open("{{ plugin_url | escapejs }}", "_blank");{% endif %}
     </script>
 {% endblock extrascript %}

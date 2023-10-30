@@ -1,10 +1,13 @@
 {% extends "admin/base.html" %}
+
 {% load i18n %}
 
-{% block title %}{{ title }} | {% trans 'QDC site admin test' %}{% endblock %}
+{% block title %}
+    {{ title }} | {% trans "QDC site admin test" %}
+{% endblock title %}
 
 {% block branding %}
-<h1 id="site-name">{% trans 'QDC administration' %}</h1>
-{% endblock %}
+    <h1 id="site-name">{% trans "QDC administration" %}</h1>
+{% endblock branding %}
 
 {% block nav-global %}{% endblock %}

@@ -1,12 +1,12 @@
 {% extends "base/template_registration.html" %}
 
 {% load i18n static %}
+
 {% load qdc_tags %}
 
 {% block content %}
-
     <div class="container">
-        <form method="post" class="form-signin need-validation" action="{% url 'login' %}" >
+        <form method="post" class="form-signin need-validation" action={% url "login" %}>
             {% csrf_token %}
 
             <h1 class="mb-3 fw-normal d-flex justify-content-center">NES</h1>
@@ -15,48 +15,52 @@
 
             <div class="mb-4 d-flex justify-content-center">
                 <span style="color: #428bca; font-size: 50px" class="fa-fw fa fa-user-circle"></span>
-                <br><br>
+                <br>
+                <br>
             </div>
 
             <div class="form-floating">
-                <input id="id_username" type="text" class="form-control" placeholder="{% trans 'User' %}" name="username" autocomplete="username" required autofocus pattern="[A-Za-z0-9._]{1,}" title="{% trans 'Username must contain only letters, numbers and periods(.)' %}"/>
-                <label for="id_username"> {% trans 'User' %} </label>
+                <input id="id_username"
+                       type="text"
+                       class="form-control"
+                       placeholder="{% trans "User" %}"
+                       name="username"
+                       autocomplete="username"
+                       required
+                       autofocus
+                       pattern="[A-Za-z0-9._]{1,}"
+                       title="{% trans "Username must contain only letters, numbers and periods(.)" %}" />
+                <label for="id_username">{% trans "User" %}"</label>
             </div>
 
             <div class="form-floating">
-                <input id="id_password" type="password" class="form-control" name="password" autocomplete="current-password" placeholder="{% trans 'Password' %}" required/>
-                <label for="id_password"> {% trans 'Password' %} </label>
+                <input id="id_password"
+                       type="password"
+                       class="form-control"
+                       name="password"
+                       autocomplete="current-password"
+                       placeholder="{% trans "Password" %}"
+                       required />
+                <label for="id_password">{% trans "Password" %}"</label>
             </div>
 
             <br>
 
             <button class="w-100 btn btn-lg btn-primary" type="submit">{% trans "Login" %}</button>
 
-            <input type="hidden" name="next" value="{{ next }}"/>
+            <input type="hidden" name="next" value="{{ next }}" />
 
             <div class="checkbox">
                 <a href="/user/password/reset">{% trans "I forgot my password" %}</a>
             </div>
 
-            <h6 style="margin-top: 0; text-align: right; font-family: 'Comic Sans MS'; font-size: 14px; color: blueviolet;">
-                {% settings_value "VERSION" %}
-            </h6>
-
+            <h6 style="margin-top: 0; text-align: right; font-family: 'Comic Sans MS'; font-size: 14px; color: blueviolet;">{% settings_value "VERSION" %}</h6>
         </form>
-
     </div>
-    
-
-
-{% endblock %}
-
+{% endblock content %}
 
 {% block extrascript %}
     {% if form.non_field_errors %}
-        <script type="text/javascript">
-            {% for error in form.non_field_errors %}
-                showErrorMessageTemporary(gettext('{{ error }}'));
-            {% endfor %}
-        </script>
+        <script type="text/javascript">{% for error in form.non_field_errors %}showErrorMessageTemporary(gettext('{{ error }}'));{% endfor %}</script>
     {% endif %}
-{% endblock %}
+{% endblock extrascript %}

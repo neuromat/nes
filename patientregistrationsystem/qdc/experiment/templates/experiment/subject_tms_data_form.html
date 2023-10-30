@@ -1,5 +1,5 @@
 {% extends "experiment/subject_tms_data_form_template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -52,7 +52,7 @@
     <div class="tab-pane fade show active" id="tmsDataProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
@@ -108,18 +108,18 @@
                 <ul class="nav nav-tabs">
 
                     {% if creating or editing %}
-                        <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Stimulation description" %}</a></li>
-{#                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Coil orientation" %}</a>#}
-                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}>
+                        <li {% if tab == "1" %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Stimulation description" %}</a></li>
+{#                        <li {% if tab == "2" %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Coil orientation" %}</a>#}
+                        <li {% if tab == "2" %}class="active"{% else %}class="disabled"{% endif %}>
 {#                            <a href="#">{% trans "Position setting" %}</a>#}
                             <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_register">{% trans "Hotspot position" %}</a>
                         </li>
                     {% else %}
-                        <li {% if tab == '1' %}class="active"{% endif %}>
+                        <li {% if tab == "1" %}class="active"{% endif %}>
 {#                            <a data-bs-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>#}
                             <a href="/experiment/tms_data/{{ tms_data.id }}">{% trans "Stimulation description" %}</a>
                         </li>
-                        <li {% if tab == '2' %}class="active" {% endif %}>
+                        <li {% if tab == "2" %}class="active" {% endif %}>
                             <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view">{% trans "Hotspot position" %}</a>
                         </li>
                     {% endif %}
@@ -128,7 +128,7 @@
 
                 <div class="tab-content">
 
-                    <div id="data_collection" {% if tab == '1' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="data_collection" {% if tab == "1" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
 
                         <h4></h4>
                         <div hidden="hidden">
@@ -295,7 +295,7 @@
 
                                 <div class="row">
                                     <div class="card-body">
-                                        <img src="{% static 'imgs/coil_orientation2.svg' %}" class="img-fluid mx-auto.d-block" width="800" height="600" style="margin: auto" >
+                                        <img src={% static "imgs/coil_orientation2.svg" %} class="img-fluid mx-auto.d-block" width="800" height="600" style="margin: auto" >
                                     </div>
                                 </div>
 
@@ -317,7 +317,7 @@
 
                     </div>
 
-                    <div id="position_setting" {% if tab == '2' %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="position_setting" {% if tab == "2" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
                         {% block subcontent %}
                         {% endblock %}
                     </div>
@@ -339,11 +339,11 @@
                             <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms"
                                class="btn btn-light">{% trans "Cancel" %}</a>
                         {% else %}
-                            {% if tab == '1' %}
+                            {% if tab == "1" %}
                                 <a href="/experiment/tms_data/{{ tms_data.id }}/"
                                    class="btn btn-light">{% trans "Cancel" %}</a>
                             {% endif %}
-                            {% if tab == '2' %}
+                            {% if tab == "2" %}
                                 <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view/"
                                    class="btn btn-light">{% trans "Cancel" %}</a>
                             {% endif %}
@@ -382,7 +382,7 @@
 
 {% block extrascript %}
 {{ block.super }}
-    <script src="{% static 'site/js/research_project.js' %}"></script>
+    <script src={% static "site/js/research_project.js" %}></script>
     <script>
         $(document).ready(function () {
             var select_tms_setting = $("#id_tms_setting");

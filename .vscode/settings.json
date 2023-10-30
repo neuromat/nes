@@ -30,8 +30,8 @@
         "--disable=C0111",
         "--disable=reportGeneralTypeIssues",
         "--load-plugins",
-        // "pylint_django",
-        //"--django-settings-module=patientregistrationsystem.qdc.qdc.settings"
+        "pylint_django",
+        "--django-settings-module=qdc.settings.dev"
     ],
     "pylint.path": [],
     "python.analysis.include": [],
@@ -65,12 +65,12 @@
         "editor.defaultFormatter": "monosans.djlint"
     },
     "djlint.enableLinting": true,
-    "djlint.maxLineLength": 160,
+    "djlint.maxLineLength": 180,
     "djlint.useGitignore": true,
     "djlint.lineBreakAfterMultilineTag": false,
     "djlint.maxBlankLines": 1,
     "djlint.formatAttributeTemplateTags": true,
-    "djlint.maxAttributeLength": 160,
+    "djlint.maxAttributeLength": 120,
     "djlint.blankLineAfterTag": [
         "endblock",
         "include",
@@ -83,7 +83,9 @@
         "load",
     ],
     "djlint.profile": "django",
+    "djlint.ignore": ["D018", "H031"],
     "[django-html]": {
         "editor.defaultFormatter": "monosans.djlint"
     },
+
 }

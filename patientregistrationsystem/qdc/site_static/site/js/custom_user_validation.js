@@ -1,51 +1,50 @@
 /**
  * Created by carlosribas on 14/05/2018.
  */
-$(function(){
-    $("[data-toggle=tooltip]").tooltip();
-    $( "user_form" ).submit(function( event ) {
-        if(checkPassExt())
+"use strict";
+
+$(function () {
+    $("user_form").submit(function (event) {
+        if (checkPassExt())
             event.preventDefault();
-        if(passwordForce() < 20 && $('#id_new_password1').val()){
+        if (passwordForce() < 20 && $('#id_new_password1').val()) {
             showErrorMessageTemporary(gettext("Password must contain at least 8 characters, including at least one uppercase letter, digit or special character."));
             event.preventDefault();
         }
     })
 });
 
-function Validate(){
-    if(!validateForm()){
+function Validate() {
+    if (!validateForm()) {
         showErrorMessage(gettext('You have to choose at least one user profile!'));
         return false;
     }
     return true;
 }
 
-function validateForm()
-{
-    if($('#optradio_1').is(':checked')){
-        var c=document.getElementsByName('groups');
-        for (var i = 0; i<c.length; i++){
-           if (c[i].type=='checkbox') {
-                if (c[i].checked){
+function validateForm() {
+    if ($('#optradio_1').is(':checked')) {
+        var c = document.getElementsByName('groups');
+        for (var i = 0; i < c.length; i++) {
+            if (c[i].type == 'checkbox') {
+                if (c[i].checked) {
                     return true;
                 }
-           }
+            }
         }
         return false;
-    }else{
+    } else {
         return true;
     }
 }
 
-$(function(){
-    $("[data-toggle=tooltip]").tooltip();
-    $( "user_form" ).submit(function( event ) {
+$(function () {
+    $("user_form").submit(function (event) {
 
-        if (checkPassExt()){
+        if (checkPassExt()) {
             event.preventDefault();
         }
-        if(!$('#email').val()){
+        if (!$('#email').val()) {
             showErrorMessage(gettext("E-mail have to be filled!"));
             $('#mailDivId').addClass('has-error');
             event.preventDefault();
@@ -53,7 +52,7 @@ $(function(){
     })
 });
 
-function cancelDisableUser(){
+function cancelDisableUser() {
     $("#optradio_0").prop("checked", false);
     $("#optradio_1").prop("checked", true);
     $("#id_username").prop('disabled', false);
@@ -63,7 +62,7 @@ function cancelDisableUser(){
     $("#profiles").show();
 }
 
-function showDialogAndEnableRemoveButton () {
+function showDialogAndEnableRemoveButton() {
     // "When there is only one single-line text input field in a form, the user agent should accept Enter in that
     // field as a request to submit the form."
     // http://www.w3.org/MarkUp/html-spec/html-spec_8.html#SEC8.2

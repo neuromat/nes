@@ -1,8 +1,12 @@
 {% load i18n %}
+
 {% if patient_homonym %}
     {% for patient in patient_homonym %}
-        <li><a href="/patient/{{ patient.id }}">
-            {% if patient.cpf %} {{ patient.cpf }} - {% endif %}{{ patient.name }}</a></li>
+        <li>
+            <a href="/patient/{{ patient.id }}">
+                {% if patient.cpf %}{{ patient.cpf }} -{% endif %}
+            {{ patient.name }}</a>
+        </li>
     {% endfor %}
 
     {# The presence of this div simply indicates that the ajax query resulted something, so that we know whether we #}
@@ -12,8 +16,11 @@
 
 {% if patient_homonym_excluded %}
     {% for patient in patient_homonym_excluded %}
-        <li><a href="/patient/restore/{{ patient.id }}">
-            {% if patient.cpf %} {{ patient.cpf }} - {% endif %}{{ patient.name }}</a></li>
+        <li>
+            <a href="/patient/restore/{{ patient.id }}">
+                {% if patient.cpf %}{{ patient.cpf }} -{% endif %}
+            {{ patient.name }}</a>
+        </li>
     {% endfor %}
 
     {# The presence of this div simply indicates that the ajax query resulted something, so that we know whether we #}

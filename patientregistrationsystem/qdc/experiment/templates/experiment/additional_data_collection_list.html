@@ -1,43 +1,56 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
+
 {% load subjects_tags %}
 
 {% block form %}
-    
     <form id="subject_form" method="post">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
+        <div class="tab-pane fade show active" id="subjectBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list/">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ group.experiment.research_project.id }}/">{{ group.experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ group.experiment.id }}/">{{ group.experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}/">{{ group.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a>
+                    </li>
+                    <li class="breadcrumb-item active">{% get_name_or_code subject.patient.id %}</li>
+                    <li class="breadcrumb-item active">{% trans "Additional data files" %}</li>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="subjectBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list/">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}/">{{ group.experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}/">{{ group.experiment.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/">{{ group.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
-                <li class="breadcrumb-item active">{% get_name_or_code subject.patient.id %}</li>
-                <li class="breadcrumb-item active">{% trans "Additional data files" %}</li>
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="row">
                 <div class="col-12 col-sm-12">
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
-                            <tr>
-                                <th>{% trans "Additional data colletion path" %}</th>
-                                <th>{% trans "Additional data file" %}</th>
-                            </tr>
+                                <tr>
+                                    <th>{% trans "Additional data colletion path" %}</th>
+                                    <th>{% trans "Additional data file" %}</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {% for data_collection in data_collections %}
@@ -60,8 +73,12 @@
                                                         <a href="/experiment/subject_step_data/edit/{{ data_collection.subject_step_data.id }}" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Set start and end date/time" %}">
                                                             <span class="fa-fw fa fa-clock-o"></span>
                                                         </a>
-                                                        {% if data_collection.subject_step_data.start_time %}<i>{% trans "from" %}</i> {{ data_collection.subject_step_data.start_time }}{% endif %}
-                                                        {% if data_collection.subject_step_data.end_time %}<i>{% trans "to" %}</i> {{ data_collection.subject_step_data.end_time }}{% endif %}
+                                                        {% if data_collection.subject_step_data.start_time %}
+                                                            <i>{% trans "from" %}</i> {{ data_collection.subject_step_data.start_time }}
+                                                        {% endif %}
+                                                        {% if data_collection.subject_step_data.end_time %}
+                                                            <i>{% trans "to" %}</i> {{ data_collection.subject_step_data.end_time }}
+                                                        {% endif %}
                                                     {% else %}
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/subject_step_data/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/add" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Set start and end date/time" %}">
                                                             <span class="fa-fw fa fa-clock-o"></span>
@@ -75,11 +92,16 @@
                                                 </h6>
 
                                                 {# Path #}
-                                                <i><h6>
-                                                    {% for item in data_collection.path %}
-                                                        {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
-                                                    {% endfor %}
-                                                </h6></i>
+                                                <i>
+                                                    <h6>
+                                                        {% for item in data_collection.path %}
+                                                            {{ item.1 }} >
+                                                            {% if item.2 %}{{ item.2 }} >{% endif %}
+
+                                                            {% if forloop.last %}{{ item.3 }}{% endif %}
+                                                        {% endfor %}
+                                                    </h6>
+                                                </i>
 
                                             </blockquote>
 
@@ -89,9 +111,10 @@
                                                 {% for additional_data in data_collection.additional_data_list %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/additional_data/{{ additional_data.id }}" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "See details" %}">
-                                                                {{ additional_data.description }}
-                                                            </a>
+                                                            <a href="/experiment/additional_data/{{ additional_data.id }}"
+                                                               data-bs-toggle="tooltip"
+                                                               data-bs-placement="left"
+                                                               title="{% trans "See details" %}">{{ additional_data.description }}</a>
                                                         </td>
                                                         <td>{{ additional_data.date }}</td>
                                                         <td>{{ additional_data.file_format.name }}</td>
@@ -101,14 +124,14 @@
                                                                 {% for additional_data_file in additional_data.additional_data_files.all %}
                                                                     <tr>
                                                                         <td>{{ additional_data_file.file.size|filesizeformat }}</td>
-                                                                        <td><a href="{{ additional_data_file.file.url }}"><span class="fa-fw fa fa-download"></span></a></td>
+                                                                        <td>
+                                                                            <a href="{{ additional_data_file.file.url }}"><span class="fa-fw fa fa-download"></span></a>
+                                                                        </td>
                                                                     </tr>
                                                                 {% endfor %}
 
                                                             </table>
                                                         </td>
-
-
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
@@ -130,18 +153,15 @@
                 </div>
             </div>
             <div class="btn-toolbar justify-content-between" role="toolbar">
+                <div class="btn-group float-start">
+                </div>
                 <div class="btn-group float-end">
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-light">{% trans "Back" %}</a>
                 </div>
             </div>
-
         </div>
+    {% endblock content %}
 
-    </div>
-
-{% endblock %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
-
+{% endblock end_form %}

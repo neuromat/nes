@@ -18,8 +18,8 @@ from .forms import PasswordChangeFormCustomized
 admin.autodiscover()
 
 urlpatterns = [
+    re_path(r"^admin/", admin.site.urls, name="admin"),
     re_path(r"^rosetta/", include("rosetta.urls")),
-    re_path(r"^admin/", admin.site.urls),
     re_path(r"^patient/", include("patient.urls")),
     re_path(r"^user/", include("custom_user.urls")),
     re_path(r"^experiment/", include("experiment.urls")),
@@ -28,6 +28,7 @@ urlpatterns = [
     re_path(r"^plugin/", include("plugin.urls")),
     re_path(r"^processing/", include("processing.urls")),
     re_path(r"^home/$", qdcviews.contact, name="contact"),
+    re_path(r"^home/$", qdcviews.contact, name="home"),
     re_path(r"^links/$", confviews.useful_links_view, name="useful_links"),
     re_path(r"^accounts/login/$", authviews.LoginView.as_view(), name="login"),
     re_path(r"^account/", include("django.contrib.auth.urls")),
@@ -78,7 +79,7 @@ urlpatterns = [
     ),
     re_path(r"^i18n/", include("django.conf.urls.i18n")),
     re_path(r"^home/check_upgrade/$", qdcviews.contact, name="check_upgrade"),
-    re_path(r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="check_upgrade"),
+    re_path(r"^home/upgrade_nes/$", qdcviews.upgrade_nes, name="upgrade_nes"),
     path("__debug__/", include("debug_toolbar.urls")),
 ]
 

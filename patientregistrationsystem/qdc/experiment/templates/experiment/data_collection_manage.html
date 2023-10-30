@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
 {% load subjects_tags %}
@@ -8,14 +8,13 @@
     
     <form id="subject_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
-{% endblock %}
+{% endblock form %}
 
 {% block content %}
-
     <div class="tab-pane fade show active" id="subjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
@@ -37,8 +36,8 @@
                     </h4>
                     <h5>
                     <div>
-                        {% trans 'Data collections in step "' %}{% if component_configuration %}{{ component_configuration.component.identification }}{% else %}{% trans "experimental protocol" %}{% endif %}":
-{#                        <span class="{{ component_icon }}"></span>#}
+                        {% trans "Data collections in step" %}{% if component_configuration %}{{ component_configuration.component.identification }}{% else %}{% trans "experimental protocol" %}{% endif %}:
+{#                      <span class="{{ component_icon }}"></span>#}
                     </div>
                     </h5>
 
@@ -136,17 +135,14 @@
                     <a href="/experiment/group/{{ group.id }}/subjects?per_steps_tab=active" class="btn btn-light">{% trans "Back" %}</a>
                 </div>
             </div>
-
         </div>
-
     </div>
-
-{% endblock %}
+{% endblock content %}
 
 {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/data_collection_manage.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/js/data_collection_manage.js" %}></script>
+{% endblock extrascript %}

@@ -1,60 +1,68 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
+
 {% load subjects_tags %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
+        <div class="tab-pane fade show active" id="breadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}">{{ group.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data">{% get_name_or_code subject.patient.id %}</a>
+                    </li>
 
-    <div class="tab-pane fade show active" id="breadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "New additional data file" %}</li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ additional_data_form.description.value }}</li>
+                    {% endif %}
+                </ol>
+            </nav>
+        </div>
 
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data">{% get_name_or_code subject.patient.id %}</a></li>
+        {% if additional_data_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New additional data file" %}</li>
-                {% else %}
-                    <li class="breadcrumb-item active">{{ additional_data_form.description.value }}</li>
-                {% endif %}
-
-            </ol>
-        </nav>
-    </div>
-
-    {% if additional_data_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
-
                 <h4>{% trans "Additional data collection" %}</h4>
                 <hr>
                 <div class="row">
                     <div class="col-6 col-sm-6">
                         <div class="form-group {% if additional_data_form.errors.date %}is-invalid{% endif %}">
-                            <label class="form-label">{% trans "Date" %}<b class="text-danger">*</b></label>
+                            <label class="form-label">
+                                {% trans "Date" %}<b class="text-danger">*</b>
+                            </label>
                             {{ additional_data_form.date }}
                             <div class="form-text with-errors">
-                                {% for error in additional_data_form.date.errors %}
-                                    {{ error }}
-                                {% endfor %}
+                                {% for error in additional_data_form.date.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
                     </div>
@@ -63,7 +71,9 @@
                 <div class="row">
                     <div class="col-6 col-sm-6">
                         <div class="form-group">
-                            <label class="form-label">{% trans "File format" %} <b class="text-danger">*</b></label>
+                            <label class="form-label">
+                                {% trans "File format" %} <b class="text-danger">*</b>
+                            </label>
                             {{ additional_data_form.file_format }}
                             <div class="form-text with-errors"></div>
 
@@ -77,7 +87,9 @@
                 <div class="row" id="div-file-format-description">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "File format description" %} <b class="text-danger">*</b></label>
+                            <label class="form-label">
+                                {% trans "File format description" %} <b class="text-danger">*</b>
+                            </label>
                             {{ additional_data_form.file_format_description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -87,7 +99,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Additional data collection description" %} <b class="text-danger">*</b></label>
+                            <label class="form-label">
+                                {% trans "Additional data collection description" %} <b class="text-danger">*</b>
+                            </label>
                             {{ additional_data_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -99,33 +113,42 @@
                         <div class="form-group {% if additional_data_form.errors.file %}is-invalid{% endif %}">
 
                             {% if creating or editing %}
-                                <label class="form-label">{% trans "Files to upload" %} <b class="text-danger">*</b></label>
-                                <br/>
+                                <label class="form-label">
+                                    {% trans "Files to upload" %} <b class="text-danger">*</b>
+                                </label>
+                                <br />
                                 <input type="file" name="additional_data_files" id="id_file" accept="" multiple>
-                                <br/>
+                                <br />
                             {% endif %}
 
                             {% if not creating %}
                                 {% if additional_data.additional_data_files %}
-                                    <label class="form-label">{% trans "Uploaded files" %} <b class="text-danger">*</b></label>
-                                    <br/>
-                                    <table><tbody>
-                                    {% for additional_data_file in additional_data.additional_data_files.all %}
-                                        <tr>
-                                        <td>{{ additional_data_file.file.url }}</td>
-                                        <td>
-                                            <button class="btn btn-light" type="button" onclick="location.href='{{ additional_data_file.file.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
-                                        </td>
-                                        <td>{{ additional_data_file.file.size|filesizeformat }}</td>
-                                        {% if editing %}
-                                            <td>
-                                                <input type="checkbox" name="remove_additional_data_file_{{ additional_data_file.id }}"/>
-                                                {% trans "Delete" %}</td>
-                                        {% endif %}
-                                        </tr>
-                                    {% endfor %}
+                                    <label class="form-label">
+                                        {% trans "Uploaded files" %} <b class="text-danger">*</b>
+                                    </label>
+                                    <br />
+                                    <table>
+                                        <tbody>
+                                            {% for additional_data_file in additional_data.additional_data_files.all %}
+                                                <tr>
+                                                    <td>{{ additional_data_file.file.url }}</td>
+                                                    <td>
+                                                        <button class="btn btn-light" type="button" onclick="location.href='{{ additional_data_file.file.url }}'">
+                                                            <span class="fa-fw fa fa-download-alt  text-info"></span>
+                                                        </button>
+                                                    </td>
+                                                    <td>{{ additional_data_file.file.size|filesizeformat }}</td>
+                                                    {% if editing %}
+                                                        <td>
+                                                            <input type="checkbox" name="remove_additional_data_file_{{ additional_data_file.id }}" />
+                                                            {% trans "Delete" %}
+                                                        </td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
 
-                                    </tbody></table>
+                                        </tbody>
+                                    </table>
                                 {% endif %}
                             {% endif %}
 
@@ -153,11 +176,9 @@
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
 
                         {% if creating %}
-                            <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data"
-                               class="btn btn-light">{% trans "Cancel" %}</a>
+                            <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data" class="btn btn-light">{% trans "Cancel" %}</a>
                         {% else %}
-                            <a href="/experiment/additional_data/{{ additional_data.id }}/{{ tab }}"
-                               class="btn btn-light">{% trans "Cancel" %}</a>
+                            <a href="/experiment/additional_data/{{ additional_data.id }}/{{ tab }}" class="btn btn-light">{% trans "Cancel" %}</a>
                         {% endif %}
 
                     </div>
@@ -168,30 +189,27 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete additional data?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">{% trans "Are you sure you want to delete additional data?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-{% endblock %}
+    {% endblock content %}
 
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/research_project.js' %}"></script>
+    <script src={% static "site/js/research_project.js" %}></script>
     <script>
         $(document).ready(function () {
             var $id_file_format = $("#id_file_format");
@@ -209,12 +227,12 @@
 
             {% if file_format_list %}
                 {% for item in file_format_list %}
-                    {% if item.code == 'other' %}
+                    {% if item.code == "other" %}
                         $other_code = {{ item.id }};
-                    {% elif item.code == 'txt' %}
+                    {% elif item.code == "txt" %}
                         $txt_code = {{ item.id }};
                         $txt_extension = "{{ item.extension }}";
-                    {% elif item.code == 'MNE-RawFromBrainVision' %}
+                    {% elif item.code == "MNE-RawFromBrainVision" %}
                         $raw_code = {{ item.id }};
                         $raw_extension = "{{ item.extension }}";
                     {% elif item.code == "media" %}
@@ -324,4 +342,4 @@
             {% endif %}
         });
     </script>
-{% endblock %}
+{% endblock extrascript %}

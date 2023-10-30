@@ -1,314 +1,324 @@
 {% extends "base/template.html" %}
 
 {% load i18n static %}
+
 {% load subjects_tags_survey %}
 
-{% block activeAdvancedSurvey %} active{% endblock activeAdvancedSurvey %}
+{% block activeAdvancedSurvey %}
+    active
+{% endblock activeAdvancedSurvey %}
 
 {% block form %}
-        <form id="survey_form" method="post" data-bs-toggle="validator">
-            {% csrf_token %}
-{% endblock form %}
+    <form id="survey_form" method="post" data-bs-toggle="validator">
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
-    <div class="tab-pane fade show active" id="surveyBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/survey/lis/">{% trans "Questionnaires" %}</a></li>
+    {% block content %}
+        <div class="tab-pane fade show active" id="surveyBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/survey/lis/">{% trans "Questionnaires" %}</a>
+                    </li>
 
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New" %}</li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item"><a href="/survey/{{ survey.id }}">{{ survey_title }}</a></li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "New" %}</li>
                     {% else %}
-                        <li class="breadcrumb-item active">{{ survey_title }} </li>
-                    {% endif %}
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-            <h4>{% trans "Questionnaire information" %}</h4>
-            <hr>
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <div class="form-group">
-                        <label class="form-label" for="questionnaire_selected">{% trans "Questionnaire" %}</label>
-                        <select class="form-select" required="" id="questionnaire_selected" name="questionnaire_selected" {% if not creating %} disabled {% endif %} 
-                        data-bs-error={% trans "Please, select a questionnaire from the list." %} >
-                            {% if creating %}
-                                <option selected="selected" value="">---------</option>
-                                {% for survey in questionnaires_list %}
-                                    <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
-                                {% endfor %}
-                            {% else %}
-                                <option selected="selected" value="">{{ survey_form.title.value }}</option>
-                            {% endif %}
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <div class="form-group">
-                        <div class="form-check">
-                            <label class="form-check-label" for="id_is_initial_evaluation">{% trans "Required fill" %}<b class="text-danger">*</b></label>
-                            {{ survey_form.is_initial_evaluation }}
-                        </div>
-                        {% if creating %}
-                            <label class="form-label my-2"><b style="color: red;">{% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
-                                (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
+                        {% if editing %}
+                            <li class="breadcrumb-item">
+                                <a href="/survey/{{ survey.id }}">{{ survey_title }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                        {% else %}
+                            <li class="breadcrumb-item active">{{ survey_title }}</li>
                         {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            {% if not editing %}
-                <div class="btn-group">
-                    <a href="/survey/edit/{{ survey.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
-                </div>
-            {% endif %}
+                    {% endif %}
+                </ol>
+            </nav>
         </div>
 
-        {% if not creating and not editing %}
-            {# Sensitive questions table #}
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
+                <h4>{% trans "Questionnaire information" %}</h4>
+                <hr>
                 <div class="row">
-                    <div class="col-12 col-lg-12">
-                        <h4>{% trans "Sensitive questions" %}</h4>
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label" for="questionnaire_selected">{% trans "Questionnaire" %}</label>
+                            <select class="form-select"
+                                    required=""
+                                    id="questionnaire_selected"
+                                    name="questionnaire_selected"
+                                    {% if not creating %}disabled{% endif %}
+                                    data-bs-error="{% trans "Please, select a questionnaire from the list." %}">
+                                {% if creating %}
+                                    <option selected="selected" value="">---------</option>
+                                    {% for survey in questionnaires_list %}<option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>{% endfor %}
+                                {% else %}
+                                    <option selected="selected" value="">{{ survey_form.title.value }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>{% trans "Question code" %}</th>
-                            <th>{% trans "Question" %}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for sensitive_question in survey.sensitive_questions.all %}
-                            <tr>
-                                <td>
-                                    {{ sensitive_question.code }}
-                                </td>
-                                <td>
-                                    {{ sensitive_question.question }}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <label class="form-check-label" for="id_is_initial_evaluation">
+                                    {% trans "Required fill" %}<b class="text-danger">*</b>
+                                </label>
+                                {{ survey_form.is_initial_evaluation }}
+                            </div>
+                            {% if creating %}
+                                <label class="form-label my-2">
+                                    <b class="text-danger">{% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                                    (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b>
+                                </label>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if not editing %}
+                    <br>
                     <div class="btn-group">
-                        <a href="/survey/edit/{{ survey.id }}/sensitive_questions" class="btn btn-primary">{% trans "Edit" %}</a>
+                        <a href="/survey/edit/{{ survey.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
-                </div>
+                {% endif %}
             </div>
 
-            {# Answers #}
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <div class="row">
-                    <div class="col-12 col-lg-12">
-                        <h4>{% trans "Answered by participants" %}</h4>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>{% trans "Participant" %}</th>
-                            <th>{% trans "Fills" %} &nbsp;&nbsp;
-                                &nbsp;
-                                <a href="/survey/update_acquisitiondate/{{ survey.id }}"
-                                    class="btn btn-primary"
-                                    data-bs-toggle="tooltip" data-bs- title="{% trans "Update LimeSurvey Fill date" %}"><span
-                                        class="fa-fw fa fa-refresh"></span></a></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for patient_questionnaire in patients_questionnaire_data_list %}
-                            <tr>
-                                <td>
-                                    {% get_name_or_code patient_questionnaire.patient_id %}
-
-                                    {% if patient_questionnaire.questionnaire_responses|length == 0 %}
-                                        <br/><span class="label label-warning">{% trans "It has to be filled" %}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <table class="col-12 col-lg-12">
-                                        {% for response in patient_questionnaire.questionnaire_responses %}
-                                            <tr>
-                                                <td class="col-4 col-lg-8">
-                                                    {{ response.questionnaire_response.date }}
-                                                </td>
-                                                {#Just for debbugging: remove it!#}
-{#                                                        <td>{{ response.questionnaire_response.token_id }}</td>#}
-                                                <td class="col-4 col-lg-4">
-                                                    {% if limesurvey_available and response.completed != None %}
-                                                        {% if response.completed %}
-                                                            <span class="label label-success">{% trans "Complete" %}</span>
-                                                        {% else %}
-                                                            <span class="label label-warning">{% trans "Incomplete" %}</span>
-                                                        {% endif %}
-                                                    {% else %}
-                                                        <span class="label label-default">{% trans "No status" %}</span>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {% if perms.experiment.view_researchproject %}
+            {% if not creating and not editing %}
+                {# Sensitive questions table #}
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <div class="row">
                         <div class="col-12 col-lg-12">
-                            <h4>{% trans "Used in experiments" %}</h4>
+                            <h4>{% trans "Sensitive questions" %}</h4>
                         </div>
                     </div>
-                    {% for dict in experiments_questionnaire_data_list %}
-                        <div class="my-3 p-3 bg-body rounded shadow-sm">
-                            <div class="row" style="margin-bottom: 5px">
-                                <div class="col-12 col-lg-8">
-                                    <strong>{% trans "Experiment:" %}</strong><br/>
-                                    {{ dict.experiment_title }}
-                                </div>
-                                <div class="col-12 col-lg-4">
-                                    <strong>{% trans "Group:" %}</strong><br/>
-                                    {{ dict.group_title }}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 col-lg-4">
-                                    <strong>{% trans "Set of parent steps:" %}</strong><br/>
-                                    {{ dict.parent_identification }}
-                                </div>
-                                <div class="col-12 col-lg-4">
-                                    <strong>{% trans "Step:" %}</strong><br/>
-                                    {{ dict.component_identification }}
-                                </div>
-                                <div class="col-12 col-lg-4">
-                                    <strong>{% trans "Name of the use:" %}</strong><br/>
-                                    {{ dict.use_name }}
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <table class="table table-striped col-12 col-lg-12">
-                                    <thead>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Question code" %}</th>
+                                    <th>{% trans "Question" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sensitive_question in survey.sensitive_questions.all %}
                                     <tr>
-                                        <th class="col-6 col-lg-6">{% trans "Participant" %}</th>
-                                        <th class="col-6 col-lg-6">{% trans "Fills" %} &nbsp;&nbsp;
-                                            &nbsp;
-                                            <a href="/survey/update_acquisitiondate/{{ survey.id }}"
-                                                class="btn btn-primary"
-                                                data-bs-toggle="tooltip" data-bs- title="{% trans "Update LimeSurvey Fill date" %}"><span
-                                                    class="fa-fw fa fa-refresh"></span></a>
-                                        </th>
+                                        <td>{{ sensitive_question.code }}</td>
+                                        <td>{{ sensitive_question.question }}</td>
                                     </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for key, patient_questionnaire in dict.patients.items %}
-                                        <tr>
-                                            <td>
-                                                {% get_name_or_code patient_questionnaire.patient_id %}
-                                            </td>
-                                            <td>
-                                                <table class="col-12 col-lg-12">
-                                                    {% for response in patient_questionnaire.questionnaire_responses %}
-                                                        <tr>
-                                                            <td class="col-8 col-lg-8">
-                                                                {{ response.questionnaire_response.date }}
-                                                            </td>
-                                                            {#Just for debbugging: remove it!#}
-{#                                                                    <td>{{ response.questionnaire_response.token_id }}</td>#}
-                                                            <td class="col-4 col-lg-4">
-                                                                {% if limesurvey_available and response.completed != None %}
-                                                                    {% if response.completed %}
-                                                                        <span class="label label-success">{% trans "Complete" %}</span>
-                                                                    {% else %}
-                                                                        <span class="label label-warning">{% trans "Incomplete" %}</span>
-                                                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="btn-group">
+                            <a href="/survey/edit/{{ survey.id }}/sensitive_questions" class="btn btn-primary">{% trans "Edit" %}</a>
+                        </div>
+                    </div>
+                </div>
+
+                {# Answers #}
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
+                    <div class="row">
+                        <div class="col-12 col-lg-12">
+                            <h4>{% trans "Answered by participants" %}</h4>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Participant" %}</th>
+                                    <th>
+                                        {% trans "Fills" %} &nbsp;&nbsp;
+                                        &nbsp;
+                                        <a href="/survey/update_acquisitiondate/{{ survey.id }}"
+                                           class="btn btn-primary"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-
+                                           title="{% trans "Update LimeSurvey Fill date" %}"><span class="fa-fw fa fa-refresh"></span></a>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient_questionnaire in patients_questionnaire_data_list %}
+                                    <tr>
+                                        <td>
+                                            {% get_name_or_code patient_questionnaire.patient_id %}
+
+                                            {% if patient_questionnaire.questionnaire_responses|length == 0 %}
+                                                <br />
+                                                <span class="label label-warning">{% trans "It has to be filled" %}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <table class="col-12 col-lg-12">
+                                                {% for response in patient_questionnaire.questionnaire_responses %}
+                                                    <tr>
+                                                        <td class="col-4 col-lg-8">{{ response.questionnaire_response.date }}</td>
+                                                        {#Just for debbugging: remove it!#}
+                                                        {#                                                        <td>{{ response.questionnaire_response.token_id }}</td>#}
+                                                        <td class="col-4 col-lg-4">
+                                                            {% if limesurvey_available and response.completed != None %}
+                                                                {% if response.completed %}
+                                                                    <span class="label label-success">{% trans "Complete" %}</span>
                                                                 {% else %}
-                                                                    <span class="label label-default">{% trans "No status" %}</span>
+                                                                    <span class="label label-warning">{% trans "Incomplete" %}</span>
                                                                 {% endif %}
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
+                                                            {% else %}
+                                                                <span class="label label-default">{% trans "No status" %}</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% if perms.experiment.view_researchproject %}
+                    <div class="my-3 p-3 bg-body rounded shadow-sm">
+                        <div class="row">
+                            <div class="col-12 col-lg-12">
+                                <h4>{% trans "Used in experiments" %}</h4>
                             </div>
                         </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endif %}
+                        {% for dict in experiments_questionnaire_data_list %}
+                            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                                <div class="row mb-1">
+                                    <div class="col-12 col-lg-8">
+                                        <strong>{% trans "Experiment:" %}</strong>
+                                        <br />
+                                        {{ dict.experiment_title }}
+                                    </div>
+                                    <div class="col-12 col-lg-4">
+                                        <strong>{% trans "Group:" %}</strong>
+                                        <br />
+                                        {{ dict.group_title }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-lg-4">
+                                        <strong>{% trans "Set of parent steps:" %}</strong>
+                                        <br />
+                                        {{ dict.parent_identification }}
+                                    </div>
+                                    <div class="col-12 col-lg-4">
+                                        <strong>{% trans "Step:" %}</strong>
+                                        <br />
+                                        {{ dict.component_identification }}
+                                    </div>
+                                    <div class="col-12 col-lg-4">
+                                        <strong>{% trans "Name of the use:" %}</strong>
+                                        <br />
+                                        {{ dict.use_name }}
+                                    </div>
+                                </div>
 
-        <div class="btn-toolbar justify-content-between"  role="toolbar">
-            <div class="btn-group">
-            {% if not editing and perms.survey.delete_survey %}
-                    <button type="button" class="btn btn-danger" onclick="showRemoveDialog()">
-                        {% trans "Delete" %}
-                    </button>
+                                <div class="form-group">
+                                    <table class="table table-striped col-12 col-lg-12">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-6 col-lg-6">{% trans "Participant" %}</th>
+                                                <th class="col-6 col-lg-6">
+                                                    {% trans "Fills" %} &nbsp;&nbsp;
+                                                    &nbsp;
+                                                    <a href="/survey/update_acquisitiondate/{{ survey.id }}"
+                                                       class="btn btn-primary"
+                                                       data-bs-toggle="tooltip"
+                                                       data-bs-
+                                                       title="{% trans "Update LimeSurvey Fill date" %}"><span class="fa-fw fa fa-refresh"></span></a>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for key, patient_questionnaire in dict.patients.items %}
+                                                <tr>
+                                                    <td>{% get_name_or_code patient_questionnaire.patient_id %}</td>
+                                                    <td>
+                                                        <table class="col-12 col-lg-12">
+                                                            {% for response in patient_questionnaire.questionnaire_responses %}
+                                                                <tr>
+                                                                    <td class="col-8 col-lg-8">{{ response.questionnaire_response.date }}</td>
+                                                                    {#Just for debbugging: remove it!#}
+                                                                    {#                                                                    <td>{{ response.questionnaire_response.token_id }}</td>#}
+                                                                    <td class="col-4 col-lg-4">
+                                                                        {% if limesurvey_available and response.completed != None %}
+                                                                            {% if response.completed %}
+                                                                                <span class="label label-success">{% trans "Complete" %}</span>
+                                                                            {% else %}
+                                                                                <span class="label label-warning">{% trans "Incomplete" %}</span>
+                                                                            {% endif %}
+                                                                        {% else %}
+                                                                            <span class="label label-default">{% trans "No status" %}</span>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <div class="btn-toolbar justify-content-between"  role="toolbar">
+                <div class="btn-group">
+                    {% if not editing and perms.survey.delete_survey %}
+                        <button type="button" class="btn btn-danger" onclick="showRemoveDialog()">{% trans "Delete" %}</button>
+                    {% endif %}
+                </div>
+                {% if editing %}
+                    <div class="btn-toolbar float-end">
+                        <div class="btn-group">
+                            <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                            <a href="/survey/{% if creating %}list{% else %}{{ survey.id }}{% endif %}" class="btn btn-light">{% trans "Cancel" %}</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="btn-group float-end">
+                        <a href="/survey/list/" class="btn btn-light">{% trans "Back" %}</a>
+                    </div>
                 {% endif %}
             </div>
-            {% if editing %}
-                <div class="btn-toolbar float-end">
-                    <div class="btn-group">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                        <a href="/survey/{% if creating %}list{% else %}{{ survey.id }}{% endif %}"
-                            class="btn btn-light">{% trans "Cancel" %}</a>
-                    </div>
-                </div>
-            {% else %}
-                <div class="btn-group float-end">
-                    <a href="/survey/list/" class="btn btn-light">{% trans "Back" %}</a>
-                </div>
-            {% endif %}
         </div>
-    </div>
 
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete questionnaire?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove" name="action">{% trans "Delete" %}</button>
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">{% trans "Are you sure you want to delete questionnaire?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" name="action">{% trans "Delete" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-{% endblock content %}
+    {% endblock content %}
 
-{% block end_form %}
+    {% block end_form %}
     </form>
 {% endblock end_form %}
 
 {% block extrascript %}
     <script>
-        {% if survey_form.errors %}
-            showErrorMessage(gettext('Please, correct the highlighted fields.'))
-        {% endif %}
+        {% if survey_form.errors %}showErrorMessage(gettext('Please, correct the highlighted fields.')){% endif %}
     </script>
 
-    <script src="{% static 'site/js/survey.js' %}"></script>
+    <script src={% static "site/js/survey.js" %}></script>
 {% endblock extrascript %}

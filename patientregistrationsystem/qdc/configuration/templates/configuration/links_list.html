@@ -2,14 +2,18 @@
 
 {% load i18n static %}
 
-{% block activeLinks %} active{% endblock activeLinks %}
+{% block activeLinks %}
+    active
+{% endblock activeLinks %}
 
 {% block content %}
     <div class="tab-pane fade show active" id="linksBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item active">{% trans 'Useful Links' %}</li>
+                <li class="breadcrumb-item">
+                    <a href={% url "home" %}>{% trans "Home" %}</a>
+                </li>
+                <li class="breadcrumb-item active">{% trans "Useful Links" %}</li>
             </ol>
         </nav>
     </div>
@@ -18,17 +22,16 @@
         <h4>{% trans "Useful Links" %}</h4>
         <hr>
         <ul class="list-group list-group-flush">
-        {% for link in useful_links %}
-            <li class="list-group-item">
-                {{ link.name }}
-                <a href="{{ link.url }}">{{ link.url }}</a>
-            </li>
-        {% endfor %}
+            {% for link in useful_links %}
+                <li class="list-group-item">
+                    {{ link.name }}
+                    <a href="{{ link.url }}">{{ link.url }}</a>
+                </li>
+            {% endfor %}
         </ul>
     </div>
 
     {% if request.user.is_superuser %}
         <a href="/admin/configuration/usefullink/" class="btn btn-info"><span class="fa-fw fa fa-link"></span> {% trans "Add new link" %}</a>
     {% endif %}
-
 {% endblock content %}

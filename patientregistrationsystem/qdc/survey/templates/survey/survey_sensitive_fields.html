@@ -1,78 +1,83 @@
 {% extends "base/template.html" %}
 
 {% load i18n static %}
+
 {% load subjects_tags_survey %}
 
-{% block activeAdvancedSurvey %} active{% endblock activeAdvancedSurvey %}
+{% block activeAdvancedSurvey %}
+    active
+{% endblock activeAdvancedSurvey %}
 
 {% block form %}
     <form id="survey_form" method="post" data-bs-toggle="validator">
         {% csrf_token %}
-{% endblock form %}
+    {% endblock form %}
 
-{% block content %}
-    <div class="tab-pane fade show active" id="surveyBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/survey/list/">{% trans "Questionnaires" %}</a></li>
-                <li class="breadcrumb-item"><a href="/survey/{{ survey.id }}">{{ survey_title }}</a></li>
-                <li class="breadcrumb-item active">{% trans "Sensitive fields" %}</li>
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-            <h4>{% trans "Sensitive fields" %}</h4>
-            <hr>
-            <div class="form-group">
-                <table class="table table-striped">
-                    <thead>
-                        <th>{% trans "Code" %}</th>
-                        <th>{% trans "Description" %}</th>
-                    </thead>
-                    <tbody>
-                    {% for field in available_fields %}
-                        <tr>
-                            <td>
-                                <input type="checkbox"
-                                        id="field_{{ field.code }}"
-                                        name="field_{{ field.code }}"
-                                        {% if field.checked %}checked="checked"{% endif %}
-{#                                           {% if localizationsystem.disabled %}disabled{% endif %}#}
-                                >
-
-                                {{ field.code }}
-                            </td>
-                            <td>
-                                {{ field.text|truncatechars:100 }}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    {% block content %}
+        <div class="tab-pane fade show active" id="surveyBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/survey/list/">{% trans "Questionnaires" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/survey/{{ survey.id }}">{{ survey_title }}</a>
+                    </li>
+                    <li class="breadcrumb-item active">{% trans "Sensitive fields" %}</li>
+                </ol>
+            </nav>
         </div>
 
-        <div class="btn-toolbar justify-content-between" role="toolbar">
-            <div class="btn-group float-end">
-                <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+        <div class="tab-pane fade show active" id="menuUserTab">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                <h4>{% trans "Sensitive fields" %}</h4>
+                <hr>
+                <div class="form-group">
+                    <table class="table table-striped">
+                        <thead>
+                            <th>{% trans "Code" %}</th>
+                            <th>{% trans "Description" %}</th>
+                        </thead>
+                        <tbody>
+                            {% for field in available_fields %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox"
+                                            id="field_{{ field.code }}"
+                                            name="field_{{ field.code }}"
+                                            {% if field.checked %}checked="checked"{% endif %}
+                                            {#                                           {% if localizationsystem.disabled %}disabled{% endif %}#}
+                                            >
 
-                <a href="/survey/{{ survey.id }}" class="btn btn-light">{% trans "Cancel" %}</a>
+                                            {{ field.code }}
+                                        </td>
+                                        <td>{{ field.text|truncatechars:100 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="btn-toolbar justify-content-between" role="toolbar">
+                    <div class="btn-group float-end">
+                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+
+                        <a href="/survey/{{ survey.id }}" class="btn btn-light">{% trans "Cancel" %}</a>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-{% endblock content %}
+        {% endblock content %}
 
-{% block end_form %}
-    </form>
-{% endblock end_form %}
+        {% block end_form %}
+        </form>
+    {% endblock end_form %}
 
-{% block extrascript %}
-    <script>
-        {% if survey_form.errors %}
-            showErrorMessage(gettext('Please, correct the highlighted fields.'))
-        {% endif %}
-    </script>
-{% endblock extrascript %}
+    {% block extrascript %}
+        <script>
+        {% if survey_form.errors %}showErrorMessage(gettext('Please, correct the highlighted fields.')){% endif %}
+        </script>
+    {% endblock extrascript %}

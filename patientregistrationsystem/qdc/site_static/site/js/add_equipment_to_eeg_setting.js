@@ -2,9 +2,7 @@
  * Created by evandro on 5/5/16.
  */
 
-$(function(){
-    $("[data-toggle=tooltip]").tooltip();
-});
+"use strict";
 
 $(document).ready(function () {
 
@@ -27,7 +25,7 @@ $(document).ready(function () {
     // setting initially the max value of the number of channels
     number_of_channels_used.prop('max', number_of_channels.prop('value'));
 
-    select_manufacturer.change(function() {
+    select_manufacturer.change(function () {
 
         var manufacturer_id = $(this).val();
 
@@ -37,12 +35,12 @@ $(document).ready(function () {
 
         var url = "/experiment/equipment/get_equipment_by_manufacturer/" + equipment_type + "/" + manufacturer_id;
 
-        $.getJSON(url, function(all_equipment) {
+        $.getJSON(url, function (all_equipment) {
             var options = '<option value="" selected="selected">---------</option>';
             for (var i = 0; i < all_equipment.length; i++) {
-                if(equipment_type == "eeg_solution"){
+                if (equipment_type == "eeg_solution") {
                     options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['name'] + '</option>';
-                }else{
+                } else {
                     options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['identification'] + '</option>';
                 }
 
@@ -53,7 +51,7 @@ $(document).ready(function () {
 
     });
 
-    select_equipment.change(function() {
+    select_equipment.change(function () {
 
         var equipment_id = $(this).val();
         var url = "";
@@ -81,14 +79,14 @@ $(document).ready(function () {
             } else {
                 var url = "/experiment/equipment/" + equipment_id + "/attributes";
 
-                $.getJSON(url, function(equipment) {
+                $.getJSON(url, function (equipment) {
                     description_field.prop('value', equipment['description']);
                     if (equipment_type == "eeg_machine") {
                         software_version.prop('value', equipment['software_version']);
                         number_of_channels.prop('value', equipment['number_of_channels']);
                         number_of_channels_used.prop('max', equipment['number_of_channels']);
                     }
-                    if(equipment_type == "amplifier"){
+                    if (equipment_type == "amplifier") {
                         gain.prop('value', equipment['gain']);
                     }
                 });
@@ -100,7 +98,7 @@ $(document).ready(function () {
                     // update the electrode net list
                     url = "/experiment/equipment/get_localization_system_by_electrode_net/" + equipment_id;
 
-                    $.getJSON(url, function(all_localization_system) {
+                    $.getJSON(url, function (all_localization_system) {
                         var first_option = '';
                         var options = '';
                         var has_selected = false;
@@ -126,8 +124,8 @@ $(document).ready(function () {
             }
         }
     });
-    
-    select_localization_system.change(function() {
+
+    select_localization_system.change(function () {
 
         var system_id = $(this).val();
 
@@ -145,7 +143,7 @@ $(document).ready(function () {
 
                 url = "/experiment/equipment/get_equipment_by_manufacturer_and_localization_system/" + manufacturer_id + "/" + system_id;
 
-                $.getJSON(url, function(all_equipment) {
+                $.getJSON(url, function (all_equipment) {
                     var options = '<option value="" selected="selected">---------</option>';
                     for (var i = 0; i < all_equipment.length; i++) {
                         options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['identification'] + '</option>';
@@ -156,5 +154,5 @@ $(document).ready(function () {
             }
         }
     });
-    
+
 });

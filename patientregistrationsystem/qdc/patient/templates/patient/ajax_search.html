@@ -1,17 +1,23 @@
 {% load i18n %}
+
 {% if patients %}
-    {{perms}}
     {% for patient in patients %}
-    <li><a href="/patient/{{ patient.id }}">
-        {% if sensitive_perm %}
-                {% if patient.cpf %} {{ patient.cpf }} - {% endif %} {% if patient.name %} {{ patient.name }} {% else %} {{ patient.code }} {% endif %}</a></li>
-        {% else %}
-                {{ patient.code }} </a></li>
-        {% endif %}
+        <li>
+            <a href="/patient/{{ patient.id }}">
+                {% if sensitive_perm %}
+                    {% if patient.cpf %}{{ patient.cpf }} -{% endif %}
+
+                    {% if patient.name %}
+                        {{ patient.name }}
+                    {% else %}
+                        {{ patient.code }}
+                    {% endif %}
+                {% else %}
+                    {{ patient.code }}
+                {% endif %}
+            </a>
+        </li>
     {% endfor %}
-
 {% else %}
-
     <li>{% trans "No participants found!" %}</li>
-
 {% endif %}

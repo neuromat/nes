@@ -1,230 +1,277 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark" xml:lang="en">
 
-{% load static i18n l10n %}
-{% load qdc_tags %}
-{% load solo_tags %}
-{% load cache %}
+    {% load cache static i18n l10n %}
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load qdc_tags solo_tags compress %}
 
-    <title>{% trans "Neuroscience Experiments System - NES" %}</title>
-    <link rel="icon" type="image/x-icon" href="{% static 'imgs/favicon.ico' %}">
-    <meta name="description" content="Database system for storing data related to EEG and EMG">
-    <meta name="author" content="Neuromat, PEB-Lapis">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {% comment %} <link rel="stylesheet" href="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.css' %}"> {% endcomment %}
-    <link rel="stylesheet" href="{% static 'site/bootstrap-5.3.2-dist/css/bootstrap.min.css' %}" charset="utf-8">
-    <link rel="stylesheet" href="{% static 'site/font-awesome-4.7.0/css/font-awesome.min.css' %}" charset="utf-8">
-    <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}" charset="utf-8">
+        <title>{% trans "Neuroscience Experiments System - NES" %}</title>
+        <link rel="icon" type="image/x-icon" href={% static "imgs/favicon.ico" %}>
+        <meta name="description" content="Database system for storing data related to EEG and EMG">
+        <meta name="author" content="Neuromat, PEB-Lapis">
 
-    <link rel="stylesheet" href="{% static 'site/css/nes.css' %}" charset="utf-8">
+        {% compress css file base_nes_css %}
+            <link rel="stylesheet" href={% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %} charset="utf-8">
+            <link rel="stylesheet" href={% static "site/font-awesome-4.7.0/css/font-awesome.min.css" %} charset="utf-8">
+            <link rel="stylesheet" href={% static "site/toastr/toastr.min.css" %} charset="utf-8">
+            <link rel="stylesheet" href={% static "site/css/nes.css" %} charset="utf-8">
+        {% endcompress %}
 
-    {% block extrahead %}{% endblock extrahead %}
-</head>
+        {% block extrahead %}
+        {% endblock extrahead %}
 
-<body class="bg-body-secondary">
-<header>
-    <form id="language_form" action="{% url 'set_language' %}" method="post">
-        {% csrf_token %}
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark shadow-sm" role="navigation">
-            <div class="container">
-                <a class="navbar-brand" href="/home/">{% trans "NES" %}</a>
-                <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <div class="navbar-collapse collapse" id="navbarCollapse">
-                    <ul class="navbar-nav ms-auto">
-                        {% if perms.configuration.upgrade_rights and if_upgrade %}
-                            <li class="nav-item">
-                                <a href="/home/upgrade_nes/" class="nav-link"><span class="fa-fw fa fa-download"></span>Upgrade_nes</a>
-                            </li>
-                        {% endif %}
-                        <li class="nav-item dropdown">
-                            {% get_current_language as LANGUAGE_CODE %}
-                            {% get_available_languages as LANGUAGES %}
-                            {% get_language_info_list for LANGUAGES as languages %}
+    </head>
 
-                            <input id="language" name="language" type="hidden">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" title="Change language">
-                                <span class="fa-fw fa fa-globe"></span> {{ LANGUAGE_CODE|language_name_local }}
-                            </a> 
-                            
-                            <div class="dropdown-menu dropdown-menu-end" role="menu" name="language" aria-labelledby="navbarDropdown">
-                                {% for language in languages %}
-                                    {% if language.code != LANGUAGE_CODE %}
-                                        <a href="javascript:{}" class="dropdown-item" onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit();">
-                                            <span  class="fa-fw fa fa-globe"></span>
-                                            {{ language.name_local }}
-                                        </a>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>   
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                <span class="fa-fw fa fa-user-circle"></span> {{ request.user.username }}
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end" role="menu" aria-labelledby="navbarDropdown">
-                                {% if request.user.is_superuser %}
-                                    <a href="/admin" class="dropdown-item"><span class="fa-fw fa fa-star"></span> {% trans "Admin" %}</a>
+    <body class="bg-body-secondary">
+        <header>
+            <form id="language_form" action={% url "set_language" %} method="post">
+                {% csrf_token %}
+                <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark shadow-sm" role="navigation">
+                    <div class="container">
+                        <a class="navbar-brand" href={% url "home" %}>{% trans "NES" %}</a>
+                        <button type="button"
+                                class="navbar-toggler collapsed"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#navbarCollapse"
+                                aria-controls="navbarCollapse"
+                                aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+
+                        <div class="navbar-collapse collapse" id="navbarCollapse">
+                            <ul class="navbar-nav ms-auto">
+                                {% if perms.configuration.upgrade_rights and if_upgrade %}
+                                    <li class="nav-item">
+                                        <a href={% url "upgrade_nes" %} class="nav-link"><span class="fa-fw fa fa-download"></span>Upgrade_nes</a>
+                                    </li>
                                 {% endif %}
-                                <a href="/password_change" class="dropdown-item"><span class="fa-fw fa fa-key"></span> {% trans "Change password" %}</a>
-                                <a href="https://nes.readthedocs.io/en/latest/userguide/userguide.html" class="dropdown-item"><span class="fa-fw fa fa-question-circle"></span> {% trans "Help" %}</a>
-                                <a href="{% url 'logout' %}" class="dropdown-item"><span class="fa-fw fa fa-power-off"></span> {% trans "Logout" %}</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"  title="Change theme">
-                                <span class="fa-fw fa fa-star-half-o"></span>
+                                <li class="nav-item dropdown">
+                                    {% get_current_language as LANGUAGE_CODE %}
+                                    {% get_available_languages as LANGUAGES %}
+                                    {% get_language_info_list for LANGUAGES as languages %}
+
+                                    <input id="language" name="language" type="hidden">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" title="Change language">
+                                        <span class="fa-fw fa fa-globe"></span> {{ LANGUAGE_CODE|language_name_local }}
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end" role="menu" name="language" aria-labelledby="navbarDropdown">
+                                        {% for language in languages %}
+                                            {% if language.code != LANGUAGE_CODE %}
+                                                <a href="javascript:{}"
+                                                   class="dropdown-item"
+                                                   onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit();">
+                                                    <span class="fa-fw fa fa-globe"></span>
+                                                    {{ language.name_local }}
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                        <span class="fa-fw fa fa-user-circle"></span> {{ request.user.username }}
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end" role="menu" aria-labelledby="navbarDropdown">
+                                        {% if request.user.is_superuser %}
+                                            <a href={% url "admin:index" %} class="dropdown-item"><span class="fa-fw fa fa-star"></span> {% trans "Admin" %}</a>
+                                        {% endif %}
+                                        <a href={% url "password_change" %} class="dropdown-item"><span class="fa-fw fa fa-key"></span> {% trans "Change password" %}</a>
+                                        <a href="https://nes.readthedocs.io/en/latest/userguide/userguide.html" class="dropdown-item"><span class="fa-fw fa fa-question-circle"></span> {% trans "Help" %}</a>
+                                        <a href={% url "logout" %} class="dropdown-item"><span class="fa-fw fa fa-power-off"></span> {% trans "Logout" %}</a>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"  title="Change theme">
+                                        <span class="fa-fw fa fa-star-half-o"></span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+                                        <a class="dropdown-item" data-bs-theme-value="light" aria-pressed="false" href="#"><span class="fa-fw fa fa-sun-o"></span> {% trans "Light Theme" %}</a>
+                                        <a class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false" href="#"><span class="fa-fw fa fa-moon-o"></span> {% trans "Dark Theme" %}</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </form>
+        </header>
+
+        <main id="main" class="container">
+
+            {% block form %}
+            {% endblock form %}
+
+            <div class="row">
+                <div class="col-12 col-lg-3 col-xl-2 mt-0">
+                    <nav class="nav nav-pills flex-column flex-sm-row flex-md-row sticky-top my-auto sticky-offset d-lg-block">
+                        <a href={% url "home" %} class="nav-link 
+                            {% block activeContact %}{% endblock activeContact %}
+                             ">
+                            <span class="fa-fw fa fa-home fa-md"></span>
+                            {% trans "Home" %}
+                        </a>
+
+                        {% if perms.patient.view_patient %}
+                            <a href="/patient/find/" class="nav-link 
+                                {% block activePatient %}{% endblock activePatient %}
+                                 " data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Add people that participated in the experiments" %}">
+                                <span class="fa-fw fa fa-users fa-md"></span>
+                                {% trans "Participants" %}
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
-                                <a class="dropdown-item" data-bs-theme-value="light" aria-pressed="false" href="#"><span class="fa-fw fa fa-sun-o"></span> {% trans "Light Theme" %}</a>
-                                <a class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false" href="#"><span class="fa-fw fa fa-moon-o"></span> {% trans "Dark Theme" %}</a>
-                            </div>
-                        </li>
-                    </ul>
+                        {% endif %}
+
+                        {% if perms.experiment.view_researchproject %}
+                            <a href="/experiment/research_project/list/" class="nav-link 
+                                {% block activeAdvancedResearchProject %}{% endblock activeAdvancedResearchProject %}
+                                 " data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Add publications" %}">
+                                <span class="fa-fw fa fa-graduation-cap fa-md"></span>
+                                {% trans "Studies" %}
+                            </a>
+                        {% endif %}
+
+                        {% if perms.experiment.view_researchproject %}
+                            <a href="/experiment/publication/list/" class="nav-link 
+                                {% block activeAdvancedPublication %}{% endblock activeAdvancedPublication %}
+                                 " data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Add publications" %}">
+                                <span class="fa-fw fa fa-book fa-md"></span>
+                                {% trans "Publications" %}
+                            </a>
+                        {% endif %}
+
+                        {% if perms.survey.view_survey %}
+                            <a href="/survey/list/" class="nav-link 
+                                {% block activeAdvancedSurvey %}{% endblock activeAdvancedSurvey %}
+                                 " data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Add users and institutions to the database" %}">
+                                <span class="fa-fw fa fa-list-alt fa-md"></span>
+                                {% trans "Questionnaires" %}
+                            </a>
+                        {% endif %}
+
+                        {% if perms.auth.add_user and perms.auth.change_user %}
+                            <a href="/user/list/" class="nav-link 
+                                {% block activeUser %}{% endblock activeUser %}
+                                 " data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Add users and institutions to the database" %}">
+                                <span class="fa-fw fa fa-user fa-md"></span>
+                                {% trans "Researchers" %}
+                            </a>
+                        {% endif %}
+
+                        {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
+                            <a href="/export/" class="nav-link 
+                                {% block activeExport %}{% endblock activeExport %}
+                                 " data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Export your projects" %}">
+                                <span class="fa-fw fa fa-upload fa-md"></span>
+                                {% trans "Export" %}
+                            </a>
+                        {% endif %}
+
+                        {% if perms.experiment.register_equipment %}
+                            <a href="/experiment/setup/" class="nav-link 
+                                {% block activeSetup %}{% endblock activeSetup %}
+                                 " data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Here you can setup the equipments used in the projects" %}">
+                                <span class="fa-fw fa fa-pencil fa-md"></span>
+                                {% trans "Set up" %}
+                            </a>
+                        {% endif %}
+
+                        {% cache 600 plugin_random_forests request.user.username using="redis" %}
+                        {% get_solo 'plugin.RandomForests' as random_forests %}
+                    {% endcache %}
+                    {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
+                        <a href={% url "send-to-plugin" %} class="nav-link 
+                            {% block activePlugin %}{% endblock activePlugin %}
+                             ">
+                            <span class="fa-fw fa fa-cloud-upload fa-md"></span>
+                            {% trans "Plugin" %}
+                        </a>
+                    {% endif %}
+
+                    <a href={% url "useful_links" %} class="nav-link 
+                        {% block activeLinks %}{% endblock activeLinks %}
+                         " data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Useful links of tools" %}">
+                        <span class="fa-fw fa fa-link fa-md"></span>
+                        {% trans "Useful Links" %}
+                    </a>
+
+                </nav>
+            </div>
+
+            <div class="col-12 col-lg-9 col-xl-10 flex-column mt-3 mt-sm-2 mt-lg-0">
+                <div id="myMenuContent" class="clearfix">
+                    <noscript>
+                        <h1 class="center">
+                            {% trans "Please enable Javascript" %} <span class="fw-bold text-danger">*</span>
+                        </h1>
+                    </noscript>
+
+                    {% block content %}
+                    {% endblock content %}
+
                 </div>
             </div>
-        </nav>
-    </form>
-</header>
-
-<main id="main" class="container">
-    {% block form %}{% endblock form %}
-
-    <div class="row">
-        <div class="col-12 col-lg-3 col-xl-2 mt-0">
-            <nav class="nav nav-pills flex-column flex-sm-row flex-md-row sticky-top my-auto sticky-offset d-lg-block">
-                <a href="/home/" class="nav-link {% block activeContact %}{% endblock %}">
-                    <span class="fa-fw fa fa-home fa-md"></span>
-                    {% trans "Home" %}
-                </a>
-
-                {% if perms.patient.view_patient %}
-                    <a href="/patient/find/" class="nav-link {% block activePatient %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add people that participated in the experiments' %}">
-                        <span class="fa-fw fa fa-users fa-md"></span>
-                        {% trans "Participants" %}
-                    </a>
-                {% endif %}
-
-                {% if perms.experiment.view_researchproject %}
-                    <a href="/experiment/research_project/list/" class="nav-link {% block activeAdvancedResearchProject %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add publications' %}">
-                        <span class="fa-fw fa fa-graduation-cap fa-md"></span>
-                        {% trans "Studies" %}
-                    </a>
-                {% endif %}
-
-                {% if perms.experiment.view_researchproject %}
-                    <a href="/experiment/publication/list/" class="nav-link {% block activeAdvancedPublication %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add publications' %}">
-                        <span class="fa-fw fa fa-book fa-md"></span>
-                        {% trans "Publications" %}
-                    </a>
-                {% endif %}
-
-                {% if perms.survey.view_survey %}
-                    <a href="/survey/list/" class="nav-link {% block activeAdvancedSurvey %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add users and institutions to the database' %}">
-                        <span class="fa-fw fa fa-list-alt fa-md"></span>
-                        {% trans "Questionnaires" %}
-                    </a>
-                {% endif %}
-
-                {% if perms.auth.add_user and perms.auth.change_user %}
-                    <a href="/user/list/" class="nav-link {% block activeUser %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Add users and institutions to the database' %}">
-                        <span class="fa-fw fa fa-user fa-md"></span>
-                        {% trans "Researchers" %}
-                    </a>
-                {% endif %}
-
-                {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
-                    <a href="/export/" class="nav-link {% block activeExport %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Export your projects' %}">
-                        <span class="fa-fw fa fa-upload fa-md"></span>
-                        {% trans "Export" %}
-                    </a>
-                {% endif %}
-
-                {% if perms.experiment.register_equipment %}
-                    <a href="/experiment/setup/" class="nav-link {% block activeSetup %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Here you can setup the equipments used in the projects' %}">
-                        <span class="fa-fw fa fa-pencil fa-md"></span>
-                        {% trans "Set up" %}
-                    </a>
-                {% endif %}
-                
-                {% cache 600 plugin_random_forests request.user.username using="redis"%}
-                {% get_solo 'plugin.RandomForests' as random_forests %}
-                {% endcache %}
-                {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
-                    <a href="/plugin/" class="nav-link {% block activePlugin %}{% endblock %}">
-                        <span class="fa-fw fa fa-cloud-upload fa-md"></span>
-                        {% trans "Plugin" %}
-                    </a>
-                {% endif %}
-
-                <a href="/links/" class="nav-link {% block activeLinks %}{% endblock %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans 'Useful links of tools' %}">
-                    <span class="fa-fw fa fa-link fa-md"></span>
-                    {% trans "Useful Links" %}
-                </a>
-
-            </nav>
         </div>
 
-        <div class="col-12 col-lg-9 col-xl-10 flex-column mt-3 mt-sm-2 mt-lg-0">
-            <div id="myMenuContent" class="clearfix">
-                <noscript><h1 class="center">{% trans "Please enable Javascript" %} <span class="fw-bold text-danger">*</span></h1></noscript>
-                {% block content %} {% endblock content %}
-            </div>
+        {% block end_form %}
+        {% endblock end_form %}
+
+    </main>
+
+    <footer class="footer mt-auto bg-body-tertiary">
+        <div class="container">
+            <a href="https://ccsl.ime.usp.br">
+                <img src={% static "imgs/logo-ccsl-sm.png" %} alt="Logo do Centro de Competência em Software Livre" width="120" height="40">
+            </a>
+
+            <span class="version_number">v
+                {% settings_value "VERSION" %}
+            </span>
         </div>
-    </div> 
+    </footer>
 
-    {% block end_form %}{% endblock end_form %}
-</main>
+    <script type="text/javascript" src="{% static "site/jquery/jquery-3.7.1.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static "site/jquery/jquery-migrate-3.4.0.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static "site/bootstrap-5.3.2-dist/js/bootstrap.bundle.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static "site/js/nes_utils.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static "site/toastr/toastr.min.js" %}" charset="utf-8"></script>
 
-<footer class="footer mt-auto bg-body-tertiary">
-    <div class="container">
-        <a href="https://ccsl.ime.usp.br">
-            <img src="{% static 'imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre" width="120" height="40">
-        </a>
+    <script type="text/javascript" async src="{% static "site/js/theme_picker.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" async src="{% static "site/jquery.autocomplete.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" async src="{% static "site/masked_input/jquery.maskedinput.min.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" async src="{% static "site/Bootstrap-Validator-Master/validator.min.js" %}" charset="utf-8"></script>
 
-        <span class="version_number">v{% settings_value "VERSION" %}</span>
-    </div>
-</footer>
+    <script type="text/javascript" async src="{% url "javascript-catalog" %}" charset="utf-8"></script>
 
+    <script type="text/javascript" charset="utf-8">
+        "use strict";
 
-<script type="text/javascript" src="{% static 'site/jquery/jquery-2.2.4.min.js' %}"></script>
-{% comment %} <script type="text/javascript" src="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script> {% endcomment %}
-<script type="text/javascript" src="{% static 'site/bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js' %}"></script>
-<script type="text/javascript" async src="{% static 'site/jquery.autocomplete.js' %}"></script>
-<script type="text/javascript" async src="{% static 'site/masked_input/jquery.maskedinput.min.js' %}"></script>
-<script type="text/javascript" async src="{% static 'site/Bootstrap-Validator-Master/validator.min.js' %}"></script>
-<script type="text/javascript" async src="{% static 'site/toastr/toastr.min.js' %}"></script>
-<script type="text/javascript" defer src="{% static 'site/js/nes_utils.js' %}"></script>
-<script type="text/javascript" async src="{% static 'site/js/theme_picker.js' %}"></script>
-<script type="text/javascript" async src="{% url 'javascript-catalog' %}"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "success" %}
+                    showSuccessMessage('{{ message }}');
+                {% endif %}
+                {% if message.tags == "warning" %}
+                    showWarningMessage('{{ message }}');
+                {% endif %}
+                {% if message.tags == "error" %}
+                    showErrorMessage('{{ message }}');
+                {% endif %}
+                {% if message.tags == "info" %}
+                    showInfoMessage('{{ message }}');
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
-<script type="text/javascript">
-    {% if messages %}
-        {% for message in messages %}
-            {% if message.tags == "success" %}
-                showSuccessMessage('{{ message }}');
-            {% endif %}
-            {% if message.tags == "warning" %}
-                showWarningMessage('{{ message }}');
-            {% endif %}
-            {% if message.tags == "error" %}
-                showErrorMessage('{{ message }}');
-            {% endif %}
-            {% if message.tags == "info" %}
-                showInfoMessage('{{ message }}');
-            {% endif %}
-        {% endfor %}
-    {% endif %}
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    </script>
 
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-</script>
-{% block extrascript %}{% endblock extrascript %}
+    {% block extrascript %}
+    {% endblock extrascript %}
+
 </body>
 </html>

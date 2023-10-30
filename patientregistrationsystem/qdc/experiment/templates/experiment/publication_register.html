@@ -2,208 +2,228 @@
 
 {% load i18n static %}
 
-{% block activeAdvancedPublication %} active{% endblock activeAdvancedPublication %}
+{% block activeAdvancedPublication %}
+    active
+{% endblock activeAdvancedPublication %}
 
 {% block form %}
     <form id="user_form" method="post" data-bs-toggle="validator">
         {% csrf_token %}
-{% endblock form %}
+    {% endblock form %}
 
-{% block content %}
-    <div class="tab-pane fade show active">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/publication/list/">{% trans "Publications" %}</a></li>
+    {% block content %}
+        <div class="tab-pane fade show active">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/publication/list/">{% trans "Publications" %}</a>
+                    </li>
 
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New" %}</li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item"><a href="/experiment/publication/{{ publication.id }}">{{ publication_form.title.value }}</a></li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "New" %}</li>
                     {% else %}
-                        <li class="breadcrumb-item active">{{ publication_form.title.value }} </li>
-                    {% endif %}
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-            <h4>{% trans "Publication" %}</h4>
-            <hr>
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <div class="form-group">
-                        <label class="form-label" for="id_title">{% trans "Title" %} <b class="text-danger">*</b></label>
-                        {{ publication_form.title }}
-                        <div class="form-text with-errors"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <div class="form-group">
-                        <label class="form-label" for="id_publication_type">{% trans "Publication Type" %} <b class="text-danger">*</b></label>
-                        {{ publication_form.publication_type }}
-                        <div class="form-text with-errors"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <div class="form-group">
-                        <label class="form-label" for="id_citation">{% trans "Citation" %} <b class="text-danger">*</b></label>
-                        {{ publication_form.citation }}
-                        <div class="form-text with-errors"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <div class="form-group">
-                        <label class="form-label" for="id_url">{% trans "URL" %}</label>
-                        {{ publication_form.url }}
-                        <div class="form-text with-errors"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <div class="form-group">
-                        <label class="form-label" for="id_file">{% trans "File" %}</label>
                         {% if editing %}
-                            {{ publication_form.file }}
+                            <li class="breadcrumb-item">
+                                <a href="/experiment/publication/{{ publication.id }}">{{ publication_form.title.value }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
                         {% else %}
-                            {{ publication_form.file.value }}
-                            <button class="btn btn-light" type="button" onclick="location.href='{{ publication_form.file.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
+                            <li class="breadcrumb-item active">{{ publication_form.title.value }}</li>
                         {% endif %}
-                        <div class="form-text with-errors"></div>
-                    </div>
-                </div>
-            </div>
-
-            {% if not editing and can_change %}
-                <br>
-                <div class="btn-group">
-                    <a href="/experiment/publication/edit/{{ publication.id }}/" class="btn btn-primary">{% trans "Edit" %}</a>
-                </div>
-            {% endif %}
-
+                    {% endif %}
+                </ol>
+            </nav>
         </div>
 
-        {% if not editing %}
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Related experiments/Projects" %}</h4>
+                <h4>{% trans "Publication" %}</h4>
                 <hr>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Title" %}</th>
-                                <th>{% trans "Description" %}</th>
-                                <th style="text-align: center"><span class="fa-fw fa fa-share-alt"></span> {% trans "Is public" %}</th>
-                                <th style="text-align: center"><span class="fa-fw fa fa-upload"></span> {% trans "Data acquisition is concluded" %}</th>
-                                <th>{% trans "Remove" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for experiment in publication.experiments.all %}
-                            <tr>
-                                <td>
-                                    {% if perms.experiment.view_researchproject %}<a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Visualize' %}"
-                                        href="/experiment/{{ experiment.id }}">
-                                        {{ experiment.title }}
-                                    </a>
-                                    {% else %}
-                                        {{ experiment.title }}
-                                    {% endif %}
-                                </td>
-                                <td>{{ experiment.description }}</td>
-                                <td style="text-align: center">{% if experiment.is_public %}<span class="fa-fw fa fa-check" style="color: royalblue"></span> {% endif %}</td>
-                                <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="fa-fw fa fa-check" style="color: royalblue"></span> {% endif %}</td>
-                                <td class="text-center col-lg-1">
-                                    <a class="btn fa-fw fa fa-remove" style="color: indianred;" data-bs-toggle="tooltip" data-bs-placement="right" onclick="show_modal_remove_experiment_from_publication('{{ experiment.id }}');" title="{% trans 'Remove experiment/project from list' %}"></a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label" for="id_title">
+                                {% trans "Title" %} <b class="text-danger">*</b>
+                            </label>
+                            {{ publication_form.title }}
+                            <div class="form-text with-errors"></div>
+                        </div>
+                    </div>
                 </div>
-                {% if perms.experiment.add_experiment and can_change %}
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label" for="id_publication_type">
+                                {% trans "Publication Type" %} <b class="text-danger">*</b>
+                            </label>
+                            {{ publication_form.publication_type }}
+                            <div class="form-text with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label" for="id_citation">
+                                {% trans "Citation" %} <b class="text-danger">*</b>
+                            </label>
+                            {{ publication_form.citation }}
+                            <div class="form-text with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label" for="id_url">{% trans "URL" %}</label>
+                            {{ publication_form.url }}
+                            <div class="form-text with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label" for="id_file">{% trans "File" %}</label>
+                            {% if editing %}
+                                {{ publication_form.file }}
+                            {% else %}
+                                {{ publication_form.file.value }}
+                                <button class="btn btn-light" type="button" onclick="location.href='{{ publication_form.file.url }}'">
+                                    <span class="fa-fw fa fa-download-alt  text-info"></span>
+                                </button>
+                            {% endif %}
+                            <div class="form-text with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if not editing and can_change %}
                     <br>
                     <div class="btn-group">
-                        <a href="/experiment/publication/{{ publication.id }}/add_experiment/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                        <a href="/experiment/publication/edit/{{ publication.id }}/" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
-            </div>
-        {% endif %}
-    </div>
 
-    <div class="btn-toolbar justify-content-between" role="toolbar">
-        <div class="btn-group">
-            {% if not editing and perms.experiment.delete_researchproject and can_change %}
-                <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
+            </div>
+
+            {% if not editing %}
+                <div class="my-3 p-3 bg-body rounded shadow-sm">
+                    <h4>{% trans "Related experiments/Projects" %}</h4>
+                    <hr>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Title" %}</th>
+                                    <th>{% trans "Description" %}</th>
+                                    <th class="text-center">
+                                        <span class="fa-fw fa fa-share-alt"></span> {% trans "Is public" %}
+                                    </th>
+                                    <th class="text-center">
+                                        <span class="fa-fw fa fa-upload"></span> {% trans "Data acquisition is concluded" %}
+                                    </th>
+                                    <th>{% trans "Remove" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for experiment in publication.experiments.all %}
+                                    <tr>
+                                        <td>
+                                            {% if perms.experiment.view_researchproject %}
+                                                <a data-bs-toggle="tooltip" data-bs-placement="left" title={% trans "Visualize" %} href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a>
+                                            {% else %}
+                                                {{ experiment.title }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ experiment.description }}</td>
+                                        <td class="text-center">
+                                            {% if experiment.is_public %}<span class="fa-fw fa fa-check text-info"></span>{% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if experiment.data_acquisition_is_concluded %}<span class="fa-fw fa fa-check text-info"></span>{% endif %}
+                                        </td>
+                                        <td class="text-center col-lg-1">
+                                            <a class="btn fa-fw fa fa-remove"
+                                               style="color: indianred"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-placement="right"
+                                               onclick="show_modal_remove_experiment_from_publication('{{ experiment.id }}');"
+                                               title="{% trans "Remove experiment/project from list" %}"></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if perms.experiment.add_experiment and can_change %}
+                        <br>
+                        <div class="btn-group">
+                            <a href="/experiment/publication/{{ publication.id }}/add_experiment/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                        </div>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
-        {% if editing %}
+
+        <div class="btn-toolbar justify-content-between" role="toolbar">
             <div class="btn-group">
-                <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-
-                <a href="/experiment/publication/{% if publication.id %}{{ publication.id }}{% else %}list{% endif %}"
-                    class="btn btn-light">{% trans "Cancel" %}
-                </a>
+                {% if not editing and perms.experiment.delete_researchproject and can_change %}
+                    <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
+                {% endif %}
             </div>
-        {% else %}
-            <div class="btn-group">
-                <a href="/experiment/publication/list/" class="btn btn-light">{% trans "Back" %}</a>
-            </div>
-        {% endif %}
-    </div>
+            {% if editing %}
+                <div class="btn-group">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
 
-
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete this publication?" %}
+                    <a href="/experiment/publication/{% if publication.id %}{{ publication.id }}{% else %}list{% endif %}"
+                       class="btn btn-light">{% trans "Cancel" %}</a>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+            {% else %}
+                <div class="btn-group">
+                    <a href="/experiment/publication/list/" class="btn btn-light">{% trans "Back" %}</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">{% trans "Are you sure you want to delete this publication?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalRemoveExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to remove experiment/project from list?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" id="remove-experiment" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+        <div class="modal fade"
+             id="modalRemoveExperiment"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">{% trans "Are you sure you want to remove experiment/project from list?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" id="remove-experiment" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endblock content %}
 
-{% endblock content %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
 {% endblock end_form %}
 
 {% block extrascript %}
-    {% if publication_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-    <script src="{% static 'site/js/publication_register.js' %}"></script>
-{% endblock %}
+    {% if publication_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
+    <script src={% static "site/js/publication_register.js" %}></script>
+{% endblock extrascript %}

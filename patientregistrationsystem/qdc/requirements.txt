@@ -13,6 +13,7 @@ django-rosetta
 django-debug-toolbar>=4.2, <5.0
 django-extensions>=3.2.3, <4.0
 jsonrpclib==0.2.1
+django_compressor
 
 python-dateutil==2.8.2
 psycopg[c]
@@ -51,4 +52,5 @@ types-python-dateutil
 django-stubs[compatible-mypy]
 django-stubs-ext 
 mypy
+djlint
 

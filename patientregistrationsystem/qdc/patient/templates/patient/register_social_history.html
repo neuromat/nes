@@ -3,15 +3,15 @@
 {% load i18n static %}
 
 {% block sub_content %}
-    <div class="tab-pane {% if currentTab == '2' %}active{% endif %}" id="tab3">
+    <div class="tab-pane {% if currentTab == "2" %}active{% endif %}" id="tab3">
         <div class="row">
             <div class="container-fluid">
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <div class="row">
-                        <div class="col-sm-12" style="text-align: right; vertical-align: bottom">
-                            {% if perms.patient.sensitive_data_patient %}
-                                <label class="fw-semibold" for="code" >{% trans "Code" %}:</label>
-                                <span class="disabled"> {{ code }} </span>
+                        <div class="col col-12 text-end">
+                            {% if perms.patient.sensitive_data_patient and code %}
+                                <label class="fw-semibold" for="code">{% trans "Code" %}:</label>
+                                <span class="disabled user-select-all">{{ code }}</span>
                             {% endif %}
                         </div>
                     </div>
@@ -21,11 +21,7 @@
                                 <label>{% trans "Smoker" %}</label>
 
                                 <div class="form-group">
-                                    {% for radio in social_history_form.smoker %}
-                                        <div class="form-check form-check-inline">
-                                            {{ radio }}
-                                        </div>
-                                    {% endfor %}
+                                    {% for radio in social_history_form.smoker %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -33,18 +29,14 @@
                             <div class="form-group">
                                 <label>{% trans "Cigarretes/Day" %}</label>
 
-                                <div class="input-group  input-group-sm">
-                                    {{ social_history_form.amount_cigarettes }}
-                                </div>
+                                <div class="input-group  input-group-sm">{{ social_history_form.amount_cigarettes }}</div>
                             </div>
                         </div>
                         <div class="col-6 col-sm-4">
                             <div class="form-group">
                                 <label>{% trans "Former smoker" %}</label>
 
-                                <div class="form-group">
-                                    {{ social_history_form.ex_smoker }}
-                                </div>
+                                <div class="form-group">{{ social_history_form.ex_smoker }}</div>
                             </div>
                         </div>
                     </div>
@@ -54,11 +46,7 @@
                                 <label>{% trans "Alcoholic" %}</label>
 
                                 <div class="form-group">
-                                    {% for radio in social_history_form.alcoholic %}
-                                        <div class="form-check form-check-inline">
-                                            {{ radio }}
-                                        </div>
-                                    {% endfor %}
+                                    {% for radio in social_history_form.alcoholic %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -66,18 +54,14 @@
                             <div class="form-group">
                                 <label>{% trans "Frequency" %}</label>
 
-                                <div class="input-group input-group-sm">
-                                    {{ social_history_form.alcohol_frequency }}
-                                </div>
+                                <div class="input-group input-group-sm">{{ social_history_form.alcohol_frequency }}</div>
                             </div>
                         </div>
                         <div class="col-6 col-sm-4">
                             <div class="form-group">
                                 <label>{% trans "Period" %}</label>
 
-                                <div class="input-group input-group-sm">
-                                    {{ social_history_form.alcohol_period}}
-                                </div>
+                                <div class="input-group input-group-sm">{{ social_history_form.alcohol_period }}</div>
                             </div>
                         </div>
                     </div>
@@ -87,17 +71,13 @@
                                 <label>{% trans "Drugs" %}</label>
 
                                 <div class="form-group  input-group-sm">
-                                    {% for radio in social_history_form.drugs %}
-                                        <div class="form-check form-check-inline">
-                                            {{ radio }}
-                                        </div>
-                                    {% endfor %}
+                                    {% for radio in social_history_form.drugs %}<div class="form-check form-check-inline">{{ radio }}</div>{% endfor %}
                                 </div>
                             </div>
                         </div>
                     </div>
                     <br>
-                    <div class ="row">
+                    <div class="row">
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
                                 <label class="form-label">{% trans "Medical Drugs History" %}</label>
@@ -109,9 +89,9 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock sub_content %}
 
 {% block extrascript %}
-{{ block.super }}
-    <script src="{% static 'site/js/patient_social_history.js' %}"></script>
-{% endblock %}
+    {{ block.super }}
+    <script src={% static "site/js/patient_social_history.js" %}></script>
+{% endblock extrascript %}

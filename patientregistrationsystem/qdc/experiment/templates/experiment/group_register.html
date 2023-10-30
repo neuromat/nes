@@ -2,57 +2,64 @@
 
 {% load i18n static %}
 
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% block extrahead %}
-    <link rel="stylesheet" href="{% static 'site/magnific-popup/magnific-popup.css' %}">
-{% endblock %}
+    <link rel="stylesheet" href={% static "site/magnific-popup/magnific-popup.css" %}>
+{% endblock extrahead %}
 
 {% block form %}
     <form id="user_form" method="post" data-bs-toggle="validator">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
+        {% if experiment_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-    {% if experiment_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
+        <div class="tab-pane fade show active" id="experimentBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a>
+                    </li>
 
-
-    <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
-
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New group" %}</li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group_form.title.value }}</a></li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "New group" %}</li>
                     {% else %}
-                        <li class="breadcrumb-item active"> {{ group_form.title.value }} </li>
+                        {% if editing %}
+                            <li class="breadcrumb-item">
+                                <a href="/experiment/group/{{ group.id }}">{{ group_form.title.value }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                        {% else %}
+                            <li class="breadcrumb-item active">{{ group_form.title.value }}</li>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Group basic information" %}</h4>
-<hr>
+                <hr>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Title" %} <b class="text-danger">*</b></label>
+                            <label class="form-label">
+                                {% trans "Title" %} <b class="text-danger">*</b>
+                            </label>
                             {{ group_form.title }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -61,7 +68,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Description" %} <b class="text-danger">*</b></label>
+                            <label class="form-label">
+                                {% trans "Description" %} <b class="text-danger">*</b>
+                            </label>
                             {{ group_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -91,351 +100,371 @@
             {% if not editing %}
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <h4>{% trans "Inclusion criteria" %}</h4>
+                    <hr>
                     {% if can_change %}
                         <div class="row">
                             <div class="col-12 col-sm-12">
                                 <div class="form-group">
                                     <input id="group_id" value="{{ group.id }}" style="display: none;">
-                                    <div class="input-group  input-group-sm "><span class="input-group-text">
+                                    <div class="input-group  input-group-sm ">
+                                        <span class="input-group-text">
                                             <span class="fa-fw fa fa-edit"></span></span>
-                                        <input class="form-control" id="get_diseases" type="text"
-                                               placeholder="{%  trans "Inform disease diagnosis or disease code (ICD-10)" %}">
+                                            <input class="form-control"
+                                                   id="get_diseases"
+                                                   type="text"
+                                                   placeholder="{% trans "Inform disease diagnosis or disease code (ICD-10)" %}">
+                                        </div>
+                                        {% csrf_token %}
+                                        <ul id="search-results-diseases" style="list-style: none;">
+                                        </ul>
                                     </div>
-                                    {% csrf_token %}
-                                    <ul id="search-results-diseases" style="list-style: none;"></ul>
                                 </div>
                             </div>
-                        </div>
-                    {% endif %}
-                    <div class="row">
-                        <div class="col-12 col-sm-12">
-                            <div class="form-group">
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>CID</th>
-                                        <th>{% trans "Description" %}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% if not classification_of_diseases_list %}
-                                        <tr>
-                                            <td colspan="2">
-                                                {% trans "There are no diagnosis as inclusion criteria of participants in this group" %}
-                                            </td>
-                                        </tr>
-                                    {% else %}
-                                        {% for classification_of_diseases in classification_of_diseases_list %}
-                                            <tr>
-                                                <td>{{ classification_of_diseases.code }}</td>
-                                                <td>
-                                                    {{ classification_of_diseases.abbreviated_description }}
-                                                    {% if can_change %}
-                                                        <a class="btn fa-fw fa fa-remove" data-bs-toggle="tooltip"
-                                                           data-bs-placement="right" title="{% trans "Delete" %}" style="color: indianred;
-                                                       position: relative; float: right; padding: 0"
-                                                           onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-sm-12">
-                            <div class="form-group">
-                                <label class="form-label">{% trans "Other inclusion description" %}</label>
-                                {{ group_form.inclusion_description }}
-                                <div class="form-text with-errors"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4>{% trans "Questionnaires of experimental protocol" %}</h4>
-                    <div class="form-group">
-                        <table class="table table-striped col-12 col-lg-12">
-                            <thead>
-                            <tr>
-                                <th class="col-lg-6">{% trans "Name" %}</th>
-                                {# Can't use bootstrap tooltip in the columns, because it hurts the format of the table. #}
-                                {# data-bs-toggle="tooltip" data-bs-placement="top" #}
-                                <th class="col-lg-2 d-none"
-                                    title="{% trans "Quantity of fills for each participant" %}">
-                                    {% trans "Needed fills by participant" %}</th>
-                                <th class="col-lg-2 d-none"
-                                    title={% trans "Quantity of fills needed by pariticipant multiplied by quantity of participants in this group" %}>
-                                    {% trans "Total fills needed" %}</th>
-                                <th class="col-lg-2 d-none"
-                                    title={% trans "Sum of fills quantity already made by each participant" %}>
-                                    {% trans "Total fills already made" %}</th>
-                                <th class="visible-xs"
-                                    title={% trans "Quantity of fills for each participant" %}>
-                                    {% trans "PNP" %}<sup>1</sup></th>
-                                <th class="visible-xs"
-                                    title={% trans "Quantity of fills needed by pariticipant multiplied by quantity of participants in this group" %}>
-                                    {% trans "TPN" %}<sup>2</sup></th>
-                                <th class="visible-xs"
-                                    title={% trans "Sum of fills quantity already made by each participant" %}>
-                                    {% trans "TPR" %}<sup>3</sup></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                {% if questionnaires_configuration_list|length == 0 %}
-                                    <tr>
-                                        <td colspan="4">
-                                            {% trans "There are no questionnaires in the experimental protocol in this group" %}
-                                        </td>
-                                    </tr>
-                                {% else %}
-                                    {% for questionnaire_configuration in questionnaires_configuration_list %}
-                                        <tr>
-                                            <td>
-                                                <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}"
-                                                   href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">
-                                                    {{ questionnaire_configuration.survey_title }}
-                                                </a>
-                                            </td>
-                                            <td>
-                                                {{ questionnaire_configuration.fills_per_participant }}
-                                            </td>
-                                            <td>
-                                                {{ questionnaire_configuration.total_fills_needed }}
-                                            </td>
-                                            <td>
-                                                {{ questionnaire_configuration.total_fills_done }}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                {% endif %}
-                            </tbody>
-                        </table>
-                        <p class="col-xp-12 visible-xs"><sup>1</sup> {% trans "Needed fills by participant" %}</p>
-                        <p class="col-xp-12 visible-xs"><sup>2</sup> {% trans "Total fills needed" %}</p>
-                        <p class="col-xp-12 visible-xs"><sup>3</sup> {% trans "Total fills already made" %}</p>
-                    </div>
-                </div>
-
-                <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4>{% trans "Participants and data collections" %}</h4>
-                    <div class="row">
-                        <div class="col-12 col-sm-12">
-                            {% if number_of_subjects > 0 %}
-                                <div class="form-group">
-                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "View / Edit" %}"
-                                       href="/experiment/group/{{ group.id }}/subjects">
-                                        {% if number_of_subjects == 1 %}
-                                            {% blocktrans %}There is {{ number_of_subjects }} participant recorded{% endblocktrans %}
-                                        {% else %}
-                                            {% blocktrans %}There are {{ number_of_subjects }} participants recorded{% endblocktrans %}
-                                        {% endif %}
-                                    </a>
-                                </div>
-                            {% else %}
-                                <div style="margin-bottom: 1em">
-                                    {% trans "No participants recorded" %}
-                                </div>
-                                {% if perms.experiment.add_subject and can_change %}
-{#                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">#}
-                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn
-                                    btn-primary">
-                                        {% trans "Add participant/s" %}
-                                    </a>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4>{% trans "Experimental protocol" %}</h4>
-                    <div class="row">
-                        <div class="col-12 col-sm-12">
-                            {% if group.experimental_protocol %}
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-12 col-sm-12">
                                 <div class="form-group">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>{% trans "Set of root steps" %}</th>
+                                                <th>CID</th>
                                                 <th>{% trans "Description" %}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Edit" %}"
-                                                       href="/experiment/component/G{{ group.id }}-{{ group.experimental_protocol.id}}">
-                                                        {{ group.experimental_protocol.identification }}
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    {{ group.experimental_protocol.description }}
-
-                                                    {% if can_change %}
-                                                       {% if group_has_data_collection %}
-                                                        <a class="btn fa-fw fa fa-ban" data-bs-toggle="tooltip" data-bs-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
-                                                           title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}">
-                                                        </a>
-                                                       {% else %}
-                                                            <a class="btn fa-fw fa fa-remove" data-bs-toggle="tooltip" data-bs-placement="right" style="color: indianred; position: relative; float: right; padding: 0"
-                                                               title="{% trans "UnConfigure experimental protocol" %}" onclick="show_modal_remove_experimental_protocol();">
-                                                            </a>
-                                                       {% endif %}
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
+                                            {% if not classification_of_diseases_list %}
+                                                <tr>
+                                                    <td colspan="2">{% trans "There are no diagnosis as inclusion criteria of participants in this group" %}</td>
+                                                </tr>
+                                            {% else %}
+                                                {% for classification_of_diseases in classification_of_diseases_list %}
+                                                    <tr>
+                                                        <td>{{ classification_of_diseases.code }}</td>
+                                                        <td>
+                                                            {{ classification_of_diseases.abbreviated_description }}
+                                                            {% if can_change %}
+                                                                <a class="btn fa-fw fa fa-remove"
+                                                                   data-bs-toggle="tooltip"
+                                                                   data-bs-placement="right"
+                                                                   title="{% trans "Delete" %}"
+                                                                   style="color: indianred;
+                                                                          position: relative;
+                                                                          float: right;
+                                                                          padding: 0"
+                                                                   onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
                                         </tbody>
                                     </table>
-
-                                    <div class="row">
-                                        <div class="col-lg-7">
-                                            <label class="form-label">{% trans "Textual description" %}</label>
-                                            <textarea class="form-control" rows="25" disabled>{{ experimental_protocol_description }}</textarea>
-                                        </div>
-                                        <div class="col-lg-5">
-
-                                            <label class="form-label">{% trans "Graph representation" %}</label>
-
-                                            {% if experimental_protocol_image %}
-
-                                                <a class="experimental-protocol-image-popup-link" href="{{ experimental_protocol_image }}">
-                                                    <img src="{{ experimental_protocol_image }}" style="width: 100%" />
-                                                </a>
-
-                                            {% else %}
-                                                <br/>
-                                                {% trans "Image not available." %}
-                                            {% endif %}
-
-                                        </div>
-                                    </div>
-
                                 </div>
-                            {% else %}
-                                <div style="margin-bottom: 1em">
-                                    {% trans "There is no experimental protocol configured" %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label">{% trans "Other inclusion description" %}</label>
+                                    {{ group_form.inclusion_description }}
+                                    <div class="form-text with-errors"></div>
                                 </div>
-                                {% if can_change %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="my-3 p-3 bg-body rounded shadow-sm">
+                        <h4>{% trans "Questionnaires of experimental protocol" %}</h4>
+                        <hr>
+                        <div class="form-group">
+                            <table class="table table-striped col-12 col-lg-12">
+                                <thead>
+                                    <tr>
+                                        <th class="col-lg-6">{% trans "Name" %}</th>
+                                        {# Can't use bootstrap tooltip in the columns, because it hurts the format of the table. #}
+                                        {# data-bs-toggle="tooltip" data-bs-placement="top" #}
+                                        <th class="col-lg-2 d-none" title="{% trans "Quantity of fills for each participant" %}">{% trans "Needed fills by participant" %}</th>
+                                        <th class="col-lg-2 d-none"
+                                            title="{% trans "Quantity of fills needed by pariticipant multiplied by quantity of participants in this group" %}">
+                                            {% trans "Total fills needed" %}
+                                        </th>
+                                        <th class="col-lg-2 d-none" title={% trans "Sum of fills quantity already made by each participant" %}>{% trans "Total fills already made" %}</th>
+                                        <th class="visible-xs" title={% trans "Quantity of fills for each participant" %}>
+                                            {% trans "PNP" %}<sup>1</sup>
+                                        </th>
+                                        <th class="visible-xs"
+                                            title="{% trans "Quantity of fills needed by pariticipant multiplied by quantity of participants in this group" %}">
+                                            {% trans "TPN" %}<sup>2</sup>
+                                        </th>
+                                        <th class="visible-xs" title={% trans "Sum of fills quantity already made by each participant" %}>
+                                            {% trans "TPR" %}<sup>3</sup>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if questionnaires_configuration_list|length == 0 %}
+                                        <tr>
+                                            <td colspan="4">{% trans "There are no questionnaires in the experimental protocol in this group" %}</td>
+                                        </tr>
+                                    {% else %}
+                                        {% for questionnaire_configuration in questionnaires_configuration_list %}
+                                            <tr>
+                                                <td>
+                                                    <a data-bs-toggle="tooltip"
+                                                       data-bs-placement="left"
+                                                       title="{% trans "Edit" %}"
+                                                       href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">
+                                                        {{ questionnaire_configuration.survey_title }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ questionnaire_configuration.fills_per_participant }}</td>
+                                                <td>{{ questionnaire_configuration.total_fills_needed }}</td>
+                                                <td>{{ questionnaire_configuration.total_fills_done }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                            <p class="col-xp-12 visible-xs">
+                                <sup>1</sup> {% trans "Needed fills by participant" %}
+                            </p>
+                            <p class="col-xp-12 visible-xs">
+                                <sup>2</sup> {% trans "Total fills needed" %}
+                            </p>
+                            <p class="col-xp-12 visible-xs">
+                                <sup>3</sup> {% trans "Total fills already made" %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="my-3 p-3 bg-body rounded shadow-sm">
+                        <h4>{% trans "Participants and data collections" %}</h4>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12 col-sm-12">
+                                {% if number_of_subjects > 0 %}
                                     <div class="form-group">
-                                        <a href="/experiment/component/G{{ group.id }}/add_new/block" class="btn btn-primary"
-                                                data-bs-toggle="tooltip" data-bs-placement="right"
-                                                title="{% trans "The experimental protocol root is always a set of steps. You can create a new set or reuse some that have already been created for this experiment." %}">
-                                            {% trans "Configure / Create" %}</a>
+                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "View / Edit" %}" href="/experiment/group/{{ group.id }}/subjects">
+                                            {% if number_of_subjects == 1 %}
+                                                {% blocktrans %}There is {{ number_of_subjects }} participant recorded{% endblocktrans %}
+                                            {% else %}
+                                                {% blocktrans %}There are {{ number_of_subjects }} participants recorded{% endblocktrans %}
+                                            {% endif %}
+                                        </a>
                                     </div>
+                                {% else %}
+                                    <div style="margin-bottom: 1em">{% trans "No participants recorded" %}</div>
+                                    {% if perms.experiment.add_subject and can_change %}
+                                        <br>
+                                        {#                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">#}
+                                        <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">{% trans "Add participant/s" %}</a>
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="my-3 p-3 bg-body rounded shadow-sm">
+                        <h4>{% trans "Experimental protocol" %}</h4>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12 col-sm-12">
+                                {% if group.experimental_protocol %}
+                                    <div class="form-group">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>{% trans "Set of root steps" %}</th>
+                                                    <th>{% trans "Description" %}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <a data-bs-toggle="tooltip"
+                                                           data-bs-placement="left"
+                                                           title="{% trans "Edit" %}"
+                                                           href="/experiment/component/G{{ group.id }}-{{ group.experimental_protocol.id }}">
+                                                            {{ group.experimental_protocol.identification }}
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        {{ group.experimental_protocol.description }}
+
+                                                        {% if can_change %}
+                                                            <br>
+                                                            {% if group_has_data_collection %}
+                                                                <a class="btn fa-fw fa fa-ban"
+                                                                   data-bs-toggle="tooltip"
+                                                                   data-bs-placement="right"
+                                                                   style="color: indianred;
+                                                                          position: relative;
+                                                                          float: right;
+                                                                          padding: 0"
+                                                                   title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}">
+                                                                </a>
+                                                            {% else %}
+                                                                <a class="btn fa-fw fa fa-remove"
+                                                                   data-bs-toggle="tooltip"
+                                                                   data-bs-placement="right"
+                                                                   style="color: indianred;
+                                                                          position: relative;
+                                                                          float: right;
+                                                                          padding: 0"
+                                                                   title="{% trans "UnConfigure experimental protocol" %}"
+                                                                   onclick="show_modal_remove_experimental_protocol();"></a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <div class="row">
+                                            <div class="col-lg-7">
+                                                <label class="form-label">{% trans "Textual description" %}</label>
+                                                <textarea class="form-control" rows="25" disabled>{{ experimental_protocol_description }}</textarea>
+                                            </div>
+                                            <div class="col-lg-5">
+
+                                                <label class="form-label">{% trans "Graph representation" %}</label>
+
+                                                {% if experimental_protocol_image %}
+                                                    <a class="experimental-protocol-image-popup-link" href="{{ experimental_protocol_image }}">
+                                                        <img src="{{ experimental_protocol_image }}" style="width: 100%" />
+                                                    </a>
+                                                {% else %}
+                                                    <br />
+                                                    {% trans "Image not available." %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div style="margin-bottom: 1em">{% trans "There is no experimental protocol configured" %}</div>
+                                    {% if can_change %}
+                                        <br>
+                                        <div class="form-group">
+                                            <a href="/experiment/component/G{{ group.id }}/add_new/block"
+                                               class="btn btn-primary"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-placement="right"
+                                               title="{% trans "The experimental protocol root is always a set of steps. You can create a new set or reuse some that have already been created for this experiment." %}">
+                                            {% trans "Configure / Create" %}</a>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="btn-toolbar justify-content-between" role="toolbar">
+                    <div class="btn-group">
+                        {% if not editing and perms.experiment.delete_experiment and can_change %}
+                            <button type="button" class="btn btn-danger" onclick="show_modal_remove_group()">{% trans "Delete" %}</button>
+                        {% endif %}
+                    </div>
+                    {% if editing %}
+                        <div class="btn-group float-end">
+                            <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                            <a href="/experiment/{% if creating %}{{ experiment.id }}{% else %}group/{{ group.id }}{% endif %}" class="btn btn-light">{% trans "Cancel" %}</a>
+                        </div>
+                    {% else %}
+                        <div class="btn-group float-end">
+                            <a href="/experiment/{{ experiment.id }}" class="btn btn-light">{% trans "Back" %}</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">{% trans "Are you sure you want to delete group?" %}</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disable_remove_button()">{% trans "Cancel" %}</button>
+                            <button type="submit" class="btn btn-danger" id="remove-group" disabled="disabled" value="remove" name="action">{% trans "Delete" %}</button>
                         </div>
                     </div>
                 </div>
-            {% endif %}
+            </div>
 
-            <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group">
-                    {% if not editing and perms.experiment.delete_experiment and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="show_modal_remove_group()">{% trans "Delete" %}</button>
-                    {% endif %}
-                </div>
-                {% if editing %}
-                    <div class="btn-group float-end">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                        <a href="/experiment/{% if creating %}{{ experiment.id }}{% else %}group/{{ group.id }}{% endif %}"
-                           class="btn btn-light">{% trans "Cancel" %}</a>
+            <div class="modal fade"
+                 id="modalRemoveClassificationOfDiseases"
+                 tabindex="-1"
+                 role="dialog"
+                 aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">{% trans "Are you sure you want to delete diagnosis?" %}</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                            <a type="button" class="btn btn-danger" id="removeClassificationOfDiseases" href="">{% trans "Delete" %}</a>
+                        </div>
                     </div>
-                {% else %}
-                    <div class="btn-group float-end">
-                        <a href="/experiment/{{ experiment.id }}" class="btn btn-light">{% trans "Back" %}</a>
+                </div>
+            </div>
+
+            <div class="modal fade"
+                 id="modalRemoveExperimentalProtocol"
+                 tabindex="-1"
+                 role="dialog"
+                 aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">{% trans "Are you sure you want to unprovision experimental protocol?" %}</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                            <button type="submit" class="btn btn-danger" value="remove_experimental_protocol" name="action">{% trans "Unset" %}</button>
+                        </div>
                     </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete group?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disable_remove_button()" >{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" id="remove-group" disabled="disabled" value="remove" name="action">{% trans "Delete" %}</button>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="modal fade" id="modalRemoveClassificationOfDiseases" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete diagnosis?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <a type="button" class="btn btn-danger" id="removeClassificationOfDiseases" href="">{% trans "Delete" %}</a>
+            <div class="modal fade"
+                 id="modalCopyExperiment"
+                 tabindex="-1"
+                 role="dialog"
+                 aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">{% trans "This experiment is in use, you can not change it! Do you want to copy this experiment?" %}</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                            <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="modal fade" id="modalRemoveExperimentalProtocol" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to unprovision experimental protocol?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" value="remove_experimental_protocol" name="action">{% trans "Unset" %}</button>
+        </a>
+
+        <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" data-bs-dismiss="modal">
+                <div class="modal-content">
+                    <div class="modal-body modal-lg">
+                        <button type="button" class="close" data-bs-dismiss="modal">
+                            <span aria-hidden="true">&amp;times</span><span class="sr-only">Close</span>
+                        </button>
+                        <img src="" class="imagepreview" style="width: 100%;">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "This experiment is in use, you can not change it! Do you want to copy this experiment?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% endblock content %}
 
-
-</a>
-
-<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog" data-bs-dismiss="modal">
-        <div class="modal-content"  >
-            <div class="modal-body modal-lg">
-                <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <img src="" class="imagepreview" style="width: 100%;" >
-            </div>
-        </div>
-    </div>
-</div>
-
-{% endblock %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/group_register.js' %}"></script>
-    <script src="{% static 'site/magnific-popup/jquery.magnific-popup.js' %}"></script>
+    <script src={% static "site/js/group_register.js" %}></script>
+    <script src={% static "site/magnific-popup/jquery.magnific-popup.js" %}></script>
     <script>
         $(document).ready(function() {
             $('.experimental-protocol-image-popup-link').magnificPopup({
@@ -448,4 +477,4 @@
             });
         });
     </script>
-{% endblock %}
+{% endblock extrascript %}

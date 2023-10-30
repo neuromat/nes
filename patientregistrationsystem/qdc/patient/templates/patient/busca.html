@@ -2,13 +2,17 @@
 
 {% load i18n static %}
 
-{% block activePatient %} active{% endblock activePatient %}
+{% block activePatient %}
+    active
+{% endblock activePatient %}
 
 {% block content %}
     <div class="tab-pane fade show active" id="mainMenuSearchCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item">
+                    <a href={% url "home" %}>{% trans "Home" %}</a>
+                </li>
                 <li class="breadcrumb-item active">{% trans "Search Participants" %}</li>
             </ol>
         </nav>
@@ -18,13 +22,16 @@
         <div class="my-3 p-3 bg-body rounded shadow-sm">
             <h4>{% trans "Search participant" %}</h4>
             <hr>
-            <div class="text-end participant-count">{% blocktrans %} {{ number_of_patients }} registered participants{% endblocktrans %}.</div>
+            <div class="text-end participant-count">
+                {% blocktrans %} {{ number_of_patients }} registered participants{% endblocktrans %}.
+            </div>
             <div class="input-group input-group-sm">
                 <span class="input-group-text"><span class="fa-fw fa fa-search"></span></span>
-                <input id="search_key" class="form-control" type="search" placeholder="{% trans 'Type participant name, CPF or code' %}">
+                <input id="search_key" class="form-control" type="search" placeholder="{% trans "Type participant name, CPF or code" %}">
             </div>
             {% csrf_token %}
-            <div id="list_results" class="list-group list-group-flush my-3 participant-list">  </div>
+            <ul id="list_results" class="list-group list-group-flush my-3 participant-list">
+            </ul>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
                 <div class="btn-group">
@@ -43,7 +50,7 @@
 {% endblock content %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/search_and_table.js' %}"></script>
+    <script src={% static "site/js/search_and_table.js" %}></script>
     <script>
         $(document).ready(function () {
             searchAndTable("/patient/search/");

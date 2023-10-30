@@ -1,71 +1,56 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
 
 {% block form %}
-    
+
     <form id="eeg_setting_form" role="form" method="post" data-bs-toggle="validator">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
+        {% if setting_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
+        <div class="tab-pane fade show active" id="experimentBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ eeg_setting.experiment.research_project.id }}">{{ eeg_setting.experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ eeg_setting.experiment.id }}">{{ eeg_setting.experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/eeg_setting/{{ eeg_setting.id }}">{{ eeg_setting.name }}</a>
+                    </li>
 
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    {% if setting_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-
-
-    <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ eeg_setting.experiment.research_project.id }}">{{ eeg_setting.experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ eeg_setting.experiment.id }}">{{ eeg_setting.experiment.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/eeg_setting/{{ eeg_setting.id }}">{{ eeg_setting.name }}</a></li>
-
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "Add setting" %} </li>
-                {% else %}
-                    <li class="breadcrumb-item active"> {{ equipment_selected.identification }} </li>
-                    {% if eeg_setting_type == "eeg_electrode_net_system" %}
-                        <li class="breadcrumb-item active"> {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.name }} </li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "Add setting" %}</li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ equipment_selected.identification }}</li>
+                        {% if eeg_setting_type == "eeg_electrode_net_system" %}
+                            <li class="breadcrumb-item active">{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.name }}</li>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
 
-                {% block breadcrumb %}
-                {% endblock %}
-            </ol>
-        </nav>
-    </div>
+                    {% block breadcrumb %}{% endblock breadcrumb %}
 
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+                </ol>
+            </nav>
+        </div>
+
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <div hidden="hidden">
@@ -73,17 +58,20 @@
                 </div>
 
                 <div>
-                    {% block selection %}
-                    {% endblock %}
+
+                    {% block selection %}{% endblock selection %}
+
                 </div>
 
                 <div>
-                    {% block settings %}
-                    {% endblock %}
+
+                    {% block settings %}{% endblock settings %}
+
                 </div>
 
                 {% if not editing and not creating and can_change %}
-                    {% if not tab or tab == '0' %}
+                    {% if not tab or tab == "0" %}
+                        <br>
                         <div class="btn-group">
                             <a href="/experiment/eeg_setting/{{ eeg_setting.id }}/{{ eeg_setting_type }}/edit" class="btn btn-primary">{% trans "Edit" %}</a>
                         </div>
@@ -93,11 +81,13 @@
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                {% if editing or creating%}
-                    <div class="btn-group float-end">
+                <div class="btn-group">
+                </div>
+                {% if editing or creating %}
+                    <div class="btn-group">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save setting" %}</button>
-                        {% if tab == '1' or tab == '2' %}
-                            <a href="/experiment/eeg_setting/eeg_electrode_position_status{% if tab == '2' %}_model{% endif %}/{{ eeg_setting.id }}{% if editing %}/{{ eeg_setting_type }}{% endif %}"
+                        {% if tab == '1' or tab == "2" %}
+                            <a href="/experiment/eeg_setting/eeg_electrode_position_status{% if tab == "2" %}_model{% endif %}/{{ eeg_setting.id }}{% if editing %}/{{ eeg_setting_type }}{% endif %}"
                                class="btn btn-light">{% trans "Cancel" %}</a>
                         {% else %}
                             <a href="/experiment/eeg_setting/{{ eeg_setting.id }}{% if editing %}/{{ eeg_setting_type }}{% endif %}"
@@ -105,21 +95,20 @@
                         {% endif %}
                     </div>
                 {% else %}
-                    <div class="btn-group float-end">
+                    <div class="btn-group">
                         <a href="/experiment/eeg_setting/{{ eeg_setting.id }}" class="btn btn-light">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
             </div>
         </div>
     </div>
-
-{% endblock %}
+{% endblock content %}
 
 {% block end_form %}
-    </form>
+</form>
 </div>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/add_equipment_to_eeg_setting.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/js/add_equipment_to_eeg_setting.js" %}></script>
+{% endblock extrascript %}

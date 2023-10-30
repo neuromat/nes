@@ -1,8 +1,8 @@
-{% extends 'base/template.html' %}
+{% extends "base/template.html" %}
 
 {% block activeContact %}
-  active
-{% endblock %}
+    active
+{% endblock activeContact %}
 
 {% load i18n static %}
 
@@ -14,62 +14,86 @@
 
     <div class="tab-pane fade show active" id="mainMenuContactTab">
         <div class=" p-3 bg-body rounded shadow-sm">
-            <h1>{% trans 'Neuroscience Experiments System - NES' %}</h1>
+            <h1>{% trans "Neuroscience Experiments System - NES" %}</h1>
             <br>
-            <h3>{% trans "Welcome to NES! If you need help you can check the <a href='https://nes.readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. <br>Please report any bug to the admin." %}</h3>
+            <h3>
+                {% trans "Welcome to NES! If you need help you can check the <a href='https://nes.readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. <br>Please report any bug to the admin." %}
+            </h3>
             <div class="container">
                 {% if institution_config.code %}
-                <h4 class="text-start"><span class="fa-fw fa fa-institution"></span> {{ institution_config.code }}</h4>
+                    <h4 class="text-start">
+                        <span class="fa-fw fa fa-institution"></span> {{ institution_config.code }}
+                    </h4>
                 {% endif %}
 
                 {% if contact_config.name %}
-                <h5 class="text-start"><span class="fa-fw fa fa-user"></span> {{ contact_config.name }}</h5>
+                    <h5 class="text-start">
+                        <span class="fa-fw fa fa-user"></span> {{ contact_config.name }}
+                    </h5>
                 {% endif %}
 
                 {% if contact_config.email %}
-                <h5 class="text-start"><span class="fa-fw fa fa-envelope"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES">{{ contact_config.email }}</a></h5>
+                    <h5 class="text-start">
+                        <span class="fa-fw fa fa-envelope"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES">{{ contact_config.email }}</a>
+                    </h5>
                 {% endif %}
             </div>
         </div>
 
         <div class="my-3 p-3 bg-body rounded shadow-sm">
-        <div class="row m-2 text-center">
-            <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
-                <a class="thumbnail" href="http://ccsl.ime.usp.br/"><img class="img-fluid" src="{% static 'imgs/logo-ccsl.jpg' %}" alt="Logo do CCSL" width="200" height="100" /></a>
+            <div class="row m-2 text-center">
+                <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
+                    <a class="thumbnail" href="https://ccsl.ime.usp.br/">
+                        <img class="img-fluid" src={% static "imgs/logo-ccsl.jpg" %} alt="Logo do CCSL" width="200" height="100" />
+                    </a>
+                </div>
+                <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
+                    <a class="thumbnail" href="https://www.ime.usp.br">
+                        <img class="img-fluid" src={% static "imgs/logo-ime.jpg" %} alt="Logo do IME" width="200" height="100" />
+                    </a>
+                </div>
+                <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
+                    <a class="thumbnail" href="https://www.usp.br">
+                        <img class="img-fluid" src={% static "imgs/logo-usp.jpg" %} alt="Logo da USP" width="200" height="100" />
+                    </a>
+                </div>
+                <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
+                    <a class="thumbnail" href="https://www.peb.ufrj.br/">
+                        <img class="img-fluid" src={% static "imgs/logo-peb.png" %} alt="Logo do PEB" width="200" height="100" />
+                    </a>
+                </div>
+                <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
+                    <a class="thumbnail" href="https://www.ufrj.br">
+                        <img class="img-fluid" src={% static "imgs/logo-ufrj.jpg" %} alt="Logo da UFRJ" width="200" height="100" />
+                    </a>
+                </div>
+                <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
+                    <a class="thumbnail" href="https://neuromat.numec.prp.usp.br">
+                        <img class="img-fluid" src={% static "imgs/logo-neuromat.jpg" %} alt="Logo do NeuroMat" width="200" height="100" />
+                    </a>
+                </div>
+                <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
+                    <a class="thumbnail" href="https://www.fapesp.br">
+                        <img class="img-fluid" src={% static "imgs/logo-fapesp.jpg" %} alt="Logo da FAPESP" width="200" height="100" />
+                    </a>
+                </div>
+                <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
+                    <a class="thumbnail" href="https://www.gov.br/cnpq/pt-br">
+                        <img class="img-fluid" src={% static "imgs/logo-cnpq.jpg" %} alt="Logo do CNPQ" width="200" height="100" />
+                    </a>
+                </div>
+                {% if institution_config.url %}
+                    <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
+                        <a class="thumbnail" href="{{ institution_config.url }}">
+                            {% if institution_config.logo %}
+                                <img class="img-fluid" src="/media/{{ institution_config.logo }}" alt="Logo do {{ institution_config.name }}" />
+                            {% else %}
+                                <img class="img-fluid" src="{{ STATIC_URL }}/imgs/{{ logo_institution }}" alt="Logo do {{ institution_config.name }}" />
+                            {% endif %}
+                        </a>
+                    </div>
+                {% endif %}
             </div>
-            <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
-                <a class="thumbnail" href="http://www.ime.usp.br"><img class="img-fluid" src="{% static 'imgs/logo-ime.jpg' %}" alt="Logo do IME" width="200" height="100" /></a>
-            </div>
-            <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
-                <a class="thumbnail" href="http://www.usp.br"><img class="img-fluid" src="{% static 'imgs/logo-usp.jpg' %}" alt="Logo da USP" width="200" height="100" /></a>
-            </div>
-            <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
-                <a class="thumbnail" href="https://www.peb.ufrj.br/"><img class="img-fluid" src="{% static 'imgs/logo-peb.png' %}" alt="Logo do PEB" width="200" height="100" /></a>
-            </div>
-            <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
-                <a class="thumbnail" href="https://www.ufrj.br"><img class="img-fluid" src="{% static 'imgs/logo-ufrj.jpg' %}" alt="Logo da UFRJ" width="200" height="100" /></a>
-            </div>
-            <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
-                <a class="thumbnail" href="http://neuromat.numec.prp.usp.br"><img class="img-fluid" src="{% static 'imgs/logo-neuromat.jpg' %}" alt="Logo do NeuroMat" width="200" height="100" /></a>
-            </div>
-            <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
-                <a class="thumbnail" href="http://www.fapesp.br"><img class="img-fluid" src="{% static 'imgs/logo-fapesp.jpg' %}" alt="Logo da FAPESP" width="200" height="100" /></a>
-            </div>
-            <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
-                <a class="thumbnail" href="https://www.gov.br/cnpq/pt-br"><img class="img-fluid" src="{% static 'imgs/logo-cnpq.jpg' %}" alt="Logo do CNPQ" width="200" height="100" /></a>
-            </div>
-            {% if institution_config.url %}
-            <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
-                <a class="thumbnail" href="{{ institution_config.url }}">
-                    {% if institution_config.logo %}
-                        <img class="img-fluid" src="/media/{{ institution_config.logo }}" alt="Logo do {{ institution_config.name }}" />
-                    {% else %}
-                        <img class="img-fluid" src="{{ STATIC_URL }}/imgs/{{ logo_institution }}" alt="Logo do {{ institution_config.name }}" />
-                    {% endif %}
-                </a>
-            </div>
-            {% endif %}
-        </div>
         </div>
     </div>
 {% endblock content %}

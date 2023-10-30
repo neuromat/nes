@@ -1,19 +1,15 @@
 {% load i18n %}
+
 {% if cid_10_list.count > 0 %}
-
     {% for cid_10 in cid_10_list %}
-        {% if medical_record %}
-            <li> <a href="/patient/{{ patient_id }}/medical_record/{{ medical_record }}/diagnosis/{{ cid_10.id }}">
-            {{ cid_10.code }} - {{ cid_10.description }}</a></li>
-        {% else %}
-            <li><a href="/patient/{{ patient_id }}/medical_record/new/diagnosis/{{ cid_10.id }}">
-            {{ cid_10.code }} - {{ cid_10.description }}</a></li>
-        {% endif %}
-
+        <li class="list-group-item"> 
+            {% if medical_record %}
+                <a href="/patient/{{ patient_id }}/medical_record/{{ medical_record }}/diagnosis/{{ cid_10.id }}">{{ cid_10.code }} - {{ cid_10.description }}</a>
+            {% else %}
+                <a href="/patient/{{ patient_id }}/medical_record/new/diagnosis/{{ cid_10.id }}">{{ cid_10.code }} - {{ cid_10.description }}</a>
+            {% endif %}
+        </li>
     {% endfor %}
-
 {% else %}
-
-    <li>{% trans "No diseases found!" %}</li>
-
+    <li class="list-group-item">{% trans "No diseases found!" %}</li>
 {% endif %}

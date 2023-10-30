@@ -1,47 +1,48 @@
-{% extends 'base/template.html' %}
+{% extends "base/template.html" %}
 
 {% load i18n static %}
 
-{% block activeUser %} active{% endblock activeUser %}
+{% block activeUser %}
+  active
+{% endblock activeUser %}
 
 {% block content %}
   <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-        <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-        <li class="breadcrumb-item active">{% trans 'Researchers and Institutions' %}</li>
+        <li class="breadcrumb-item">
+          <a href={% url "home" %}>{% trans "Home" %}</a>
+        </li>
+        <li class="breadcrumb-item active">{% trans "Researchers and Institutions" %}</li>
       </ol>
     </nav>
   </div>
 
   <div class="tab-pane fade show active" id="mainMenuUserTab">
     <div class="my-3 p-3 bg-body rounded shadow-sm">
-      <h4>{% trans 'Researchers' %}</h4>
+      <h4>{% trans "Researchers" %}</h4>
       <hr class="hr" />
       <div class="accordion accordion-flush overflow-x-auto" id="accordion">
         <div class="accordion-item">
-          <h2 class="accordion-header" id="headingOne"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">{% trans 'Show/Hide researchers' %}</button></h2>
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne"
+                    aria-expanded="false"
+                    aria-controls="collapseOne">{% trans "Show/Hide researchers" %}</button>
+          </h2>
 
           <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion">
             <div class="accordion-body">
               <table class="table table-striped">
                 <thead>
                   <tr>
-                    <th>
-                      {% trans 'Researcher' %}
-                    </th>
-                    <th>
-                      {% trans 'E-mail' %}
-                    </th>
-                    <th>
-                      {% trans 'Institution' %}
-                    </th>
-                    <th class="text-center">
-                      {% trans 'Username' %}
-                    </th>
-                    <th>
-                      {% trans 'Citation name' %}
-                    </th>
+                    <th>{% trans "Researcher" %}"</th>
+                    <th>{% trans "E-mail" %}"</th>
+                    <th>{% trans "Institution" %}"</th>
+                    <th class="text-center">{% trans "Username" %}"</th>
+                    <th>{% trans "Citation name" %}"</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -49,11 +50,19 @@
                     <tr>
                       {% if user.first_name and user.last_name %}
                         <td>
-                          <a data-bs-toggle="tooltip" data-bs-placement="left" title data-bs-original-title="{% trans 'Edit' %}" href="/user/view/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a>
+                          <a data-bs-toggle="tooltip"
+                             data-bs-placement="left"
+                             title
+                             data-bs-original-title="{% trans "Edit" %}"
+                             href="/user/view/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a>
                         </td>
                       {% else %}
                         <td>
-                          <a data-bs-toggle="tooltip" data-bs-placement="left" title data-bs-original-title="{% trans 'Edit' %}" href="/user/view/{{ user.id }}"><em>{% trans 'Name not registered' %}</em></a>
+                          <a data-bs-toggle="tooltip"
+                             data-bs-placement="left"
+                             title
+                             data-bs-original-title="{% trans "Edit" %}"
+                             href="/user/view/{{ user.id }}"><em>{% trans "Name not registered" %}</em></a>
                         </td>
                       {% endif %}
                       <td>{{ user.email }}</td>
@@ -85,7 +94,7 @@
       <br />
       {% if perms.auth.add_user %}
         <div class="btn-group">
-          <a href="/user/new/" class="btn btn-primary">{% trans 'Insert new' %}</a>
+          <a href="/user/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
         </div>
       {% endif %}
     </div>
@@ -93,28 +102,27 @@
 
   <div class="tab-pane fade show active" id="mainMenuUserTab">
     <div class="my-3 p-3 bg-body rounded shadow-sm">
-      <h4>{% trans 'Institutions' %}</h4>
+      <h4>{% trans "Institutions" %}</h4>
       <hr class="hr" />
       <div class="accordion accordion-flush overflow-x-auto" id="accordion2">
         <div class="accordion-item">
-          <h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">{% trans 'Show/Hide institutions' %}</button></h2>
+          <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseTwo"
+                    aria-expanded="false"
+                    aria-controls="collapseTwo">{% trans "Show/Hide institutions" %}</button>
+          </h2>
           <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordion2">
             <div class="accordion-body">
               <table class="table table-striped">
                 <thead>
                   <tr>
-                    <th>
-                      {% trans 'Name' %}
-                    </th>
-                    <th>
-                      {% trans 'Acronym' %}
-                    </th>
-                    <th>
-                      {% trans 'Country' %}
-                    </th>
-                    <th>
-                      {% trans 'Parent' %}
-                    </th>
+                    <th>{% trans "Name" %}"</th>
+                    <th>{% trans "Acronym" %}"</th>
+                    <th>{% trans "Country" %}"</th>
+                    <th>{% trans "Parent" %}"</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -122,7 +130,10 @@
                     <tr>
                       <td>
                         {% if perms.auth.add_user %}
-                          <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans 'Visualize' %}" href="/user/institution/{{ institution.id }}">{{ institution.name }}</a>
+                          <a data-bs-toggle="tooltip"
+                             data-bs-placement="left"
+                             title="{% trans "Visualize" %}"
+                             href="/user/institution/{{ institution.id }}">{{ institution.name }}</a>
                         {% else %}
                           {{ institution.name }}
                         {% endif %}
@@ -141,7 +152,7 @@
       <br />
       {% if perms.auth.add_user %}
         <div class="btn-group">
-          <a href="/user/institution/new/" class="btn btn-primary">{% trans 'Insert new' %}</a>
+          <a href="/user/institution/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
         </div>
       {% endif %}
     </div>

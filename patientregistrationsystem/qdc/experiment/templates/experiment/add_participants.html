@@ -5,7 +5,7 @@
 {#information from http://stackoverflow.com/questions/6451304/django-simple-custom-template-tag-example#}
 {% load subjects_tags %}
 
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
 
 {% block form %}
     
@@ -18,7 +18,7 @@
     <div class="tab-pane fade show active" id="subjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3"> 
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
@@ -41,7 +41,7 @@
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text"> <span class="fa-fw fa fa-search"></span></span>
                                     <input class="form-control" {% if perms.patient.sensitive_data_patient %}
-                                    placeholder="{% trans 'Type participant name, CPF or code' %}" {% else %} placeholder="{% trans 'Type participant code' %}"
+                                    placeholder={% trans "Type participant name, CPF or code" %} {% else %} placeholder={% trans "Type participant code" %}
                                 {% endif %} id="subject_name" type="text" autofocus="true">
                                 </div>
                                 {% csrf_token %}
@@ -103,6 +103,6 @@
 {% endblock %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/subjects.js' %}"></script>
-    <script src="{% static 'site/js/participant_selection.js' %}"></script>
+    <script src={% static "site/js/subjects.js" %}></script>
+    <script src={% static "site/js/participant_selection.js" %}></script>
 {% endblock %}

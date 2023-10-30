@@ -1,5 +1,5 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
 
 {% load i18n static %}
 
@@ -20,7 +20,7 @@
     <div class="tab-pane fade show active" id="experimentBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3"> 
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list/">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ eeg_setting.experiment.research_project.id }}/">{{ eeg_setting.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ eeg_setting.experiment.id }}/">{{ eeg_setting.experiment.title }}</a></li>
@@ -178,5 +178,5 @@
 {% endblock %}
 
 {% block extrascript %}
-        <script src="{% static 'site/js/add_equipment_to_eeg_setting.js' %}"></script>
+        <script src={% static "site/js/add_equipment_to_eeg_setting.js" %}></script>
 {% endblock %}

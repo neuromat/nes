@@ -5,7 +5,7 @@
 {#information from http://stackoverflow.com/questions/6451304/django-simple-custom-template-tag-example#}
 {% load subjects_tags %}
 
-{% block activeAdvancedResearchProject %} active{% endblock %}
+{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
 
 {% block form %}
     
@@ -18,7 +18,7 @@
     <div class="tab-pane fade show active" id="subjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
@@ -195,6 +195,6 @@
 {% endblock %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/subjects.js' %}"></script>
-    <script src="{% static 'site/js/participant_selection.js' %}"></script>
+    <script src={% static "site/js/subjects.js" %}></script>
+    <script src={% static "site/js/participant_selection.js" %}></script>
 {% endblock %}

@@ -1,51 +1,59 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
+        {% if collaborator_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-    {% if collaborator_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
+        <div class="tab-pane fade show active" id="collaboratorBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a>
+                    </li>
 
-    <div class="tab-pane fade show active" id="collaboratorBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "New researcher" %}</li>
+                    {% endif %}
+                </ol>
+            </nav>
+        </div>
 
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New researcher" %}</li>
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Add researchers" %}</h4>
-<hr>
+                <hr>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         {% if collaborators %}
-                            <div class="checkbox">
-                                <label><input type="checkbox" value="select_all" id="select_all_collaborators"><em>{% trans 'Select all' %}</em></label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="select_all" id="select_all_collaborators">
+                                <label class="form-check-label" for="select_all_collaborators">
+                                    <em>{% trans "Select all" %}</em>
+                                </label>
                             </div>
                             {% for collaborator in collaborators %}
-                                <div class="checkbox">
-                                    <label><input type="checkbox" class="checkbox_collaborators" name="collaborators" value="{{ collaborator.id }}">{{ collaborator.first_name }} {{ collaborator.last_name }}</label>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="collaborators" value="{{ collaborator.id }}">
+                                    <label class="form-check-label">{{ collaborator.first_name }} {{ collaborator.last_name }}</label>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -56,7 +64,8 @@
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                 {% if editing %}
+                <div class="btn-group float-start"></div>
+                {% if editing %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary" id="add_researcher">{% trans "Save" %}</button>
                         <a href="/experiment/{{ experiment.id }}" class="btn btn-light">{% trans "Cancel" %}</a>
@@ -68,14 +77,12 @@
                 {% endif %}
             </div>
         </div>
-    </div>
+    {% endblock content %}
 
-{% endblock %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-         <script src="{% static 'site/js/experiment_collaborator.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/js/experiment_collaborator.js" %}></script>
+{% endblock extrascript %}

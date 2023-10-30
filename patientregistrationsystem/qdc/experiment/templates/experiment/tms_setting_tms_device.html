@@ -1,70 +1,56 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
 
 {% block form %}
-    
     <form id="tms_setting_form" method="post" data-bs-toggle="validator">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
+        {% if tms_device_setting_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
+        <div class="tab-pane fade show active" id="experimentBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ tms_setting.experiment.research_project.id }}">{{ tms_setting.experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ tms_setting.experiment.id }}">{{ tms_setting.experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/tms_setting/{{ tms_setting.id }}">{{ tms_setting.name }}</a>
+                    </li>
 
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    {% if tms_device_setting_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-
-
-    <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ tms_setting.experiment.research_project.id }}">{{ tms_setting.experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ tms_setting.experiment.id }}">{{ tms_setting.experiment.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/tms_setting/{{ tms_setting.id }}">{{ tms_setting.name }}</a></li>
-
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "Add TMS device setting" %} </li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item"><a href="/experiment/tms_setting/{{ tms_setting.id }}/tms_device">{{ tms_setting.tms_device_setting.tms_device.identification }}</a></li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "Add TMS device setting" %}</li>
                     {% else %}
-                        <li class="breadcrumb-item active"> {{ tms_setting.tms_device_setting.tms_device.identification }} </li>
+                        {% if editing %}
+                            <li class="breadcrumb-item">
+                                <a href="/experiment/tms_setting/{{ tms_setting.id }}/tms_device">{{ tms_setting.tms_device_setting.tms_device.identification }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                        {% else %}
+                            <li class="breadcrumb-item active">{{ tms_setting.tms_device_setting.tms_device.identification }}</li>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <h4>{% trans "TMS device settings" %}</h4>
@@ -72,11 +58,12 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Manufacturer" %} </label>
+                            <label class="form-label">{% trans "Manufacturer" %}</label>
                             <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
                                 <option value>-------</option>
                                 {% for manufacturer in manufacturer_list %}
-                                    <option {% if manufacturer.id == equipment_form.instance.manufacturer_id %}selected="selected"{% endif %} value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+                                    <option {% if manufacturer.id == equipment_form.instance.manufacturer_id %}selected="selected"{% endif %}
+                                            value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
                                 {% endfor %}
                             </select>
                             <div class="form-text with-errors"></div>
@@ -88,7 +75,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "TMS device" %} </label>
+                            <label class="form-label">{% trans "TMS device" %}</label>
                             {{ tms_device_setting_form.tms_device }}
                             <div class="form-text with-errors"></div>
 
@@ -99,7 +86,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Description" %} </label>
+                            <label class="form-label">{% trans "Description" %}</label>
                             {{ equipment_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -119,7 +106,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Description" %} </label>
+                            <label class="form-label">{% trans "Description" %}</label>
                             {{ coil_model_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -141,15 +128,13 @@
                         <a href="/experiment/tms_setting/{{ tms_setting.id }}/tms_device/edit" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
-
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                {% if editing or creating%}
+                {% if editing or creating %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save setting" %}</button>
-                        <a href="/experiment/tms_setting/{{ tms_setting.id }}{% if editing %}/tms_device{% endif %}"
-                           class="btn btn-light">{% trans "Cancel" %}</a>
+                        <a href="/experiment/tms_setting/{{ tms_setting.id }}{% if editing %}/tms_device{% endif %}" class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
                     <div class="btn-group float-end">
@@ -158,15 +143,12 @@
                 {% endif %}
             </div>
         </div>
-    </div>
+    {% endblock content %}
 
-{% endblock %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
-</div>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script src="{% static 'site/js/add_description_to_tms_setting.js' %}"></script>
-{% endblock %}
+    <script src={% static "site/js/add_description_to_tms_setting.js" %}></script>
+{% endblock extrascript %}
