@@ -2,12 +2,12 @@
 
 {% load i18n static %}
 
-{% block activeSetup %} active{% endblock %}
+{% block activeSetup %} active{% endblock activeSetup %}
 
 {% block form %}
     <form class="needs-validation" id="user_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
-{% endblock %}
+{% endblock form %}
 
 {% block content %}
 
@@ -40,59 +40,57 @@
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Material" %}</h4>
-                 <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
-                            {{ equipment_form.name }}
-                            <div class="form-text invalid-feedback"></div>
-                        </div>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "Material" %}</h4>
+            <hr>
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
+                        {{ equipment_form.name }}
+                        <div class="form-text invalid-feedback"></div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="form-label">{% trans "Description" %}</label>
-                            {{ equipment_form.description }}
-                            <div class="form-text with-errors"></div>
-                        </div>
-                    </div>
-                </div>
-
-                {% if not editing and can_change %}
-                    <div class="btn-group float-start">
-                        <a href="/experiment/material/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
-                    </div>
-                {% endif %}
-
             </div>
-            {% if not editing %}
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Description" %}</label>
+                        {{ equipment_form.description }}
+                        <div class="form-text with-errors"></div>
+                    </div>
+                </div>
+            </div>
 
+            {% if not editing and can_change %}
+                <br>
+                <div class="btn-group">
+                    <a href="/experiment/material/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                </div>
             {% endif %}
 
-            <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
-                    {% if not editing and perms.experiment.register_equipment and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
-                    {% endif %}
-                </div>
-                {% if editing %}
-                    <div class="btn-group float-end">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
-                        <a href="/experiment/material/{% if creating %}list{% else %}{{ equipment.id }}{% endif %}"
-                           class="btn btn-light">{% trans "Cancel" %}</a>
-                    </div>
-                {% else %}
-                    <div class="btn-group float-end">
-                        <a href="/experiment/material/list" class="btn btn-light">{% trans "Back" %}</a>
-                    </div>
+        </div>
+        {% if not editing %}
+
+        {% endif %}
+
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+            <div class="btn-group">
+                {% if not editing and perms.experiment.register_equipment and can_change %}
+                    <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                 {% endif %}
             </div>
+            {% if editing %}
+                <div class="btn-group">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                    <a href="/experiment/material/{% if creating %}list{% else %}{{ equipment.id }}{% endif %}"
+                        class="btn btn-light">{% trans "Cancel" %}</a>
+                </div>
+            {% else %}
+                <div class="btn-group">
+                    <a href="/experiment/material/list" class="btn btn-light">{% trans "Back" %}</a>
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -111,12 +109,12 @@
         </div>
     </div>
 
-{% endblock %}
+{% endblock content %}
 
 {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
     <script src="{% static 'site/js/equipment.js' %}"></script>
-{% endblock %}
+{% endblock extrascript %}

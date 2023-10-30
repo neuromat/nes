@@ -25,18 +25,6 @@
                     </div>
                     <hr>
 
-                    {% if patient_form.errors %}
-                        {% for field in patient_form %}
-                            {% if field.errors %}
-                                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
-                            {% endif %}
-                        {% endfor %}
-
-                        <script type="text/javascript">
-                            showErrorMessage(gettext('Participant was not saved. Please, correct fields highlighted.'))
-                        </script>
-                    {% endif %}
-
                     <div class="row">
                         <div class="col-12 col-sm-12">
                             <div class="form-check">
@@ -386,4 +374,16 @@
     <script src="{% static 'site/js/phone.js' %}"></script>
     <script src="{% static 'site/js/cep.js' %}"></script>
     <script src="{% static 'site/js/patient_personal_data.js' %}"></script>
+
+    {% if patient_form.errors %}
+        {% for field in patient_form %}
+            {% if field.errors %}
+                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+            {% endif %}
+        {% endfor %}
+
+        <script type="text/javascript">
+            showErrorMessage(gettext('Participant was not saved. Please, correct fields highlighted.'))
+        </script>
+    {% endif %}
 {% endblock %}

@@ -2,10 +2,7 @@
 
 {% load i18n %}
 
-{% block extrahead %}
-{% endblock %}
-
 {% block content %}
     <div  class="text-center"><h1>{% trans "Access is not authorized" %}</h1></div>
     <p>{{ exception }}</p>
-{% endblock %}
+{% endblock content %}

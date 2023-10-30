@@ -102,7 +102,7 @@
         </div>
     </div>
 
-    <div class="">
+    <div class="btn-toolbar justify-content-between" role="toolbar">
         <div class="btn-group float-start">
         {% if not editing and perms.auth.add_user and can_change %}
             <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">
@@ -110,20 +110,18 @@
             </button>
         {% endif %}
         </div>
-        <div class="btn-toolbar float-end" role="toolbar">
-            <div class="btn-group" role="group">
-            {% if editing %}
-                <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                
-                <a href="{% if creating %}/user/list{% else %}/user/institution/{{ institution.id }}{% endif %}"
-                    class="btn btn-light">{% trans "Cancel" %}</a>
+        <div class="btn-group" role="group">
+        {% if editing %}
+            <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+            
+            <a href="{% if creating %}/user/list{% else %}/user/institution/{{ institution.id }}{% endif %}"
+                class="btn btn-light">{% trans "Cancel" %}</a>
+        </div>
+        {% else %}
+            <div class="btn-group">
+                <a href="/user/list/" class="btn btn-light">{% trans "Back" %}</a>
             </div>
-            {% else %}
-                <div class="btn-group float-end">
-                    <a href="/user/list/" class="btn btn-light">{% trans "Back" %}</a>
-                </div>
-            {% endif %}
-            </div>
+        {% endif %}
         </div>
     </div>
 

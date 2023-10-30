@@ -2,44 +2,19 @@
 
 {% load i18n static %}
 
-{% block activeSetup %} active{% endblock %}
+{% block activeSetup %} active{% endblock activeSetup %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator">
     {% csrf_token %}
-{% endblock %}
+{% endblock form %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
     {% if equipment_form.errors %}
         <script type="text/javascript">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
     {% endif %}
-
 
     <div class="tab-pane fade show active" id="equipmentBreadCrumb">
         <nav aria-label="breadcrumb">
@@ -63,119 +38,122 @@
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Muscle" %}</h4>
-                 <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
-                            {{ equipment_form.name }}
-                            <div class="form-text with-errors"></div>
-                        </div>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "Muscle" %}</h4>
+            <hr>
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
+                        {{ equipment_form.name }}
+                        <div class="form-text with-errors"></div>
                     </div>
                 </div>
-
-                {% if not editing and can_change %}
-                    <div class="btn-group float-start">
-                        <a href="/experiment/muscle/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
-                    </div>
-                {% endif %}
-
             </div>
 
-            {% if not editing %}
-                <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4>{% trans "Subdivision" %}</h4>
-                    <div class="form-group">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>{% trans "Name" %}</th>
-                                    <th>{% trans "Anatomy Origin" %}</th>
-                                    <th>{% trans "Anatomy Insertion" %}</th>
-                                    <th>{% trans "Anatomy Function" %}</th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            {% for subdivision in musclesubdivisions %}
-                                <tr>
-                                    <td>
-                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/muscle_subdivision/{{ subdivision.id }}/">{{ subdivision.name }}</a>
-                                    </td>
-
-                                    <td>
-                                        {{ subdivision.anatomy_origin|default:""  }}
-                                    </td>
-                                    <td>
-                                        {{ subdivision.anatomy_insertion|default:""  }}
-                                    </td>
-                                    <td>
-                                        {{ subdivision.anatomy_function|default:""  }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% if perms.experiment.add_experiment %}
-                        <div class="btn-group float-start">
-                            <a href="/experiment/muscle/{{ equipment.id }}/new_muscle_subdivision/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h4>{% trans "Side" %}</h4>
-                    <div class="form-group">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>{% trans "Name" %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            {% for side in musclesides %}
-                                <tr>
-                                    <td>
-                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/muscle_side/{{ side.id}}/">{{ side.name }}</a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% if perms.experiment.add_experiment %}
-                        <div class="btn-group float-start">
-                            <a href="/experiment/muscle/{{ equipment.id }}/new_muscle_side/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                        </div>
-                    {% endif %}
+            {% if not editing and can_change %}
+                <div class="btn-group float-start">
+                    <a href="/experiment/muscle/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                 </div>
             {% endif %}
 
-            <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
-                    {% if not editing and perms.experiment.register_equipment and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
-                    {% endif %}
+        </div>
+
+        {% if not editing %}
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                <h4>{% trans "Subdivision" %}</h4>
+                <hr>
+                <div class="form-group">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Name" %}</th>
+                                <th>{% trans "Anatomy Origin" %}</th>
+                                <th>{% trans "Anatomy Insertion" %}</th>
+                                <th>{% trans "Anatomy Function" %}</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for subdivision in musclesubdivisions %}
+                            <tr>
+                                <td>
+                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/muscle_subdivision/{{ subdivision.id }}/">{{ subdivision.name }}</a>
+                                </td>
+
+                                <td>
+                                    {{ subdivision.anatomy_origin|default:""  }}
+                                </td>
+                                <td>
+                                    {{ subdivision.anatomy_insertion|default:""  }}
+                                </td>
+                                <td>
+                                    {{ subdivision.anatomy_function|default:""  }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-                {% if editing %}
-                    <div class="btn-group float-end">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
-                        <a href="/experiment/muscle/{% if creating %}list{% else %}{{ equipment.id }}{% endif %}"
-                           class="btn btn-light">{% trans "Cancel" %}</a>
-                    </div>
-                {% else %}
-                    <div class="btn-group float-end">
-                        <a href="/experiment/muscle/list" class="btn btn-light">{% trans "Back" %}</a>
+
+                {% if perms.experiment.add_experiment %}
+                    <br>
+                    <div class="btn-group">
+                        <a href="/experiment/muscle/{{ equipment.id }}/new_muscle_subdivision/" class="btn btn-primary">{% trans "Insert new" %}</a>
                     </div>
                 {% endif %}
             </div>
+
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                <h4>{% trans "Side" %}</h4>
+                <hr>
+                <div class="form-group">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Name" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for side in musclesides %}
+                            <tr>
+                                <td>
+                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/muscle_side/{{ side.id}}/">{{ side.name }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if perms.experiment.add_experiment %}
+                    <br>
+                    <div class="btn-group">
+                        <a href="/experiment/muscle/{{ equipment.id }}/new_muscle_side/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+            <div class="btn-group">
+                {% if not editing and perms.experiment.register_equipment and can_change %}
+                    <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
+                {% endif %}
+            </div>
+            {% if editing %}
+                <div class="btn-group">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                    <a href="/experiment/muscle/{% if creating %}list{% else %}{{ equipment.id }}{% endif %}"
+                        class="btn btn-light">{% trans "Cancel" %}</a>
+                </div>
+            {% else %}
+                <div class="btn-group">
+                    <a href="/experiment/muscle/list" class="btn btn-light">{% trans "Back" %}</a>
+                </div>
+            {% endif %}
         </div>
     </div>
 

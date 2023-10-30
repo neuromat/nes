@@ -10,13 +10,6 @@
 {% endblock form %}
 
 {% block content %}
-
-    {% if form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct the fields highlighted.'))
-        </script>
-    {% endif %}
-
     <div class="tab-pane fade show active" id="equipmentBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
@@ -214,28 +207,26 @@
     </div>
   
 
-    <div class="">
-        <div class="btn-group float-start">
+    <div class="btn-toolbar justify-content-between" role="toolbar">
+        <div class="btn-group">
             {% if not creating and perms.auth.delete_user and current_user_id != user.id %}
                 <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
             {% endif %}
         </div>
-        <div class="btn-toolbar float-end" role="toolbar">
-            <div class="btn-group" role="group">
-                {% if creating or editing %}
-                    <button type="submit" name="action" value="save" class="btn btn-primary" id="submit">{% trans "Save" %}</button>
-                {% else  %}
-                    <a href="/user/edit/{{ user }}" class="btn btn-primary">{% trans "Edit" %}</a>
-                {% endif %}
+        <div class="btn-group" role="group">
+            {% if creating or editing %}
+                <button type="submit" name="action" value="save" class="btn btn-primary" id="submit">{% trans "Save" %}</button>
+            {% else  %}
+                <a href="/user/edit/{{ user }}" class="btn btn-primary">{% trans "Edit" %}</a>
+            {% endif %}
 
-                {% if creating %}
-                    <a href="/user/list" class="btn btn-light">{% trans "Cancel" %}</a>
-                {% elif editing %}
-                    <a href="/user/view/{{ user }}" class="btn btn-light">{% trans "Back" %}</a>
-                {% else %}
-                    <a href="/user/list" class="btn btn-light">{% trans "Back" %}</a>
-                {% endif %}
-            </div>
+            {% if creating %}
+                <a href="/user/list" class="btn btn-light">{% trans "Cancel" %}</a>
+            {% elif editing %}
+                <a href="/user/view/{{ user }}" class="btn btn-light">{% trans "Back" %}</a>
+            {% else %}
+                <a href="/user/list" class="btn btn-light">{% trans "Back" %}</a>
+            {% endif %}
         </div>
     </div>
 
@@ -278,4 +269,10 @@
     <script src="{% static 'site/js/password.js' %}"></script>
     <script src="{% static 'site/js/password_register.js' %}"></script>
     <script src="{% static 'site/js/custom_user_validation.js' %}"></script>
+
+    {% if form.errors %}
+        <script type="text/javascript">
+            showErrorMessage(gettext('Please, correct the fields highlighted.'))
+        </script>
+    {% endif %}
 {% endblock extrascript %}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xml:lang="en" lang="en" data-bs-theme="">
+<html xml:lang="en" lang="en" data-bs-theme="dark">
 
 {% load static i18n l10n %}
 {% load qdc_tags %}
@@ -16,11 +16,11 @@
     <meta name="author" content="Neuromat, PEB-Lapis">
 
     {% comment %} <link rel="stylesheet" href="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.css' %}"> {% endcomment %}
-    <link rel="stylesheet" href="{% static 'site/bootstrap-5.3.2-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'site/font-awesome-4.7.0/css/font-awesome.min.css' %}">
-    <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'site/bootstrap-5.3.2-dist/css/bootstrap.min.css' %}" charset="utf-8">
+    <link rel="stylesheet" href="{% static 'site/font-awesome-4.7.0/css/font-awesome.min.css' %}" charset="utf-8">
+    <link rel="stylesheet" href="{% static 'site/toastr/toastr.min.css' %}" charset="utf-8">
 
-    <link rel="stylesheet" href="{% static 'site/css/nes.css' %}">
+    <link rel="stylesheet" href="{% static 'site/css/nes.css' %}" charset="utf-8">
 
     {% block extrahead %}{% endblock extrahead %}
 </head>
@@ -198,13 +198,13 @@
 <script type="text/javascript" src="{% static 'site/jquery/jquery-2.2.4.min.js' %}"></script>
 {% comment %} <script type="text/javascript" src="{% static 'site/jquery-ui-1.13.2/jquery-ui.min.js' %}"></script> {% endcomment %}
 <script type="text/javascript" src="{% static 'site/bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/jquery.autocomplete.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/masked_input/jquery.maskedinput.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/Bootstrap-Validator-Master/validator.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/toastr/toastr.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/js/nes_utils.js' %}"></script>
-<script type="text/javascript" src="{% static 'site/js/theme_picker.js' %}"></script>
-<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+<script type="text/javascript" async src="{% static 'site/jquery.autocomplete.js' %}"></script>
+<script type="text/javascript" async src="{% static 'site/masked_input/jquery.maskedinput.min.js' %}"></script>
+<script type="text/javascript" async src="{% static 'site/Bootstrap-Validator-Master/validator.min.js' %}"></script>
+<script type="text/javascript" async src="{% static 'site/toastr/toastr.min.js' %}"></script>
+<script type="text/javascript" defer src="{% static 'site/js/nes_utils.js' %}"></script>
+<script type="text/javascript" async src="{% static 'site/js/theme_picker.js' %}"></script>
+<script type="text/javascript" async src="{% url 'javascript-catalog' %}"></script>
 
 <script type="text/javascript">
     {% if messages %}
