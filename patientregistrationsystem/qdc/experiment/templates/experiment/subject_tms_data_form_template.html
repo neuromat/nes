@@ -135,7 +135,7 @@
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     {% if not editing and perms.experiment.delete_researchproject and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}

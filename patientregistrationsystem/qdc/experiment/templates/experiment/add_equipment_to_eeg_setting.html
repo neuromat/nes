@@ -133,7 +133,7 @@
 
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     {% if not editing and perms.experiment.delete_experiment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
                     {% endif %}

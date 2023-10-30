@@ -5,41 +5,17 @@
 {% block activeSetup %} active{% endblock %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator">
-    {% csrf_token %}
+        {% csrf_token %}
 {% endblock %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
 
     {% if equipment_form.errors %}
         <script type="text/javascript">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
     {% endif %}
-
 
     <div class="tab-pane fade show active" id="equipmentBreadCrumb">
         <nav aria-label="breadcrumb">
@@ -65,78 +41,74 @@
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Muscle subdivision" %}</h4>
-                <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
-                            {{ equipment_form.name }}
-                            <div class="form-text with-errors"></div>
-                        </div>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "Muscle subdivision" %}</h4>
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
+                        {{ equipment_form.name }}
+                        <div class="form-text with-errors"></div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="form-label">{% trans "Anatomy origin" %}</label>
-                            {{ equipment_form.anatomy_origin }}
-                            <div class="form-text with-errors"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="form-label">{% trans "Anatomy insertion" %}</label>
-                            {{ equipment_form.anatomy_insertion }}
-                            <div class="form-text with-errors"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="form-label">{% trans "Anatomy function" %}</label>
-                            {{ equipment_form.anatomy_function }}
-                            <div class="form-text with-errors"></div>
-                        </div>
-                    </div>
-                </div>
-                {% if not editing and can_change %}
-                    <div class="btn-group float-start">
-                        <a href="/experiment/muscle_subdivision/{{ equipment.id }}/edit/" class="btn btn-primary">{% trans "Edit" %}</a>
-                    </div>
-                {% endif %}
-
             </div>
-            {% if not editing %}
 
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Anatomy origin" %}</label>
+                        {{ equipment_form.anatomy_origin }}
+                        <div class="form-text with-errors"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Anatomy insertion" %}</label>
+                        {{ equipment_form.anatomy_insertion }}
+                        <div class="form-text with-errors"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Anatomy function" %}</label>
+                        {{ equipment_form.anatomy_function }}
+                        <div class="form-text with-errors"></div>
+                    </div>
+                </div>
+            </div>
+            {% if not editing and can_change %}
+                <br>
+                <div class="btn-group">
+                    <a href="/experiment/muscle_subdivision/{{ equipment.id }}/edit/" class="btn btn-primary">{% trans "Edit" %}</a>
+                </div>
             {% endif %}
 
-            <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
-                    {% if not editing and perms.experiment.delete_muscle_subdivision and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
-                    {% endif %}
-                </div>
-                {% if editing %}
-                    <div class="btn-group float-end">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
-                        <a href="/experiment{% if creating %}/muscle/{{ muscle.id }}{% else %}/muscle_subdivision/{{ equipment.id }}{% endif %}"
-                           class="btn btn-light">{% trans "Cancel" %}</a>
-                    </div>
-                {% else %}
-                    <div class="btn-group float-end">
-                        <a href="/experiment/muscle/{{ equipment.muscle.id }}" class="btn btn-light">{% trans "Back" %}</a>
-                    </div>
+        </div>
+        {% if not editing %}
+
+        {% endif %}
+
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+            <div class="btn-group">
+                {% if not editing and perms.experiment.delete_muscle_subdivision and can_change %}
+                    <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                 {% endif %}
             </div>
+
+            <div class="btn-group">
+                {% if editing %}
+                    <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                    <a href="/experiment{% if creating %}/muscle/{{ muscle.id }}{% else %}/muscle_subdivision/{{ equipment.id }}{% endif %}"
+                        class="btn btn-light">{% trans "Cancel" %}</a>
+                {% else %}
+                    <a href="/experiment/muscle/{{ equipment.muscle.id }}" class="btn btn-light">{% trans "Back" %}</a>
+                {% endif %}
+        </div>
         </div>
     </div>
 
@@ -155,12 +127,12 @@
         </div>
     </div>
 
-{% endblock %}
+{% endblock content %}
 
 {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
     <script src="{% static 'site/js/equipment.js' %}"></script>
-{% endblock %}
+{% endblock extrascript %}

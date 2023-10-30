@@ -80,7 +80,7 @@
                 {% endif %}
 
                 {% if not editing and can_change %}
-                    <div class="btn-group float-start">
+                    <div class="btn-group">
                         <a href="/experiment/group/edit/{{ group.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
@@ -333,7 +333,7 @@
             {% endif %}
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     {% if not editing and perms.experiment.delete_experiment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="show_modal_remove_group()">{% trans "Delete" %}</button>
                     {% endif %}

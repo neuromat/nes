@@ -79,7 +79,7 @@
                     </table>
                 </div>
                 {% if perms.experiment.add_researchproject %}
-                    <div class="btn-group float-start">
+                    <div class="btn-group">
                         <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Insert new study" %}</a>
                     </div>
                     <div class="tn-group float-end">
@@ -89,7 +89,7 @@
             </div>
 
             {% if can_send_to_portal and perms.experiment.add_researchproject %}
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     <a href="/experiment/schedule_of_sending/list/" class="btn btn-success">
                         <span class="fa-fw fa fa-send"></span> {% trans "Send experiments/projects to Portal" %}
                     </a>

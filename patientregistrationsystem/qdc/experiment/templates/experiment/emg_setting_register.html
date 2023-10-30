@@ -102,7 +102,7 @@
                 <div class="row">
                 </div>
                 {% if not editing and can_change %}
-                    <div class="btn-group float-start">
+                    <div class="btn-group">
                         <a href="/experiment/emg_setting/edit/{{ emg_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
@@ -176,7 +176,7 @@
                         </table>
 
                         {% if can_change %}
-                            <div class="btn-group float-start">
+                            <div class="btn-group">
                                 <a href="/experiment/emg_setting/{{ emg_setting.id }}/electrode/add" class="btn btn-primary">{% trans "Add new" %}</a>
                             </div>
                         {% endif %}
@@ -261,7 +261,7 @@
             {% endif %}
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     {% if not editing and perms.experiment.delete_experiment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete EMG setting" %}</button>
                     {% endif %}

@@ -91,37 +91,31 @@
                     </div>
                 </div>
             </div>
-
-            {% if not editing and can_change %}
-                <br>
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a href="/user/institution/edit/{{ institution.id }}"
-                        class="btn btn-primary">{% trans "Edit" %}</a>
-                </div>
-            {% endif %}
         </div>
     </div>
 
     <div class="btn-toolbar justify-content-between" role="toolbar">
-        <div class="btn-group float-start">
-        {% if not editing and perms.auth.add_user and can_change %}
-            <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">
-                {% trans "Delete institution" %}
-            </button>
-        {% endif %}
+        <div class="btn-group">
+            {% if not editing and perms.auth.add_user and can_change %}
+                <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">
+                    {% trans "Delete institution" %}
+                </button>
+            {% endif %}
         </div>
         <div class="btn-group" role="group">
-        {% if editing %}
-            <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-            
-            <a href="{% if creating %}/user/list{% else %}/user/institution/{{ institution.id }}{% endif %}"
-                class="btn btn-light">{% trans "Cancel" %}</a>
-        </div>
-        {% else %}
-            <div class="btn-group">
+            {% if editing %}
+                <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+            {% elif can_change %}
+                <a href="/user/institution/edit/{{ institution.id }}" 
+                    class="btn btn-primary">{% trans "Edit" %}</a>
+            {% endif %}
+
+            {% if editing %}
+                <a href="{% if creating %}/user/list{% else %}/user/institution/{{ institution.id }}{% endif %}"
+                    class="btn btn-light">{% trans "Cancel" %}</a>
+            {% else %}
                 <a href="/user/list/" class="btn btn-light">{% trans "Back" %}</a>
-            </div>
-        {% endif %}
+            {% endif %}
         </div>
     </div>
 

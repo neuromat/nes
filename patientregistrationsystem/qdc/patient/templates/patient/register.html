@@ -89,7 +89,7 @@
         {% block sub_content %}{% endblock sub_content %}
 
         <div class="">
-            <div class="btn-group float-start">
+            <div class="btn-group">
                 {% if not editing %}
                     {% if perms.patient.delete_patient %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">

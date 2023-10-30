@@ -69,7 +69,7 @@
             </div>
 
             {% if not editing %}
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     <a href="/survey/edit/{{ survey.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                 </div>
             {% endif %}
@@ -104,7 +104,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <div class="btn-group float-start">
+                    <div class="btn-group">
                         <a href="/survey/edit/{{ survey.id }}/sensitive_questions" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 </div>
@@ -261,7 +261,7 @@
         {% endif %}
 
         <div class="btn-toolbar justify-content-between"  role="toolbar">
-            <div class="btn-group float-start">
+            <div class="btn-group">
             {% if not editing and perms.survey.delete_survey %}
                     <button type="button" class="btn btn-danger" onclick="showRemoveDialog()">
                         {% trans "Delete" %}

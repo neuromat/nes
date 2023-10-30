@@ -304,7 +304,7 @@
                         </div>
 
                         {% if not editing and can_change %}
-                            <div class="btn-group float-start">
+                            <div class="btn-group">
                                 <a href="/experiment/tms_data/edit/{{ tms_data.id }}/1" class="btn btn-primary">{% trans "Edit" %}</a>
                             </div>
 
@@ -326,7 +326,7 @@
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     {% if not editing and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}

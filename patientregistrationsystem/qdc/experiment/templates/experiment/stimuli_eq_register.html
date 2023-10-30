@@ -106,7 +106,7 @@
                
 
                 {% if not editing and can_change %}
-                    <div class="btn-group float-start">
+                    <div class="btn-group">
                         <a href="/experiment/stimuli_eq/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
@@ -117,7 +117,7 @@
             {% endif %}
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     {% if not editing and perms.experiment.register_equipment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}

@@ -55,6 +55,7 @@
                     </div>
                     {% if not creating and editing %}
                         {% if perms.patient.add_medicalrecorddata %}
+                            <br>
                             <div class="btn-group">
                                 <a href="/patient/{{ patient_id }}/medical_record/new/" class="btn btn-primary">{% trans "Insert medical record" %}</a>
                             </div>

@@ -42,35 +42,11 @@
 {% endblock %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
-    {% csrf_token %}
+        {% csrf_token %}
 {% endblock %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
     <div class="tab-pane fade show active" id="breadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
@@ -99,74 +75,71 @@
     </div>
 
     <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
-            <div hidden="hidden">
-                <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
-                <input id="map_file" type="text" value="{{ localization_system.map_image_file.url }}">
-                <input id="localization_system_id" type="text" value="{{ localization_system.id }}">
-            </div>
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "EEG electrode localization system basic information" %}</h4>
-                <div class="row">
-                    <div style="width:100%;">
-                        <table>
+        <div hidden="hidden">
+            <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
+            <input id="map_file" type="text" value="{{ localization_system.map_image_file.url }}">
+            <input id="localization_system_id" type="text" value="{{ localization_system.id }}">
+        </div>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "EEG electrode localization system basic information" %}</h4>
+            <hr>
+            <div class="row">
+                <div style="width:100%;">
+                    <table>
+                        <tr>
+                            <td width="80%" valign="top">
+                                <div style="float:left; width: 80%">
+                                    <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
+                                    </canvas>
+                                    <p id="demo"></p>
+                                </div>
+                            </td>
+
+                            <td width="20%" valign="top" align="center">
+                                <label>{% trans "List of positions" %}</label>
+                                <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tfoot>
                             <tr>
-                                <td width="80%" valign="top">
-                                    <div style="float:left; width: 80%">
-                                        <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
-                                        </canvas>
-                                        <p id="demo"></p>
-                                    </div>
-                                </td>
-
-                                <td width="20%" valign="top" align="center">
-                                    <label>{% trans "List of positions" %}</label>
-                                    <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
-                                        <tbody>
-
-                                        </tbody>
-                                    </table>
-                                </td>
+                                <td colspan="3">{% trans "To mark a new coordinate, please click on the image map." %}</td>
                             </tr>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3">{% trans "To mark a new coordinate, please click on the image map." %}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">{% trans "To delete some coordinate, please click on the delete button or unmark the point clicking on it." %}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">{% trans "To update some coordinate, please click on the name of the point in the positions list and after click on the image to get the new coordinate." %}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3"><b>Obs.:</b>{% trans " The delete button and the point on the image are disabled when the corresponding position is used by some layout." %}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                 </div>
-            </div>
-
-            <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
-                    {% if not editing %}
-                        <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
-                    {% endif %}
+                            <tr>
+                                <td colspan="3">{% trans "To delete some coordinate, please click on the delete button or unmark the point clicking on it." %}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">{% trans "To update some coordinate, please click on the name of the point in the positions list and after click on the image to get the new coordinate." %}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><b>Obs.:</b>{% trans " The delete button and the point on the image are disabled when the corresponding position is used by some layout." %}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-                {% if editing %}
-                    <div class="btn-group float-end">
-                        <button type="submit" id="save_button" name="action" value="save" class="btn btn-primary" onclick="sendPositions()">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
-                        <a href="/experiment/eeg_electrode_localization_system/{% if creating %}list{% else %}{{ localization_system.id }}{% endif %}"
-                           class="btn btn-light">{% trans "Cancel" %}</a>
-                    </div>
-                {% else %}
-                    <div class="btn-group float-end">
-                        <a href="/experiment/eeg_electrode_localization_system/list" class="btn btn-light">{% trans "Back" %}</a>
-                    </div>
+                </div>
+        </div>
+
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+            <div class="btn-group">
+                {% if not editing %}
+                    <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                 {% endif %}
             </div>
+            {% if editing %}
+                <div class="btn-group">
+                    <button type="submit" id="save_button" name="action" value="save" class="btn btn-primary" onclick="sendPositions()">{% trans "Save" %}</button>
+                    <a href="/experiment/eeg_electrode_localization_system/{% if creating %}list{% else %}{{ localization_system.id }}{% endif %}"
+                        class="btn btn-light">{% trans "Cancel" %}</a>
+                </div>
+            {% else %}
+                <div class="btn-group">
+                    <a href="/experiment/eeg_electrode_localization_system/list" class="btn btn-light">{% trans "Back" %}</a>
+                </div>
+            {% endif %}
         </div>
     </div>
 

@@ -5,29 +5,6 @@
 {% block activeSetup %} active{% endblock %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
     <div class="tab-pane fade show active" id="tmsLocalizationSystemBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
@@ -39,55 +16,54 @@
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "TMS localization system list" %}</h4>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Name" %}</th>
-                                <th>{% trans "Description" %}</th>
-                                <th>{% trans "Brain area" %}</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for tms_localization_system in tms_localization_systems %}
-                            <tr>
-                                <td>
-                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}"
-                                       href="/experiment/tms_localization_system/{{ tms_localization_system.id }}">
-                                        {{ tms_localization_system.name }}
-                                    </a>
-                                </td>
-                                <td>
-                                    {{ tms_localization_system.description }}
-                                </td>
-                                <td>
-                                    {{ tms_localization_system.brain_area }}
-                                </td>
-                                <td>
-                                    {% if tms_localization_system.tms_localization_system_image %}
-                                        <span class="fa-fw fa fa-camera"></span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% if perms.experiment.view_equipment %}
-                    <div class="btn-group float-start">
-                        <a href="/experiment/tms_localization_system/new/" class="btn btn-primary">{% trans "Insert new localization system" %}</a>
-                    </div>
-                {% endif %}
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "TMS localization system list" %}</h4>
+            <hr>
+            <div class="form-group">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Name" %}</th>
+                            <th>{% trans "Description" %}</th>
+                            <th>{% trans "Brain area" %}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for tms_localization_system in tms_localization_systems %}
+                        <tr>
+                            <td>
+                                <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}"
+                                    href="/experiment/tms_localization_system/{{ tms_localization_system.id }}">
+                                    {{ tms_localization_system.name }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ tms_localization_system.description }}
+                            </td>
+                            <td>
+                                {{ tms_localization_system.brain_area }}
+                            </td>
+                            <td>
+                                {% if tms_localization_system.tms_localization_system_image %}
+                                    <span class="fa-fw fa fa-camera"></span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% if perms.experiment.view_equipment %}
+                <br>
+                <div class="btn-group">
+                    <a href="/experiment/tms_localization_system/new/" class="btn btn-primary">{% trans "Insert new localization system" %}</a>
+                </div>
+            {% endif %}
+        </div>
 
         <div class="btn-group float-end">
             <a href="/experiment/setup" class="btn btn-light">{% trans "Back" %}</a>
-        </div>
-
         </div>
     </div>
 

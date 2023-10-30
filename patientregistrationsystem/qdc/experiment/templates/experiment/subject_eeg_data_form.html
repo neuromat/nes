@@ -262,7 +262,7 @@
                         </div>
 
                         {% if not editing and can_change %}
-                            <div class="btn-group float-start">
+                            <div class="btn-group">
                                 <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/1" class="btn btn-primary">{% trans "Edit" %}</a>
                             </div>
                         {% endif %}
@@ -317,7 +317,7 @@
                             </table>
 
                             {% if not editing and can_change and eeg_data.electrode_positions.all %}
-                                <div class="btn-group float-start">
+                                <div class="btn-group">
                                     <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/2" class="btn btn-primary">{% trans "Edit" %}</a>
                                 </div>
                             {% endif %}
@@ -399,7 +399,7 @@
                                     </div>
                                     <div class="btn-toolbar">
                                         {% if not editing and can_change %}
-                                            <div class="btn-group float-start">
+                                            <div class="btn-group">
                                                 <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/3" class="btn btn-primary">{% trans "Edit" %}</a>
                                             </div>
                                         {% endif %}
@@ -414,7 +414,7 @@
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     {% if not editing and perms.experiment.delete_researchproject and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}

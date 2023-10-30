@@ -118,7 +118,7 @@
                 </div>
 
                 {% if not editing and can_change %}
-                    <div class="btn-group float-start">
+                    <div class="btn-group">
                         <a href="/experiment/research_project/edit/{{ research_project.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
@@ -201,7 +201,7 @@
                         </table>
                     </div>
                     {% if perms.experiment.add_experiment and can_change %}
-                        <div class="btn-group float-start">
+                        <div class="btn-group">
                             <a href="/experiment/research_project/{{ research_project.id }}/new_experiment/" class="btn btn-primary">{% trans "Insert new" %}</a>
                         </div>
 {#                        Commented out until a safe export/import tool is done #}
@@ -213,7 +213,7 @@
             {% endif %}
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-start">
+                <div class="btn-group">
                     {% if not editing and perms.experiment.delete_researchproject and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}
