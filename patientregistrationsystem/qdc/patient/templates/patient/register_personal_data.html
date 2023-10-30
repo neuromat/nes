@@ -36,7 +36,7 @@
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             <div id="div_name" class="form-group {% if patient_form.errors.name %}is-invalid{% endif %}">
-                                <label for="name" class="form-label">{% trans "Full name" %} <b style="color: red;">*</b></label>
+                                <label for="name" class="form-label">{% trans "Full name" %} <b class="text-danger">*</b></label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text"> <span class="fa-fw fa fa-user"></span></span>
                                     {% if  perms.patient.sensitive_data_patient or creating %}
@@ -92,7 +92,7 @@
                     <div class="row">
                         <div class="col-6 col-sm-6">
                             <div class="form-group {% if patient_form.errors.date_birth %}is-invalid{% endif %}">
-                                <label for="date_birth" class="form-label">{% trans "Date of birth" %} <b style="color: red;">*</b></label>
+                                <label for="date_birth" class="form-label">{% trans "Date of birth" %} <b class="text-danger">*</b></label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text"> <span class="fa-fw fa fa-birthday-cake"></span></span>
                                     {{ patient_form.date_birth }}
@@ -108,7 +108,7 @@
                         </div>
                         <div class="col-6 col-sm-6">
                             <div class="form-group">
-                                <label for="id_gender" class="form-label">{% trans "Gender" %} <b style="color: red;">*</b></label>
+                                <label for="id_gender" class="form-label">{% trans "Gender" %} <b class="text-danger">*</b></label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text"> <span class="fa-fw fa fa-venus-mars"></span></span>
                                     {{ patient_form.gender }}

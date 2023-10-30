@@ -128,14 +128,11 @@
             </div>
             <div class="btn-toolbar justify-content-between" role="toolbar">
                 <div class="btn-group">
-                </div>
-                <div class="btn-group float-end">
+
                     <button disabled="disabled" type="submit" id="button_remove" name="action" value="remove" class="btn btn-primary" onclick="return check_data_selection(false);">{% trans "Remove" %}</button>
-                </div>
-                <div class="btn-group float-end">
+
                     <button disabled="disabled" type="submit" id="button_transfer" name="action" value="transfer" class="btn btn-primary" onclick="return check_data_selection(true);">{% trans "Transfer" %}</button>
-                </div>
-                <div class="btn-group float-end">
+
                     <a href="/experiment/group/{{ group.id }}/subjects?per_steps_tab=active" class="btn btn-light">{% trans "Back" %}</a>
                 </div>
             </div>

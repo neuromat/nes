@@ -2,7 +2,7 @@
 
 {% load i18n static %}
 
-{% block activeSetup %} active{% endblock %}
+{% block activeSetup %} active{% endblock activeSetup %}
 
 {% block form %}
     
@@ -68,10 +68,11 @@
         <div class="container-fluid">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Software version" %}</h4>
+<hr>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Name" %} <b class="text-danger">*</b></label>
                             {{ software_version_form.name }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -79,6 +80,7 @@
                 </div>
 
                 {% if not editing and can_change %}
+                    <br>
                     <div class="btn-group">
                         <a href="/experiment/software_version/{{ software_version.id }}/edit/" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
@@ -95,8 +97,6 @@
                 {% if editing %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
                         <a href="/experiment{% if creating %}/software/{{ software.id }}{% else %}/software_version/{{ software_version.id }}{% endif %}"
                            class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>

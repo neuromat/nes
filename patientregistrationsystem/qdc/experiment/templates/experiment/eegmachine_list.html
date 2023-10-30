@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block activeSetup %} active{% endblock %}
+{% block activeSetup %} active{% endblock activeSetup %}
 
 {% block content %}
 
@@ -81,6 +81,7 @@
                     </table>
                 </div>
                 {% if perms.experiment.register_equipment %}
+                    <br>
                     <div class="btn-group">
                         <a href="/experiment/eegmachine/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
                     </div>
@@ -96,5 +97,3 @@
 
 {% endblock %}
 
-{% block extrascript %}
-{% endblock %}

@@ -175,11 +175,9 @@
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
                 <div class="btn-group">
-                </div>
-                <div class="btn-group float-end">
+
                     <a {% if not enable_upload %}disabled="disabled"{% endif %} href="/experiment/group/{{ group.id }}/load_goalkeeper_game_data" class="btn btn-primary" >{% trans "Load goalkeeper game data" %}</a>
-                </div>
-                <div class="btn-group float-end">
+
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-light">{% trans "Back" %}</a>
                 </div>
             </div>
@@ -194,5 +192,3 @@
     </form>
 {% endblock %}
 
-{% block extrascript %}
-{% endblock %}

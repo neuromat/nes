@@ -41,7 +41,7 @@
                 <div class="col-12 col-sm-6">
                     <div class="form-group has-feedback {% if institution_form.name.errors %}is-invalid{% endif %}">
                         <label for="id_name" class="form-label">
-                            {% trans "Name" %} <b style="color: red;">*</b>
+                            {% trans "Name" %} <b class="text-danger">*</b>
                         </label>
                         {{ institution_form.name }}
                         <div class="form-text with-errors">
@@ -54,7 +54,7 @@
                 <div class="col-12 col-sm-6">
                     <div class="form-group {% if institution_form.acronym.errors %}is-invalid{% endif %}">
                         <label class="form-label">
-                            {% trans "Acronym" %} <b style="color: red;">*</b>
+                            {% trans "Acronym" %} <b class="text-danger">*</b>
                         </label>
                         {{ institution_form.acronym }}
                         <div class="form-text with-errors">
@@ -69,7 +69,7 @@
                 <div class="col-12 col-sm-6">
                     <div class="form-group {% if institution_form.country.errors %}is-invalid{% endif %}">
                         <label class="form-label">
-                            {% trans "Country" %} <b style="color: red;">*</b>
+                            {% trans "Country" %} <b class="text-danger">*</b>
                         </label>
                         {{ institution_form.country }}
                         <div class="form-text with-errors">

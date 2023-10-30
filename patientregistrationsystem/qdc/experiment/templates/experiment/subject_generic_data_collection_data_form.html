@@ -111,7 +111,7 @@
                         <div class="row">
                             <div class="col-6 col-sm-6">
                                 <div class="form-group {% if generic_data_collection_data_form.errors.date %}is-invalid{% endif %}">
-                                    <label class="form-label">{% trans "Date" %} <b style="color: red;">*</b></label>
+                                    <label class="form-label">{% trans "Date" %} <b class="text-danger">*</b></label>
                                     {{ generic_data_collection_data_form.date }}
                                     <div class="form-text with-errors">
                                         {% for error in generic_data_collection_data_form.date.errors %}
@@ -138,7 +138,7 @@
                         <div class="row">
                             <div class="col-6 col-sm-6">
                                 <div class="form-group">
-                                    <label class="form-label">{% trans "File format" %} <b style="color: red;">*</b></label>
+                                    <label class="form-label">{% trans "File format" %} <b class="text-danger">*</b></label>
                                     {{ generic_data_collection_data_form.file_format }}
                                     <div class="form-text with-errors"></div>
                                 </div>
@@ -148,7 +148,7 @@
                         <div class="row" id="div-file-format-description">
                             <div class="col-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="form-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
+                                    <label class="form-label">{% trans "File format description" %} <b class="text-danger">*</b></label>
                                     {{ generic_data_collection_data_form.file_format_description }}
                                     <div class="form-text with-errors"></div>
                                 </div>
@@ -158,7 +158,7 @@
                         <div class="row">
                             <div class="col-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="form-label">{% trans "Generic data collection description" %} <b style="color: red;">*</b></label>
+                                    <label class="form-label">{% trans "Generic data collection description" %} <b class="text-danger">*</b></label>
                                     {{ generic_data_collection_data_form.description }}
                                     <div class="form-text with-errors"></div>
                                 </div>
@@ -170,7 +170,7 @@
                                 <div class="form-group {% if generic_data_collection_data_form.errors.file %}is-invalid{% endif %}">
 
                                     {% if creating or editing %}
-                                        <label class="form-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
+                                        <label class="form-label">{% trans "Files to upload" %} <b class="text-danger">*</b></label>
                                         <br/>
                                         <input type="file" name="generic_data_collection_files" multiple>
                                         <br/>
@@ -178,7 +178,7 @@
 
                                     {% if not creating %}
                                         {% if generic_data_collection_data.generic_data_collection_files %}
-                                            <label class="form-label">{% trans "Uploaded files" %} <b style="color: red;">*</b></label>
+                                            <label class="form-label">{% trans "Uploaded files" %} <b class="text-danger">*</b></label>
                                             <br/>
                                             <table><tbody>
                                             {% for generic_data_collection_file in generic_data_collection_data.generic_data_collection_files.all %}
@@ -231,8 +231,6 @@
                 {% if editing %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
 
                         {% if creating %}
                             <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/generic_data_collection"

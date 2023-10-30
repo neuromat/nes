@@ -67,10 +67,11 @@
         <div class="container-fluid">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4><span class="fa-fw fa fa-flash"></span> {% trans "EEG Setting" %}</h4>
+<hr>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Name" %} <b class="text-danger">*</b></label>
                             {{ eeg_setting_form.name }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -79,7 +80,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Description" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Description" %} <b class="text-danger">*</b></label>
                             {{ eeg_setting_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -87,6 +88,7 @@
                 </div>
 
                 {% if not editing and can_change %}
+                    <br>
                     <div class="btn-group">
                         <a href="/experiment/eeg_setting/edit/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
@@ -245,8 +247,6 @@
                 {% if editing %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
                         <a href="/experiment/{% if creating %}{{ experiment.id }}{% else %}eeg_setting/{{ eeg_setting.id }}{% endif %}"
                            class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>

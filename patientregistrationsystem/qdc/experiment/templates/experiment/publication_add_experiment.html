@@ -46,7 +46,7 @@
                 <div class="row">
                     <div class="col-12 col-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Experiments" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Experiments" %} <b class="text-danger">*</b></label>
                             <select class="form-control" id="id_experiments" name="experiment_selected" required="">
                                 <option value>-------</option>
                                 {% for experiment in experiments %}

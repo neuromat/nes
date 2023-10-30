@@ -2,10 +2,9 @@
 
 {% load i18n %}
 
-{% block activeSetup %} active{% endblock %}
+{% block activeSetup %} active{% endblock activeSetup %}
 
 {% block content %}
-
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
@@ -17,60 +16,54 @@
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Amplifier List" %}</h4>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Identification" %}</th>
-                                <th>{% trans "Manufacturer" %}</th>
-                                <th>{% trans "Serial number" %}</th>
-                                <th>{% trans "Gain (times)" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for equipment in equipments %}
-                            <tr>
-                                <td>{% if perms.experiment.register_equipment %}
-                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}"
-                                           href="/experiment/amplifier/{{ equipment.id }}">
-                                            {{ equipment.identification }}
-                                        </a>
-                                    {% else %}
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "Amplifier List" %}</h4>
+            <hr>
+            <div class="form-group">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Identification" %}</th>
+                            <th>{% trans "Manufacturer" %}</th>
+                            <th>{% trans "Serial number" %}</th>
+                            <th>{% trans "Gain (times)" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for equipment in equipments %}
+                        <tr>
+                            <td>{% if perms.experiment.register_equipment %}
+                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}"
+                                        href="/experiment/amplifier/{{ equipment.id }}">
                                         {{ equipment.identification }}
-                                    {% endif %}
-                                </td>
-                                <td>{{ equipment.manufacturer }}</td>
-                                <td>
-                                    {{ equipment.serial_number }}
-                                </td>
-                                <td>
-                                    {{ equipment.gain|default:"" }}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% if perms.experiment.register_equipment %}
-                    <div class="btn-group">
-                        <a href="/experiment/amplifier/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                    </div>
-                {% endif %}
+                                    </a>
+                                {% else %}
+                                    {{ equipment.identification }}
+                                {% endif %}
+                            </td>
+                            <td>{{ equipment.manufacturer }}</td>
+                            <td>
+                                {{ equipment.serial_number }}
+                            </td>
+                            <td>
+                                {{ equipment.gain|default:"" }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
-
-            <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-end">
-                    <a href="/experiment/setup" class="btn btn-light">{% trans "Back" %}</a>
+            {% if perms.experiment.register_equipment %}
+                <br>
+                <div class="btn-group">
+                    <a href="/experiment/amplifier/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
                 </div>
-            </div>
+            {% endif %}
+        </div>
 
+        <div class="btn-group float-end">
+            <a href="/experiment/setup" class="btn btn-light">{% trans "Back" %}</a>
         </div>
     </div>
+{% endblock content %}
 
-{% endblock %}
-
-{% block extrascript %}
-{% endblock %}

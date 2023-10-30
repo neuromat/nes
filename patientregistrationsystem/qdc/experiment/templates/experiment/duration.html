@@ -15,7 +15,7 @@
         </div>
     {% else %}
         <div class="col-12 col-sm-12">
-            <label for="duration" class="form-label">{% trans "Duration" %} {% if component_form.component_type == 'pause' %}<b style="color: red;">*</b>{% endif %}</label>
+            <label for="duration" class="form-label">{% trans "Duration" %} {% if component_form.component_type == 'pause' %}<b class="text-danger">*</b>{% endif %}</label>
         </div>
         <div class="col-4 col-sm-4">
             <div class="form-group {% if component_form.errors.duration_value %}is-invalid{% endif %}">

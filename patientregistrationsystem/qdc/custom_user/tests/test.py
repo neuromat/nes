@@ -112,7 +112,7 @@ class FormUserValidation(TestCase):
             "protocol": use_https and "https" or "http",
         }
 
-        subject_template_name = "registration/password_reset_subject.txt"
+        subject_template_name = "registration/password_reset_subject.django-txt"
         subject: str = loader.render_to_string(subject_template_name, context)
 
         # Email subject *must not* contain newlines

@@ -2,51 +2,58 @@
 
 {% load i18n static %}
 
-{% block activeSetup %} active{% endblock %}
+{% block activeSetup %}
+    active
+{% endblock activeSetup %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-bs-toggle="validator">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock %}
 
-{% block content %}
+    {% block content %}
 
-    {% if equipment_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
+        {% if equipment_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
-    <div class="tab-pane fade show active" id="equipmentBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/setup/">{% trans "Set up" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/coil/list/">{% trans "Coil Model" %}</a></li>
+        <div class="tab-pane fade show active" id="equipmentBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href="/home/">{% trans 'Home' %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/setup/">{% trans "Set up" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/coil/list/">{% trans "Coil Model" %}</a>
+                    </li>
 
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New" %}</li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item"><a href="/experiment/coil/{{ equipment.id }}/">{{ equipment_form.name.value }}</a></li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">{% trans "New" %}</li>
                     {% else %}
-                        <li class="breadcrumb-item active"> {{ equipment_form.name.value }} </li>
+                        {% if editing %}
+                            <li class="breadcrumb-item">
+                                <a href="/experiment/coil/{{ equipment.id }}/">{{ equipment_form.name.value }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                        {% else %}
+                            <li class="breadcrumb-item active">{{ equipment_form.name.value }}</li>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4>{% trans "Coil Model" %}</h4>
-                 <div class="row">
+                <hr>
+                <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">
+                                {% trans "Name" %} <b class="text-danger">*</b>
+                            </label>
                             {{ equipment_form.name }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -64,7 +71,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Coil shape" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">
+                                {% trans "Coil shape" %} <b class="text-danger">*</b>
+                            </label>
                             {{ equipment_form.coil_shape }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -90,15 +99,14 @@
                 </div>
 
                 {% if not editing and can_change %}
+                    <br>
                     <div class="btn-group">
                         <a href="/experiment/coil/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
 
             </div>
-            {% if not editing %}
-
-            {% endif %}
+            {% if not editing %}{% endif %}
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
                 <div class="btn-group">
@@ -109,10 +117,7 @@
                 {% if editing %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
-                        <a href="/experiment/coil/{% if creating %}list{% else %}{{ equipment.id }}{% endif %}"
-                           class="btn btn-light">{% trans "Cancel" %}</a>
+                        <a href="/experiment/coil/{% if creating %}list{% else %}{{ equipment.id }}{% endif %}" class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
                     <div class="btn-group float-end">
@@ -121,29 +126,24 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete this coil model?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">{% trans "Are you sure you want to delete this coil model?" %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endblock content %}
 
-{% endblock %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-        <script src="{% static 'site/js/equipment.js' %}"></script>
-{% endblock %}
+    <script src="{% static 'site/js/equipment.js' %}"></script>
+{% endblock extrascript %}

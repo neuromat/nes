@@ -57,7 +57,7 @@
                 <div class="col-12 col-sm-12">
                     <div class="form-group">
                         <div class="form-check">
-                            <label class="form-check-label" for="id_is_initial_evaluation">{% trans "Required fill" %}<b style="color: red;">*</b></label>
+                            <label class="form-check-label" for="id_is_initial_evaluation">{% trans "Required fill" %}<b class="text-danger">*</b></label>
                             {{ survey_form.is_initial_evaluation }}
                         </div>
                         {% if creating %}

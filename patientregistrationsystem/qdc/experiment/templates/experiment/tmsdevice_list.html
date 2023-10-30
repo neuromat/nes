@@ -2,61 +2,44 @@
 
 {% load i18n %}
 
-{% block activeSetup %} active{% endblock %}
+{% block activeSetup %}
+    active
+{% endblock activeSetup %}
 
 {% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/setup">{% trans "Set up" %}</a></li>
+                <li class="breadcrumb-item">
+                    <a href="/home/">{% trans 'Home' %}</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/experiment/setup">{% trans "Set up" %}</a>
+                </li>
                 <li class="breadcrumb-item active">{% trans "TMS Device" %}</li>
             </ol>
         </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "TMS Device List" %}</h4>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Identification" %}</th>
-                                <th>{% trans "Manufacturer" %}</th>
-                                <th>{% trans "Pulse Type" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "TMS Device List" %}</h4>
+            <hr>
+            <div class="form-group">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Identification" %}</th>
+                            <th>{% trans "Manufacturer" %}</th>
+                            <th>{% trans "Pulse Type" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {% for equipment in equipments %}
                             <tr>
-                                <td>{% if perms.experiment.register_equipment %}
-                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}"
-                                           href="/experiment/tmsdevice/{{ equipment.id }}">
+                                <td>
+                                    {% if perms.experiment.register_equipment %}
+                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/tmsdevice/{{ equipment.id }}">
                                             {{ equipment.identification }}
                                         </a>
                                     {% else %}
@@ -64,27 +47,22 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ equipment.manufacturer }}</td>
-                                <td>
-                                    {{ equipment.pulse_type|default:"" }}
-                                </td>
+                                <td>{{ equipment.pulse_type|default:"" }}</td>
                             </tr>
                         {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% if perms.experiment.register_equipment %}
-                    <div class="btn-group">
-                        <a href="/experiment/tmsdevice/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                    </div>
-                {% endif %}
+                    </tbody>
+                </table>
             </div>
+            {% if perms.experiment.register_equipment %}
+                <br>
+                <div class="btn-group">
+                    <a href="/experiment/tmsdevice/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                </div>
+            {% endif %}
+        </div>
 
         <div class="btn-group float-end">
             <a href="/experiment/setup" class="btn btn-light">{% trans "Back" %}</a>
         </div>
-
-        </div>
     </div>
-
-{% endblock %}
-
+{% endblock content %}

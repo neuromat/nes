@@ -26,7 +26,7 @@
     <div class="row">
         <div class="container-fluid">
             <div class="form-group">
-                <label class="form-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
+                <label class="form-label">{% trans "Identification" %} <b class="text-danger">*</b></label>
 
                 <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
@@ -96,7 +96,7 @@
     <div class="row">
         <div class="container-fluid">
             <div class="form-group">
-                <label class="form-label">{% trans "Number of used channels" %} <b style="color: red;">*</b></label>
+                <label class="form-label">{% trans "Number of used channels" %} <b class="text-danger">*</b></label>
                 {{ setting_form.number_of_channels_used }}
                 <div class="form-text with-errors"></div>
             </div>

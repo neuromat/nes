@@ -68,11 +68,11 @@
             <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <h4>{% trans "EMG electrode settings" %}</h4>
-
+                <hr>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label for="id_electrode_type" class="form-label">{% trans "Electrode type" %} <b style="color: red;">*</b></label>
+                            <label for="id_electrode_type" class="form-label">{% trans "Electrode type" %} <b class="text-danger">*</b></label>
                             {{ emg_electrode_model_form.electrode_type }}
                             <div class="form-text with-errors"></div>
 
@@ -82,7 +82,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label for="id_electrode" class="form-label">{% trans "Electrode" %} <b style="color: red;">*</b></label>
+                            <label for="id_electrode" class="form-label">{% trans "Electrode" %} <b class="text-danger">*</b></label>
                             {{ emg_electrode_setting_form.electrode }}
                             <div class="form-text with-errors"></div>
 
@@ -103,7 +103,7 @@
                         <div class="form-group">
 
                             <div class="form-group">
-                                <label class="form-label">{% trans "Electrode placement" %} <b style="color: red;">*</b></label>
+                                <label class="form-label">{% trans "Electrode placement" %} <b class="text-danger">*</b></label>
                                 {{ emg_electrode_placement_setting_form.emg_electrode_placement }}
                                 <div class="form-text with-errors"></div>
                             </div>
@@ -115,7 +115,7 @@
                 <div class="row" id="div-muscle-side">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Muscle side" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Muscle side" %} <b class="text-danger">*</b></label>
                             {{ emg_electrode_placement_setting_form.muscle_side }}
                             <div class="form-text with-errors"></div>
                         </div>

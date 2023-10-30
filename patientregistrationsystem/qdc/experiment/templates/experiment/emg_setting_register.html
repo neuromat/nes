@@ -67,10 +67,11 @@
         <div class="container-fluid">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <h4><span class="fa-fw fa fa-bar-chart"></span> {% trans "EMG Setting" %}</h4>
+<hr>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Name" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Name" %} <b class="text-danger">*</b></label>
                             {{ emg_setting_form.name }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -79,7 +80,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Description" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Description" %} <b class="text-danger">*</b></label>
                             {{ emg_setting_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -88,7 +89,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Acquisition software version" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Acquisition software version" %} <b class="text-danger">*</b></label>
                             <select class="form-control" required="required" name="software_version" id="id_software_version" {% if not editing and not creating %}disabled{% endif %}>
                                 <option value>-------</option>
                                 {% for software_version in software_version_list %}
@@ -102,6 +103,7 @@
                 <div class="row">
                 </div>
                 {% if not editing and can_change %}
+                    <br>
                     <div class="btn-group">
                         <a href="/experiment/emg_setting/edit/{{ emg_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
@@ -269,8 +271,6 @@
                 {% if editing %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
                         <a href="/experiment/{% if creating %}{{ experiment.id }}{% else %}emg_setting/{{ emg_setting.id }}{% endif %}"
                            class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>

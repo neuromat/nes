@@ -2,41 +2,45 @@
 
 {% load i18n %}
 
-{% block activeSetup %} active{% endblock %}
+{% block activeSetup %}
+    active
+{% endblock activeSetup %}
 
 {% block content %}
-
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href="/home/">{% trans 'Home' %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/setup">{% trans "Set up" %}</a></li>
+                <li class="breadcrumb-item">
+                    <a href="/home/">{% trans 'Home' %}</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/experiment/setup">{% trans "Set up" %}</a>
+                </li>
                 <li class="breadcrumb-item active">{% trans "A/D converter" %}</li>
             </ol>
         </nav>
     </div>
-
     <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "A/D converter List" %}</h4>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Identification" %}</th>
-                                <th>{% trans "Manufacturer" %}</th>
-                                <th>{% trans "Signal-to-noise ratio / SNR (dB)" %}</th>
-                                <th>{% trans "Sampling rate (Hz)" %}</th>
-                                <th>{% trans "Resolution (bits)" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            <h4>{% trans "A/D converter List" %}</h4>
+            <hr>
+            <div class="form-group">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Identification" %}</th>
+                            <th>{% trans "Manufacturer" %}</th>
+                            <th>{% trans "Signal-to-noise ratio / SNR (dB)" %}</th>
+                            <th>{% trans "Sampling rate (Hz)" %}</th>
+                            <th>{% trans "Resolution (bits)" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {% for equipment in equipments %}
                             <tr>
-                                <td>{% if perms.experiment.register_equipment %}
-                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}"
-                                           href="/experiment/ad_converter/{{ equipment.id }}">
+                                <td>
+                                    {% if perms.experiment.register_equipment %}
+                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/ad_converter/{{ equipment.id }}">
                                             {{ equipment.identification }}
                                         </a>
                                     {% else %}
@@ -44,39 +48,23 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ equipment.manufacturer }}</td>
-
-                                <td>
-                                    {{ equipment.signal_to_noise_rate }}
-                                </td>
-                                <td>
-                                    {{ equipment.sampling_rate }}
-                                </td>
-
-                                <td>
-                                    {{ equipment.resolution|default:"" }}
-                                </td>
+                                <td>{{ equipment.signal_to_noise_rate }}</td>
+                                <td>{{ equipment.sampling_rate }}</td>
+                                <td>{{ equipment.resolution|default:"" }}</td>
                             </tr>
                         {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% if perms.experiment.register_equipment %}
-                    <div class="btn-group">
-                        <a href="/experiment/ad_converter/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                    </div>
-                {% endif %}
+                    </tbody>
+                </table>
             </div>
-
-            <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-end">
-                    <a href="/experiment/setup" class="btn btn-light">{% trans "Back" %}</a>
+            {% if perms.experiment.register_equipment %}
+                <br>
+                <div class="btn-group">
+                    <a href="/experiment/ad_converter/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
                 </div>
-            </div>
-
+            {% endif %}
+        </div>
+        <div class="btn-group float-end">
+            <a href="/experiment/setup" class="btn btn-light">{% trans "Back" %}</a>
         </div>
     </div>
-
-{% endblock %}
-
-{% block extrascript %}
-{% endblock %}
+{% endblock content %}

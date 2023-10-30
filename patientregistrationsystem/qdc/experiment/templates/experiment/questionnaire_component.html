@@ -28,7 +28,7 @@
     <div class="row">
         <div class="col-6 col-sm-12">
             <div class="form-group">
-                <label for="questionnaire_selected" class="form-label">{% trans "Questionnaire name at LimeSurvey" %}<b style="color: red;">*</b></label>
+                <label for="questionnaire_selected" class="form-label">{% trans "Questionnaire name at LimeSurvey" %}<b class="text-danger">*</b></label>
                 <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-bs-error="Por favor, selecione um questionário da lista." {% if updating or reusing %}disabled{% endif %}>
                     {% if reusing %}
                         <option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})

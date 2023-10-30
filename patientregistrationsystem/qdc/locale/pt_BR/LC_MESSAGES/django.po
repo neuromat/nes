@@ -1043,7 +1043,7 @@ msgstr ""
 msgid "E-mail"
 msgstr "E-mail"
 
-#: templates/registration/password_reset_subject.txt:2
+#: templates/registration/password_reset_subject.django-txt:2
 #, python-format
 msgid "Password reset on %(site_name)s"
 msgstr "Alterar senha em %(site_name)s"

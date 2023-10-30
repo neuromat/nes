@@ -32,7 +32,7 @@
     <div class="row">
         <div class="col-12 col-sm-6">
             <div class="form-group">
-                <label class="form-label" for="type">{% trans "Organization of sub-steps" %} <b style="color: red;">*</b></label>
+                <label class="form-label" for="type">{% trans "Organization of sub-steps" %} <b class="text-danger">*</b></label>
 
                 <div class="input-group  input-group-sm">
                     {% trans "Sub-steps will be executed one after another" as text_1 %}
@@ -48,7 +48,7 @@
             </div>
         </div>
         <div class="col-12 col-sm-6">
-            <label for="unlimited_number_of_repetitions" class="form-label">{% trans "Quantity of steps obligatory." %} <b style="color: red;">*</b></label>
+            <label for="unlimited_number_of_repetitions" class="form-label">{% trans "Quantity of steps obligatory." %} <b class="text-danger">*</b></label>
             <div>
                 <div class="radio-inline" style="vertical-align: top">
                     <input id="id_all_mandatory" name="radio_number_of_mandatory_components" type="radio" value="all"

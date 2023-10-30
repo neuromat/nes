@@ -96,8 +96,6 @@
                 {% if editing or creating%}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save setting" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
                         {% if tab == '1' or tab == '2' %}
                             <a href="/experiment/eeg_setting/eeg_electrode_position_status{% if tab == '2' %}_model{% endif %}/{{ eeg_setting.id }}{% if editing %}/{{ eeg_setting_type }}{% endif %}"
                                class="btn btn-light">{% trans "Cancel" %}</a>

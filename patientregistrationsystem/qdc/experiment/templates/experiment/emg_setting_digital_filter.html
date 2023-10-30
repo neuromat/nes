@@ -68,7 +68,7 @@
             <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <h4>{% trans "EMG digital filter settings" %}</h4>
-
+                <hr>
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
@@ -196,8 +196,6 @@
                 {% if editing or creating%}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save setting" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
                         <a href="/experiment/emg_setting/{{ emg_setting.id }}{% if editing %}/digital_filter{% endif %}"
                            class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>

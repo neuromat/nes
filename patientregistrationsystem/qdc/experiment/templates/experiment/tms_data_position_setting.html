@@ -19,7 +19,7 @@
         <div class="row">
             <div class="col-8 col-sm-8">
                 <div class="form-group">
-                    <label class="form-label">{% trans "TMS localization system" %}<b style="color: red;">*</b> </label>
+                    <label class="form-label">{% trans "TMS localization system" %}<b class="text-danger">*</b> </label>
 
                     <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>

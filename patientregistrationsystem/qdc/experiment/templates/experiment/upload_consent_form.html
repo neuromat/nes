@@ -47,7 +47,7 @@
                                     </div>
                                 </div>
                                 <div class="col-4 col-sm-6">
-                                    <div class="btn-toolbar">
+                                    <div class="btn-toolbar justify-content-between" role="toolbar">
                                         {% if perms.patient.sensitive_data_patient %}
                                             <button class="btn btn-light" type="button" onclick="location.href='{{ file_list.url }}'"><span class="fa-fw fa fa-download-alt" style="color: royalblue"></span></button>
                                             <button class="btn btn-light" type="button" onclick="$('#modalRemove').modal('show')"><span class="fa-fw fa fa-remove" style="color: indianred"></span></button>
@@ -59,7 +59,7 @@
                     </div>
                 </div>
             </div>
-            <div class="btn-toolbar">
+            <div class="btn-toolbar justify-content-between" role="toolbar">
                 {% if not file_list %}
                     {# This div has to exist so that the upload and cancel buttons appear separated from each other. #}
                     <div class="btn-group">

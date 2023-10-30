@@ -63,7 +63,7 @@
             <div class="my-3 p-3 bg-body rounded shadow-sm">
 
                 <h4>{% trans "Subject step data" %}</h4>
-
+                <hr>
                 <div class="row">
                     <div class="col-3 col-sm-3">
                         <div class="form-group {% if subject_step_data_form.errors.start_date %}is-invalid{% endif %}">
@@ -125,8 +125,6 @@
                 {% if editing %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data"
                            class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>

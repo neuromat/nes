@@ -70,10 +70,11 @@
                 <h4>{% trans "EMG data collection" %}</h4>
 
                 <h4></h4>
+<hr>
                 <div class="row">
                     <div class="col-6 col-sm-6">
                         <div class="form-group {% if emg_data_form.errors.date %}is-invalid{% endif %}">
-                            <label class="form-label">{% trans "Date" %}<b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Date" %}<b class="text-danger">*</b></label>
                             {{ emg_data_form.date }}
                             <div class="form-text with-errors">
                                 {% for error in emg_data_form.date.errors %}
@@ -98,7 +99,7 @@
                 <div class="row">
                     <div class="col-6 col-sm-6">
                         <div class="form-group">
-                            <label class="form-label">{% trans "EMG setting" %}<b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "EMG setting" %}<b class="text-danger">*</b></label>
                                 {{ emg_data_form.emg_setting }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -108,7 +109,7 @@
                 <div class="row" id="div-reason-for-change">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "Reason for change the EMG setting" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "Reason for change the EMG setting" %} <b class="text-danger">*</b></label>
                             {{ emg_data_form.emg_setting_reason_for_change }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -118,7 +119,7 @@
                 <div class="row">
                     <div class="col-6 col-sm-6">
                         <div class="form-group">
-                            <label class="form-label">{% trans "File format" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "File format" %} <b class="text-danger">*</b></label>
                             {{ emg_data_form.file_format }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -128,7 +129,7 @@
                 <div class="row" id="div-file-format-description">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "File format description" %} <b class="text-danger">*</b></label>
                             {{ emg_data_form.file_format_description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -138,7 +139,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label">{% trans "EMG data collection description" %} <b style="color: red;">*</b></label>
+                            <label class="form-label">{% trans "EMG data collection description" %} <b class="text-danger">*</b></label>
                             {{ emg_data_form.description }}
                             <div class="form-text with-errors"></div>
                         </div>
@@ -150,7 +151,7 @@
                         <div class="form-group {% if emg_data_form.errors.file %}is-invalid{% endif %}">
 
                             {% if creating or editing %}
-                                <label class="form-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
+                                <label class="form-label">{% trans "Files to upload" %} <b class="text-danger">*</b></label>
                                 <br/>
                                 <input type="file" name="emg_files" multiple>
                                 <br/>
@@ -158,7 +159,7 @@
 
                             {% if not creating %}
                                 {% if emg_data.emg_files %}
-                                    <label class="form-label">{% trans "Uploaded files" %} <b style="color: red;">*</b></label>
+                                    <label class="form-label">{% trans "Uploaded files" %} <b class="text-danger">*</b></label>
                                     <br/>
                                     <table><tbody>
                                     {% for emg_file in emg_data.emg_files.all %}
@@ -185,6 +186,7 @@
                 </div>
 
                 {% if not editing and can_change %}
+                    <br>
                     <div class="btn-group">
                         <a href="/experiment/emg_data/edit/{{ emg_data.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
@@ -201,8 +203,6 @@
                 {% if editing %}
                     <div class="btn-group float-end">
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-                    </div>
-                    <div class="btn-group float-end">
 
                         {% if creating %}
                             <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/emg"

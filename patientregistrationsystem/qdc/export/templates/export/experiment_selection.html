@@ -27,7 +27,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-12 col-sm-12">
-                        <label for="id_research_projects" class="form-label">{% trans "Studies" %} <b style="color: red;">*</b></label>
+                        <label for="id_research_projects" class="form-label">{% trans "Studies" %} <b class="text-danger">*</b></label>
                         <select class="form-select" id="id_research_projects" name="research_projects_selected">
                             <option value>-------</option>
                             {% for research_project in research_projects %}
@@ -42,7 +42,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-12 col-12">
-                        <label for="id_experiments" class="form-label">{% trans "Experiments" %} <b style="color: red;">*</b></label>
+                        <label for="id_experiments" class="form-label">{% trans "Experiments" %} <b class="text-danger">*</b></label>
                         <select class="form-select" id="id_experiments" name="experiment_selected">
                             <option value>-------</option>
                             {% for experiment in experiment_list %}
@@ -55,7 +55,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-12 col-12">
-                        <label for="group_selected" class="form-label">{% trans "Groups" %} <b style="color: red;">*</b></label>
+                        <label for="group_selected" class="form-label">{% trans "Groups" %} <b class="text-danger">*</b></label>
                         <select class="form-control" id="group_selected" name="group_selected" multiple="multiple">
                             {% for group in group_list %}
                                 <option title="{{ group.title }}" value="{{ group.id }}">{{ group.title }}</option>
