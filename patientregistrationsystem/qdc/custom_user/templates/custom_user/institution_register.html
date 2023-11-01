@@ -48,7 +48,7 @@
                                 {% trans "Name" %} <b class="text-danger">*</b>
                             </label>
                             {{ institution_form.name }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in institution_form.name.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
@@ -59,7 +59,7 @@
                                 {% trans "Acronym" %} <b class="text-danger">*</b>
                             </label>
                             {{ institution_form.acronym }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in institution_form.acronym.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
@@ -72,7 +72,7 @@
                                 {% trans "Country" %} <b class="text-danger">*</b>
                             </label>
                             {{ institution_form.country }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in institution_form.country.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
@@ -81,7 +81,7 @@
                         <div class="form-group {% if institution_form.parent.errors %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "Parent" %}</label>
                             {{ institution_form.parent }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in institution_form.parent.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>

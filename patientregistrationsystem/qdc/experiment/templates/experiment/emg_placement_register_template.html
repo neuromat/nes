@@ -51,7 +51,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Muscle subdivision" %} <b class="text-danger">*</b></label>
                         {{ emg_electrode_placement_form.muscle_subdivision }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Location description" %}</label>
                         {{ emg_electrode_placement_form.location }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
                             {% endif %}
                         {% endif %}
 
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>

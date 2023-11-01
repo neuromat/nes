@@ -19,7 +19,7 @@
                     {% endfor %}
                 </select>
 
-                <div class="form-text with-errors"></div>
+                <div class="form-text with-errors text-danger"></div>
 
             </div>
         </div>
@@ -32,7 +32,7 @@
             <div class="form-group">
                 <label class="form-label">{% trans "Description" %} </label>
                 {{ equipment_form.description }}
-                <div class="form-text with-errors"></div>
+                <div class="form-text with-errors text-danger"></div>
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
             <div class="form-group {% if setting_form.high_pass.errors %}is-invalid{% endif %}">
                 <label class="form-label">{% trans "High pass cutoff (Hz)" %} </label>
                 {{ setting_form.high_pass }}
-                <div class="form-text with-errors">
+                <div class="form-text with-errors text-danger">
                     {% for error in setting_form.high_pass.errors %}
                         {{ error }}
                     {% endfor %}
@@ -64,7 +64,7 @@
             <div class="form-group {% if setting_form.low_pass.errors %}is-invalid{% endif %}">
                 <label class="form-label">{% trans "Low pass cutoff (Hz)" %} </label>
                 {{ setting_form.low_pass }}
-                <div class="form-text with-errors">
+                <div class="form-text with-errors text-danger">
                     {% for error in setting_form.low_pass.errors %}
                         {{ error }}
                     {% endfor %}
@@ -80,7 +80,7 @@
             <div class="form-group {% if setting_form.low_band_pass.errors %}is-invalid{% endif %}">
                 <label class="form-label">{% trans "Low band pass (Hz)" %}</label>
                 {{ setting_form.low_band_pass }}
-                <div class="form-text with-errors">
+                <div class="form-text with-errors text-danger">
                     {% for error in setting_form.low_band_pass.errors %}
                         {{ error }}
                     {% endfor %}
@@ -92,7 +92,7 @@
             <div class="form-group {% if setting_form.high_band_pass.errors %}is-invalid{% endif %}">
                 <label class="form-label">{% trans "High band pass (Hz)" %}</label>
                 {{ setting_form.high_band_pass }}
-                <div class="form-text with-errors">
+                <div class="form-text with-errors text-danger">
                     {% for error in setting_form.high_band_pass.errors %}
                         {{ error }}
                     {% endfor %}
@@ -108,7 +108,7 @@
             <div class="form-group {% if setting_form.low_notch.errors %}is-invalid{% endif %}">
                 <label class="form-label">{% trans "Low notch (Hz)" %}</label>
                 {{ setting_form.low_notch }}
-                <div class="form-text with-errors">
+                <div class="form-text with-errors text-danger">
                     {% for error in setting_form.low_notch.errors %}
                         {{ error }}
                     {% endfor %}
@@ -120,7 +120,7 @@
             <div class="form-group {% if setting_form.high_notch.errors %}is-invalid{% endif %}">
                 <label class="form-label">{% trans "High notch (Hz)" %}</label>
                 {{ setting_form.high_notch }}
-                <div class="form-text with-errors">
+                <div class="form-text with-errors text-danger">
                     {% for error in setting_form.high_notch.errors %}
                         {{ error }}
                     {% endfor %}
@@ -136,7 +136,7 @@
             <div class="form-group {% if setting_form.order.errors %}is-invalid{% endif %}">
                 <label class="form-label">{% trans "Order" %} </label>
                 {{ setting_form.order }}
-                <div class="form-text with-errors">
+                <div class="form-text with-errors text-danger">
                     {% for error in setting_form.order.errors %}
                         {{ error }}
                     {% endfor %}

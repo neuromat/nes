@@ -72,7 +72,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Size" %} <b class="text-danger">*</b></label>
                             {{ equipment_form.size }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                         <div class="form-group {% if equipment_form.electrode_adjacent_distance.errors %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "Electrode adjacent distance" %}</label>
                             {{ equipment_form.electrode_adjacent_distance }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in equipment_form.electrode_adjacent_distance.errors %}
                                     {{ error }}
                                 {% endfor %}

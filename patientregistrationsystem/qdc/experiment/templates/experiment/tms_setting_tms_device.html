@@ -66,7 +66,7 @@
                                             value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
                                 {% endfor %}
                             </select>
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
 
                         </div>
                     </div>
@@ -77,7 +77,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "TMS device" %}</label>
                             {{ tms_device_setting_form.tms_device }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
 
                         </div>
                     </div>
@@ -88,7 +88,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Description" %}</label>
                             {{ equipment_form.description }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Coil Model" %}</label>
                             {{ tms_device_setting_form.coil_model }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Description" %}</label>
                             {{ coil_model_form.description }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Pulse stimulus type" %}</label>
                             {{ tms_device_setting_form.pulse_stimulus_type }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>

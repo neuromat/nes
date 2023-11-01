@@ -54,7 +54,7 @@
                         <div class="form-group {% if subject_step_data_form.errors.start_date %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "Start date" %}</label>
                             {{ subject_step_data_form.start_date }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in subject_step_data_form.start_date.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
@@ -63,7 +63,7 @@
                         <div class="form-group {% if subject_step_data_form.errors.start_time %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "time" %}</label>
                             {{ subject_step_data_form.start_time }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in subject_step_data_form.start_time.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                         <div class="form-group {% if subject_step_data_form.errors.end_date %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "End date" %}</label>
                             {{ subject_step_data_form.end_date }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in subject_step_data_form.end_date.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                         <div class="form-group {% if subject_step_data_form.errors.end_time %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "time" %}</label>
                             {{ subject_step_data_form.end_time }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in subject_step_data_form.end_time.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>

@@ -41,7 +41,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Manufacturer" %} <b class="text-danger">*</b></label>
                             {{ equipment_form.manufacturer }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Identification" %} <b class="text-danger">*</b></label>
                             {{ equipment_form.identification }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Description" %} </label>
                             {{ equipment_form.description }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Serial number" %}</label>
                             {{ equipment_form.serial_number }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                         <div class="form-group {% if equipment_form.signal_to_noise_rate.errors %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "Signal-to-noise ratio/SNR (dB)" %}</label>
                             {{ equipment_form.signal_to_noise_rate }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in equipment_form.signal_to_noise_rate.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -91,7 +91,7 @@
                         <div class="form-group {% if equipment_form.sampling_rate.errors %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "Sampling rate (Hz)" %}</label>
                             {{ equipment_form.sampling_rate }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in equipment_form.sampling_rate.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -104,7 +104,7 @@
                         <div class="form-group {% if equipment_form.resolution.errors %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "Resolution (bits)" %}</label>
                             {{ equipment_form.resolution }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in equipment_form.resolution.errors %}
                                     {{ error }}
                                 {% endfor %}

@@ -52,7 +52,7 @@
                                 {% trans "Title" %} <b class="text-danger">*</b>
                             </label>
                             {{ research_project_form.title }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                                 {% trans "Initial date" %}<b class="text-danger">*</b>
                             </label>
                             {{ research_project_form.start_date }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in research_project_form.start_date.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
@@ -72,7 +72,7 @@
                         <div class="form-group {% if research_project_form.errors.end_date %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "End date" %}</label>
                             {{ research_project_form.end_date }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in research_project_form.end_date.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>
@@ -85,7 +85,7 @@
                                 {% trans "Description" %} <b class="text-danger">*</b>
                             </label>
                             {{ research_project_form.description }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Responsible" %}</label>
                             {{ research_project_owner_form.owner }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>

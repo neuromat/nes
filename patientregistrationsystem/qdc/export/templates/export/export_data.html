@@ -35,12 +35,12 @@
                                 <div class="form-check">
                                     {{ export_form.per_participant }}
                                     <label for="per_participant" class="form-ckeck-label">{% trans "Per participant" %}</label>
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                                 <div class="form-check">
                                     {{ export_form.per_questionnaire }}
                                     <label for="per_questionnaire" class="form-ckeck-label">{% trans "Per questionnaire" %}</label>
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                                 {% for error in export_form.errors.per_questionnaire %}
                                     <div>{{ error }}</div>

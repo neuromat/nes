@@ -181,7 +181,7 @@
                                             {#                                        Commented since we hide date input field on the fly (NES-1033). TODO: remove code #}
                                             {#                                        {% endif %}#}
                                         </div>
-                                        <div class="form-text with-errors">
+                                        <div class="form-text with-errors text-danger">
                                             {% if questionnaire_response_form.date.errors %}
                                                 <span>
                                                     {% for error in questionnaire_response_form.date.errors %}{{ error }}{% endfor %}

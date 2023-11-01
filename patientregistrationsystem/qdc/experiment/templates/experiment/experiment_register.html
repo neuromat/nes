@@ -57,7 +57,7 @@
                                 {% trans "Study" %} <b class="text-danger">*</b>
                             </label>
                             {{ experiment_form.research_project }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                                 {% trans "Title" %} <b class="text-danger">*</b>
                             </label>
                             {{ experiment_form.title }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                                 {% trans "Description" %} <b class="text-danger">*</b>
                             </label>
                             {{ experiment_form.description }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                             <div class="form-group">
                                 <label for="id_source_code_url" class="form-label">{% trans "Project info URL" %}</label>
                                 {{ experiment_form.source_code_url }}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                             <div class="form-group">
                                 <label for="id_ethics_committee_project_url" class="form-label">{% trans "URL of the project approved by the ethics committee" %}</label>
                                 {{ experiment_form.ethics_committee_project_url }}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                                         <span class="fa-fw fa fa-download-alt text-info"></span>
                                     </button>
                                 {% endif %}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -133,7 +133,7 @@
                                 {{ experiment_form.is_public }}
                                 <span class="fa-fw fa fa-share-alt"></span>
                                 <label for="id_is_public" class="form-label">{% trans "Is public" %}</label>
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                                 {{ experiment_form.data_acquisition_is_concluded }}
                                 <span class="fa-fw fa fa-upload"></span>
                                 <label for="id_data_acquisition_is_concluded" class="form-label">{% trans "Data acquisition is concluded" %}</label>
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>

@@ -53,7 +53,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Name" %} <b class="text-danger">*</b></label>
                         {{ position_form.name }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                     <div class="form-group {% if position_form.coordinate_x.errors %}is-invalid{% endif %}">
                         <label class="form-label">{% trans "Coordinate X" %}</label>
                         {{ position_form.coordinate_x }}
-                        <div class="form-text with-errors">
+                        <div class="form-text with-errors text-danger">
                             {% for error in position_form.coordinate_x.errors %}
                                 {{ error }}
                             {% endfor %}
@@ -77,7 +77,7 @@
                     <div class="form-group {% if position_form.coordinate_y.errors %}is-invalid{% endif %}">
                         <label class="form-label">{% trans "Coordinate Y" %}</label>
                         {{ position_form.coordinate_y }}
-                        <div class="form-text with-errors">
+                        <div class="form-text with-errors text-danger">
                             {% for error in position_form.coordinate_y.errors %}
                                 {{ error }}
                             {% endfor %}
@@ -91,7 +91,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Position reference" %}</label>
                         {{ position_form.position_reference }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>

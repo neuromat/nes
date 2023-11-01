@@ -43,7 +43,7 @@
                             <span class="input-group-text"> <span class="fa-fw fa fa-user"></span></span>
                             {{ form.first_name }}
                         </div>
-                        <div class="form-text with-errors">
+                        <div class="form-text with-errors text-danger">
                             {% for error in form.errors.first_name %}<div>{{ error }}</div>{% endfor %}
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                             <span class="input-group-text"> <span class="fa-fw fa fa-user"></span></span>
                             {{ form.last_name }}
                         </div>
-                        <div class="form-text with-errors">
+                        <div class="form-text with-errors text-danger">
                             {% for error in form.errors.last_name %}<div>{{ error }}</div>{% endfor %}
                         </div>
                     </div>
@@ -74,7 +74,7 @@
                             <span class="input-group-text"> <span class="fa-fw fa fa-envelope"></span></span>
                             {{ form.email }}
                         </div>
-                        <div class="form-text with-errors">
+                        <div class="form-text with-errors text-danger">
                             {% for error in form.errors.email %}<div>{{ error }}</div>{% endfor %}
                         </div>
                     </div>
@@ -147,7 +147,7 @@
                             <span class="input-group-text"> <span class="fa-fw fa fa-user-circle"></span></span>
                             {{ form.username }}
                         </div>
-                        <div class="form-text with-errors">
+                        <div class="form-text with-errors text-danger">
                             {% for error in form.errors.username %}<div>{{ error }}</div>{% endfor %}
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                             <div id="show"></div>
                             {{ form.password }}
                         </div>
-                        <div class="form-text with-errors">
+                        <div class="form-text with-errors text-danger">
                             {% for error in form.errors.password %}<div>{{ error }}</div>{% endfor %}
                         </div>
                     </div>
@@ -186,7 +186,7 @@
                                    type="password"
                                    onkeyup="checkPassExt(); beginCheckPassword1=true;">
                         </div>
-                        <div class="form-text with-errors">
+                        <div class="form-text with-errors text-danger">
                             {% for error in form.errors.password %}<div>{{ error }}</div>{% endfor %}
                             <div id="message"></div>
                         </div>

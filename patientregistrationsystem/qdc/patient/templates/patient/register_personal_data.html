@@ -35,7 +35,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12 col-sm-6">
-                            <div id="div_name" class="form-group {% if patient_form.errors.name %}is-invalid{% endif %}">
+                            <div id="div_name" class="form-group has-feedback {% if patient_form.errors.name %}is-invalid{% endif %}">
                                 <label for="name" class="form-label">
                                     {% trans "Full name" %} <b class="text-danger">*</b>
                                 </label>
@@ -47,7 +47,7 @@
                                         <input type="text" class="form-control" disabled value={% trans "SENSITIVE DATA" %}>
                                     {% endif %}
                                 </div>
-                                <div id="div_name_message" class="form-text with-errors"></div>
+                                <div id="div_name_message" class="help-block with-errors text-danger"></div>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
@@ -61,7 +61,7 @@
                                         <input type="text" class="form-control" disabled value={% trans "SENSITIVE DATA" %}>
                                     {% endif %}
                                 </div>
-                                <div class="form-text with-errors">
+                                <div class="help-block with-errors text-danger">
                                     {% if patient_form.cpf.errors %}
                                         <span>
                                             {% for error in patient_form.cpf.errors %}{{ error }}{% endfor %}
@@ -101,7 +101,7 @@
                                     <span class="input-group-text"> <span class="fa-fw fa fa-birthday-cake"></span></span>
                                     {{ patient_form.date_birth }}
                                 </div>
-                                <div class="form-text with-errors">
+                                <div class="help-block with-errors text-danger">
                                     {% if patient_form.date_birth.errors %}
                                         <span>
                                             {% for error in patient_form.date_birth.errors %}{{ error }}{% endfor %}
@@ -119,7 +119,7 @@
                                     <span class="input-group-text"> <span class="fa-fw fa fa-venus-mars"></span></span>
                                     {{ patient_form.gender }}
                                 </div>
-                                <div class="form-text with-errors"></div>
+                                <div class="help-block with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -169,7 +169,7 @@
                                     <span class="input-group-text"> <span class="fa-fw fa fa-home"></span></span>
                                     {{ patient_form.zipcode }}
                                 </div>
-                                <div class="form-text with-errors"></div>
+                                <div class="help-block with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -200,7 +200,7 @@
                                     <span class="input-group-text"> <span class="fa-fw fa fa-home"></span></span>
                                     {{ patient_form.address_complement }}
                                 </div>
-                                <div class="form-text with-errors"></div>
+                                <div class="help-block with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -241,7 +241,7 @@
                                     <span class="input-group-text"> <span class="fa-fw fa fa-envelope"></span></span>
                                     {{ patient_form.email }}
                                 </div>
-                                <div class="form-text with-errors"></div>
+                                <div class="help-block with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -292,7 +292,7 @@
                                         <span class="input-group-text"> <span class="fa-fw fa fa-tag"></span></span>
                                         {{ telephone_form.type }}
                                     </div>
-                                    <div class="form-text with-errors"></div>
+                                    <div class="help-block with-errors text-danger"></div>
                                 </div>
                             </div>
                             <div class="col-8 col-sm-4">
@@ -301,7 +301,7 @@
                                         <span class="input-group-text"> <span class="fa-fw fa fa-pencil"></span></span>
                                         {{ telephone_form.note }}
                                     </div>
-                                    <div class="form-text with-errors"></div>
+                                    <div class="help-block with-errors text-danger"></div>
                                 </div>
                             </div>
                             <div class="col-4 col-sm-2">

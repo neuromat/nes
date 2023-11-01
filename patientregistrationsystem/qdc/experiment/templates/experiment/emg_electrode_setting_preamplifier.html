@@ -69,7 +69,7 @@
                                             value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
                                 {% endfor %}
                             </select>
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
 
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Preamplifier" %}</label>
                             {{ emg_preamplifier_setting_form.amplifier }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
 
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Description" %}</label>
                             {{ equipment_form.description }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>

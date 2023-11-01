@@ -113,7 +113,7 @@
                                 <div class="form-group {% if generic_data_collection_data_form.errors.date %}is-invalid{% endif %}">
                                     <label class="form-label">{% trans "Date" %} <b class="text-danger">*</b></label>
                                     {{ generic_data_collection_data_form.date }}
-                                    <div class="form-text with-errors">
+                                    <div class="form-text with-errors text-danger">
                                         {% for error in generic_data_collection_data_form.date.errors %}
                                             {{ error }}
                                         {% endfor %}
@@ -125,7 +125,7 @@
                                 <div class="form-group {% if generic_data_collection_data_form.errors.time %}is-invalid{% endif %}">
                                     <label class="form-label">{% trans "Hour" %}</label>
                                     {{ generic_data_collection_data_form.time }}
-                                    <div class="form-text with-errors">
+                                    <div class="form-text with-errors text-danger">
                                         {% for error in generic_data_collection_data_form.time.errors %}
                                             {{ error }}
                                         {% endfor %}
@@ -140,7 +140,7 @@
                                 <div class="form-group">
                                     <label class="form-label">{% trans "File format" %} <b class="text-danger">*</b></label>
                                     {{ generic_data_collection_data_form.file_format }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>
@@ -150,7 +150,7 @@
                                 <div class="form-group">
                                     <label class="form-label">{% trans "File format description" %} <b class="text-danger">*</b></label>
                                     {{ generic_data_collection_data_form.file_format_description }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>
@@ -160,7 +160,7 @@
                                 <div class="form-group">
                                     <label class="form-label">{% trans "Generic data collection description" %} <b class="text-danger">*</b></label>
                                     {{ generic_data_collection_data_form.description }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>

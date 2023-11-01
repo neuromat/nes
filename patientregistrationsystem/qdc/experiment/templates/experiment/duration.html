@@ -20,7 +20,7 @@
         <div class="col-4 col-sm-4">
             <div class="form-group {% if component_form.errors.duration_value %}is-invalid{% endif %}">
                 {{ component_form.duration_value }}
-                <div class="form-text with-errors">
+                <div class="form-text with-errors text-danger">
                     {% for error in component_form.duration_value.errors %}
                         {{ error }}
                     {% endfor %}
@@ -30,7 +30,7 @@
         <div class="col-8 col-sm-6">
             <div class="form-group {% if component_form.errors.duration_unit %}is-invalid{% endif %}">
                 {{ component_form.duration_unit }}
-                <div class="form-text with-errors">
+                <div class="form-text with-errors text-danger">
                     {% for error in component_form.duration_unit.errors %}
                         {{ error }}
                     {% endfor %}

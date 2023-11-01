@@ -156,7 +156,7 @@
                                             {% trans "Date" %}<b class="text-danger">*</b>
                                         </label>
                                         {{ tms_data_form.date }}
-                                        <div class="form-text with-errors">
+                                        <div class="form-text with-errors text-danger">
                                             {% for error in tms_data_form.date.errors %}{{ error }}{% endfor %}
                                         </div>
                                     </div>
@@ -166,7 +166,7 @@
                                     <div class="form-group {% if tms_data_form.errors.time %}is-invalid{% endif %}">
                                         <label class="form-label">{% trans "Hour" %}</label>
                                         {{ tms_data_form.time }}
-                                        <div class="form-text with-errors">
+                                        <div class="form-text with-errors text-danger">
                                             {% for error in tms_data_form.time.errors %}{{ error }}{% endfor %}
                                         </div>
                                     </div>
@@ -181,7 +181,7 @@
                                             {% trans "TMS setting" %}<b class="text-danger">*</b>
                                         </label>
                                         {{ tms_data_form.tms_setting }}
-                                        <div class="form-text with-errors"></div>
+                                        <div class="form-text with-errors text-danger"></div>
                                     </div>
                                 </div>
                             </div>
@@ -193,7 +193,7 @@
                                             {% trans "TMS stimulation description" %} <b class="text-danger">*</b>
                                         </label>
                                         {{ tms_data_form.description }}
-                                        <div class="form-text with-errors"></div>
+                                        <div class="form-text with-errors text-danger"></div>
                                     </div>
                                 </div>
                             </div>
@@ -218,7 +218,7 @@
                                             <div class="form-group">
                                                 <label class="form-label">{% trans "Resting motor threshold - RMT (%)" %}</label>
                                                 {{ tms_data_form.resting_motor_threshold }}
-                                                <div class="form-text with-errors"></div>
+                                                <div class="form-text with-errors text-danger"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -228,14 +228,14 @@
                                             <div class="form-group">
                                                 <label class="form-label">{% trans "Test pulse intensity of stimulation (% over the %RMT)" %}</label>
                                                 {{ tms_data_form.test_pulse_intensity_of_simulation }}
-                                                <div class="form-text with-errors"></div>
+                                                <div class="form-text with-errors text-danger"></div>
                                             </div>
                                         </div>
                                         <div id="second_pulse_intensity" class="col-6 col-sm-6">
                                             <div class="form-group">
                                                 <label class="form-label">{% trans "Second test pulse intensity of stimulation (% over the %RMT)" %}</label>
                                                 {{ tms_data_form.second_test_pulse_intensity }}
-                                                <div class="form-text with-errors"></div>
+                                                <div class="form-text with-errors text-danger"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -246,7 +246,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">{% trans "Interval between pulses" %}</label>
                                                     {{ tms_data_form.interval_between_pulses }}
-                                                    <div class="form-text with-errors"></div>
+                                                    <div class="form-text with-errors text-danger"></div>
                                                 </div>
                                             </div>
 
@@ -254,7 +254,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">{% trans "Interval between pulses unit" %}</label>
                                                     {{ tms_data_form.interval_between_pulses_unit }}
-                                                    <div class="form-text with-errors"></div>
+                                                    <div class="form-text with-errors text-danger"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -266,7 +266,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">{% trans "Time between mep trials" %}</label>
                                                     {{ tms_data_form.time_between_mep_trials }}
-                                                    <div class="form-text with-errors"></div>
+                                                    <div class="form-text with-errors text-danger"></div>
                                                 </div>
                                             </div>
 
@@ -274,7 +274,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">{% trans "Time between mep trials unit" %}</label>
                                                     {{ tms_data_form.time_between_mep_trials_unit }}
-                                                    <div class="form-text with-errors"></div>
+                                                    <div class="form-text with-errors text-danger"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -286,7 +286,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">{% trans "Repetitive pulse frequency (Hz)" %}</label>
                                                     {{ tms_data_form.repetitive_pulse_frequency }}
-                                                    <div class="form-text with-errors"></div>
+                                                    <div class="form-text with-errors text-danger"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -306,7 +306,7 @@
                                             <div class="form-group">
                                                 <label class="form-label">{% trans "Coil orientation" %}</label>
                                                 {{ tms_data_form.coil_orientation }}
-                                                <div class="form-text with-errors"></div>
+                                                <div class="form-text with-errors text-danger"></div>
                                             </div>
                                         </div>
 
@@ -314,7 +314,7 @@
                                             <div class="form-group">
                                                 <label class="form-label">{% trans "Orientation angle" %}</label>
                                                 {{ tms_data_form.coil_orientation_angle }}
-                                                <div class="form-text with-errors"></div>
+                                                <div class="form-text with-errors text-danger"></div>
                                             </div>
                                         </div>
 

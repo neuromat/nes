@@ -137,7 +137,7 @@
                                 <div class="form-group {% if eeg_data_form.errors.date %}is-invalid{% endif %}">
                                     <label class="form-label">{% trans "Date" %}<b class="text-danger">*</b></label>
                                     {{ eeg_data_form.date }}
-                                    <div class="form-text with-errors">
+                                    <div class="form-text with-errors text-danger">
                                         {% for error in eeg_data_form.date.errors %}
                                             {{ error }}
                                         {% endfor %}
@@ -149,7 +149,7 @@
                                 <div class="form-group {% if eeg_data_form.errors.time %}is-invalid{% endif %}">
                                     <label class="form-label">{% trans "Hour" %}</label>
                                     {{ eeg_data_form.time }}
-                                    <div class="form-text with-errors">
+                                    <div class="form-text with-errors text-danger">
                                         {% for error in eeg_data_form.time.errors %}
                                             {{ error }}
                                         {% endfor %}
@@ -163,7 +163,7 @@
                                 <div class="form-group">
                                     <label class="form-label">{% trans "EEG setting" %}<b class="text-danger">*</b></label>
                                         {{ eeg_data_form.eeg_setting }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +173,7 @@
                                 <div class="form-group">
                                     <label class="form-label">{% trans "Reason for change the EEG setting" %} <b class="text-danger">*</b></label>
                                     {{ eeg_data_form.eeg_setting_reason_for_change }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>
@@ -183,7 +183,7 @@
                                 <div class="form-group">
                                     <label class="form-label">{% trans "Cap size" %}<b class="text-danger">*</b></label>
                                         {{ eeg_data_form.eeg_cap_size }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>
@@ -193,7 +193,7 @@
                                 <div class="form-group">
                                     <label class="form-label">{% trans "File format" %} <b class="text-danger">*</b></label>
                                     {{ eeg_data_form.file_format }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +207,7 @@
                                 <div class="form-group">
                                     <label class="form-label">{% trans "File format description" %} <b class="text-danger">*</b></label>
                                     {{ eeg_data_form.file_format_description }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>
@@ -217,7 +217,7 @@
                                 <div class="form-group">
                                     <label class="form-label">{% trans "EEG data collection description" %} <b class="text-danger">*</b></label>
                                     {{ eeg_data_form.description }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>

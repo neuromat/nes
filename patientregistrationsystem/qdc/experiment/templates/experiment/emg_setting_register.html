@@ -60,7 +60,7 @@
                                 {% trans "Name" %} <b class="text-danger">*</b>
                             </label>
                             {{ emg_setting_form.name }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                                 {% trans "Description" %} <b class="text-danger">*</b>
                             </label>
                             {{ emg_setting_form.description }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                                             value="{{ software_version.id }}">{{ software_version.software.name }} - {{ software_version.name }}</option>
                                 {% endfor %}
                             </select>
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>

@@ -119,7 +119,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="identification">{% trans "Identification" %} <b class="text-danger">*</b></label>
                                 {{ component_form.identification }}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                         {% include "experiment/duration.html" %}
@@ -130,7 +130,7 @@
                         <div class="form-group">
                             <label class="form-label" for="description">{% trans "Description" %}</label>
                             {{ component_form.description }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -214,7 +214,7 @@
                             <div class="col-6 col-sm-2">
                                 <div class="form-group">
                                     {{ number_of_uses_form.number_of_uses_to_insert }}
-                                    <div class="form-text with-errors"></div>
+                                    <div class="form-text with-errors text-danger"></div>
                                 </div>
                             </div>
                         </div>
@@ -234,7 +234,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="name" class="form-label">{% trans "Name" %}</label>
                                     {{ configuration_form.name }}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                         {% if type_of_the_parent_block == "sequence" %}
@@ -267,7 +267,7 @@
                                     <input {% if not can_change %}disabled{% endif %} id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
                                     <div id="div_form_number_of_repetitions">
                                         {{ configuration_form.number_of_repetitions }}
-                                        <div class="form-text with-errors" id="div_for_errors_in_number_of_repetitions"></div>
+                                        <div class="form-text with-errors text-danger" id="div_for_errors_in_number_of_repetitions"></div>
                                     </div>
                                 </div>
                             </div>
@@ -284,13 +284,13 @@
                                         <div class="col-4 col-sm-4" style="padding-left: 0px">
                                             <div class="form-group" id="div_form_interval_between_repetitions_value">
                                                 {{ configuration_form.interval_between_repetitions_value }}
-                                                <div class="form-text with-errors" id="div_for_errors_in_interval_between_repetitions_value"></div>
+                                                <div class="form-text with-errors text-danger" id="div_for_errors_in_interval_between_repetitions_value"></div>
                                             </div>
                                         </div>
                                         <div class="col-4 col-sm-5" style="padding-left: 0px">
                                             <div class="form-group" id="div_form_interval_between_repetitions_unit">
                                                 {{ configuration_form.interval_between_repetitions_unit }}
-                                                <div class="form-text with-errors" id="div_for_errors_in_interval_between_repetitions_unit"></div>
+                                                <div class="form-text with-errors text-danger" id="div_for_errors_in_interval_between_repetitions_unit"></div>
                                             </div>
                                         </div>
                                 </label>

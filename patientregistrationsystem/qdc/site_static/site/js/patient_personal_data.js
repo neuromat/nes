@@ -13,18 +13,70 @@ document.addEventListener("DOMContentLoaded", () => {
         $("#get_location").val(city);
     }
 
-    // Get city from the database
-    $('#get_location').autocomplete({
-        serviceUrl: "/export/get_locations",
-        onSelect: function (event, ui) {
-            $("#get_location").val(ui.item.value);
-            // $('ul').empty();
-        },
-        // close: function () {
-        //   $("#get_location").val("");
-        //     $("#get_location").attr('placeholder', 'Enter a city');
-        // }
-    });
+    // const auto_location = new autoComplete({
+    //     selector: "#get_location",
+    //     data: {
+    //         src: async (query) => {
+    //             try {
+    //                 console.log(query)
+    //                 // Fetch Data from external Source
+    //                 const source = await fetch('/export/get_locations/?term='+query);
+    //                 // Data should be an array of `Objects` or `Strings`
+    //                 const data = await source.json();
+    //                 console.log(data)
+    //                 return data;
+    //             } catch (error) {
+    //                 return error;
+    //             }
+    //         },
+    //         keys: ["value"]
+    //     },
+    //     threshold: 2,
+    //     debounce: 300,
+    //     resultItem: {
+    //         highlight: true
+    //     },
+    //     resultsList: {
+    //         destination: "#search-results-locations",
+    //         element: (list, data) => {
+    //             //console.log(list)
+    //             console.log(data)
+    //             if (!data.results.length) {
+    //                 // Create "No Results" message element
+    //                 const message = document.createElement("div");
+    //                 // Add class to the created element
+    //                 message.setAttribute("class", "no_result");
+    //                 // Add message text content
+    //                 message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+    //                 // Append message element to the results list
+    //                 list.prepend(message);
+    //             }
+    //         },
+    //         noResults: true,
+    //     },
+    //     events: {
+    //         input: {
+    //             selection: (event) => {
+    //                 const selection = event.detail.selection.value.value;
+    //                 console.log(event)
+    //                 auto_location.input.value = selection;
+    //             }
+    //         }
+    //     },
+    // });
+
+    // // Get city from the database
+    // $('#get_location').autocomplete({
+    //     serviceUrl: "/export/get_locations",
+    //     onSelect: function (event, ui) {
+    //         $("#get_location").val(ui.item.value);
+    //         // $('ul').empty();
+    //     },
+    //     // close: function () {
+    //     //   $("#get_location").val("");
+    //     //     $("#get_location").attr('placeholder', 'Enter a city');
+    //     // }
+    // });
 
     // Disable fields that identify a person when creating an anonymous user
     anonymous.on("change", function () {

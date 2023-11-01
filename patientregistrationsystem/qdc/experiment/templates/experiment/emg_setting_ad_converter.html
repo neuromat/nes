@@ -59,7 +59,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "A/D converter" %}</label>
                             {{ emg_ad_converter_setting_form.ad_converter }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
 
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                         <div class="form-group">
                             <label class="form-label">{% trans "Description" %}</label>
                             {{ equipment_form.description }}
-                            <div class="form-text with-errors"></div>
+                            <div class="form-text with-errors text-danger"></div>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
                         <div class="form-group {% if emg_ad_converter_setting_form.sampling_rate.errors %}is-invalid{% endif %}">
                             <label class="form-label">{% trans "Sampling rate (Hz)" %}</label>
                             {{ emg_ad_converter_setting_form.sampling_rate }}
-                            <div class="form-text with-errors">
+                            <div class="form-text with-errors text-danger">
                                 {% for error in emg_ad_converter_setting_form.sampling_rate.errors %}{{ error }}{% endfor %}
                             </div>
                         </div>

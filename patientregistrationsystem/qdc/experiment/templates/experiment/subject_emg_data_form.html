@@ -66,7 +66,7 @@
                                     {% trans "Date" %}<b class="text-danger">*</b>
                                 </label>
                                 {{ emg_data_form.date }}
-                                <div class="form-text with-errors">
+                                <div class="form-text with-errors text-danger">
                                     {% for error in emg_data_form.date.errors %}{{ error }}{% endfor %}
                                 </div>
                             </div>
@@ -75,7 +75,7 @@
                             <div class="form-group {% if emg_data_form.errors.time %}is-invalid{% endif %}">
                                 <label class="form-label">{% trans "Hour" %}</label>
                                 {{ emg_data_form.time }}
-                                <div class="form-text with-errors">
+                                <div class="form-text with-errors text-danger">
                                     {% for error in emg_data_form.time.errors %}{{ error }}{% endfor %}
                                 </div>
                             </div>
@@ -89,7 +89,7 @@
                                     {% trans "EMG setting" %}<b class="text-danger">*</b>
                                 </label>
                                 {{ emg_data_form.emg_setting }}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                                     {% trans "Reason for change the EMG setting" %} <b class="text-danger">*</b>
                                 </label>
                                 {{ emg_data_form.emg_setting_reason_for_change }}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -113,7 +113,7 @@
                                     {% trans "File format" %} <b class="text-danger">*</b>
                                 </label>
                                 {{ emg_data_form.file_format }}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -125,7 +125,7 @@
                                     {% trans "File format description" %} <b class="text-danger">*</b>
                                 </label>
                                 {{ emg_data_form.file_format_description }}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>
@@ -137,7 +137,7 @@
                                     {% trans "EMG data collection description" %} <b class="text-danger">*</b>
                                 </label>
                                 {{ emg_data_form.description }}
-                                <div class="form-text with-errors"></div>
+                                <div class="form-text with-errors text-danger"></div>
                             </div>
                         </div>
                     </div>

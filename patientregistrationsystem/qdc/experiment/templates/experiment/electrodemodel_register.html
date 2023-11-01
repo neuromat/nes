@@ -47,7 +47,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Name" %} <b class="text-danger">*</b></label>
                         {{ equipment_form.name }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>
@@ -56,7 +56,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Description" %}</label>
                         {{ equipment_form.description }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Usability" %}</label>
                         {{ equipment_form.usability }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>
@@ -75,7 +75,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Material" %}</label>
                         {{ equipment_form.material }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                     <div class="form-group {% if equipment_form.impedance.errors %}is-invalid{% endif %}">
                         <label class="form-label">{% trans "Impedance" %}</label>
                         {{ equipment_form.impedance }}
-                        <div class="form-text with-errors">
+                        <div class="form-text with-errors text-danger">
                             {% for error in equipment_form.impedance.errors %}
                                 {{ error }}
                             {% endfor %}
@@ -95,7 +95,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Unit" %}</label>
                         {{ equipment_form.impedance_unit }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>
@@ -104,7 +104,7 @@
                     <div class="form-group">
                         <label class="form-label">{% trans "Type" %} <b class="text-danger">*</b></label>
                         {{ equipment_form.electrode_type }}
-                        <div class="form-text with-errors"></div>
+                        <div class="form-text with-errors text-danger"></div>
                     </div>
                 </div>
             </div>
