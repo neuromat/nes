@@ -21,22 +21,28 @@ function searchSuccessPatient(data, textStatus, jqXHR) {
     list.html(pagination(dataResults, 1));
 }
 
-function searchRequest(url, query, ajaxExtras = null) {
+async function searchRequest(url, query, ajaxExtras = null) {
     let data = {
-        'search_text': query,
-        'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+        "search_text": query,
+        "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val(),
     };
+    // let data = new FormData();
+    // data.append("search_text", query);
+    // data.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val());
+
     for (let el in ajaxExtras) {
-        if (ajaxExtras.hasOwnProperty(el)) data[el] = ajaxExtras[el];
+        if (ajaxExtras.hasOwnProperty(el)) data.el = ajaxExtras[el];
     }
 
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: data,
-        success: searchSuccessPatient,
-        dataType: 'html'
-    });
+    fetch_post(url, data, searchSuccessPatient);
+
+    // $.ajax({
+    //     type: "POST",
+    //     url: url,
+    //     data: data,
+    //     success: searchSuccessPatient,
+    //     dataType: 'html'
+    // });
 }
 
 function searchAndTable(url, ajaxExtras = null, canSeeNames = false) {

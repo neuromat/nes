@@ -36,12 +36,8 @@
 
         <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <div class="row">
-                    <div class="col-6 col-sm-6">
-                        <label class="form-label">{% trans "list of steps:" %}</label>
-                    </div>
-                </div>
-                <br>
+                <h4>{% trans "List of steps" %}</h4>
+                <hr>
                 <div class="form-group">
                     <table class="table table-striped">
                         <thead>
@@ -106,7 +102,9 @@
             </div>
 
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                <div class="btn-group float-end">
+                <div class="btn-group">
+                </div>
+                <div class="btn-group">
                     <a href="/experiment/{{ experiment.id }}" class="btn btn-light">{% trans "Back" %}</a>
                 </div>
             </div>

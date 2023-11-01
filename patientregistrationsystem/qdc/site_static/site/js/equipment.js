@@ -5,7 +5,8 @@
  * Created by diogopedrosa on 3/19/15.
  */
 
-//$(document).ready(function () {
+//"use strict";
+//document.addEventListener("DOMContentLoaded", () => {
 //    //Search for keywords in search mode
 //    $('#keywords').keyup(function() {
 //        $.ajax({
@@ -26,7 +27,7 @@
 //    }
 //});
 
-function showDialogAndEnableRemoveButton () {
+function showDialogAndEnableRemoveButton() {
     // "When there is only one single-line text input field in a form, the user agent should accept Enter in that
     // field as a request to submit the form."
     // http://www.w3.org/MarkUp/html-spec/html-spec_8.html#SEC8.2
@@ -40,8 +41,7 @@ function disableRemoveButton() {
     $('#remove_button').prop('disabled', true);
 }
 
-
-function show_modal_remove_cap_size () {
+function show_modal_remove_cap_size() {
     // "When there is only one single-line text input field in a form, the user agent should accept Enter in that
     // field as a request to submit the form."
     // http://www.w3.org/MarkUp/html-spec/html-spec_8.html#SEC8.2

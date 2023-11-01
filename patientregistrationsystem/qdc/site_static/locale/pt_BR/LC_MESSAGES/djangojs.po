@@ -2,12 +2,11 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#: site_static/site/jquery-ui-1.13.2/jquery-ui.min.js:6
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-06 14:11-0300\n"
+"POT-Creation-Date: 2023-10-30 22:31-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +16,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: site_static/site/jquery-ui-1.13.2/jquery-ui.min.js:6
-msgid "'"
-msgstr "'"
-
-#: site_static/site/js/block_component.js:56
+#: site_static/site/js/block_component.js:53
 msgid "Collapse"
 msgstr "Recolher"
 
-#: site_static/site/js/block_component.js:70
+#: site_static/site/js/block_component.js:67
 msgid "Expand"
 msgstr "Expandir"
 
-#: site_static/site/js/block_component.js:93
+#: site_static/site/js/block_component.js:90
 msgid "Are you sure you want to delete this use of step from list?"
 msgstr "Tem certeza que deseja excluir este uso de passo da lista?"
 
-#: site_static/site/js/block_component.js:102
+#: site_static/site/js/block_component.js:99
 msgid "Are you sure you want to delete these "
 msgstr "Tem certeza que deseja excluir estes "
 
-#: site_static/site/js/block_component.js:102
+#: site_static/site/js/block_component.js:99
 msgid "  uses of step from list?"
 msgstr " usos de passo da lista?"
 
-#: site_static/site/js/custom_user_validation.js:10
+#: site_static/site/js/custom_user_validation.js:11
 #: site_static/site/js/password_ext.js:11
 msgid ""
 "Password must contain at least 8 characters, including at least one "
@@ -50,11 +45,11 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: site_static/site/js/custom_user_validation.js:18
+#: site_static/site/js/custom_user_validation.js:19
 msgid "You have to choose at least one user profile!"
 msgstr "Você precisa escolher ao menos um pefil de usuário!"
 
-#: site_static/site/js/custom_user_validation.js:49
+#: site_static/site/js/custom_user_validation.js:48
 msgid "E-mail have to be filled!"
 msgstr "E-mail precisa ser preenchido!"
 
@@ -128,7 +123,7 @@ msgstr "Excelente"
 
 #: site_static/site/js/patient_personal_data.js:186
 #: site_static/site/js/patient_personal_data.js:191
-#: site_static/site/js/register.js:75
+#: site_static/site/js/register.js:77
 msgid "Obligatory fields must be filled."
 msgstr "Campos obrigatórios devem ser preenchidos."
 
@@ -163,6 +158,9 @@ msgstr "Pelo menos um campo de participante deve ser preenchido."
 #: site_static/site/js/tms_position_setting.js:138
 msgid "Please enter the name of the position"
 msgstr "Por favor insira o nome da posição"
+
+#~ msgid "'"
+#~ msgstr "'"
 
 #~ msgid "mm/dd/yy"
 #~ msgstr "dd/mm/yy"

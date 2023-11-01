@@ -1,75 +1,77 @@
-$(document).ready(function () {
+"use strict";
 
-    $(".invalidLink").click(function (e) {
+document.addEventListener("DOMContentLoaded", () => {
+
+    $(".invalidLink").on("click", function (e) {
         e.preventDefault();
         $('#modalInvalidLink').modal('show');
     });
 
     // The following 5 handlers prepare to show a confirmation modal by storing the future tab number.
-    $("#linkToTab0").click(function (e) {
+    $("#linkToTab0").on("click", function (e) {
         document.getElementById('nextTab').value = '0';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);
     });
 
-    $("#linkToTab1").click(function (e) {
+    $("#linkToTab1").on("click", function (e) {
         document.getElementById('nextTab').value = '1';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);
     });
 
-    $("#linkToTab2").click(function (e) {
+    $("#linkToTab2").on("click", function (e) {
         document.getElementById('nextTab').value = '2';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);
     });
 
-    $("#linkToTab3").click(function (e) {
+    $("#linkToTab3").on("click", function (e) {
         document.getElementById('nextTab').value = '3';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);
     });
 
-    $("#linkToTab4").click(function (e) {
+    $("#linkToTab4").on("click", function (e) {
         document.getElementById('nextTab').value = '4';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);
     });
 
     // Handle the confirmation for saving data after clicking on a different tab.
-    $("#savetab_modal_save").click(function () {
+    $("#savetab_modal_save").on("click", function () {
         document.getElementById('action').value = "change_tab";
-        $("#form_id").submit();
+        $("#form_id").trigger("submit");
     });
 
     // Handle the option for not saving data after clicking on a different tab.
-    $("#savetab_modal_dont_save").click(function () {
+    $("#savetab_modal_dont_save").on("click", function () {
         window.location = document.getElementById('nextTabURL').value;
     });
 
-    $("#editPatient").click(function () {
+    $("#editPatient").on("click", function () {
         document.getElementById('action').value = "edit";
-        $("#form_id").submit();
+        $("#form_id").trigger("submit");
     });
 
-    $("#removePatient").click(function () {
+    $("#removePatient").on("click", function () {
         document.getElementById('action').value = "remove";
-        $("#form_id").submit();
+        $("#form_id").trigger("submit");
     });
 
-    $("#prevtab").click(function () {
+    $("#prevtab").on("click", function () {
         document.getElementById('action').value = "show_previous";
-        $("#form_id").submit();
+        $("#form_id").trigger("submit");
     });
 
-    $("#nexttab").click(function () {
+    $("#nexttab").on("click", function () {
         document.getElementById('action').value = "show_next";
-        $("#form_id").submit();
+        $("#form_id").trigger("submit");
     });
 
-    $("#save_exam").click(function () {
-        var date_value = $.trim($("#exam_date").val());
-        var description_value = $.trim($("#exam_description").val());
+    $("#save_exam").on("click", function () {
+        var date_value = $("#exam_date").val().trim();
+        var description_value = $("#exam_description").val().trim();
 
         if (date_value.length == 0 || description_value.length == 0) {
             showErrorMessageTemporary(gettext("Obligatory fields must be filled."));
@@ -77,7 +79,7 @@ $(document).ready(function () {
             document.getElementById('exam_date').focus();
             document.getElementById('exam_description').focus();
         } else {
-            $("#form_exam").submit();
+            $("#form_exam").trigger("submit");
         }
     });
 });

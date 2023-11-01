@@ -68,7 +68,7 @@ After selecting one of the suggestions, the diagnosis is shown.
 
 .. image:: ../../_img/participant_medical_evaluation_edit_choose_diag.png
 
-You can include as many diagnoses as necessary.
+You can include as many diagnosis as necessary.
 
 .. _deleting-the-selected-diagnosis:
 

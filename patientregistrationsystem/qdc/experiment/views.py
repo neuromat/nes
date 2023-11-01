@@ -584,7 +584,7 @@ def research_project_update(
 @login_required
 @permission_required("experiment.view_researchproject")
 def keyword_search_ajax(request: HttpRequest) -> HttpResponse:
-    keywords_name_list = None
+    keywords_name_list = []
     keywords_list_filtered = None
     search_text = None
 
@@ -6044,7 +6044,7 @@ def search_cid10_ajax(request):
         else:
             return render(
                 None,
-                "export/diagnoses.html",
+                "export/diagnosis.html",
                 {"classification_of_diseases_list": cid_10_list},
             )
 
@@ -6945,7 +6945,7 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
 
                 if "diagnosis_checkbox" in request.POST:
                     classification_of_diseases_list = request.POST.getlist(
-                        "selected_diagnoses"
+                        "selected_diagnosis"
                     )
 
                     participants_list = participants_list.filter(

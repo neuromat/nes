@@ -6,7 +6,7 @@ from .views import (
     export_menu,
     export_view,
     filter_participants,
-    search_diagnoses,
+    search_diagnosis,
     search_locations,
     select_groups_by_experiment,
     select_experiments_by_study,
@@ -22,7 +22,7 @@ urlpatterns = [
     ),
     # export (ajax)
     re_path(r"^get_locations/$", search_locations, name="search_locations"),
-    re_path(r"^get_diagnoses/$", search_diagnoses, name="search_diagnoses"),
+    re_path(r"^get_diagnosis/$", search_diagnosis, name="search_diagnosis"),
     re_path(
         r"^get_experiments_by_study/(?P<study_id>\d+)/$",
         select_experiments_by_study,

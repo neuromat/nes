@@ -1,45 +1,122 @@
+"use strict";
+
 function showSuccessMessage(message) {
-    toastr.options.closeButton = true;
-    toastr.options.timeOut = 10000;
-    toastr.success(message);
+    bootstrap.showToast({
+        header: "",
+        headerSmall: "",
+        body: message,
+        closeButton: true,
+        closeButtonLabel: "close",
+        closeButtonClass: "",
+        toastClass: "bg-success",
+        animation: true,
+        delay: 0,
+        position: "top-0 end-0",
+        direction: "append",
+        ariaLive: "assertive",
+    })
 }
 
 function showWarningMessage(message) {
-    toastr.options.closeButton = true;
-    toastr.options.timeOut = 0;
-    toastr.warning(message);
+    bootstrap.showToast({
+        header: "",
+        headerSmall: "",
+        body: message,
+        closeButton: true,
+        closeButtonLabel: "close",
+        closeButtonClass: "",
+        toastClass: "bg-success",
+        animation: true,
+        delay: 10000,
+        position: "top-0 end-0",
+        direction: "append",
+        ariaLive: "assertive",
+    })
 }
 
 function showErrorMessage(message) {
-    toastr.options.closeButton = true;
-    toastr.options.timeOut = 0;
-    toastr.error(message);
+    bootstrap.showToast({
+        header: "",
+        headerSmall: "",
+        body: message,
+        closeButton: true,
+        closeButtonLabel: "close",
+        closeButtonClass: "",
+        toastClass: "bg-danger",
+        animation: true,
+        delay: 0,
+        position: "top-0 end-0",
+        direction: "append",
+        ariaLive: "assertive",
+    })
 }
 
 function showErrorMessageTemporary(message) {
-    toastr.options.closeButton = true;
-    toastr.options.timeOut = 10000;
-    toastr.error(message);
+    bootstrap.showToast({
+        header: "",
+        headerSmall: "",
+        body: message,
+        closeButton: true,
+        closeButtonLabel: "close",
+        closeButtonClass: "",
+        toastClass: "bg-danger",
+        animation: true,
+        delay: 10000,
+        position: "top-0 end-0",
+        direction: "append",
+        ariaLive: "assertive",
+    })
 }
 
 function showInfoMessage(message) {
-    toastr.options.closeButton = true;
-    toastr.options.timeOut = 0;
-    toastr.info(message);
+    bootstrap.showToast({
+        header: "",
+        headerSmall: "",
+        body: message,
+        closeButton: true,
+        closeButtonLabel: "close",
+        closeButtonClass: "",
+        toastClass: "bg-info",
+        animation: true,
+        delay: 0,
+        position: "top-0 end-0",
+        direction: "append",
+        ariaLive: "assertive",
+    })
 }
 
 function jumpToElement(h) {
-    var top = document.getElementById(h).offsetTop;
+    const top = document.getElementById(h).offsetTop;
     window.scrollTo(0, top);
 }
 
-/**
- * Use if you want to blink some html element.
- * Give it the class blink.
- */
-function blink() {
-    const updated = $('.blink');
-    updated.fadeOut(500);
-    updated.fadeIn(500);
+async function fetch_post(url, data, success) {
+    const data_form = new FormData();
+
+    for (var key in data) {
+        if (data.hasOwnProperty(key)) {
+            data_form.append(key, data[key]);
+        }
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            body: data_form,
+            credentials: 'same-origin',
+        });
+        const result = await response.text();
+        console.log(result);
+        success(result);
+    } catch (error) {
+        console.error("Error:", error);
+    }
 }
-setInterval(blink, 1000);
+
+function ready(fn) {
+    if (document.readyState !== 'loading') {
+        fn();
+    } else {
+        document.addEventListener('DOMContentLoaded', fn);
+    }
+}

@@ -1,9 +1,9 @@
 /**
  * Created by diogopedrosa on 4/17/15.
  */
-"use strict";
 
-$(document).ready(function () {
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
     var unlimited_number_of_repetitions = $("#id_repetitions_0");
     var limited_number_of_repetitions = $("#id_repetitions_1");
     var id_number_of_repetitions = $("#id_number_of_repetitions");
@@ -39,8 +39,8 @@ $(document).ready(function () {
 
     function manage_interval_disable_flag() {
         var should_disable = !(
-                unlimited_number_of_repetitions.is(":checked") ||
-                Number(id_number_of_repetitions.val()) > 1);
+            unlimited_number_of_repetitions.is(":checked") ||
+            Number(id_number_of_repetitions.val()) > 1);
         var undefined = undefined_interval.is(":checked")
 
         id_interval_between_repetitions_value.prop('disabled', should_disable || undefined);
@@ -72,23 +72,23 @@ $(document).ready(function () {
         }, 500);
     }
 
-    unlimited_number_of_repetitions.click(function () {
+    unlimited_number_of_repetitions.on("click", function () {
         manage_interval_disable_flag();
         id_number_of_repetitions.prop('value', '');
         id_number_of_repetitions.prop('readonly', true);
         fix_bootstrap_error_message_repetitions();
     });
 
-    limited_number_of_repetitions.click(function () {
+    limited_number_of_repetitions.on("click", function () {
         manage_interval_disable_flag();
         id_number_of_repetitions.prop('disabled', false);
         id_number_of_repetitions.prop('readonly', false);
-        id_number_of_repetitions.focus();
+        id_number_of_repetitions.on("focus");
         fix_bootstrap_error_message_repetitions();
     });
 
     // Keypress is not always called. That's why we're using keyup.
-    id_number_of_repetitions.keyup(function () {
+    id_number_of_repetitions.on("keyup", function () {
         manage_interval_disable_flag();
     });
 
@@ -97,7 +97,7 @@ $(document).ready(function () {
         manage_interval_disable_flag();
     });
 
-    undefined_interval.click(function () {
+    undefined_interval.on("click", function () {
         id_interval_between_repetitions_value.prop('disabled', true);
         id_interval_between_repetitions_value.prop('required', false);
         id_interval_between_repetitions_unit.prop('disabled', true);
@@ -109,13 +109,13 @@ $(document).ready(function () {
         fix_bootstrap_error_message_interval();
     });
 
-    defined_interval.click(function () {
+    defined_interval.on("click", function () {
         id_interval_between_repetitions_value.prop('disabled', false);
         id_interval_between_repetitions_value.prop('required', true);
         id_interval_between_repetitions_unit.prop('disabled', false);
         id_interval_between_repetitions_unit.prop('required', true);
 
-        id_interval_between_repetitions_value.focus();
+        id_interval_between_repetitions_value.on("focus");
     });
 
 });

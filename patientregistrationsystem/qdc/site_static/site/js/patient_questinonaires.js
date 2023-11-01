@@ -4,12 +4,13 @@
 
 // The inclusion of disabled class in a submit button can't be done in the
 // template, because Bootstrap overwrite it.
-$(document).ready(function () {
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
     setTimeout(function() { $("#save_submit_button").addClass("disabled"); }, 50);
 
     var additional_survey_selected = $("#additional_survey_selected");
     
-    additional_survey_selected.change(function () {
+    additional_survey_selected.on("change", function () {
         var selected = $("#additional_survey_selected option:selected");
         var fill_button = $("#fill_button");
         if (selected.val() == '') {

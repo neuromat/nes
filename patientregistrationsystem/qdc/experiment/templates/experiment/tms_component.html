@@ -8,33 +8,41 @@
         <li class="breadcrumb-item active">{% trans "New TMS" %}</li>
     {% endif %}
 
-{% endblock %}
+{% endblock breadcrumb %}
 
-{% block component_label %}{% trans "the TMS" %}{% endblock %}
+{% block component_label %}
+    {% trans "the TMS" %}
+{% endblock component_label %}
 
 {% block component_add_new %}
     <li role="presentation">
-        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/tms{% if position %}?position={{ position }}{% endif %}')">
+        <a role="menuitem"
+           tabindex="-1"
+           onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/tms
+                    {% if position %}?position={{ position }}{% endif %}
+                    ')">
             << {% trans "New TMS" %} >>
         </a>
     </li>
-{% endblock %}
+{% endblock component_add_new %}
 
 {% block component_button_label %}
     {% trans "New TMS" %}
-{% endblock %}
+{% endblock component_button_label %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-6 col-sm-6">
             <div class="form-group">
-                <label class="form-label">{% trans "TMS setting" %}<b class="text-danger">*</b></label>
-                    {{ specific_form.tms_setting }}
+                <label class="form-label">
+                    {% trans "TMS setting" %}<b class="text-danger">*</b>
+                </label>
+                {{ specific_form.tms_setting }}
                 <div class="form-text with-errors"></div>
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock extra_fields %}
 
 {# In case of inclusion of javascript, insert parent template scripts #}
 {#{% block extrascript %}#}

@@ -1,13 +1,14 @@
 function checkGroups(element, index, array) {
     // console.log("a[" + index + "] = " + element);
     $('input[name = "groups"]').each(function () {
-        if(this.value == element){
+        if (this.value == element) {
             this.checked = true;
         }
     })
 }
 
-$(document).ready(function () {
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
     var username_field = $("#id_username");
     var user_field = $("#id_user");
     var first_name_field = $("#id_first_name");
@@ -19,12 +20,12 @@ $(document).ready(function () {
     var operation = $("#operation");
     $("#id_new_password1").prop('disabled', true);
     $("#id_new_password2").prop('disabled', true);
-    $("#text_profiles").collapse({'toggle': false});
-    $("#profiles").collapse({'toggle': false});
+    $("#text_profiles").collapse({ 'toggle': false });
+    $("#profiles").collapse({ 'toggle': false });
 
-    if(operation.val()=="viewing") {
-        if( typeof user_name_field.val() == 'undefined' || user_name_field.val() == null || user_name_field.val() == ''){
-            user_name_div.collapse({'toggle': false});
+    if (operation.val() == "viewing") {
+        if (typeof user_name_field.val() == 'undefined' || user_name_field.val() == null || user_name_field.val() == '') {
+            user_name_div.collapse({ 'toggle': false });
             user_name_div.collapse('hide');
             $("#profiles").collapse('hide');
         }
@@ -35,24 +36,24 @@ $(document).ready(function () {
         $("#text_profiles").collapse('hide');
         $("#optradio3").prop('checked', true);
         user_field.prop('disabled', false);
-        $("#update_password").collapse({'toggle': false});
-        $("#password_flag").collapse({'toggle': false});
+        $("#update_password").collapse({ 'toggle': false });
+        $("#password_flag").collapse({ 'toggle': false });
         $("#update_password").collapse('hide');
         $("#password_flag").collapse('hide');
     }
-    if(operation.val()=="editing") {
+    if (operation.val() == "editing") {
         $("#div_add_login").prop('disabled', false);
         $("#div_add_login").css('visibility', 'show');
         $("#div_cancel_add_login").prop('disabled', true);
         $("#div_cancel_add_login").css('visibility', 'hidden');
-        if(id_username.value != '') {
+        if (id_username.value != '') {
             $("#profiles").collapse('show');
             $("#optradio3").prop('checked', true);
             $("#text_profiles").collapse('show');
             user_field.prop('disabled', false);
             $("#update_password").collapse('show');
             $("#password_flag").collapse('show');
-            user_name_div.collapse({'toggle': true});
+            user_name_div.collapse({ 'toggle': true });
             user_name_div.collapse('show');
             id_username.disabled = false;
         } else {
@@ -60,17 +61,27 @@ $(document).ready(function () {
         }
     }
 
-    user_field.change(function () {
-        var user_id = user_field.val();
-        if(user_id) {
-            var url = "/team/person/get_user_attributes/" + user_id;
-            $.getJSON(url, function (user) {
-                first_name_field.prop('value', user['first_name']);
-                last_name_field.prop('value', user['last_name']);
-                email_field.prop('value', user['email']);
-                $('input[name = "groups"]').prop('checked', false);
-                user['groups'].forEach(checkGroups)
-            })
+    user_field.on("change", async function () {
+        const user_id = user_field.val();
+        if (user_id) {
+            const url = "/team/person/get_user_attributes/" + user_id;
+
+            const response_fetch = await fetch(url);
+            let user = await response_fetch.json();
+            
+            first_name_field.prop('value', user['first_name']);
+            last_name_field.prop('value', user['last_name']);
+            email_field.prop('value', user['email']);
+            $('input[name = "groups"]').prop('checked', false);
+            user['groups'].forEach(checkGroups)
+
+            // $.getJSON(url, function (user) {
+            //     first_name_field.prop('value', user['first_name']);
+            //     last_name_field.prop('value', user['last_name']);
+            //     email_field.prop('value', user['email']);
+            //     $('input[name = "groups"]').prop('checked', false);
+            //     user['groups'].forEach(checkGroups)
+            // })
         } else {
             first_name_field.prop('value', '');
             last_name_field.prop('value', '');
@@ -78,13 +89,11 @@ $(document).ready(function () {
         }
     });
 
-
-    $('input[name = "editPerson"]').on('change', function(e) {
+    $('input[name = "editPerson"]').on('change', function (e) {
         var person_name = username_field;
     });
 
-
-    $('input[name = "optradio"]').on('change', function(e) {
+    $('input[name = "optradio"]').on('change', function (e) {
         var update_password_div = $("#update_password");
         var password_div = $("#div_password");
         var id_new_password2_form_group_div = $("#id_new_password2_form_group");
@@ -92,21 +101,21 @@ $(document).ready(function () {
         var operation = $("#operation");
         var password1_field = $("#id_new_password1");
         var password2_field = $("#id_new_password2");
-        if(e.currentTarget.value == "1") {
+        if (e.currentTarget.value == "1") {
             username_field.prop('disabled', true);
             user_field.prop('disabled', true);
             update_password_div.css('visibility', 'hidden');
             password_div.css('visibility', 'hidden');
             id_new_password2_form_group_div.css('visibility', 'hidden');
             profiles_div.css('visibility', 'hidden');
-            if(update_password_div.hasClass('in')) {update_password_div.collapse('hide');}
-            if(password_div.hasClass('in')) { password_div.collapse('hide');}
-            if(id_new_password2_form_group_div.hasClass('in')) { id_new_password2_form_group_div.collapse('hide');}
-            if(profiles_div.hasClass('in')) { profiles_div.collapse('hide');}
+            if (update_password_div.hasClass('in')) { update_password_div.collapse('hide'); }
+            if (password_div.hasClass('in')) { password_div.collapse('hide'); }
+            if (id_new_password2_form_group_div.hasClass('in')) { id_new_password2_form_group_div.collapse('hide'); }
+            if (profiles_div.hasClass('in')) { profiles_div.collapse('hide'); }
         } else if (e.currentTarget.value == "2") {
             username_field.prop('disabled', false);
             user_field.prop('disabled', true);
-            if(operation.val()=="editing") {
+            if (operation.val() == "editing") {
                 update_password_div.css('visibility', 'visible');
                 password_div.css('visibility', 'visible');
                 id_new_password2_form_group_div.css('visibility', 'visible');
@@ -150,7 +159,7 @@ $(document).ready(function () {
             id_new_password2_form_group_div.collapse('show');
             profiles_div.collapse('show');
 
-            if(operation.val()=="editing") {
+            if (operation.val() == "editing") {
                 password1_field.prop('disabled', false);
                 password2_field.prop('disabled', false);
                 update_password_div.collapse('hide');
@@ -158,12 +167,12 @@ $(document).ready(function () {
         }
     });
 
-    password_flag_field.change(function () {
+    password_flag_field.on("change", function () {
         var password_div = $("#div_password");
         var id_new_password2_form_group_div = $("#id_new_password2_form_group");
         var password_field = $("#id_new_password1");
         var password2_field = $("#id_new_password2");
-        if($("#password_flag").is(":checked")){
+        if ($("#password_flag").is(":checked")) {
             password_field.prop('disabled', false);
             password2_field.prop('disabled', false);
             password_div.collapse('show');
@@ -177,7 +186,7 @@ $(document).ready(function () {
     });
 });
 
-function showDialogAndEnableRemoveButton () {
+function showDialogAndEnableRemoveButton() {
     $('#remove_button').prop('disabled', false);
     $('#modalRemove').modal('show');
 }
@@ -186,11 +195,11 @@ function disableRemoveButton() {
     $('#remove_button').prop('disabled', true);
 }
 
-function deactivate_user (id) {
+function deactivate_user(id) {
     disableDeactivateButton();
 }
 
-function showDialogAndEnableDeactiveteUserButton (id) {
+function showDialogAndEnableDeactiveteUserButton(id) {
     $('#deactivate_button').prop('disabled', false);
     $('#modalDeactivate').modal('show');
 }
@@ -199,15 +208,15 @@ function disableDeactivateButton() {
     $('#modalDeactivate').prop('disabled', true);
 }
 
-function add_user (id) {
-    $("#user_name_div").collapse({'toggle': false});
-    $("#text_profiles").collapse({'toggle': false});
-    $("#profiles").collapse({'toggle': false});
-    $("#update_password").collapse({'toggle': false});
-    $("#div_password").collapse({'toggle': false});
-    $("#id_new_password2_form_group").collapse({'toggle': false});
-    $("#password_flag").collapse({'toggle': false});
-    $("#div_add_login").collapse({'toggle': false});
+function add_user(id) {
+    $("#user_name_div").collapse({ 'toggle': false });
+    $("#text_profiles").collapse({ 'toggle': false });
+    $("#profiles").collapse({ 'toggle': false });
+    $("#update_password").collapse({ 'toggle': false });
+    $("#div_password").collapse({ 'toggle': false });
+    $("#id_new_password2_form_group").collapse({ 'toggle': false });
+    $("#password_flag").collapse({ 'toggle': false });
+    $("#div_add_login").collapse({ 'toggle': false });
     $("#user_name_div").collapse('show');
     $("#text_profiles").collapse('show');
     $("#profiles").collapse('show');
@@ -224,15 +233,15 @@ function add_user (id) {
     $("#id_new_password2").prop('disabled', false);
 }
 
-function cancel_add_user (id) {
-    $("#user_name_div").collapse({'toggle': false});
-    $("#text_profiles").collapse({'toggle': false});
-    $("#profiles").collapse({'toggle': false});
-    $("#update_password").collapse({'toggle': false});
-    $("#div_password").collapse({'toggle': false});
-    $("#id_new_password2_form_group").collapse({'toggle': false});
-    $("#password_flag").collapse({'toggle': false});
-    $("#div_add_login").collapse({'toggle': false});
+function cancel_add_user(id) {
+    $("#user_name_div").collapse({ 'toggle': false });
+    $("#text_profiles").collapse({ 'toggle': false });
+    $("#profiles").collapse({ 'toggle': false });
+    $("#update_password").collapse({ 'toggle': false });
+    $("#div_password").collapse({ 'toggle': false });
+    $("#id_new_password2_form_group").collapse({ 'toggle': false });
+    $("#password_flag").collapse({ 'toggle': false });
+    $("#div_add_login").collapse({ 'toggle': false });
     $("#user_name_div").collapse('hide');
     $("#text_profiles").collapse('hide');
     $("#profiles").collapse('hide');

@@ -1423,7 +1423,7 @@ def filter_participants(request):
 
                 if "diagnosis_checkbox" in request.POST:
                     classification_of_diseases_list = request.POST.getlist(
-                        "selected_diagnoses"
+                        "selected_diagnosis"
                     )
 
                     participants_list = participants_list.filter(
@@ -1772,7 +1772,7 @@ def search_locations(request):
         return HttpResponse(data, mimetype)
 
 
-def search_diagnoses(request):
+def search_diagnosis(request):
     if request.accepts("application/json"):
         search_text = request.GET.get("term", "")
 

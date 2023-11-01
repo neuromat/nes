@@ -39,7 +39,7 @@
                         <label for="id_first_name" class="form-label">
                             {% trans "First name" %}<b class="text-danger">*</b>
                         </label>
-                        <div class="input-group input-group-sm">
+                        <div class="input-group ">
                             <span class="input-group-text"> <span class="fa-fw fa fa-user"></span></span>
                             {{ form.first_name }}
                         </div>
@@ -53,7 +53,7 @@
                         <label for="id_last_name" class="form-label">
                             {% trans "Last name" %}<b class="text-danger">*</b>
                         </label>
-                        <div class="input-group input-group-sm">
+                        <div class="input-group ">
                             <span class="input-group-text"> <span class="fa-fw fa fa-user"></span></span>
                             {{ form.last_name }}
                         </div>
@@ -70,7 +70,7 @@
                         <label for="id_email" class="form-label">
                             E-mail<b class="text-danger">*</b>
                         </label>
-                        <div class="input-group input-group-sm">
+                        <div class="input-group ">
                             <span class="input-group-text"> <span class="fa-fw fa fa-envelope"></span></span>
                             {{ form.email }}
                         </div>
@@ -82,7 +82,7 @@
                 <div class="col-6 col-sm-6">
                     <div class="form-group">
                         <label for="id_institution" class="form-label">{% trans "Institution" %}</label>
-                        <div class="input-group input-group-sm">
+                        <div class="input-group ">
                             <span class="input-group-text"> <span class="fa-fw fa fa-building"></span></span>
                             {{ profile_form.institution }}
                         </div>
@@ -94,7 +94,7 @@
                 <div class="col-6 col-sm-6">
                     <div class="form-group"  id="citation_name_id">
                         <label for="id_citation_name" class="form-label">{% trans "Citation name" %}</label>
-                        <div class="input-group input-group-sm">
+                        <div class="input-group ">
                             <span class="input-group-text"> <span class="fa-fw fa fa-user"></span></span>
                             {{ profile_form.citation_name }}
                         </div>
@@ -117,9 +117,9 @@
                                hidden="hidden">
                         <label for="operation">{% trans "Can this researcher access the system?" %}</label>
                         <br>
-                        <ul id="optradio">
+                        <div id="optradio">
                             {% for radio in profile_form.login_enabled %}
-                                <li>
+                                <div class="form-check">
                                     <input class="form-check-input"
                                            id="optradio_{{ radio.id_for_label|last }}"
                                            {% if radio.data.selected %}checked="checked"{% endif %}
@@ -129,9 +129,9 @@
                                            {% if viewing %}disabled{% endif %}
                                            {% if profile_form.login_enabled.value == True and radio.data.value == False %}onchange="$('#modalDeactivate').modal('show')"{% endif %}>
                                     <label class="form-check-label" for="optradio_{{ radio.id_for_label|last }}">{{ radio.data.label }}</label>
-                                </li>
+                                </div>
                             {% endfor %}
-                        </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                         <label for="id_username" class="form-label">
                             {% trans "Username" %}<b class="text-danger">*</b>
                         </label>
-                        <div class="input-group input-group-sm">
+                        <div class="input-group ">
                             <span class="input-group-text"> <span class="fa-fw fa fa-user-circle"></span></span>
                             {{ form.username }}
                         </div>
@@ -160,7 +160,7 @@
                         <label for="id_new_password1" class="form-label">
                             {% trans "Password" %}<b class="text-danger">*</b>
                         </label>
-                        <div class="input-group input-group-sm right-inner-addon">
+                        <div class="input-group  right-inner-addon">
                             <span class="input-group-text"> <span class="fa-fw fa fa-asterisk"></span></span>
                             <div id="show"></div>
                             {{ form.password }}
@@ -175,7 +175,7 @@
                         <label for="id_new_password2" class="form-label">
                             {% trans "Please confirm password" %}<b class="text-danger">*</b>
                         </label>
-                        <div class="input-group input-group-sm has-feedback">
+                        <div class="input-group  has-feedback">
                             <span class="input-group-text"> <span class="fa-fw fa fa-asterisk"></span></span>
                             <input class="form-control"
                                    id="id_new_password2"
@@ -214,7 +214,7 @@
                         <label for="check_profile" class="form-label">
                             {% trans "In which these profiles does user identify?" %} <b class="text-danger">*</b>
                         </label>
-                        <div id="check_profile" class="input-group input-group-sm checkbox">
+                        <div id="check_profile" class="input-group  checkbox">
                             {% for group_permission in group_permissions %}
                                 <div class="form-check pb-1">
                                     <label>

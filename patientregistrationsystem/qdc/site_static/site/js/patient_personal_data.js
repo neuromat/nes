@@ -2,13 +2,14 @@
  * Created by diogopedrosa on 3/18/15.
  */
 
-$(document).ready(function () {
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
     var original_name = $('#id_name').val();
     var original_cpf = $('#id_cpf').val();
     var anonymous = $('#id_anonymous');
     var city = $('#patient_city').val();
-    
-    if (city != ""){
+
+    if (city != "") {
         $("#get_location").val(city);
     }
 
@@ -26,8 +27,8 @@ $(document).ready(function () {
     });
 
     // Disable fields that identify a person when creating an anonymous user
-    anonymous.change(function() {
-        if($(this).is(":checked")) {
+    anonymous.on("change", function () {
+        if ($(this).is(":checked")) {
             $("#id_name").prop('disabled', true);
             $("#id_name").prop('required', false);
             $("#id_cpf").prop('disabled', true);
@@ -43,8 +44,7 @@ $(document).ready(function () {
             $("#div_name").removeClass("form-group has-error");
             $("#div_name_message").children("ul:first").remove();
         }
-        else
-        {
+        else {
             $("#id_name").prop('disabled', false);
             $("#id_name").prop('required', true);
             $("#id_cpf").prop('disabled', false);
@@ -61,8 +61,8 @@ $(document).ready(function () {
         }
     });
 
-    anonymous.each(function() {
-        if($(this).is(":checked")) {
+    anonymous.each(function () {
+        if ($(this).is(":checked")) {
             $("#id_name").prop('disabled', true);
             $("#id_name").prop('required', false);
             $("#id_cpf").prop('disabled', true);
@@ -79,65 +79,85 @@ $(document).ready(function () {
     });
 
     // Ajax to search for homonym patient by name
-    $('#id_name').blur(function() {
+    $('#id_name').on("blur", async function () {
         var new_name = $('#id_name').val();
 
         if (new_name != original_name) {
-            $.ajax({
-                type: "POST",
-                url: "/patient/verify_homonym/",
-                data: {
-                    'search_text': new_name,
-                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
-                },
-                success: searchSuccessHomonym,
-                dataType: 'html'
-            });
+            fetch_post("/patient/verify_homonym/", {
+                'search_text': new_name,
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+            }, searchSuccessHomonym);
 
-            $.ajax({
-                type: "POST",
-                url: "/patient/verify_homonym_excluded/",
-                data: {
-                    'search_text': new_name,
-                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
-                },
-                success: searchSuccessHomonymExcluded,
-                dataType: 'html'
-            });
+            fetch_post("/patient/verify_homonym_excluded/", {
+                'search_text': new_name,
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+            }, searchSuccessHomonymExcluded);
+
+            // $.ajax({
+            //     type: "POST",
+            //     url: "/patient/verify_homonym/",
+            //     data: {
+            //         'search_text': new_name,
+            //         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+            //     },
+            //     success: searchSuccessHomonym,
+            //     dataType: 'html'
+            // });
+
+            // $.ajax({
+            //     type: "POST",
+            //     url: "/patient/verify_homonym_excluded/",
+            //     data: {
+            //         'search_text': new_name,
+            //         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+            //     },
+            //     success: searchSuccessHomonymExcluded,
+            //     dataType: 'html'
+            // });
         }
     });
 
     // Ajax to search for homonym patient by CPF
-    $('#id_cpf').blur(function() {
+    $('#id_cpf').on("blur", function () {
         var new_cpf = $('#id_cpf').val();
 
         if (new_cpf != original_cpf) {
-            $.ajax({
-                type: "POST",
-                url: "/patient/verify_homonym/",
-                data: {
-                    'search_text': new_cpf,
-                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
-                },
-                success: searchSuccessHomonym,
-                dataType: 'html'
-            });
+            fetch_post("/patient/verify_homonym/", {
+                'search_text': new_cpf,
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+            }, searchSuccessHomonym);
 
-            $.ajax({
-                type: "POST",
-                url: "/patient/verify_homonym_excluded/",
-                data: {
-                    'search_text': new_cpf,
-                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
-                },
-                success: searchSuccessHomonymExcluded,
-                dataType: 'html'
-            });
+            fetch_post("/patient/verify_homonym_excluded/", {
+                'search_text': new_cpf,
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+            }, searchSuccessHomonymExcluded);
+
+            // $.ajax({
+            //     type: "POST",
+            //     url: "/patient/verify_homonym/",
+            //     data: {
+            //         'search_text': new_cpf,
+            //         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+            //     },
+            //     success: searchSuccessHomonym,
+            //     dataType: 'html'
+            // });
+
+            // $.ajax({
+            //     type: "POST",
+            //     url: "/patient/verify_homonym_excluded/",
+            //     data: {
+            //         'search_text': new_cpf,
+            //         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+            //     },
+            //     success: searchSuccessHomonymExcluded,
+            //     dataType: 'html'
+            // });
         }
     });
 
     function searchSuccessHomonym(data, textStatus, jqXHR) {
-        if ($('#search-results-homonym').html() == "") {
+        if ($('#search-results-homonym').html() != "") {
             $('#search-results-homonym').html(data);
 
             var myElem = document.getElementById('patient_homonym');
@@ -151,7 +171,7 @@ $(document).ready(function () {
     }
 
     function searchSuccessHomonymExcluded(data, textStatus, jqXHR) {
-        if ($('#search-results-homonym-excluded').html() == "") {
+        if ($('#search-results-homonym-excluded').html() != "") {
             $('#search-results-homonym-excluded').html(data);
 
             var myElemExcluded = document.getElementById('patient_homonym_excluded');
@@ -164,37 +184,54 @@ $(document).ready(function () {
         }
     }
 
-    $("#modalHomonymCancel").click(function () {
+    $("#modalHomonymCancel").on("click", function () {
         $('#search-results-homonym').html("")
     });
 
-    $("#modalHomonymExcludedCancel").click(function () {
+    $("#modalHomonymExcludedCancel").on("click", function () {
         $('#search-results-homonym-excluded').html("")
     });
 
-    $("#id_cpf").mask("999.999.999-99");
-    $('#id_zipcode').mask('99999-999');
+    const cleaveCPF = new Cleave('#id_cpf', {
+        blocks: [3, 3, 3, 2],
+        delimiters: ['.', '.', '-'],
+        uppercase: true
+    });
+    const cleaveCEP = new Cleave('#id_zipcode', {
+        blocks: [5, 3],
+        delimiter: '-',
+        uppercase: true
+    });
+    // $("#id_cpf").mask("999.999.999-99");
+    //$('#id_zipcode').mask('99999-999');
 
-    $("#savetab").click(function () {
-        var name_value = $.trim($("#id_name").val());
-        var date_birth_value = $.trim($("#id_date_birth").val());
-        var gender_value = $.trim($("#id_gender").val());
-        var cpf_value = $.trim($("#id_cpf").val());
+    $("#savetab").on("click", function () {
+        var name_value = $("#id_name").val().trim();
+        var date_birth_value = $("#id_date_birth").val().trim();
+        var gender_value = $("#id_gender").val().trim();
+        var cpf_value = $("#id_cpf").val().trim();
         var anonymous = $('#id_anonymous');
 
-        if (anonymous.is(":checked") && date_birth_value.length == 0 || gender_value.length == 0) {
+        if (anonymous.is(":checked") && (date_birth_value.length == 0 || gender_value.length == 0)) {
             showErrorMessageTemporary(gettext("Obligatory fields must be filled."));
             jumpToElement('id_date_birth');
-            document.getElementById('id_date_birth').focus();
-            document.getElementById('id_gender').focus();
-        } else if (!anonymous.is(":checked") && name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
+            if (date_birth_value.length == 0) {
+                document.getElementById('id_date_birth').focus();
+            } else if (gender_value.length == 0) {
+                document.getElementById('id_gender').focus();
+            }
+        } else if (!anonymous.is(":checked") && (name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0)) {
             showErrorMessageTemporary(gettext("Obligatory fields must be filled."));
             jumpToElement('id_name');
-            document.getElementById('id_date_birth').focus();
-            document.getElementById('id_gender').focus();
-            document.getElementById('id_name').focus();
+            if (name_value.length == 0) {
+                document.getElementById('id_name').focus();
+            } else if (date_birth_value.length == 0) {
+                document.getElementById('id_date_birth').focus();
+            } else if (gender_value.length == 0) {
+                document.getElementById('id_gender').focus();
+            }
         } else {
-            var email_value = $.trim($('#id_email').val());
+            var email_value = $('#id_email').val().trim();
 
             if (email_value.length != 0 && !validateEmail(email_value)) {
                 showErrorMessageTemporary(gettext("Please fill the fields correctly. E-mail is invalid"));
@@ -202,19 +239,19 @@ $(document).ready(function () {
                 if (!anonymous.is(":checked") && cpf_value.length == 0) {
                     $("#modalNoCPF").modal('show');
                 } else {
-                    $("#form_id").submit();
+                    $("#form_id").trigger("submit");
                 }
             }
         }
     });
 
-    $("#noCPF_modal").click(function () {
-        $("#form_id").submit();
+    $("#noCPF_modal").on("click", function () {
+        $("#form_id").trigger("submit");
     });
 
-    $("#more_phones").click(function () {
+    $("#more_phones").on("click", function () {
         document.getElementById('action').value = "more_phones";
-        $("#form_id").submit();
+        $("#form_id").trigger("submit");
     });
 });
 

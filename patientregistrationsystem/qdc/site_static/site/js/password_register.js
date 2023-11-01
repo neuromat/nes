@@ -11,14 +11,15 @@ function checkPassExt(){
 }
 
 
-$(document).ready(function () {
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
     var password_flag = $("#password_flag");
 
     if (!password_flag.prop("checked")) {
         password_container_refresh();
     }
 
-    password_flag.change(function() {
+    password_flag.on("change", function() {
         password_container_refresh();
     });
 });

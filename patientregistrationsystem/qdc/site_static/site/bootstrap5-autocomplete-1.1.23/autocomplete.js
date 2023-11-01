@@ -565,7 +565,7 @@ class Autocomplete {
       case 27:
       case "Escape":
         if (this.isDropdownVisible()) {
-          this._searchInput.focus();
+          this._searchInput.on("focus", );
           this.hideSuggestions();
         }
         break;

@@ -1,20 +1,20 @@
 //Busca CEP utilizando o sistema ViaCEP. Ref: https://viacep.com.br/exemplo/javascript/
 
 function limpa_formulário_cep() {
-        //Limpa valores do formulário de cep.
-        document.getElementById('id_street').value=("");
-        document.getElementById('id_district').value=("");
-        document.getElementById('id_city').value=("");
-        document.getElementById('id_state').value=("");
+    //Limpa valores do formulário de cep.
+    document.getElementById('id_street').value = ("");
+    document.getElementById('id_district').value = ("");
+    document.getElementById('id_city').value = ("");
+    document.getElementById('id_state').value = ("");
 }
 
 function meu_callback(conteudo) {
     if (!("erro" in conteudo)) {
         //Atualiza os campos com os valores.
-        document.getElementById('id_street').value=(conteudo.logradouro);
-        document.getElementById('id_district').value=(conteudo.bairro);
-        document.getElementById('id_city').value=(conteudo.localidade);
-        document.getElementById('id_state').value=(conteudo.uf);
+        document.getElementById('id_street').value = (conteudo.logradouro);
+        document.getElementById('id_district').value = (conteudo.bairro);
+        document.getElementById('id_city').value = (conteudo.localidade);
+        document.getElementById('id_state').value = (conteudo.uf);
     } //end if.
     else {
         //CEP não Encontrado.
@@ -35,19 +35,19 @@ function pesquisacep(valor) {
         var validacep = /^[0-9]{8}$/;
 
         //Valida o formato do CEP.
-        if(validacep.test(cep)) {
+        if (validacep.test(cep)) {
 
             //Preenche os campos com "..." enquanto consulta webservice.
-            document.getElementById('id_street').value="...";
-            document.getElementById('id_district').value="...";
-            document.getElementById('id_city').value="...";
-            document.getElementById('id_state').value="...";
+            document.getElementById('id_street').value = "...";
+            document.getElementById('id_district').value = "...";
+            document.getElementById('id_city').value = "...";
+            document.getElementById('id_state').value = "...";
 
             //Cria um elemento javascript.
             var script = document.createElement('script');
 
             //Sincroniza com o callback.
-            script.src = '//viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+            script.src = '//viacep.com.br/ws/' + cep + '/json/?callback=meu_callback';
 
             //Insere script no documento e carrega o conteúdo.
             document.body.appendChild(script);

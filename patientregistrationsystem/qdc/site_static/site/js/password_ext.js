@@ -3,8 +3,8 @@
  */
 "use strict";
 
-$(function(){
-    $( "form" ).submit(function( event ) {
+$(document).ready(function(){
+    $( "form" ).on("submit", function( event ) {
         if(checkPass())
             event.preventDefault();
         if(passwordForce() < 20 && $('#id_new_password1').val()){

@@ -17,17 +17,17 @@ $(document).ready(
             not_all_mandatory_components.prop('checked', true);
         }
 
-        all_mandatory_components.click(function () {
+        all_mandatory_components.on("click", function () {
             id_number_of_mandatory_components.prop('value', "");
             id_number_of_mandatory_components.prop('disabled', true);
             id_number_of_mandatory_components.prop('required', false);
             fix_bootstrap_error_message();
         });
 
-        not_all_mandatory_components.click(function () {
+        not_all_mandatory_components.on("click", function () {
             id_number_of_mandatory_components.prop('disabled', false);
             id_number_of_mandatory_components.prop('required', true);
-            id_number_of_mandatory_components.focus();
+            id_number_of_mandatory_components.on("focus");
         });
 
         function fix_bootstrap_error_message() {
@@ -39,7 +39,7 @@ $(document).ready(
         }
 
         // Change icon while collapsing or expanding an accordion
-        $(".collapsed").click(expand)
+        $(".collapsed").on("click", expand)
 
         function expand() {
             // Replace right arrow by the down arrow
@@ -47,13 +47,13 @@ $(document).ready(
 
             // Change the listener of the click event
             $(this).unbind("click");
-            $(this).click(collapse)
+            $(this).on("click", collapse)
 
             // Replace the title of the tootip
             $(this).children(".panel-heading").attr("data-original-title", gettext("Collapse"));
         }
 
-        $(".expanded").click(collapse)
+        $(".expanded").on("click", collapse)
 
         function collapse() {
             // Replace down arrow by the right arrow
@@ -61,18 +61,18 @@ $(document).ready(
 
             // Change the listener of the click event
             $(this).unbind("click");
-            $(this).click(expand)
+            $(this).on("click", expand)
 
             // Replace the title of the tootip
             $(this).children(".panel-heading").attr("data-original-title", gettext("Expand"));
         }
 
         // Following two handlers avoid expanding and collapsing an accordion while clicking to move or remove a line.
-        $(".collapsed a").click(function (e) {
+        $(".collapsed a").on("click", function (e) {
             e.stopPropagation();
         });
 
-        $(".expanded a").click(function (e) {
+        $(".expanded a").on("click", function (e) {
             e.stopPropagation();
         });
     });

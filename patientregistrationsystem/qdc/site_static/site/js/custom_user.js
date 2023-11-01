@@ -2,7 +2,8 @@
  * Created by carlosribas on 09/05/2018.
  */
 
-$(document).ready(function () {
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
     var username_field = $("#id_username");
     var password_flag = $("#password_flag");
     var password1_field = $("#id_new_password1");
@@ -19,8 +20,8 @@ $(document).ready(function () {
     div_user_account.hide();
     div_profiles.hide();
 
-    $('input[name = "login_enabled"]').on('change', function(e) {
-        if(e.currentTarget.value == "False") {
+    $('input[name = "login_enabled"]').on('change', function (e) {
+        if (e.currentTarget.value == "False") {
             console.log("teste")
             username_field.prop('disabled', true);
             username_field.prop('required', false);
@@ -42,7 +43,7 @@ $(document).ready(function () {
         }
     });
 
-    if (optradio_0.checked){
+    if (optradio_0.checked) {
         username_field.prop('disabled', true);
         username_field.prop('required', false);
         password1_field.prop('disabled', true);
@@ -53,7 +54,7 @@ $(document).ready(function () {
         div_profiles.hide();
     }
 
-    if (optradio_1.checked){
+    if (optradio_1.checked) {
         username_field.prop('disabled', false);
         username_field.prop('required', true);
         password1_field.prop('disabled', false);
@@ -64,7 +65,7 @@ $(document).ready(function () {
         div_profiles.show();
     }
 
-    if(operation.val()=="viewing") {
+    if (operation.val() == "viewing") {
         username_field.prop('disabled', true);
         password_flag.prop('disabled', true);
         div_password_flag.hide();
@@ -72,8 +73,8 @@ $(document).ready(function () {
         password2_field.prop('disabled', true);
     }
 
-    if(operation.val()=="editing") {
-        if (optradio_1.checked){
+    if (operation.val() == "editing") {
+        if (optradio_1.checked) {
             div_password_flag.hide();
             password_flag.prop('checked', false);
             password1_field.prop('disabled', true);
@@ -82,7 +83,7 @@ $(document).ready(function () {
             password2_field.prop('required', false);
         }
 
-        $('input[name = "login_enabled"]').on('change', function(e) {
+        $('input[name = "login_enabled"]').on('change', function (e) {
             if (e.currentTarget.value == "True") {
                 username_field.prop('disabled', false);
                 username_field.val("");

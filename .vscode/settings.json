@@ -67,10 +67,10 @@
     "djlint.enableLinting": true,
     "djlint.maxLineLength": 180,
     "djlint.useGitignore": true,
-    "djlint.lineBreakAfterMultilineTag": false,
+    "djlint.lineBreakAfterMultilineTag": true,
     "djlint.maxBlankLines": 1,
-    "djlint.formatAttributeTemplateTags": true,
-    "djlint.maxAttributeLength": 120,
+    "djlint.formatAttributeTemplateTags": false,
+    "djlint.maxAttributeLength": 160,
     "djlint.blankLineAfterTag": [
         "endblock",
         "include",

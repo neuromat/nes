@@ -10,7 +10,7 @@ function show_modal_remove_setting(emg_electrode_setting_type) {
     $('#modalRemoveElectrodeSetting').modal('show');
 }
 
-$(document).ready(function () {
+document.addEventListener("DOMContentLoaded", () => {
 
     var emg_electrode_placement = $("#id_emg_electrode_placement");
     var select_muscle_side = $("select#id_muscle_side");
@@ -27,11 +27,11 @@ $(document).ready(function () {
         surface_show_field(true);
     }
 
-    emg_electrode_placement.change(function () {
+    emg_electrode_placement.on("change", function () {
         muscle_side_select_refresh();
     });
 
-    select_electrode.change(function () {
+    select_electrode.on("change", async function () {
         var electrode_id = $(this).val();
         var description_field = $("#id_description");
         description_field.prop("disabled", true);
@@ -42,14 +42,18 @@ $(document).ready(function () {
         if (electrode_id == "") {
             description_field.prop('value', "");
         } else {
-            $.getJSON(url, function (electrode) {
-                description_field.prop('value', electrode['description']);
-            })
+            var response = await fetch(url);
+            const electrode = await response.json();
+            
+            description_field.prop('value', electrode['description']);
+
+            // $.getJSON(url, function (electrode) {
+            //     description_field.prop('value', electrode['description']);
+            // })
         }
     });
 
-    select_electrode_type.change(function () {
-
+    select_electrode_type.on("change", async function () {
         // surface_show_field(false);
         // muscle_side_show_field(false);
         document.getElementById("id_description").value = "";
@@ -61,33 +65,49 @@ $(document).ready(function () {
         }
 
         var url = "/experiment/emg_setting/get_electrode_by_type/" + electrode_type;
+        var response = await fetch(url);
+        const electrode_type_list = await response.json();
 
-        $.getJSON(url, function (electrode_type_list) {
-            var options = '<option value="" selected="selected">---------</option>';
-            for (var i = 0; i < electrode_type_list.length; i++) {
-                options += '<option value="' + electrode_type_list[i].pk + '">' + electrode_type_list[i].fields['name'] + '</option>';
-            }
-            select_electrode.html(options);
-            //select_electrode.change();
-        });
+        var options = '<option value="" selected="selected">---------</option>';
+        for (var i = 0; i < electrode_type_list.length; i++) {
+            options += '<option value="' + electrode_type_list[i].pk + '">' + electrode_type_list[i].fields['name'] + '</option>';
+        }
+        select_electrode.html(options);
+
+        // $.getJSON(url, function (electrode_type_list) {
+        //     var options = '<option value="" selected="selected">---------</option>';
+        //     for (var i = 0; i < electrode_type_list.length; i++) {
+        //         options += '<option value="' + electrode_type_list[i].pk + '">' + electrode_type_list[i].fields['name'] + '</option>';
+        //     }
+        //     select_electrode.html(options);
+        //     //select_electrode.on("change");
+        // });
 
         var url = "/experiment/emg_setting/get_electrode_placement_by_type/" + electrode_type;
+        var response = await fetch(url);
+        const electrode_placement_list = await response.json();
 
-        $.getJSON(url, function (electrode_placement_list) {
-            var options_placement = '<option value="" selected="selected">---------</option>';
-            for (var i = 0; i < electrode_placement_list.length; i++) {
-                options_placement += '<option value="' + electrode_placement_list[i].id + '">' + electrode_placement_list[i].description + '</option>';
-            }
-            emg_electrode_placement.html(options_placement);
-            emg_electrode_placement.change();
-        });
+        var options_placement = '<option value="" selected="selected">---------</option>';
+        for (var i = 0; i < electrode_placement_list.length; i++) {
+            options_placement += '<option value="' + electrode_placement_list[i].id + '">' + electrode_placement_list[i].description + '</option>';
+        }
+        emg_electrode_placement.html(options_placement);
+        emg_electrode_placement.on("change");
+
+        // $.getJSON(url, function (electrode_placement_list) {
+        //     var options_placement = '<option value="" selected="selected">---------</option>';
+        //     for (var i = 0; i < electrode_placement_list.length; i++) {
+        //         options_placement += '<option value="' + electrode_placement_list[i].id + '">' + electrode_placement_list[i].description + '</option>';
+        //     }
+        //     emg_electrode_placement.html(options_placement);
+        //     emg_electrode_placement.on("change");
+        // });
 
     });
 
 });
 
-function muscle_side_select_refresh() {
-
+async function muscle_side_select_refresh() {
     var emg_electrode_placement_id = $("#id_emg_electrode_placement").val();
     var select_muscle_side = $("select#id_muscle_side");
 
@@ -96,31 +116,51 @@ function muscle_side_select_refresh() {
         muscle_side_show_field(false);
         surface_show_field(false);
     } else {
-        var url = "/experiment/emg_setting/get_muscle_side_by_electrode_placement/" + emg_electrode_placement_id;
+        const url = "/experiment/emg_setting/get_muscle_side_by_electrode_placement/" + emg_electrode_placement_id;
+        const response = await fetch(url);
+        const data_placement = await response.json();
 
-        $.getJSON(url, function (data_placement) {
+        if (data_placement.length > 0) {
 
-            if (data_placement.length > 0) {
+            muscle_side_show_field(true);
 
-                muscle_side_show_field(true);
+            var string_selected = "";
 
-                var string_selected = "";
+            var options = '<option value="">---------</option>';
 
-                var options = '<option value="">---------</option>';
-
-                for (var i = 0; i < data_placement.length; i++) {
-                    string_selected = "";
-                    if (data_placement[i].pk == select_muscle_side.val()) {
-                        string_selected = ' selected="selected"';
-                    }
-                    options += '<option value="' + data_placement[i].pk + '"' + string_selected + '>' + data_placement[i].fields['name'] + '</option>';
+            for (var i = 0; i < data_placement.length; i++) {
+                string_selected = "";
+                if (data_placement[i].pk == select_muscle_side.val()) {
+                    string_selected = ' selected="selected"';
                 }
-                select_muscle_side.html(options);
-            } else {
-                muscle_side_show_field(false);
+                options += '<option value="' + data_placement[i].pk + '"' + string_selected + '>' + data_placement[i].fields['name'] + '</option>';
             }
+            select_muscle_side.html(options);
+        } else {
+            muscle_side_show_field(false);
+        }
 
-        });
+        // $.getJSON(url, function (data_placement) {
+        //     if (data_placement.length > 0) {
+
+        //         muscle_side_show_field(true);
+
+        //         var string_selected = "";
+
+        //         var options = '<option value="">---------</option>';
+
+        //         for (var i = 0; i < data_placement.length; i++) {
+        //             string_selected = "";
+        //             if (data_placement[i].pk == select_muscle_side.val()) {
+        //                 string_selected = ' selected="selected"';
+        //             }
+        //             options += '<option value="' + data_placement[i].pk + '"' + string_selected + '>' + data_placement[i].fields['name'] + '</option>';
+        //         }
+        //         select_muscle_side.html(options);
+        //     } else {
+        //         muscle_side_show_field(false);
+        //     }
+        // });
         surface_show_field(true);
     }
 }
@@ -141,7 +181,7 @@ function muscle_side_show_field(show) {
     }
 }
 
-function surface_show_field(show) {
+async function surface_show_field(show) {
     var emg_electrode_type = $("#id_electrode_type").val();
     var div_start_posture = $("#div-start_posture");
     var start_posture_field = $("#id_start_posture");
@@ -173,18 +213,26 @@ function surface_show_field(show) {
     depth_of_insertion_field.prop("disabled", true);
     depth_of_insertion_field.prop("required", false);
 
-
     if (show) {
-        var emg_electrode_placement_id = $("#id_emg_electrode_placement").val();
-        var url = "/experiment/emg_setting/get_description_by_placement/" + emg_electrode_type + "/" + emg_electrode_placement_id;
+        const emg_electrode_placement_id = $("#id_emg_electrode_placement").val();
+        const url = "/experiment/emg_setting/get_description_by_placement/" + emg_electrode_type + "/" + emg_electrode_placement_id;
         if (emg_electrode_type == "surface") {
-            $.getJSON(url, function (data_placement) {
-                document.getElementById("id_start_posture").value = data_placement.start_posture;
-                document.getElementById("id_orientation").value = data_placement.orientation;
-                document.getElementById("id_fixation_on_the_skin").value = data_placement.fixation_on_the_skin;
-                document.getElementById("id_reference_electrode").value = data_placement.reference_electrode;
-                document.getElementById("id_clinical_test").value = data_placement.clinical_test;
-            });
+            const response = await fetch(url);
+            var data_placement = await response.json();
+
+            document.getElementById("id_start_posture").value = data_placement.start_posture;
+            document.getElementById("id_orientation").value = data_placement.orientation;
+            document.getElementById("id_fixation_on_the_skin").value = data_placement.fixation_on_the_skin;
+            document.getElementById("id_reference_electrode").value = data_placement.reference_electrode;
+            document.getElementById("id_clinical_test").value = data_placement.clinical_test;
+
+            // $.getJSON(url, function (data_placement) {
+            //     document.getElementById("id_start_posture").value = data_placement.start_posture;
+            //     document.getElementById("id_orientation").value = data_placement.orientation;
+            //     document.getElementById("id_fixation_on_the_skin").value = data_placement.fixation_on_the_skin;
+            //     document.getElementById("id_reference_electrode").value = data_placement.reference_electrode;
+            //     document.getElementById("id_clinical_test").value = data_placement.clinical_test;
+            // });
             div_start_posture.show();
             div_orientation.show();
             div_fixation_on_the_skin.show();
@@ -198,10 +246,16 @@ function surface_show_field(show) {
             div_depth_of_insertion.prop("disabled", true);
             depth_of_insertion_field.prop("required", false);
         } else if (emg_electrode_type == "intramuscular") {
-            $.getJSON(url, function (data_placement) {
-                document.getElementById("id_method_of_insertion").value = data_placement.method_of_insertion;
-                document.getElementById("id_depth_of_insertion").value = data_placement.depth_of_insertion;
-            });
+            const response = await fetch(url);
+            var data_placement = await response.json();
+
+            document.getElementById("id_method_of_insertion").value = data_placement.method_of_insertion;
+            document.getElementById("id_depth_of_insertion").value = data_placement.depth_of_insertion;
+
+            // $.getJSON(url, function (data_placement) {
+            //     document.getElementById("id_method_of_insertion").value = data_placement.method_of_insertion;
+            //     document.getElementById("id_depth_of_insertion").value = data_placement.depth_of_insertion;
+            // });
             div_method_of_insertion.show();
             div_method_of_insertion.prop("required", true);
             div_depth_of_insertion.show();
@@ -218,9 +272,11 @@ function surface_show_field(show) {
             div_clinical_test.prop("disabled", true);
             div_clinical_test.hide();
         } else if (emg_electrode_type == "needle") {
-            $.getJSON(url, function (data_placement) {
+            const response = await fetch(url);
+            var data_placement = await response.json();
+            // $.getJSON(url, function (data_placement) {
 
-            });
+            // });
         }
 
     } else {

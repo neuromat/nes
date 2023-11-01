@@ -11,12 +11,13 @@
 // A possible approach could be as described in http://php.eduardokraus.com/plugin-jquery-masked-input-para-celular,
 // but it does not look good to me because other cities are also increasing the number of digits.
 
-$(document).ready(function () {
-    $('.telephone_number').focus(function () {
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
+    $('.telephone_number').on("focus", function () {
         $(this).val($(this).val().replace(/\D/g,''));
     });
 
-    $('.telephone_number').blur(function () {
+    $('.telephone_number').on("blur", function () {
         number = $(this).val().replace(/\D/g,'');
 
         // 011 98888 8888

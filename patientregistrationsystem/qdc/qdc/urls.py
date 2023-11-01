@@ -1,5 +1,7 @@
 import os
+from django import get_version
 
+from django.views.decorators.cache import cache_page
 from custom_user.forms import CustomPasswordResetForm
 from django.conf import settings
 from django.conf.urls import include
@@ -100,7 +102,9 @@ js_info_dict = {
 urlpatterns += [
     re_path(
         r"^jsi18n/$",
-        JavaScriptCatalog.as_view(domain="djangojs"),
+        cache_page(86400, cache="redis", key_prefix="jsi18n-%s" % get_version())(
+            JavaScriptCatalog.as_view()
+        ),
         name="javascript-catalog",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

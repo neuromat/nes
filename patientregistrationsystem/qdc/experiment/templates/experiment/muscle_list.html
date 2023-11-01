@@ -2,14 +2,20 @@
 
 {% load i18n %}
 
-{% block activeSetup %} active{% endblock activeSetup %}
+{% block activeSetup %}
+    active
+{% endblock activeSetup %}
 
 {% block content %}
     <div class="tab-pane fade show active" id="researchProjectBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/setup/">{% trans "Set up" %}</a></li>
+                <li class="breadcrumb-item">
+                    <a href={% url "home" %}>{% trans "Home" %}</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/experiment/setup/">{% trans "Set up" %}</a>
+                </li>
                 <li class="breadcrumb-item active">{% trans "Muscle" %}</li>
             </ol>
         </nav>
@@ -18,7 +24,7 @@
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="my-3 p-3 bg-body rounded shadow-sm">
             <h4>{% trans "Muscle List" %}</h4>
-            <br>
+            <hr>
             <div class="form-group">
                 <table class="table table-striped">
                     <thead>
@@ -27,19 +33,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for equipment in equipments %}
-                        <tr>
-                            <td>{% if perms.experiment.register_equipment %}
-                                    <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}"
-                                        href="/experiment/muscle/{{ equipment.id }}">
+                        {% for equipment in equipments %}
+                            <tr>
+                                <td>
+                                    {% if perms.experiment.register_equipment %}
+                                        <a data-bs-toggle="tooltip"
+                                           data-bs-placement="left"
+                                           title="{% trans "Visualize" %}"
+                                           href="/experiment/muscle/{{ equipment.id }}">{{ equipment.name }}</a>
+                                    {% else %}
                                         {{ equipment.name }}
-                                    </a>
-                                {% else %}
-                                    {{ equipment.name }}
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -56,5 +63,4 @@
             <a href="/experiment/setup" class="btn btn-light">{% trans "Back" %}</a>
         </div>
     </div>
-
 {% endblock content %}

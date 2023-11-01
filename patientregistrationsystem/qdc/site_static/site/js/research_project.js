@@ -2,20 +2,27 @@
  * Created by diogopedrosa on 3/19/15.
  */
 
-$(document).ready(function () {
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
     //Search for keywords in search mode
-    $('#keywords').keyup(function() {
-        $.ajax({
-            type: "POST",
-            url: "/experiment/keyword/search/",
-            data: {
-                'search_text': $('#keywords').val(),
-                'research_project_id': $('#research_project_id').val(),
-                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
-            },
-            success: searchSuccessKeywords,
-            dataType: 'html'
-        });
+    $('#keywords').on("keyup", function () {
+        fetch_post("/experiment/keyword/search/", {
+            'search_text': $('#keywords').val(),
+            'research_project_id': $('#research_project_id').val(),
+            'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+        }, searchSuccessKeywords);
+
+        // $.ajax({
+        //     type: "POST",
+        //     url: "/experiment/keyword/search/",
+        //     data: {
+        //         'search_text': $('#keywords').val(),
+        //         'research_project_id': $('#research_project_id').val(),
+        //         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+        //     },
+        //     success: searchSuccessKeywords,
+        //     dataType: 'html'
+        // });
     });
 
     function searchSuccessKeywords(data, textStatus, jqXHR) {
@@ -27,18 +34,18 @@ $(document).ready(function () {
     // TODO:
     // see if it's a matter of Bootstrap Validator and JQuery Date picker
     // libraries.
-    $("#id_save_button").click(function (e) {
+    $("#id_save_button").on("click", function (e) {
         console.log($("#id_start_date").val());
-        if ( $("#id_end_date").val() == "__/__/____" ) {
+        if ($("#id_end_date").val() == "__/__/____") {
             $("#id_end_date").val("");
         }
-        if ( $("#id_start_date").val() == "__/__/____" ) {
+        if ($("#id_start_date").val() == "__/__/____") {
             $("#id_start_date").val("");
         }
     });
 });
 
-function showDialogAndEnableRemoveButton () {
+function showDialogAndEnableRemoveButton() {
     // "When there is only one single-line text input field in a form, the
     // user agent should accept Enter in that field as a request to submit
     // the form."

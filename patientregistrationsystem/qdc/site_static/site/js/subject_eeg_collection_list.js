@@ -6,7 +6,7 @@
 
 var requisition_id = 0;
 
-$(document).ready(function () {
+document.addEventListener("DOMContentLoaded", () => {
     requisition_id = $("#process_requisition").val();
 });
 
@@ -25,15 +25,27 @@ function handle_processing() {
     setTimeout(check_requisition, 1000);
 }
 
-function check_requisition() {
-    var url = "/experiment/eeg_data/get_process_requisition_status/" + requisition_id;
-    $.getJSON(url, function (response) {
-        document.getElementById('label_process_requisition_status').innerHTML = response['message'];
-        if(response['status'] == "finished"){
-            $('#pleaseWaitDialog').modal('hide');
+async function check_requisition() {
+    const url = "/experiment/eeg_data/get_process_requisition_status/" + requisition_id;
+
+    const response_fetch = await fetch(url);
+    const response = await response_fetch.json();
+
+    document.getElementById('label_process_requisition_status').innerHTML = response['message'];
+    if (response['status'] == "finished") {
+        $('#pleaseWaitDialog').modal('hide');
         document.getElementById('label_process_requisition_status').innerHTML = "";
-        } else {
-            setTimeout(check_requisition, 1000);
-        }
-    });
+    } else {
+        setTimeout(check_requisition, 1000);
+    }
+
+    // $.getJSON(url, function (response) {
+    //     document.getElementById('label_process_requisition_status').innerHTML = response['message'];
+    //     if(response['status'] == "finished"){
+    //         $('#pleaseWaitDialog').modal('hide');
+    //     document.getElementById('label_process_requisition_status').innerHTML = "";
+    //     } else {
+    //         setTimeout(check_requisition, 1000);
+    //     }
+    // });
 }

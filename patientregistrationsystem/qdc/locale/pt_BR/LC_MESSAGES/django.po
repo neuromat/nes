@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-29 16:21-0300\n"
+"POT-Creation-Date: 2023-10-30 22:28-0300\n"
 "PO-Revision-Date: 2023-10-02 12:49-0300\n"
 "Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
 "Language-Team: \n"
@@ -678,53 +678,53 @@ msgstr "Pesquisador sênior"
 msgid "Administrator"
 msgstr "Administrador"
 
-#: configuration/templates/configuration/links_list.html:11
-#: templates/base/template.html:107
-#: templates/registration/change_password_custom.html:68
-#: templates/registration/logged_out.html:5
+#: configuration/templates/configuration/links_list.html:14
+#: templates/base/template.html:113
+#: templates/registration/change_password_custom.html:65
+#: templates/registration/logged_out.html:7
 msgid "Home"
 msgstr "Home"
 
-#: configuration/templates/configuration/links_list.html:13
-#: configuration/templates/configuration/links_list.html:20
-#: templates/base/template.html:171
+#: configuration/templates/configuration/links_list.html:16
+#: configuration/templates/configuration/links_list.html:22
+#: templates/base/template.html:195
 msgid "Useful Links"
 msgstr ""
 
-#: configuration/templates/configuration/links_list.html:33
+#: configuration/templates/configuration/links_list.html:35
 #, fuzzy
 #| msgid "Add login"
 msgid "Add new link"
 msgstr "Adicionar login"
 
-#: processing/templates/processing/file_selection.html:38
+#: processing/templates/processing/file_selection.html:37
 msgid "Filters selection"
 msgstr ""
 
-#: processing/templates/processing/file_selection.html:42
-#: templates/base/template.html:120
+#: processing/templates/processing/file_selection.html:41
+#: templates/base/template.html:130
 msgid "Studies"
 msgstr ""
 
-#: processing/templates/processing/file_selection.html:57
+#: processing/templates/processing/file_selection.html:56
 #, fuzzy
 #| msgid "Can add experiment"
 msgid "Experiments"
 msgstr "Pode adicionar experimento"
 
-#: processing/templates/processing/file_selection.html:71
+#: processing/templates/processing/file_selection.html:70
 msgid "Groups"
 msgstr ""
 
-#: processing/templates/processing/file_selection.html:77
+#: processing/templates/processing/file_selection.html:76
 msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
 msgstr ""
 
-#: processing/templates/processing/file_selection.html:85
+#: processing/templates/processing/file_selection.html:84
 msgid "Next"
 msgstr ""
 
-#: processing/templates/processing/file_selection.html:90
+#: processing/templates/processing/file_selection.html:87
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -744,125 +744,125 @@ msgstr "Esta página ainda não existe!"
 msgid "Back"
 msgstr "Voltar"
 
-#: templates/admin/base_site.html:4
+#: templates/admin/base_site.html:6
 msgid "QDC site admin test"
 msgstr "QDC site admin teste"
 
-#: templates/admin/base_site.html:7
+#: templates/admin/base_site.html:10
 msgid "QDC administration"
 msgstr "Administração QDC"
 
-#: templates/admin/qdc_403.html:9
+#: templates/admin/qdc_403.html:7
 msgid "Access is not authorized"
 msgstr "Acesso não autorizado"
 
-#: templates/base/contato.html:17 templates/base/template.html:13
+#: templates/base/contato.html:17 templates/base/template.html:10
 #: templates/base/template_registration.html:13
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociência - NES"
 
-#: templates/base/contato.html:19
+#: templates/base/contato.html:20
 msgid ""
 "Welcome to NES! If you need help you can check the <a href='https://nes."
 "readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. "
 "<br>Please report any bug to the admin."
 msgstr ""
 
-#: templates/base/template.html:36
+#: templates/base/template.html:32
 msgid "NES"
 msgstr ""
 
-#: templates/base/template.html:75
+#: templates/base/template.html:78
 msgid "Admin"
 msgstr ""
 
-#: templates/base/template.html:77
+#: templates/base/template.html:80
 msgid "Change password"
 msgstr "Alterar senha"
 
-#: templates/base/template.html:78
+#: templates/base/template.html:81
 msgid "Help"
 msgstr ""
 
-#: templates/base/template.html:79
-#: templates/registration/change_password_custom.html:70
+#: templates/base/template.html:82
+#: templates/registration/change_password_custom.html:67
 msgid "Logout"
 msgstr "Logout"
 
-#: templates/base/template.html:87
+#: templates/base/template.html:90
 msgid "Light Theme"
 msgstr ""
 
-#: templates/base/template.html:88
+#: templates/base/template.html:91
 msgid "Dark Theme"
 msgstr ""
 
-#: templates/base/template.html:111
+#: templates/base/template.html:119
 msgid "Add people that participated in the experiments"
 msgstr ""
 
-#: templates/base/template.html:113
+#: templates/base/template.html:121
 msgid "Participants"
 msgstr ""
 
-#: templates/base/template.html:118 templates/base/template.html:125
+#: templates/base/template.html:128 templates/base/template.html:137
 msgid "Add publications"
 msgstr ""
 
-#: templates/base/template.html:127
+#: templates/base/template.html:139
 msgid "Publications"
 msgstr ""
 
-#: templates/base/template.html:132 templates/base/template.html:139
+#: templates/base/template.html:146 templates/base/template.html:155
 msgid "Add users and institutions to the database"
 msgstr ""
 
-#: templates/base/template.html:134
+#: templates/base/template.html:148
 #, fuzzy
 #| msgid "Can add questionnaire"
 msgid "Questionnaires"
 msgstr "Pode adicionar questinário"
 
-#: templates/base/template.html:141
+#: templates/base/template.html:157
 #, fuzzy
 #| msgid "Junior researcher"
 msgid "Researchers"
 msgstr "Pesquisador júnior"
 
-#: templates/base/template.html:146
+#: templates/base/template.html:164
 msgid "Export your projects"
 msgstr ""
 
-#: templates/base/template.html:148
+#: templates/base/template.html:166
 msgid "Export"
 msgstr ""
 
-#: templates/base/template.html:153
+#: templates/base/template.html:173
 msgid "Here you can setup the equipments used in the projects"
 msgstr ""
 
-#: templates/base/template.html:155
+#: templates/base/template.html:175
 msgid "Set up"
 msgstr ""
 
-#: templates/base/template.html:165
+#: templates/base/template.html:187
 msgid "Plugin"
 msgstr ""
 
-#: templates/base/template.html:169
+#: templates/base/template.html:193
 msgid "Useful links of tools"
 msgstr ""
 
-#: templates/base/template.html:179
+#: templates/base/template.html:205
 msgid "Please enable Javascript"
 msgstr ""
 
-#: templates/registration/change_password_custom.html:18
+#: templates/registration/change_password_custom.html:15
 msgid "Password change"
 msgstr "Alterar senha"
 
-#: templates/registration/change_password_custom.html:40
-#: templates/registration/password_reset_confirm.html:23
+#: templates/registration/change_password_custom.html:36
+#: templates/registration/password_reset_confirm.html:21
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
@@ -870,35 +870,35 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: templates/registration/change_password_custom.html:63
+#: templates/registration/change_password_custom.html:60
 msgid "Save"
 msgstr "Salvar"
 
-#: templates/registration/logged_out.html:9
+#: templates/registration/logged_out.html:13
 msgid "Thanks for spending some quality time with the Web site today."
 msgstr "Obrigado por passar momentos de qualidade com o site hoje."
 
-#: templates/registration/logged_out.html:11
+#: templates/registration/logged_out.html:16
 msgid "Log in again"
 msgstr "Faça login novamente"
 
-#: templates/registration/login.html:24 templates/registration/login.html:25
+#: templates/registration/login.html:24 templates/registration/login.html:31
 msgid "User"
 msgstr "Usuário"
 
-#: templates/registration/login.html:24
+#: templates/registration/login.html:30
 msgid "Username must contain only letters, numbers and periods(.)"
 msgstr ""
 
-#: templates/registration/login.html:29 templates/registration/login.html:30
+#: templates/registration/login.html:40 templates/registration/login.html:42
 msgid "Password"
 msgstr "Senha"
 
-#: templates/registration/login.html:35
+#: templates/registration/login.html:47
 msgid "Login"
 msgstr "Fazer login"
 
-#: templates/registration/login.html:40
+#: templates/registration/login.html:52
 msgid "I forgot my password"
 msgstr "Esqueci minha senha"
 
@@ -920,7 +920,7 @@ msgstr ""
 "    Por favor, vá para a seguinte página e entre com uma senha:\n"
 "    "
 
-#: templates/registration/password_define_email.html:14
+#: templates/registration/password_define_email.html:15
 #, python-format
 msgid ""
 "Your username: %(user.username)s\n"
@@ -937,7 +937,7 @@ msgstr ""
 "    Equipe Neuromat.\n"
 "    "
 
-#: templates/registration/password_reset_complete.html:8
+#: templates/registration/password_reset_complete.html:9
 msgid ""
 "Your password was configured successfully.\n"
 "           Access the system using your new credentials."
@@ -945,42 +945,47 @@ msgstr ""
 "Sua senha foi configurada com sucesso.\n"
 "            Acesse o sistema utilizando suas novas credenciais."
 
-#: templates/registration/password_reset_complete.html:11
+#: templates/registration/password_reset_complete.html:13
 msgid "Access"
 msgstr "Acessar"
 
-#: templates/registration/password_reset_confirm.html:20
-#: templates/registration/password_reset_form.html:35
+#: templates/registration/password_reset_confirm.html:13
+#: templates/registration/password_reset_form.html:43
 msgid "Reset password"
 msgstr "Redefinir senha"
 
-#: templates/registration/password_reset_confirm.html:24
+#: templates/registration/password_reset_confirm.html:22
 msgid "New password"
 msgstr "Nova senha"
 
-#: templates/registration/password_reset_confirm.html:27
+#: templates/registration/password_reset_confirm.html:32
 msgid "Confirm password"
 msgstr "Confirmar senha"
 
-#: templates/registration/password_reset_confirm.html:29
+#: templates/registration/password_reset_confirm.html:36
 msgid "Confirm"
 msgstr "Confirmar"
 
-#: templates/registration/password_reset_confirm.html:32
+#: templates/registration/password_reset_confirm.html:40
 msgid "Password reset failed."
 msgstr "Redefinição de senha falhou."
 
-#: templates/registration/password_reset_confirm.html:33
+#: templates/registration/password_reset_confirm.html:43
+#, fuzzy
+#| msgid ""
+#| "Invalid link for password reset, possibly because this link has already "
+#| "been used previously. <br/>\n"
+#| "                Please, request a new password reset."
 msgid ""
 "Invalid link for password reset, possibly because this link has already been "
-"used previously. <br/>\n"
+"used previously. <br />\n"
 "                Please, request a new password reset."
 msgstr ""
 "Link inválido para redefinição de senha, possivelmente porque este link ja "
 "foi usado anteriormente. <br/>\n"
 "                Por favor, faça uma nova requisição de redefinição de senha."
 
-#: templates/registration/password_reset_done.html:8
+#: templates/registration/password_reset_done.html:9
 msgid ""
 "We sent you a message with instructions to set up your password\n"
 "            for the e-mail provided. "
@@ -989,7 +994,7 @@ msgstr ""
 "endereço de\n"
 "            e-mail informado. "
 
-#: templates/registration/password_reset_done.html:10
+#: templates/registration/password_reset_done.html:13
 msgid "You should receive it soon."
 msgstr "Você deve recebê-lo em breve."
 
@@ -1020,7 +1025,7 @@ msgstr ""
 "        Por favor, vá para a seguinte página e entre com uma nova senha:\n"
 "    "
 
-#: templates/registration/password_reset_email.html:14
+#: templates/registration/password_reset_email.html:15
 msgid ""
 "\n"
 "    Thank you for using our site!\n"
@@ -1039,14 +1044,13 @@ msgid "Please enter your e-mail to receive instructions for password reset."
 msgstr ""
 "Especifique seu e-mail para receber as instruções para redefinição de senha."
 
-#: templates/registration/password_reset_form.html:29
+#: templates/registration/password_reset_form.html:34
 msgid "E-mail"
 msgstr "E-mail"
 
-#: templates/registration/password_reset_subject.django-txt:2
 #, python-format
-msgid "Password reset on %(site_name)s"
-msgstr "Alterar senha em %(site_name)s"
+#~ msgid "Password reset on %(site_name)s"
+#~ msgstr "Alterar senha em %(site_name)s"
 
 #, fuzzy
 #~| msgid "Delete institution"

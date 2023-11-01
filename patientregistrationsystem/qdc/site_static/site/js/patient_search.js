@@ -2,7 +2,8 @@
  * Created by diogopedrosa on 3/19/15.
  */
 
-$(document).ready(function () {
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
     const list = $('#search-results-patients');
     let dataResults = [];
     let page = 1;
@@ -21,33 +22,42 @@ $(document).ready(function () {
     const defaultQuery = ' ';
 
     //Search for patient in search mode
-    $('#nameKey').keyup( function(e){
+    $('#nameKey').on("keyup", function (e) {
         e.target.value !== '' ? searchRequest(e.target.value) : searchRequest(defaultQuery);
     });
 
-    function searchRequest(query){
-        $.ajax({
-            type: "POST",
-            url: "/patient/search/",
-            data: {
-                'search_text' : query,
-                'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
+    function searchRequest(query) {
+        fetch_post(
+            "/patient/search/",
+            {
+                'search_text': query,
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
             },
-            success: searchSuccessPatient,
-            dataType: 'html'
-        });
+            searchSuccessPatient
+        );
+
+        // $.ajax({
+        //     type: "POST",
+        //     url: "/patient/search/",
+        //     data: {
+        //         'search_text': query,
+        //         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+        //     },
+        //     success: searchSuccessPatient,
+        //     dataType: 'html'
+        // });
     }
 
     // Handle results pagination
     function pagination(data, page, resultsPerPage) {
-        let start = (page - 1) * resultsPerPage ;
+        let start = (page - 1) * resultsPerPage;
         let end = start + resultsPerPage;
         return data.slice(start, end);
     }
 
     // Handle pagination control
-    $('#nextBtn, #prevBtn').click(function(e) {
-        if ((e.target.id === 'nextBtn') && (page !== totalPages)){
+    $('#nextBtn, #prevBtn').on("click", function (e) {
+        if ((e.target.id === 'nextBtn') && (page !== totalPages)) {
             page++;
         } else if ((e.target.id === 'prevBtn') && (page !== 1)) {
             page--;

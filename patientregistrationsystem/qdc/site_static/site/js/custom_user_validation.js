@@ -4,7 +4,7 @@
 "use strict";
 
 $(function () {
-    $("user_form").submit(function (event) {
+    $("user_form").on("submit", function (event) {
         if (checkPassExt())
             event.preventDefault();
         if (passwordForce() < 20 && $('#id_new_password1').val()) {
@@ -39,7 +39,7 @@ function validateForm() {
 }
 
 $(function () {
-    $("user_form").submit(function (event) {
+    $("user_form").on("submit", function (event) {
 
         if (checkPassExt()) {
             event.preventDefault();

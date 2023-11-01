@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark" xml:lang="en">
 
-    {% load cache static i18n l10n %}
-
-    {% load qdc_tags solo_tags compress %}
+    {% load cache static i18n l10n qdc_tags solo_tags compress %}
 
     <head>
         <meta charset="utf-8">
@@ -14,12 +12,13 @@
         <meta name="description" content="Database system for storing data related to EEG and EMG">
         <meta name="author" content="Neuromat, PEB-Lapis">
 
-        {% compress css file base_nes_css %}
-            <link rel="stylesheet" href={% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %} charset="utf-8">
-            <link rel="stylesheet" href={% static "site/font-awesome-4.7.0/css/font-awesome.min.css" %} charset="utf-8">
-            <link rel="stylesheet" href={% static "site/toastr/toastr.min.css" %} charset="utf-8">
+        {% comment %} {% compress css file base_nes_css %} {% endcomment %}
+            <link rel="stylesheet"  href={% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %} charset="utf-8">
+            <link rel="stylesheet"  href={% static "site/font-awesome-4.7.0/css/font-awesome.min.css" %} charset="utf-8">
             <link rel="stylesheet" href={% static "site/css/nes.css" %} charset="utf-8">
-        {% endcompress %}
+        {% comment %} {% endcompress %} {% endcomment %}
+
+        {% comment %} <link rel="stylesheet" href={% static "site/autoComplete.js-10.2.7/autoComplete.min.css" %}> {% endcomment %}
 
         {% block extrahead %}
         {% endblock extrahead %}
@@ -44,11 +43,6 @@
 
                         <div class="navbar-collapse collapse" id="navbarCollapse">
                             <ul class="navbar-nav ms-auto">
-                                {% if perms.configuration.upgrade_rights and if_upgrade %}
-                                    <li class="nav-item">
-                                        <a href={% url "upgrade_nes" %} class="nav-link"><span class="fa-fw fa fa-download"></span>Upgrade_nes</a>
-                                    </li>
-                                {% endif %}
                                 <li class="nav-item dropdown">
                                     {% get_current_language as LANGUAGE_CODE %}
                                     {% get_available_languages as LANGUAGES %}
@@ -62,9 +56,7 @@
                                     <div class="dropdown-menu dropdown-menu-end" role="menu" name="language" aria-labelledby="navbarDropdown">
                                         {% for language in languages %}
                                             {% if language.code != LANGUAGE_CODE %}
-                                                <a href="javascript:{}"
-                                                   class="dropdown-item"
-                                                   onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit();">
+                                                <a href="javascript:{}" class="dropdown-item" onclick="$('#language').val('{{ language.code }}');document.getElementById('language_form').submit()">
                                                     <span class="fa-fw fa fa-globe"></span>
                                                     {{ language.name_local }}
                                                 </a>
@@ -197,7 +189,6 @@
                         <span class="fa-fw fa fa-link fa-md"></span>
                         {% trans "Useful Links" %}
                     </a>
-
                 </nav>
             </div>
 
@@ -233,18 +224,24 @@
         </div>
     </footer>
 
-    <script type="text/javascript" src="{% static "site/jquery/jquery-3.7.1.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static "site/jquery/jquery-3.7.1.slim.min.js" %}" charset="utf-8"></script>
+
     <script type="text/javascript" src="{% static "site/jquery/jquery-migrate-3.4.0.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" src="{% static "site/bootstrap-5.3.2-dist/js/bootstrap.bundle.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" src="{% static "site/js/nes_utils.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" src="{% static "site/toastr/toastr.min.js" %}" charset="utf-8"></script>
 
-    <script type="text/javascript" async src="{% static "site/js/theme_picker.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" async src="{% static "site/jquery.autocomplete.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" async src="{% static "site/masked_input/jquery.maskedinput.min.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" async src="{% static "site/Bootstrap-Validator-Master/validator.min.js" %}" charset="utf-8"></script>
+    {% compress js %}
+        <script type="text/javascript" src="{% static "site/bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js" %}" charset="utf-8"></script>
+        <script type="text/javascript" src="{% static "site/autoComplete.js-10.2.7/autoComplete.min.js" %}" charset="utf-8"></script>
+        <script type="text/javascript" src="{% static "site/js/nes_utils.js" %}" charset="utf-8"></script>
+        <script type="text/javascript" src="{% static "site/bootstrap-show-toast/bootstrap-show-toast.min.js" %}" charset="utf-8"></script>
+        <script type="text/javascript" src="{% static "site/js/theme_picker.js" %}" charset="utf-8"></script>
+    {% endcompress %}
 
-    <script type="text/javascript" async src="{% url "javascript-catalog" %}" charset="utf-8"></script>
+    {% compress js %}
+        <script type="text/javascript" async src="{% static "site/cleave.min.js" %}" charset="utf-8"></script>
+        <script type="text/javascript" async src="{% static "site/Bootstrap-Validator-Master/validator.min.js" %}" charset="utf-8"></script>
+    {% endcompress %}
+
+    <script type="text/javascript" defer src="{% url "javascript-catalog" %}" charset="utf-8"></script>
 
     <script type="text/javascript" charset="utf-8">
         "use strict";

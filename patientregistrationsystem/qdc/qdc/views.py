@@ -1,7 +1,6 @@
 import os
 import platform
 import sys
-from functools import partial
 from pathlib import Path
 
 import pip

@@ -44,7 +44,7 @@ window.onload = function() {
         
     }
 
-    select_localization_system.change(function () {
+    select_localization_system.on("change", function () {
         var tms_localization_system = $(this).val();
 
         if(tms_localization_system == ""){

@@ -13,7 +13,7 @@ A group contains:
 
 * A title (obligatory);
 * A description (obligatory);
-* One or more diagnoses of diseases specified using the International Classification of Diseases (ICD) as inclusion criteria;
+* One or more diagnosis of diseases specified using the International Classification of Diseases (ICD) as inclusion criteria;
 * A list of participants; and
 * An experimental protocol.
 
@@ -34,7 +34,7 @@ While in the screen for visualizing an experiment, you can see more information 
 Inclusion Criteria
 ------------------
 
-Researchers may include one or more diagnoses to be used as inclusion criteria for participants in the group. This information is only informative. The system does not verify if participants included in the group have the specified disease. To include a new diagnosis, you should type the name or part of the name of the disease or the ICD code. A drop down list of suggestion will be shown for you to select one of the diagnoses from the list. To remove an inclusion criteria, you simply click the :x: button associated to it. Again, only users that have permission to update a group can add or remove inclusion criteria. Non-authorized users can't see the text field.
+Researchers may include one or more diagnosis to be used as inclusion criteria for participants in the group. This information is only informative. The system does not verify if participants included in the group have the specified disease. To include a new diagnosis, you should type the name or part of the name of the disease or the ICD code. A drop down list of suggestion will be shown for you to select one of the diagnosis from the list. To remove an inclusion criteria, you simply click the :x: button associated to it. Again, only users that have permission to update a group can add or remove inclusion criteria. Non-authorized users can't see the text field.
 
 .. image:: ../../_img/icd.png
 

@@ -12,7 +12,7 @@ var point_update = 0;
 var point_update_name = "";
 
 // função que inicializa as variaveis da página
-function init(){
+function init() {
     var canvas = document.getElementById("electrodeMapCanvas");
     var ctx = canvas.getContext("2d");
     var eeg_positions = document.getElementById("eeg_electrode_position");
@@ -23,8 +23,8 @@ function init(){
     addSetted();
     var imageObj = new Image();
 
-    imageObj.onload = function(){
-        ctx.drawImage(imageObj, 0,0,700,500);
+    imageObj.onload = function () {
+        ctx.drawImage(imageObj, 0, 0, 700, 500);
         pintar();
     };
     var map_file = document.getElementById("map_file");
@@ -34,22 +34,22 @@ function init(){
 }
 
 // função utilizada para ordenar dois posições
-function compare(a,b) {
-  if (a.position < b.position)
-    return -1;
-  if (a.position > b.position)
-    return 1;
-  return 0;
+function compare(a, b) {
+    if (a.position < b.position)
+        return -1;
+    if (a.position > b.position)
+        return 1;
+    return 0;
 }
 
 //objs.sort(compare);
 
 //cria dinamicamente a lista de posições e os buttons para remover
-function  addSetted(){
+function addSetted() {
     positions.sort(compare);
-    for(var i in positions){
+    for (var i in positions) {
         var position = positions[i];
-        if(!position.delete){
+        if (!position.delete) {
             id = position.id;
             name = position.position;
             x = parseInt(position.x);
@@ -65,10 +65,10 @@ function  addSetted(){
             a = document.createElement('a');
             a.innerHTML = name;
             a.name = id;
-            if(used){
+            if (used) {
                 a.style.color = "#808080";
-                a.onclick = function(){false;}
-            }else a.onclick = function(){
+                a.onclick = function () { false; }
+            } else a.onclick = function () {
                 update(this.name);
             }
 
@@ -76,36 +76,36 @@ function  addSetted(){
             btn_node.id = id;
             var t = document.createTextNode(gettext("delete"));
             btn_node.appendChild(t);
-            if(used) btn_node.setAttribute("disabled", "disabled");
-            btn_node.onclick = function(event){
+            if (used) btn_node.setAttribute("disabled", "disabled");
+            btn_node.onclick = function (event) {
                 var i = this.parentNode.parentNode.rowIndex;
                 document.getElementById("cap_positions").deleteRow(i);
                 setted(this.id);
             }
 
-            var textnode=document.createTextNode(name);
+            var textnode = document.createTextNode(name);
             textnode.id = 'txt' + id;
 
             var checknode = document.createElement('input');
             checknode.type = 'checkbox';
             checknode.id = id;
             checknode.setAttribute("checked", "checked");
-            if(used) checknode.setAttribute("disabled", "disabled");
+            if (used) checknode.setAttribute("disabled", "disabled");
 
-            checknode.onclick = function(event){
-            if(!this.checked){ //checked estava true
-                var i = this.parentNode.parentNode.rowIndex;
-                document.getElementById("cap_positions").deleteRow(i);
-                setted(this.id);
-            }
+            checknode.onclick = function (event) {
+                if (!this.checked) { //checked estava true
+                    var i = this.parentNode.parentNode.rowIndex;
+                    document.getElementById("cap_positions").deleteRow(i);
+                    setted(this.id);
+                }
 
-        };
+            };
 
-        cell1.appendChild(a);
-        cell2.appendChild(btn_node);
-        row.appendChild(cell1);
-        row.appendChild(cell2);
-        posTable.appendChild(row);
+            cell1.appendChild(a);
+            cell2.appendChild(btn_node);
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+            posTable.appendChild(row);
         }
     }
 }
@@ -146,14 +146,14 @@ function update(positionId) {
 };
 
 //Funcao que coloca delete = true para posteriormente ser apagado do banco de dados
-function setted(positionId){
+function setted(positionId) {
     var canvas = document.getElementById("electrodeMapCanvas");
     var ctx = canvas.getContext("2d");
 
-    for(var i in positions) {
+    for (var i in positions) {
         var position = positions[i];
 
-        if(position.id == positionId) {
+        if (position.id == positionId) {
             positions[i].delete = true; //this point is deleted
             used_positions_counter--;
             refresh_Screen();
@@ -163,19 +163,19 @@ function setted(positionId){
 };
 
 // função que desenha um circulo na imagem para indicar uma posição
-function pintar(){
+function pintar() {
     var canvas = document.getElementById("electrodeMapCanvas");
     var context = canvas.getContext("2d");
 
-    for(var i in positions){
+    for (var i in positions) {
         var position = positions[i];
-        if(!position.delete){
+        if (!position.delete) {
             x = parseInt(position.x);
             y = parseInt(position.y);
 
             context.beginPath();
             context.strokeStyle = "red";
-            if(position.used){
+            if (position.used) {
                 context.strokeStyle = "gray";
                 context.fillStyle = "gray";
             }
@@ -186,15 +186,15 @@ function pintar(){
             context.stroke();
         }
     }
-    if(can_update){
+    if (can_update) {
         can_update = false;
         update(point_update);
     }
 }; //fim function pintar
 
 // função que insere um novo valor na lista de posições
-function addRow(index){
-    var position = positions[index-1];
+function addRow(index) {
+    var position = positions[index - 1];
     id = position.id;
     name = position.position;
     x = parseInt(position.x);
@@ -209,7 +209,7 @@ function addRow(index){
     a = document.createElement('a');
     a.innerHTML = name;
     a.name = id;
-    a.onclick = function(){
+    a.onclick = function () {
         update(this.name);
     }
 
@@ -217,20 +217,20 @@ function addRow(index){
     btn_node.id = id;
     var t = document.createTextNode(gettext("delete"));
     btn_node.appendChild(t);
-    btn_node.onclick = function(event){
+    btn_node.onclick = function (event) {
         var i = this.parentNode.parentNode.rowIndex;
         document.getElementById("cap_positions").deleteRow(i);
         setted(this.id);
     }
 
-    var textnode=document.createTextNode(name);
+    var textnode = document.createTextNode(name);
     textnode.id = 'txt_' + id;
     var checknode = document.createElement('input');
     checknode.type = 'checkbox';
     checknode.id = id;
     checknode.setAttribute("checked", true);
-    checknode.onclick = function(event){
-        if(!this.checked){ //checked estava true
+    checknode.onclick = function (event) {
+        if (!this.checked) { //checked estava true
             var i = this.parentNode.parentNode.rowIndex;
             document.getElementById("cap_positions").deleteRow(i);
             setted(this.id);
@@ -247,14 +247,14 @@ function addRow(index){
 }
 
 // função que recarrega a imagem no canvas
-function refresh_Screen(){
+function refresh_Screen() {
     var canvas = document.getElementById("electrodeMapCanvas");
     var ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width,canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     var imageObj = new Image();
 
-    imageObj.onload = function() {
+    imageObj.onload = function () {
         ctx.drawImage(imageObj, 0, 0, 700, 500);
         pintar();
     };
@@ -263,56 +263,56 @@ function refresh_Screen(){
 };
 
 // função que valida se o mouse foi clickado numa posição que já existe
-function validPosition(new_x, new_y){
+function validPosition(new_x, new_y) {
     var x = parseInt(new_x);
     var y = parseInt(new_y);
-    var dx,dy;
+    var dx, dy;
     var valid = false;
 
-    for(var i in positions) {
+    for (var i in positions) {
         position = positions[i];
         //if(!position.delete){
-            dx = x - parseInt(position.x);
-            dy = y - parseInt(position.y);
+        dx = x - parseInt(position.x);
+        dy = y - parseInt(position.y);
 
-            dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist < radio){
-                valid= true;
-                if(!position.delete){
-                    if(position.used){
-                        alert(gettext("This coodinates can't be modified because is being used by some EEG layout setting! "));
-                    }else{
-                        btn = document.getElementById(position.id);
-                        position.delete = true;
-                        var i = btn.parentNode.parentNode.rowIndex;
-                        document.getElementById("cap_positions").deleteRow(i);
-                    }
-                }else {
-                    alert(gettext("Updating point ") + position.position);
-                    if (confirm(gettext("Confirms the coordinates? x - y: ") + x + " - " + y) == true) {
-                        var name = prompt(gettext("Please enter the name of the point"), position.position);
-                        if(name != null){
-                            // chkbox = document.getElementById(position.id);
-                            // chkbox.checked = true;
-                            position.position = name,
+        dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < radio) {
+            valid = true;
+            if (!position.delete) {
+                if (position.used) {
+                    alert(gettext("This coodinates can't be modified because is being used by some EEG layout setting! "));
+                } else {
+                    btn = document.getElementById(position.id);
+                    position.delete = true;
+                    var i = btn.parentNode.parentNode.rowIndex;
+                    document.getElementById("cap_positions").deleteRow(i);
+                }
+            } else {
+                alert(gettext("Updating point ") + position.position);
+                if (confirm(gettext("Confirms the coordinates? x - y: ") + x + " - " + y) == true) {
+                    var name = prompt(gettext("Please enter the name of the point"), position.position);
+                    if (name != null) {
+                        // chkbox = document.getElementById(position.id);
+                        // chkbox.checked = true;
+                        position.position = name,
                             position.x = x,
                             position.y = y,
                             position.update = true,
                             position.delete = false
-                        }
                     }
-                    //refresh_Screen();
-                    index = parseInt(i)+1;
-                    addRow(index);
                 }
+                //refresh_Screen();
+                index = parseInt(i) + 1;
+                addRow(index);
             }
+        }
         //}
     }
     return valid;
 }
 
 // função que captura o evento 'click do mouse
-function getPosition(event){
+function getPosition(event) {
     var x = new Number();
     var y = new Number();
     var canvas = document.getElementById("electrodeMapCanvas");
@@ -328,19 +328,19 @@ function getPosition(event){
     x = parseInt(coords.x);
     y = parseInt(coords.y);
 
-    if(can_update){
+    if (can_update) {
         alert(gettext("Updating point ") + point_update_name);
         can_update = false;
         if (confirm(gettext("Confirms the coordinates? x - y: ") + x + " - " + y) == true) {
             var name = prompt(gettext("Please enter the name of the point"), point_update_name);
-            if(name != null){
-                for(var i in positions){
+            if (name != null) {
+                for (var i in positions) {
                     var position = positions[i];
-                    if(position.id == point_update){
+                    if (position.id == point_update) {
                         position.position = name,
-                        position.x = x,
-                        position.y = y
-                        a =  document.getElementsByName(position.id);
+                            position.x = x,
+                            position.y = y
+                        a = document.getElementsByName(position.id);
                         a.innerHTML = name;
                     }
                 }
@@ -348,10 +348,10 @@ function getPosition(event){
         }
         //addSetted();
         refresh_Screen();
-    }else if(validPosition(x,y) && !can_update) {
+    } else if (validPosition(x, y) && !can_update) {
         refresh_Screen();
-    }else{
-        if(!can_update) {
+    } else {
+        if (!can_update) {
             if (confirm(gettext("Confirms the coordinates? x - y: ") + x + " - " + y) == true) {
                 var id = positions.length + 1;
                 var name = prompt(gettext("Please enter the name this point"), id);
@@ -383,14 +383,22 @@ function getPosition(event){
 };
 
 // função que envia a lista de posições ao servidor para ser atualizadas no banco de dados
-function sendPositions(){
-    var url = "/experiment/eeg_electrode_localization_system/get_positions/" + localization_system_id;
+async function sendPositions() {
+    const url = "/experiment/eeg_electrode_localization_system/get_positions/" + localization_system_id + "?positions=";
 
-    $.getJSON(
-        url,
-        {positions : JSON.stringify(positions)},
-        function(data){
-            //alert(data[0].new + " positions saved! and " + data[0].delete + " positions deleted!")
-        }
-    );
+    fetch(url.concat(JSON.stringify(positions)))
+        .then((response) => {
+            console.log(response.json())
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+    // $.getJSON(
+    //     url,
+    //     { positions: JSON.stringify(positions) },
+    //     function (data) {
+    //         //alert(data[0].new + " positions saved! and " + data[0].delete + " positions deleted!")
+    //     }
+    // );
 };

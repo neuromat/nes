@@ -9,6 +9,13 @@
 {% load solo_tags %}
 
 {% block content %}
+
+    {% if perms.configuration.upgrade_rights and if_upgrade %}
+        <li class="nav-item">
+            <a href={% url "upgrade_nes" %} class="nav-link"><span class="fa-fw fa fa-download"></span>Upgrade_nes</a>
+        </li>
+    {% endif %}
+
     {% get_solo 'configuration.LocalInstitution' as institution_config %}
     {% get_solo 'configuration.Contact' as contact_config %}
 
@@ -86,9 +93,9 @@
                     <div class="col-xs-5 col-md-4 col-lg-3 p-1 thumb">
                         <a class="thumbnail" href="{{ institution_config.url }}">
                             {% if institution_config.logo %}
-                                <img class="img-fluid" src="/media/{{ institution_config.logo }}" alt="Logo do {{ institution_config.name }}" />
+                                <img class="img-fluid" src="/media/{{ institution_config.logo }}" alt="Logo do {{ institution_config.name }}" width="200" height="100"/>
                             {% else %}
-                                <img class="img-fluid" src="{{ STATIC_URL }}/imgs/{{ logo_institution }}" alt="Logo do {{ institution_config.name }}" />
+                                <img class="img-fluid" src="{{ STATIC_URL }}/imgs/{{ logo_institution }}" alt="Logo do {{ institution_config.name }}" width="200" height="100"/>
                             {% endif %}
                         </a>
                     </div>

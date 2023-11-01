@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="container">
-        <form method="post" class="form-signin need-validation" action={% url "login" %}>
+        <form method="post" class="form-signin needs-validation" action="{% url 'login' %}" data-bs-toggle="validator" novalidate>
             {% csrf_token %}
 
             <h1 class="mb-3 fw-normal d-flex justify-content-center">NES</h1>
@@ -14,9 +14,7 @@
             <br>
 
             <div class="mb-4 d-flex justify-content-center">
-                <span style="color: #428bca; font-size: 50px" class="fa-fw fa fa-user-circle"></span>
-                <br>
-                <br>
+                <span style="font-size: 50px" class="fa-fw fa fa-user-circle text-primary"></span>
             </div>
 
             <div class="form-floating">
@@ -30,7 +28,7 @@
                        autofocus
                        pattern="[A-Za-z0-9._]{1,}"
                        title="{% trans "Username must contain only letters, numbers and periods(.)" %}" />
-                <label for="id_username">{% trans "User" %}"</label>
+                <label for="id_username">{% trans "User" %}</label>
             </div>
 
             <div class="form-floating">
@@ -41,7 +39,7 @@
                        autocomplete="current-password"
                        placeholder="{% trans "Password" %}"
                        required />
-                <label for="id_password">{% trans "Password" %}"</label>
+                <label for="id_password">{% trans "Password" %}</label>
             </div>
 
             <br>
@@ -51,7 +49,7 @@
             <input type="hidden" name="next" value="{{ next }}" />
 
             <div class="checkbox">
-                <a href="/user/password/reset">{% trans "I forgot my password" %}</a>
+                <a href="{% url "password_reset" %}">{% trans "I forgot my password" %}</a>
             </div>
 
             <h6 style="margin-top: 0; text-align: right; font-family: 'Comic Sans MS'; font-size: 14px; color: blueviolet;">{% settings_value "VERSION" %}</h6>

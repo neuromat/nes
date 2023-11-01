@@ -32,7 +32,9 @@
                 <li class="breadcrumb-item">
                     <a href="/plugin/">{% trans "Plugin" %}</a>
                 </li>
-                <li class="breadcrumb-item active">{% trans "Participants selection" %}</li>
+                <li class="breadcrumb-item active">
+                    {% trans "Participants selection" %}
+                </li>
             </ol>
         </nav>
     </div>
@@ -40,7 +42,9 @@
     <div class="tab-pane fade show active" id="menuUserTab">
         <div class="my-3 p-3 bg-body rounded shadow-sm">
             {% if perms.patient.export_patient %}
-                <h4>{% trans "Plugin" %}</h4>
+                <h4>
+                    {% trans "Plugin" %}
+                </h4>
                 <hr>
                 <div class="row">
                     <div class="col-12 col-sm-12">
@@ -60,7 +64,9 @@
         </div>
         {# Questionnaires Info Section #}
         <div class="my-3 p-3 bg-body rounded shadow-sm">
-            <h4>{% trans "Questionnaires data to be sent" %}</h4>
+            <h4>
+                {% trans "Questionnaires data to be sent" %}
+            </h4>
             <hr>
             <div class="card-body">
                 <div class="col-lg-5 col-sm-12">
@@ -111,7 +117,9 @@
                         </div>
                         <div id="collapse_experiment" class=" collapse in">
                             <div id="studies_container" class="my-3 p-3 bg-body rounded shadow-sm">
-                                <h4>{% trans "Filters selection" %}</h4>
+                                <h4>
+                                    {% trans "Filters selection" %}
+                                </h4>
                                 <hr>
                                 <div class="form-group">
                                     <div class="row">
@@ -120,17 +128,22 @@
                                                 {% trans "Experiments" %} <b class="text-danger">*</b>
                                             </label>
                                             <select class="form-control" id="id_experiments" name="experiment_selected">
-                                                <option value>-------</option>
+                                                <option value>
+                                                    -------
+                                                </option>
                                                 {% for experiment in experiments %}
-                                                    <option {% if not creating and experiment.id == experiment_selected_id %}selected="selected"{% endif %}
-                                                            value="{{ experiment.id }}">{{ experiment.title }} - ({{ experiment.research_project }})</option>
+                                                    <option {% if not creating and experiment.id == experiment_selected_id %}selected="selected"{% endif %} value="{{ experiment.id }}">
+                                                        {{ experiment.title }} - ({{ experiment.research_project }})
+                                                    </option>
                                                 {% endfor %}
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="my-3 p-3 bg-body rounded shadow-sm">
-                                    <h4>{% trans "List of participants" %}</h4>
+                                    <h4>
+                                        {% trans "List of participants" %}
+                                    </h4>
                                     <div class="card-body">
                                         <div class="col-lg-5 col-sm-12">
                                             <div class="form-group" style="position: relative;">
@@ -140,9 +153,15 @@
 
                                                     <img src={% static "plugin/ajax-loader.gif" %} alt="Loading...">
                                                 </div>
-                                                <label for="multiselect_2" class="form-label">{% trans "Participants available:" %}</label>
+                                                <label for="multiselect_2" class="form-label">
+                                                    {% trans "Participants available:" %}
+                                                </label>
                                                 <select class="form-control" size="13" id="multiselect_2" name="from[]" multiple="multiple">
-                                                    {% for key, value in participants_from.items %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+                                                    {% for key, value in participants_from.items %}
+                                                        <option value="{{ key }}">
+                                                            {{ value }}
+                                                        </option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                         </div>
@@ -161,9 +180,15 @@
                                             </button>
                                         </div>
                                         <div class="col-lg-5 col-sm-10">
-                                            <label for="multiselect_2_to" class="form-label">{% trans "Participants chosen:" %}</label>
+                                            <label for="multiselect_2_to" class="form-label">
+                                                {% trans "Participants chosen:" %}
+                                            </label>
                                             <select name="patients_selected[]" id="multiselect_2_to" class="form-control" size="13" multiple="multiple">
-                                                {% for key, value in participants_to.items %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+                                                {% for key, value in participants_to.items %}
+                                                    <option value="{{ key }}">
+                                                        {{ value }}
+                                                    </option>
+                                                {% endfor %}
                                             </select>
                                         </div>
                                     </div>
@@ -182,7 +207,9 @@
                         data-bs-error="Please, select a patient field from the list."
                         style="opacity: 0;
                                height: 1px">
-                    <option id="gender_field" value="gender__name*gender" selected="">Gender</option>
+                    <option id="gender_field" value="gender__name*gender" selected="">
+                        Gender
+                    </option>
                 </select>
                 {# Identify Per experiment post #}
                 <input type="hidden" name="per_experiment" value="true">
@@ -211,15 +238,23 @@
                         <div id="collapse_participant" class=" collapse">
                             {# List of Participants Section #}
                             <div class="my-3 p-3 bg-body rounded shadow-sm">
-                                <h4>{% trans "List of participants" %}</h4>
+                                <h4>
+                                    {% trans "List of participants" %}
+                                </h4>
                                 <hr>
                                 <div class="card-body">
                                     <div class="col-lg-5 col-sm-12">
                                         <div class="form-group">
-                                            <label for="multiselect_" class="form-label">{% trans "Participants available:" %}</label>
+                                            <label for="multiselect_" class="form-label">
+                                                {% trans "Participants available:" %}
+                                            </label>
                                             <select class="form-control" size="13" id="multiselect_" name="from[]" multiple="multiple">
                                                 {% for field in participants %}
-                                                    {% if not field.selected %}<option value="{{ field.patient_id }}">{{ field.patient_name }}</option>{% endif %}
+                                                    {% if not field.selected %}
+                                                        <option value="{{ field.patient_id }}">
+                                                            {{ field.patient_name }}
+                                                        </option>
+                                                    {% endif %}
                                                 {% endfor %}
                                             </select>
                                         </div>
@@ -239,10 +274,16 @@
                                         </button>
                                     </div>
                                     <div class="col-lg-5 col-sm-10">
-                                        <label for="multiselect__to" class="form-label">{% trans "Participants chosen:" %}</label>
+                                        <label for="multiselect__to" class="form-label">
+                                            {% trans "Participants chosen:" %}
+                                        </label>
                                         <select name="patients_selected[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">
                                             {% for field in participants %}
-                                                {% if field.selected %}<option value="{{ field.patient_id }}">{{ field.patient_name }}</option>{% endif %}
+                                                {% if field.selected %}
+                                                    <option value="{{ field.patient_id }}">
+                                                        {{ field.patient_name }}
+                                                    </option>
+                                                {% endif %}
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -260,7 +301,9 @@
                         data-bs-error="Please, select a patient field from the list."
                         style="opacity: 0;
                                height: 1px">
-                    <option id="gender_field" value="gender__name*gender" selected="">Gender</option>
+                    <option id="gender_field" value="gender__name*gender" selected="">
+                        Gender
+                    </option>
                 </select>
             </div>
 
@@ -278,7 +321,6 @@
 
 {% block extrascript %}
     <script src={% static "site/js/experiment_selection.js" %}></script>
-    <script src={% static "site/multiselect/multiselect.min.js" %}></script>
     <script src={% static "site/js/participant_import.js" %}></script>
     <script>
         function validate_plugin_form() {
@@ -293,7 +335,7 @@
             return true;
 
         }
-        $("#patient_selected").click(function () {
+        $("#patient_selected").on("click", function () {
             $("#gender_field").prop('selected', true);
         });
 
