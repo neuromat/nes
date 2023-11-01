@@ -159,6 +159,7 @@ CACHES: dict[str, Any] = {
 }
 
 COMPRESS_CACHE_BACKEND = "redis"
+COMPRESS_OFFLINE = False
 
 ROOT_URLCONF = "qdc.urls"
 

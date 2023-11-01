@@ -12,12 +12,11 @@
         <meta name="description" content="Database system for storing data related to EEG and EMG">
         <meta name="author" content="Neuromat, PEB-Lapis">
 
-        {% comment %} {% compress css file base_nes_css %} {% endcomment %}
-            <link rel="stylesheet" href={% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %} charset="utf-8">
-            <link rel="stylesheet" href={% static "site/font-awesome-4.7.0/css/font-awesome.min.css" %} charset="utf-8">
-            <link rel="stylesheet" href={% static "site/css/nes.css" %} charset="utf-8">
-        {% comment %} {% endcompress %} {% endcomment %}
-
+        {% comment %} {% compress css file base_nes_css %}  {% endcomment %}
+        <link rel="stylesheet" href={% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %} charset="utf-8">
+        <link rel="stylesheet" href={% static "site/font-awesome-4.7.0/css/font-awesome.min.css" %} charset="utf-8">
+        <link rel="stylesheet" href={% static "site/css/nes.css" %} charset="utf-8">
+        {% comment %} {% endcompress %}  {% endcomment %}
 
         {% block extrahead %}
         {% endblock extrahead %}
@@ -223,7 +222,7 @@
         </div>
     </footer>
 
-    <script type="text/javascript" src="{% static "site/jquery/jquery-3.7.1.slim.min.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static "site/jquery/jquery-3.7.1.slim.js" %}" charset="utf-8"></script>
 
     <script type="text/javascript" src="{% static "site/jquery/jquery-migrate-3.4.0.js" %}" charset="utf-8"></script>
 
@@ -237,7 +236,6 @@
 
     {% compress js %}
         <script type="text/javascript" async src="{% static "site/cleave.min.js" %}" charset="utf-8"></script>
-        <script type="text/javascript" async src="{% static "site/Bootstrap-Validator-Master/validator.min.js" %}" charset="utf-8"></script>
     {% endcompress %}
 
     <script type="text/javascript" defer src="{% url "javascript-catalog" %}" charset="utf-8"></script>
