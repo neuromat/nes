@@ -11,7 +11,7 @@
 
 {% block content %}
     {% if equipment_form.errors %}
-        <script type="text/javascript">
+        <script type="text/javascript" defer>
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
     {% endif %}

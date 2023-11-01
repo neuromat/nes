@@ -545,6 +545,6 @@
     <script src={% static "site/js/questionnaire_export.js" %}></script>
 
     {% if export_form.errors %}
-        <script type="text/javascript">showErrorMessage(gettext('Please, correct the highlighted fields.'))</script>
+        <script type="text/javascript" defer>showErrorMessage(gettext('Please, correct the highlighted fields.'))</script>
     {% endif %}
 {% endblock extrascript %}

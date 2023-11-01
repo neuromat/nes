@@ -16,7 +16,7 @@
     {% endblock form %}
 
     {% block content %}
-        {% if experiment_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
+        {% if experiment_form.errors %}<script type="text/javascript" defer>showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
         <div class="tab-pane fade show active" id="experimentBreadCrumb">
             <nav aria-label="breadcrumb">

@@ -228,7 +228,7 @@
     <script src={% static "site/multiselect/multiselect.min.js" %}></script>
     <script src={% static "site/js/questionnaire_export.js" %}></script>
     {% if export_form.errors %}
-        <script type="text/javascript">
+        <script type="text/javascript" defer>
             showErrorMessage(gettext('Please, correct the highlighted fields.'))
         </script>
     {% endif %}
