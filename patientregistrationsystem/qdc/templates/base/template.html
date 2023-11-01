@@ -12,10 +12,13 @@
         <meta name="description" content="Database system for storing data related to EEG and EMG">
         <meta name="author" content="Neuromat, PEB-Lapis">
 
+        <link rel="preload" href="style.css" as="style" />
+        <link rel="preload" href="{% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %}" as="script" />
+
         {% comment %} {% compress css file base_nes_css %}  {% endcomment %}
-        <link rel="stylesheet" href={% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %} charset="utf-8">
-        <link rel="stylesheet" href={% static "site/font-awesome-4.7.0/css/font-awesome.min.css" %} charset="utf-8">
-        <link rel="stylesheet" href={% static "site/css/nes.css" %} charset="utf-8">
+        <link rel="stylesheet" href="{% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %}" charset="utf-8">
+        <link rel="stylesheet" href="{% static "site/font-awesome-4.7.0/css/font-awesome.min.css" %}" charset="utf-8">
+        <link rel="stylesheet" href="{% static "site/css/nes.css" %}" charset="utf-8">
         {% comment %} {% endcompress %}  {% endcomment %}
 
         {% block extrahead %}
