@@ -140,12 +140,11 @@ document.addEventListener("DOMContentLoaded", () => {
         data: {
             src: async (query) => {
                 try {
-                    console.log(query)
                     // Fetch Data from external Source
                     const source = await fetch('/export/get_locations/?term='+query);
                     // Data should be an array of `Objects` or `Strings`
                     const data = await source.json();
-                    console.log(data)
+
                     return data;
                 } catch (error) {
                     return error;

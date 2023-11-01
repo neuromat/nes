@@ -106,7 +106,7 @@ async function fetch_post(url, data, success) {
             credentials: 'same-origin',
         });
         const result = await response.text();
-        console.log(result);
+        //console.log(result);
         success(result);
     } catch (error) {
         console.error("Error:", error);
