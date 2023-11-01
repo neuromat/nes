@@ -326,11 +326,9 @@
                                                 <textarea class="form-control" rows="25" disabled>{{ experimental_protocol_description }}</textarea>
                                             </div>
                                             <div class="col-lg-5">
-
                                                 <label class="form-label">{% trans "Graph representation" %}</label>
-
                                                 {% if experimental_protocol_image %}
-                                                    <a class="experimental-protocol-image-popup-link" href="{{ experimental_protocol_image }}">
+                                                    <a class="experimental-protocol-image-popup-link" href="{{ experimental_protocol_image }}" data-toggle="lightbox">
                                                         <img src="{{ experimental_protocol_image }}" style="width: 100%" />
                                                     </a>
                                                 {% else %}
@@ -463,18 +461,7 @@
 {% endblock end_form %}
 
 {% block extrascript %}
+    <script id="bs5-lightbox" src="https://cdn.jsdelivr.net/npm/bs5-lightbox@latest/dist/index.bundle.min.js"></script>
+    
     <script src={% static "site/js/group_register.js" %}></script>
-    <script src={% static "site/magnific-popup/jquery.magnific-popup.js" %}></script>
-    <script>
-        $(document).ready(function() {
-            $('.experimental-protocol-image-popup-link').magnificPopup({
-                type: 'image',
-                closeBtnInside: false,
-                closeOnContentClick: false,
-                image: {
-                    verticalFit: false
-                }
-            });
-        });
-    </script>
 {% endblock extrascript %}
