@@ -226,7 +226,6 @@
 
     <script type="text/javascript" src="{% static "site/jquery/jquery-migrate-3.4.0.js" %}" charset="utf-8"></script>
 
-
     {% compress js %}
         <script type="text/javascript" src="{% static "site/bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js" %}" charset="utf-8"></script>
         <script type="text/javascript" src="{% static "site/autoComplete.js-10.2.7-dist/autoComplete.min.js" %}" charset="utf-8"></script>
@@ -235,8 +234,8 @@
         <script type="text/javascript" src="{% static "site/js/theme_picker.js" %}" charset="utf-8"></script>
     {% endcompress %}
 
-    <script type="text/javascript" src="{% static "site/bootstrap-validator-0.11.9/validator.js" %}" charset="utf-8"></script>
     {% compress js %}
+        <script type="text/javascript" async src="{% static "site/bootstrap-validator-0.11.9/validator.min.js" %}" charset="utf-8"></script>
         <script type="text/javascript" async src="{% static "site/cleave.min.js" %}" charset="utf-8"></script>
     {% endcompress %}
 
