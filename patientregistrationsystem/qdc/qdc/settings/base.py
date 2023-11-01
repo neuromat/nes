@@ -253,6 +253,15 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
+
 STATICFILES_DIRS: list[str] = [
     os.path.join(BASE_DIR, "site_static"),
 ]
