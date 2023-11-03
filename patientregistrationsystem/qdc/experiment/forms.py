@@ -3,6 +3,7 @@ from typing import Any
 
 from django.contrib.auth.models import User
 from django.forms import (
+    CheckboxInput,
     ClearableFileInput,
     Form,
     IntegerField,
@@ -284,10 +285,12 @@ class ComponentConfigurationForm(ModelForm):
                     "placeholder": _("Repetitions"),
                 }
             ),
-            "interval_between_repetitions_value": TextInput(
+            "interval_between_repetitions_value": NumberInput(
                 attrs={
                     "class": "form-control",
                     "required": "",
+                    "min": "1",
+                    "max": "99999",
                     "data-error": _("Interval must be filled."),
                     "placeholder": _("Time"),
                 }
@@ -297,6 +300,11 @@ class ComponentConfigurationForm(ModelForm):
                     "class": "form-select",
                     "required": "",
                     "data-error": _("Interval unit must be filled."),
+                }
+            ),
+            "requires_start_and_end_datetime": CheckboxInput(
+                attrs={
+                    "class": "form-check-input",
                 }
             ),
         }
@@ -853,7 +861,7 @@ class EEGAmplifierForm(ModelForm):
 
         widgets = {
             "gain": TextInput(attrs={"class": "form-control", "disabled": ""}),
-            "number_of_channels": TextInput(
+            "number_of_channels": NumberInput(
                 attrs={"class": "form-control", "disabled": ""}
             ),
         }
@@ -2191,7 +2199,7 @@ class TMSDataForm(ModelForm):
                 attrs={"class": "form-control"}
             ),
             "second_test_pulse_intensity": TextInput(attrs={"class": "form-control"}),
-            "interval_between_pulses": TextInput(attrs={"class": "form-control"}),
+            "interval_between_pulses": NumberInput(attrs={"class": "form-control"}),
             "interval_between_pulses_unit": Select(attrs={"class": "form-select"}),
             "time_between_mep_trials": TextInput(attrs={"class": "form-control"}),
             "time_between_mep_trials_unit": Select(attrs={"class": "form-select"}),

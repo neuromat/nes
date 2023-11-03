@@ -1,8 +1,13 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
+
 {% load subjects_tags %}
+
 
 {% block extrahead %}
     <style>
@@ -39,103 +44,102 @@
             float: left;
         }
     </style>
-{% endblock %}
+{% endblock extrahead %}
 
 {% block form %}
-    
-    <form id="user_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
-    {% csrf_token %}
-{% endblock %}
+    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
+    {% block content %}
+        <div class="tab-pane fade show active" id="eegDataProjectBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}">{{ group.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a>
+                    </li>
 
-    <div class="tab-pane fade show active" id="eegDataProjectBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg">{% get_name_or_code subject.patient.id %}</a>
+                    </li>
 
-                <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg">{% get_name_or_code subject.patient.id %}</a></li>
-
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New EEG data file" %}</li>
-                {% else %}
-                    <li class="breadcrumb-item active">{{ eeg_data_form.description.value }}</li>
-                {% endif %}
-
-            </ol>
-        </nav>
-    </div>
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    {% if eeg_data_form.errors %}
-        <script type="text/javascript" defer>
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
-            <div class="my-3 p-3 bg-body rounded shadow-sm">
-
-                <h4>{% trans "EEG data collection" %}</h4>
-
-                <ul class="nav nav-tabs">
-
-                    {% if creating or editing %}
-                        <li {% if tab == "1" %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Data collection" %}</a></li>
-                        <li {% if tab == "2" %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrodes position status" %}</a></li>
-                        <li {% if tab == "3" %}class="active"{% else %}class="disabled"{% endif %}><a href="#">
-                            {% trans "Image of the position of the electrodes" %}</a></li>
+                    {% if creating %}
+                        <li class="breadcrumb-item active">
+                            {% trans "New EEG data file" %}
+                        </li>
                     {% else %}
-                        <li {% if tab == "1" %}class="active"{% endif %}>
-                            <a data-bs-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>
+                        <li class="breadcrumb-item active">
+                            {{ eeg_data_form.description.value }}
                         </li>
-                        <li {% if tab == "2" %}class="active"{% endif %}>
-                            <a {% if not creating %}data-bs-toggle="tab"{% endif %} href="#electrode_position_status">{% trans "Electrodes position status" %}</a>
+                    {% endif %}
+
+                </ol>
+            </nav>
+        </div>
+
+        {% if eeg_data_form.errors %}
+            <script type="text/javascript" defer>
+            showErrorMessage(gettext('Please, correct fields highlighted.'))
+            </script>
+        {% endif %}
+
+        <div class="tab-pane fade show active" id="menuUserTab">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                <h4>
+                    {% trans "EEG data collection" %}
+                </h4>
+                <hr>
+                <ul class="nav nav-tabs">
+                    {% if creating or editing %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if tab == "1" %}active{% else %}disabled{% endif %}" href="#">{% trans "Data collection" %}</a>
                         </li>
-                        <li {% if tab == "3" %}class="active"{% endif %}>
-                            <a {% if not creating %}data-bs-toggle="tab"{% endif %}
-                               href="#electrodes_operating_status">{% trans "Image of the position of the electrodes" %}</a>
+                        <li class="nav-item">
+                            <a class="nav-link {% if tab == "2" %}active{% else %}disabled{% endif %}" href="#">{% trans "Electrodes position status" %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link  {% if tab == "3" %}active{% else %}disabled{% endif %}" href="#">
+                            {% trans "Image of the position of the electrodes" %}</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if tab == "1" %}active{% endif %}" data-bs-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if tab == "2" %}active{% endif %}" {% if not creating %}data-bs-toggle="tab"{% endif %} href="#electrode_position_status">{% trans "Electrodes position status" %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if tab == "3" %}active{% endif %}" {% if not creating %}data-bs-toggle="tab"{% endif %} href="#electrodes_operating_status">{% trans "Image of the position of the electrodes" %}</a>
                         </li>
                     {% endif %}
 
                 </ul>
 
                 <div class="tab-content">
-
                     <div id="data_collection" {% if tab == "1" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
-
-                        <h4></h4>
+                        <h4>
+                        </h4>
                         <div class="row">
                             <div class="col-6 col-sm-6">
                                 <div class="form-group {% if eeg_data_form.errors.date %}is-invalid{% endif %}">
-                                    <label class="form-label">{% trans "Date" %}<b class="text-danger">*</b></label>
+                                    <label class="form-label">
+                                        {% trans "Date" %}<b class="text-danger">*</b>
+                                    </label>
                                     {{ eeg_data_form.date }}
                                     <div class="form-text with-errors text-danger">
                                         {% for error in eeg_data_form.date.errors %}
@@ -147,7 +151,9 @@
 
                             <div class="col-6 col-sm-6">
                                 <div class="form-group {% if eeg_data_form.errors.time %}is-invalid{% endif %}">
-                                    <label class="form-label">{% trans "Hour" %}</label>
+                                    <label class="form-label">
+                                        {% trans "Hour" %}
+                                    </label>
                                     {{ eeg_data_form.time }}
                                     <div class="form-text with-errors text-danger">
                                         {% for error in eeg_data_form.time.errors %}
@@ -161,9 +167,12 @@
                         <div class="row">
                             <div class="col-6 col-sm-6">
                                 <div class="form-group">
-                                    <label class="form-label">{% trans "EEG setting" %}<b class="text-danger">*</b></label>
-                                        {{ eeg_data_form.eeg_setting }}
-                                    <div class="form-text with-errors text-danger"></div>
+                                    <label class="form-label">
+                                        {% trans "EEG setting" %}<b class="text-danger">*</b>
+                                    </label>
+                                    {{ eeg_data_form.eeg_setting }}
+                                    <div class="form-text with-errors text-danger">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -171,9 +180,12 @@
                         <div class="row" id="div-reason-for-change">
                             <div class="col-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="form-label">{% trans "Reason for change the EEG setting" %} <b class="text-danger">*</b></label>
+                                    <label class="form-label">
+                                        {% trans "Reason for change the EEG setting" %} <b class="text-danger">*</b>
+                                    </label>
                                     {{ eeg_data_form.eeg_setting_reason_for_change }}
-                                    <div class="form-text with-errors text-danger"></div>
+                                    <div class="form-text with-errors text-danger">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -181,9 +193,12 @@
                         <div class="row" id="div-cap_size">
                             <div class="col-6 col-sm-6">
                                 <div class="form-group">
-                                    <label class="form-label">{% trans "Cap size" %}<b class="text-danger">*</b></label>
-                                        {{ eeg_data_form.eeg_cap_size }}
-                                    <div class="form-text with-errors text-danger"></div>
+                                    <label class="form-label">
+                                        {% trans "Cap size" %}<b class="text-danger">*</b>
+                                    </label>
+                                    {{ eeg_data_form.eeg_cap_size }}
+                                    <div class="form-text with-errors text-danger">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -191,23 +206,30 @@
                         <div class="row">
                             <div class="col-6 col-sm-6">
                                 <div class="form-group">
-                                    <label class="form-label">{% trans "File format" %} <b class="text-danger">*</b></label>
+                                    <label class="form-label">
+                                        {% trans "File format" %} <b class="text-danger">*</b>
+                                    </label>
                                     {{ eeg_data_form.file_format }}
-                                    <div class="form-text with-errors text-danger"></div>
+                                    <div class="form-text with-errors text-danger">
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-12 col-sm-12" id="info_raw_data" style="color: green"></div>
+                            <div class="col-12 col-sm-12 text-success" id="info_raw_data">
+                            </div>
                         </div>
 
                         <div class="row" id="div-file-format-description">
                             <div class="col-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="form-label">{% trans "File format description" %} <b class="text-danger">*</b></label>
+                                    <label class="form-label">
+                                        {% trans "File format description" %} <b class="text-danger">*</b>
+                                    </label>
                                     {{ eeg_data_form.file_format_description }}
-                                    <div class="form-text with-errors text-danger"></div>
+                                    <div class="form-text with-errors text-danger">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -215,9 +237,12 @@
                         <div class="row">
                             <div class="col-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="form-label">{% trans "EEG data collection description" %} <b class="text-danger">*</b></label>
+                                    <label class="form-label">
+                                        {% trans "EEG data collection description" %} <b class="text-danger">*</b>
+                                    </label>
                                     {{ eeg_data_form.description }}
-                                    <div class="form-text with-errors text-danger"></div>
+                                    <div class="form-text with-errors text-danger">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -227,33 +252,46 @@
                                 <div class="form-group {% if eeg_data_form.errors.file %}is-invalid{% endif %}">
 
                                     {% if creating or editing %}
-                                        <label class="form-label">{% trans "Files to upload" %} <b class="text-danger">*</b></label>
-                                        <br/>
+                                        <label class="form-label">
+                                            {% trans "Files to upload" %} <b class="text-danger">*</b>
+                                        </label>
+                                        <br />
                                         <input type="file" name="eeg_files" multiple>
-                                        <br/>
+                                        <br />
                                     {% endif %}
 
                                     {% if not creating %}
                                         {% if eeg_data.eeg_files %}
-                                            <label class="form-label">{% trans "Uploaded files" %} <b class="text-danger">*</b></label>
-                                            <br/>
-                                            <table><tbody>
-                                            {% for eeg_file in eeg_data.eeg_files.all %}
-                                                <tr>
-                                                <td>{{ eeg_file.file.url }}</td>
-                                                <td>
-                                                    <button class="btn btn-light" type="button" onclick="location.href='{{ eeg_file.file.url }}'"><span class="fa-fw fa fa-download-alt  text-info"></span></button>
-                                                </td>
-                                                <td>{{ eeg_file.file.size|filesizeformat }}</td>
-                                                {% if editing %}
-                                                    <td>
-                                                        <input type="checkbox" name="remove_eeg_file_{{ eeg_file.id }}"/>
-                                                        {% trans "Delete" %}</td>
-                                                {% endif %}
-                                                </tr>
-                                            {% endfor %}
+                                            <label class="form-label">
+                                                {% trans "Uploaded files" %} <b class="text-danger">*</b>
+                                            </label>
+                                            <br />
+                                            <table>
+                                                <tbody>
+                                                    {% for eeg_file in eeg_data.eeg_files.all %}
+                                                        <tr>
+                                                            <td>
+                                                                {{ eeg_file.file.url }}
+                                                            </td>
+                                                            <td>
+                                                                <button class="btn btn-light" type="button" onclick="location.href='{{ eeg_file.file.url }}'">
+                                                                    <span class="fa-fw fa fa-download-alt  text-info"></span>
+                                                                </button>
+                                                            </td>
+                                                            <td>
+                                                                {{ eeg_file.file.size|filesizeformat }}
+                                                            </td>
+                                                            {% if editing %}
+                                                                <td>
+                                                                    <input type="checkbox" name="remove_eeg_file_{{ eeg_file.id }}" />
+                                                                    {% trans "Delete" %}
+                                                                </td>
+                                                            {% endif %}
+                                                        </tr>
+                                                    {% endfor %}
 
-                                            </tbody></table>
+                                                </tbody>
+                                            </table>
                                         {% endif %}
                                     {% endif %}
 
@@ -274,44 +312,56 @@
                             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                                 <thead>
                                     <tr>
-                                        <th>{% trans "Channel index" %}</th>
-                                        <th>{% trans "Position" %}</th>
-                                        <th>{% trans "Used" %}</th>
-                                        <th>{% trans "Worked" %}</th>
-                                        <th colspan="2" class="text-center">{% trans "Order" %}</th>
-                                        <th></th>
+                                        <th>
+                                            {% trans "Channel index" %}
+                                        </th>
+                                        <th>
+                                            {% trans "Position" %}
+                                        </th>
+                                        <th>
+                                            {% trans "Used" %}
+                                        </th>
+                                        <th>
+                                            {% trans "Worked" %}
+                                        </th>
+                                        <th colspan="2" class="text-center">
+                                            {% trans "Order" %}
+                                        </th>
+                                        <th>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for position_status in eeg_data.electrode_positions.all|dictsort:"channel_index" %}
-                                    <tr>
-                                        <td>
-                                            {{ position_status.channel_index }}
-                                        </td>
-                                        <td>
-                                            {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" disabled {% if position_status.eeg_electrode_position_setting.used %}checked="checked"{% endif %}/>
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" name="position_status_{{ position_status.id }}"
-                                                   {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
-                                                   {% if position_status.worked %}checked="checked"{% endif %}/>
-                                        </td>
+                                        <tr>
+                                            <td>
+                                                {{ position_status.channel_index }}
+                                            </td>
+                                            <td>
+                                                {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" disabled {% if position_status.eeg_electrode_position_setting.used %}checked="checked"{% endif %} />
+                                            </td>
+                                            <td>
+                                                <input type="checkbox"
+                                                       name="position_status_{{ position_status.id }}"
+                                                       {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
+                                                       {% if position_status.worked %}checked="checked"{% endif %} />
+                                            </td>
 
-                                        <td class="text-end col-lg-1">
-                                            {% if not forloop.last %}
-                                                <a class="btn fa-fw fa fa-arrow-down" href="/experiment/eeg_electrode_position_collection_status/change_the_order/{{ position_status.id }}/down/"></a>
-                                            {% endif %}
-                                        </td>
-                                        <td class="col-lg-1">
-                                            {% if not forloop.first %}
-                                                <a class="btn fa-fw fa fa-arrow-up" href="/experiment/eeg_electrode_position_collection_status/change_the_order/{{ position_status.id }}/up/"></a>
-                                            {% endif %}
-                                        </td>
+                                            <td class="text-end col-lg-1">
+                                                {% if not forloop.last %}
+                                                    <a class="btn fa-fw fa fa-arrow-down" href="/experiment/eeg_electrode_position_collection_status/change_the_order/{{ position_status.id }}/down/"></a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="col-lg-1">
+                                                {% if not forloop.first %}
+                                                    <a class="btn fa-fw fa fa-arrow-up" href="/experiment/eeg_electrode_position_collection_status/change_the_order/{{ position_status.id }}/up/"></a>
+                                                {% endif %}
+                                            </td>
 
-                                    </tr>
+                                        </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
@@ -323,7 +373,9 @@
                             {% endif %}
 
                         {% else %}
-                            <label>{% trans "There is not electrode position status data for this data collection" %}</label>
+                            <label>
+                                {% trans "There is not electrode position status data for this data collection" %}
+                            </label>
                         {% endif %}
                     </div>
 
@@ -331,8 +383,7 @@
                         {% if sensors_image != None and not creating %}
                             <div class="row">
                                 <div class="card-body">
-                                    <img src="{{ sensors_image }}" class="img-fluid mx-auto.d-block" width="800"
-                                         height="600" style="margin: auto" >
+                                    <img src="{{ sensors_image }}" class="img-fluid mx-auto.d-block" width="800" height="600" style="margin: auto">
                                 </div>
                             </div>
 
@@ -343,13 +394,17 @@
                                     <div hidden="hidden">
                                         <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
                                         <input id="image_status" type="text" value="{{ editing }}">
-                                        <input id="map_file" type="text" value="{{ eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
+                                        <input id="map_file"
+                                               type="text"
+                                               value="{{ eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
                                     </div>
                                     <div class="my-3 p-3 bg-body rounded shadow-sm">
-                                        <h4>{% trans "EEG electrode localization system basic information" %}</h4>
+                                        <h4>
+                                            {% trans "EEG electrode localization system basic information" %}
+                                        </h4>
                                         <div class="row">
                                             <div style="width:100%;">
-                                                 <table>
+                                                <table>
                                                     <tr>
                                                         <td width="80%" valign="top">
                                                             <div style="float:left; width: 80%">
@@ -363,22 +418,29 @@
                                                                     <caption><b>{% trans "List of positions" %}</b></caption>
                                                                     <thead>
                                                                         <tr>
-                                                                            <td>{% trans "Name" %}</td>
-                                                                            <td>{% trans "Worked" %}</td>
+                                                                            <td>
+                                                                                {% trans "Name" %}
+                                                                            </td>
+                                                                            <td>
+                                                                                {% trans "Worked" %}
+                                                                            </td>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         {% for position_status in eeg_data.electrode_positions.all %}
-                                                                        <tr>
-                                                                            <td align="center">
-                                                                                {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="checkbox" id="position_worked_{{ position_status.id }}" name="position_worked_{{ position_status.id }}"
-                                                                                       {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
-                                                                                       {% if position_status.worked %}checked="checked"{% endif %} onclick="worked()"/>
-                                                                            </td>
-                                                                        </tr>
+                                                                            <tr>
+                                                                                <td align="center">
+                                                                                    {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="checkbox"
+                                                                                           id="position_worked_{{ position_status.id }}"
+                                                                                           name="position_worked_{{ position_status.id }}"
+                                                                                           {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
+                                                                                           {% if position_status.worked %}checked="checked"{% endif %}
+                                                                                           onclick="worked()" />
+                                                                                </td>
+                                                                            </tr>
                                                                         {% endfor %}
                                                                     </tbody>
                                                                 </table>
@@ -387,10 +449,14 @@
                                                     </tr>
                                                     <tfoot>
                                                         <tr>
-                                                            <td colspan="3">{% trans "To mark or unmark any position as 'worked' or 'did not worked' you can click on the image on the selected position" %}</td>
+                                                            <td colspan="3">
+                                                                {% trans "To mark or unmark any position as 'worked' or 'did not worked' you can click on the image on the selected position" %}
+                                                            </td>
                                                         </tr>
                                                         <tr>
-                                                            <td>{% trans "or you can check or uncheck the checkbox selected in the list of positions. " %}</td>
+                                                            <td>
+                                                                {% trans "or you can check or uncheck the checkbox selected in the list of positions. " %}
+                                                            </td>
                                                         </tr>
                                                     </tfoot>
                                                 </table>
@@ -406,7 +472,9 @@
                                     </div>
                                 </div>
                             {% else %}
-                                <label>{% trans "There is not image" %}</label>
+                                <label>
+                                    {% trans "There is not image" %}
+                                </label>
                             {% endif %}
                         {% endif %}
                     </div>
@@ -416,19 +484,21 @@
             <div class="btn-toolbar justify-content-between" role="toolbar">
                 <div class="btn-group">
                     {% if not editing and perms.experiment.delete_researchproject and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
+                        <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">
+                            {% trans "Delete" %}
+                        </button>
                     {% endif %}
                 </div>
                 {% if editing %}
                     <div class="btn-group float-end">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                        <button type="submit" name="action" value="save" class="btn btn-primary">
+                            {% trans "Save" %}
+                        </button>
 
                         {% if creating %}
-                            <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg"
-                               class="btn btn-light">{% trans "Cancel" %}</a>
+                            <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg" class="btn btn-light">{% trans "Cancel" %}</a>
                         {% else %}
-                            <a href="/experiment/eeg_data/{{ eeg_data.id }}/{{ tab }}"
-                               class="btn btn-light">{% trans "Cancel" %}</a>
+                            <a href="/experiment/eeg_data/{{ eeg_data.id }}/{{ tab }}" class="btn btn-light">{% trans "Cancel" %}</a>
                         {% endif %}
 
                     </div>
@@ -439,25 +509,28 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    {% trans "Are you sure you want to delete EEG data?" %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        {% trans "Are you sure you want to delete EEG data?" %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">
+                            {% trans "Cancel" %}
+                        </button>
+                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">
+                            {% trans "Delete" %}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-{% endblock %}
+    {% endblock %}
 
-{% block end_form %}
+    {% block end_form %}
     </form>
 {% endblock %}
 

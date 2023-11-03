@@ -26,14 +26,11 @@ async function searchRequest(url, query, ajaxExtras = null) {
         "search_text": query,
         "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val(),
     };
-    // let data = new FormData();
-    // data.append("search_text", query);
-    // data.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val());
-
+    
     for (let el in ajaxExtras) {
-        if (ajaxExtras.hasOwnProperty(el)) data.el = ajaxExtras[el];
+        if (ajaxExtras.hasOwnProperty(el)) data[el] = ajaxExtras[el];
     }
-
+    
     fetch_post(url, data, searchSuccessPatient);
 
     // $.ajax({

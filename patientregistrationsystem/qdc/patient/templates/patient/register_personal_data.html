@@ -27,7 +27,7 @@
 
                     <div class="row">
                         <div class="col-12 col-sm-12">
-                            <div class="form-check">
+                            <div class="form-check form-switch">
                                 {{ patient_form.anonymous }}
                                 <label class="form-check-label user-select-none" for="id_anonymous">{% trans "Anonymous participant?" %}</label>
                             </div>
@@ -276,7 +276,6 @@
                     {{ telephone_formset.management_form }}
                     {% for telephone_form in telephone_formset %}
                         {% for hidden in telephone_form.hidden_fields %}{{ hidden }}{% endfor %}
-
                         <div class="row">
                             <div class="col-6 col-sm-3">
                                 <div class="form-group">
@@ -313,6 +312,7 @@
                     {% endfor %}
 
                     {% if editing %}
+                    <br>
                         <button type="button" class="btn btn-light" id="more_phones">{% trans "Save and include more phones" %}</button>
                     {% endif %}
                 </div>

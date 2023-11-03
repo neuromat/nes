@@ -7,42 +7,45 @@
 {% endblock activeExport %}
 
 {% block form %}
-    <form id="user_form" method="post" data-bs-toggle="validator">
+    <form id="user_form" method="post" data-toggle="validator">
         {% csrf_token %}
     {% endblock form %}
 
     {% block content %}
         <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                     <li class="breadcrumb-item">
                         <a href={% url "home" %}>{% trans "Home" %}</a>
                     </li>
                     <li class="breadcrumb-item">
                         <a href="/export/">{% trans "Export" %}</a>
                     </li>
-                    <li class="breadcrumb-item active">{% trans "Participants selection" %}</li>
+                    <li class="breadcrumb-item active">
+                        {% trans "Participants selection" %}
+                    </li>
                 </ol>
             </nav>
         </div>
 
         <div class="tab-pane fade show active" id="mainMenuUserTab">
             <div id="participants_container" class="my-3 p-3 bg-body rounded shadow-sm">
-                <h4>{% trans "Participants selection" %}</h4>
+                <h4>
+                    {% trans "Participants selection" %}
+                </h4>
                 <hr>
                 <div class="form-group">
                     <div class="form-check">
-                        <input class="form-check-input"
-                               id="id_type_of_selection_radio_0"
-                               name="type_of_selection_radio"
-                               type="radio"
-                               value="all"
-                               checked>
-                        <label class="form-check-label" for="id_type_of_selection_radio_0">{% trans "All participants" %}</label>
+                        <input class="form-check-input" id="id_type_of_selection_radio_0" name="type_of_selection_radio" type="radio" value="all">
+                        <label class="form-check-label" for="id_type_of_selection_radio_0">
+                            {% trans "All participants" %}
+                        </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" id="id_type_of_selection_radio_1" name="type_of_selection_radio" type="radio" value="selected">
-                        <label class="form-check-label" for="id_type_of_selection_radio_1">{% trans "Selected participants" %}</label>
+                        <label class="form-check-label" for="id_type_of_selection_radio_1">
+                            {% trans "Selected participants" %}
+                        </label>
                     </div>
 
                     <div class="col-lg-12 collapse" id="participants_filter_div" style="visibility: hidden">
@@ -54,22 +57,20 @@
                         </div>
                         <div class="form-group">
                             {{ participant_selection_form.gender }}
-                            <div class="form-text with-errors text-danger"></div>
+                            <div class="form-text with-errors text-danger">
+                            </div>
                         </div>
 
                         <div class="form-check pt-2">
                             <label>
-                                <input class="form-check-input"
-                                       id="id_marital_status_checkbox"
-                                       name="marital_status_checkbox"
-                                       type="checkbox"
-                                       value="marital_status_selected">
+                                <input class="form-check-input" id="id_marital_status_checkbox" name="marital_status_checkbox" type="checkbox" value="marital_status_selected">
                                 {% trans "Marital status" %}
                             </label>
                         </div>
                         <div class="form-group">
                             {{ participant_selection_form.marital_status }}
-                            <div class="form-text with-errors text-danger"></div>
+                            <div class="form-text with-errors text-danger">
+                            </div>
                         </div>
 
                         <div class="form-check pt-2">
@@ -93,7 +94,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
-                                        <div id="localization_list" class="form-group"></div>
+                                        <div id="localization_list" class="form-group">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -101,11 +103,7 @@
 
                         <div class="form-check pt-2">
                             <label>
-                                <input class="form-check-input"
-                                       id="id_diagnosis_checkbox"
-                                       name="diagnosis_checkbox"
-                                       type="checkbox"
-                                       value="diagnosis_selected">
+                                <input class="form-check-input" id="id_diagnosis_checkbox" name="diagnosis_checkbox" type="checkbox" value="diagnosis_selected">
                                 {% trans "Diagnosis" %}
                             </label>
                         </div>
@@ -123,7 +121,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
-                                        <div id="diagnosis_list" class="form-group"></div>
+                                        <div id="diagnosis_list" class="form-group">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -139,13 +138,17 @@
                             <div class="card-body">
                                 <div class="row g-3">
                                     <div class="col-auto">
-                                        <div class="form-group">{{ age_interval_form.min_age }}</div>
+                                        <div class="form-group">
+                                            {{ age_interval_form.min_age }}
+                                        </div>
                                     </div>
                                     <div class="col-auto">
                                         <span>{% trans "to" %}</span>
                                     </div>
                                     <div class="col-auto">
-                                        <div class="form-group">{{ age_interval_form.max_age }}</div>
+                                        <div class="form-group">
+                                            {{ age_interval_form.max_age }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

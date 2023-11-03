@@ -12,7 +12,7 @@ from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
 from django.http import HttpRequest, HttpResponseRedirect
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -50,7 +50,7 @@ from survey.views import (
     get_questionnaire_responses,
 )
 
-
+# mypy: disable-error-code="misc"
 permission_required = partial(permission_required, raise_exception=True)
 
 
@@ -395,7 +395,9 @@ def patient_update_social_history(
     return render(request, "patient/register_social_history.html", context)
 
 
-def patient_update_medical_record(request, patient, context):
+def patient_update_medical_record(
+    request: HttpRequest, patient: Patient, context
+) -> HttpResponse:
     if request.method == "POST":
         return finish_handling_post(request, patient.id, 3)
 
@@ -503,8 +505,10 @@ def patient_view_social_history(
 def patient_view_medical_record(
     request: HttpRequest, patient: Patient, context: dict[str, Any]
 ) -> HttpResponse:
-    medical_record = MedicalRecordData.objects.filter(patient_id=patient.id).order_by(
-        "record_date"
+    medical_record = (
+        MedicalRecordData.objects.filter(patient_id=patient.id)
+        .prefetch_related("patient")
+        .order_by("record_date")
     )
 
     context.update({"medical_record": medical_record, "code": patient.code})
@@ -735,7 +739,7 @@ def restore_patient(request: HttpRequest, patient_id: int) -> HttpResponseRedire
 @permission_required("patient.view_patient")
 def search_patients_ajax(request: HttpRequest) -> HttpResponse:
     sensitive_perm = request.user.has_perm("patient.sensitive_data_patient")
-    patient_list = None
+    patient_list = []
     if request.method == "POST":
         search_text = request.POST["search_text"]
         if search_text:
@@ -825,7 +829,7 @@ def patients_verify_homonym_excluded(request: HttpRequest) -> HttpResponse:
 @login_required
 @permission_required("patient.add_medicalrecorddata")
 def search_cid10_ajax(request):
-    cid_10_list = None
+    cid_10_list = []
 
     if request.method == "POST":
         search_text = request.POST["search_text"]
@@ -851,6 +855,8 @@ def search_cid10_ajax(request):
                 "patient_id": patient_id,
             },
         )
+
+    return HttpResponseNotAllowed(["POST"])
 
 
 @login_required
@@ -1015,7 +1021,9 @@ def medical_record_update(
 
 @login_required
 @permission_required("patient.add_medicalrecorddata")
-def medical_record_delete(request, patient_id, record_id):
+def medical_record_delete(
+    request: HttpRequest, patient_id: int, record_id: int
+) -> HttpResponseRedirect:
     medical_record = MedicalRecordData.objects.get(pk=record_id)
     medical_record.delete()
     messages.success(request, _("Medical evaluation successfully deleted."))
@@ -1026,7 +1034,9 @@ def medical_record_delete(request, patient_id, record_id):
 
 @login_required
 @permission_required("patient.add_medicalrecorddata")
-def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
+def diagnosis_create(
+    request: HttpRequest, patient_id: int, medical_record_id: int, cid10_id: int
+) -> HttpResponseRedirect:
     medical_record = MedicalRecordData.objects.get(pk=medical_record_id)
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
 
@@ -1055,7 +1065,9 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
 
 @login_required
 @permission_required("patient.add_medicalrecorddata")
-def medical_record_create_diagnosis_create(request, patient_id, cid10_id):
+def medical_record_create_diagnosis_create(
+    request, patient_id, cid10_id: int
+) -> HttpResponseRedirect:
     current_patient = Patient.objects.get(id=patient_id)
 
     new_medical_record = MedicalRecordData()

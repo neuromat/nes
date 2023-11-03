@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="container">
-        <form method="post" class="form-signin needs-validation" action="{% url 'login' %}" data-bs-toggle="validator" novalidate>
+        <form method="post" class="form-signin needs-validation" action="{% url 'login' %}" data-toggle="validator">
             {% csrf_token %}
 
             <h1 class="mb-3 fw-normal d-flex justify-content-center">NES</h1>

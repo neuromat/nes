@@ -25,7 +25,7 @@
 {% block content %}
     <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+            <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                 <li class="breadcrumb-item">
                     <a href={% url "home" %}>{% trans "Home" %}</a>
                 </li>
@@ -103,7 +103,7 @@
             </div>
         </div>
         {# Send by experiment #}
-        <form id="user_form" method="post" data-bs-toggle="validator">
+        <form id="user_form" method="post" data-toggle="validator">
             {# For Floresta plugin it's needed "headings" input with value "code" #}
             <input type="hidden" name="headings" value="code">
             {% csrf_token %}
@@ -112,7 +112,7 @@
                     <div class="card-group" id="accordion">
                         <div class="card-header">
                             <h4>
-                                <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_experiment" aria-expanded="true">{% trans "Per Experiment" %}"</a>
+                                <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_experiment" aria-expanded="true">{% trans "Per Experiment" %}</a>
                             </h4>
                         </div>
                         <div id="collapse_experiment" class=" collapse in">
@@ -223,7 +223,7 @@
             </div>
         </form>
         {# Send by participants #}
-        <form id="user_form" method="post" data-bs-toggle="validator">
+        <form id="user_form" method="post" data-toggle="validator">
             {% csrf_token %}
             {# For Floresta plugin it's needed "headings" input with value "code" #}
             <input type="hidden" name="headings" value="code">
@@ -232,7 +232,7 @@
                     <div class="card-group" id="accordion">
                         <div class="card-header">
                             <h4>
-                                <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_participant">{% trans "Per Participant" %}"</a>
+                                <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_participant">{% trans "Per Participant" %}</a>
                             </h4>
                         </div>
                         <div id="collapse_participant" class=" collapse">

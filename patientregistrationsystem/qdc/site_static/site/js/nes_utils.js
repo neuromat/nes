@@ -93,7 +93,7 @@ function jumpToElement(h) {
 async function fetch_post(url, data, success) {
     const data_form = new FormData();
 
-    for (var key in data) {
+    for (let key in data) {
         if (data.hasOwnProperty(key)) {
             data_form.append(key, data[key]);
         }

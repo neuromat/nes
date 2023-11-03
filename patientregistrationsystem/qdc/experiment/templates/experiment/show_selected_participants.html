@@ -5,7 +5,7 @@
 {% block activeExport %} active{% endblock %}
 
 {% block form %}
-    <form id="user_form" method="post" data-bs-toggle="validator">
+    <form id="user_form" method="post" data-toggle="validator">
     {% csrf_token %}
 {% endblock form %}
 
@@ -13,7 +13,7 @@
 
     <div class="tab-pane fade show active" id="selectedParticipantBreadCrumb">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+            <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                 <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>

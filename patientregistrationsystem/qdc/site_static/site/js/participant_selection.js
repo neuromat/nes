@@ -4,7 +4,6 @@
 
 "use strict";
 document.addEventListener("DOMContentLoaded", () => {
-
     var all_participants_radio = $("#id_type_of_selection_radio_0");
     var selected_participants_radio = $("#id_type_of_selection_radio_1");
     var participants_filter_div = $("#participants_filter_div");
@@ -38,20 +37,26 @@ document.addEventListener("DOMContentLoaded", () => {
         min_age_field.prop('required', false);
         marital_status_options.prop('required', false);
         gender_options.prop('required', false);
-        $('#get_diagnosis').prop('required', false);
-        $('#get_location').prop('required', false);
+        get_diagnosis.prop('required', false);
+        get_location.prop('required', false);
     });
 
     all_participants_radio.on("click", function () {
-        participants_filter_div.prop('disabled', true);
-
         if (gender_checkbox.is(":checked")) { gender_checkbox.on("click",); }
         if (marital_status_checkbox.is(":checked")) { marital_status_checkbox.on("click",); }
         if (age_checkbox.is(":checked")) { age_checkbox.on("click",); }
         if (location_checkbox.is(":checked")) { location_checkbox.on("click",); }
 
+        participants_filter_div.prop('disabled', true);
         participants_filter_div.css('visibility', 'hidden');
         participants_filter_div.collapse('hide');
+
+        max_age_field.prop('required', false);
+        min_age_field.prop('required', false);
+        marital_status_options.prop('required', false);
+        gender_options.prop('required', false);
+        get_diagnosis.prop('required', false);
+        get_location.prop('required', false);
     });
 
     gender_checkbox.on("click", function () {
@@ -90,30 +95,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     location_checkbox.on("click", function () {
         if (location_checkbox.is(":checked")) {
-            $('#get_location').prop('disabled', false);
-            $('#get_location').prop('required', true);
+            get_location.prop('disabled', false);
+            get_location.prop('required', true);
         } else {
-            $('#get_location').val("");
-            $('#get_location').prop('disabled', true);
-            $('#get_location').prop('required', false);
-            var ul_location_list = $('#ul-location-list');
+            get_location.val("");
+            get_location.prop('disabled', true);
+            get_location.prop('required', false);
+            let ul_location_list = $('#ul-location-list');
             ul_location_list.hide();
-            var div_location_list = $('#localization_list');
+            let div_location_list = $('#localization_list');
             div_location_list.hide();
         }
     });
 
     diagnosis_checkbox.on("click", function () {
         if (diagnosis_checkbox.is(":checked")) {
-            $('#get_diagnosis').prop('disabled', false);
-            $('#get_diagnosis').prop('required', true);
+            get_diagnosis.prop('disabled', false);
+            get_diagnosis.prop('required', true);
         } else {
-            $('#get_diagnosis').val("");
-            $('#get_diagnosis').prop('disabled', true);
-            $('#get_diagnosis').prop('required', false);
-            var ul_diagnosis_list = $('#ul-diagnosis-list');
+            get_diagnosis.val("");
+            get_diagnosis.prop('disabled', true);
+            get_diagnosis.prop('required', false);
+            let ul_diagnosis_list = $('#ul-diagnosis-list');
             ul_diagnosis_list.hide();
-            var div_diagnosis_list = $('#diagnosis_list');
+            let div_diagnosis_list = $('#diagnosis_list');
             div_diagnosis_list.hide();
         }
 
@@ -121,122 +126,126 @@ document.addEventListener("DOMContentLoaded", () => {
 
     diseases_checkbox.on("click", function () {
         if (diseases_checkbox.is(":checked")) {
-            $('#get_diseases').prop('disabled', false);
-            $('#get_diseases').prop('required', true);
+            get_diagnosis.prop('disabled', false);
+            get_diagnosis.prop('required', true);
         } else {
-            $('#get_diseases').val("");
-            $('#get_diseases').prop('disabled', true);
-            $('#get_diseases').prop('required', false);
-            var ul_diagnosis_list = $('#ul-diagnosis-list');
+            get_diagnosis.val("");
+            get_diagnosis.prop('disabled', true);
+            get_diagnosis.prop('required', false);
+            let ul_diagnosis_list = $('#ul-diagnosis-list');
             ul_diagnosis_list.hide();
-            var div_diagnosis_list = $('#diagnosis_list');
+            let div_diagnosis_list = $('#diagnosis_list');
             div_diagnosis_list.hide();
         }
 
     });
 
-    const auto_location = new autoComplete({
-        selector: "#get_location",
-        data: {
-            src: async (query) => {
-                try {
-                    // Fetch Data from external Source
-                    const source = await fetch('/export/get_locations/?term='+query);
-                    // Data should be an array of `Objects` or `Strings`
-                    const data = await source.json();
+    if (get_location.length) {
+        const auto_location = new autoComplete({
+            selector: "#get_location",
+            data: {
+                src: async (query) => {
+                    try {
+                        // Fetch Data from external Source
+                        const source = await fetch('/export/get_locations/?term=' + query);
+                        // Data should be an array of `Objects` or `Strings`
+                        const data = await source.json();
 
-                    return data;
-                } catch (error) {
-                    return error;
-                }
+                        return data;
+                    } catch (error) {
+                        return error;
+                    }
+                },
+                keys: ["value"]
             },
-            keys: ["value"]
-        },
-        threshold: 2,
-        debounce: 300,
-        resultItem: {
-            highlight: true
-        },
-        resultsList: {
-            destination: "#search-results-locations",
-            element: (list, data) => {
-                //console.log(list)
-                console.log(data)
-                if (!data.results.length) {
-                    // Create "No Results" message element
-                    const message = document.createElement("div");
-                    // Add class to the created element
-                    message.setAttribute("class", "no_result");
-                    // Add message text content
-                    message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
-                    // Append message element to the results list
-                    list.prepend(message);
-                }
+            threshold: 2,
+            debounce: 300,
+            resultItem: {
+                highlight: true
             },
-            noResults: true,
-        },
-        events: {
-            input: {
-                selection: (event) => {
-                    const selection = event.detail.selection.value.value;
-                    console.log(event)
-                    auto_location.input.value = selection;
-                }
-            }
-        },
-    });
-
-    const auto_diagnosis = new autoComplete({
-        selector: "#get_diagnosis",
-        data: {
-            src: async (query) => {
-                try {
-                    console.log(query)
-                    // Fetch Data from external Source
-                    const source = await fetch('/export/get_diagnosis/?term='+query);
-                    // Data should be an array of `Objects` or `Strings`
-                    const data = await source.json();
+            resultsList: {
+                destination: "#search-results-locations",
+                element: (list, data) => {
+                    //console.log(list)
                     console.log(data)
-                    return data;
-                } catch (error) {
-                    return error;
+                    if (!data.results.length) {
+                        // Create "No Results" message element
+                        const message = document.createElement("div");
+                        // Add class to the created element
+                        message.setAttribute("class", "no_result");
+                        // Add message text content
+                        message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+                        // Append message element to the results list
+                        list.prepend(message);
+                    }
+                },
+                noResults: true,
+            },
+            events: {
+                input: {
+                    selection: (event) => {
+                        const selection = event.detail.selection.value.value;
+                        console.log(event)
+                        auto_location.input.value = selection;
+                    }
                 }
             },
-            keys: ["value"]
-        },
-        threshold: 2,
-        debounce: 300,
-        resultItem: {
-            highlight: true
-        },
-        resultsList: {
-            destination: "#search-results-diagnosis",
-            element: (list, data) => {
-                //console.log(list)
-                console.log(data)
-                if (!data.results.length) {
-                    // Create "No Results" message element
-                    const message = document.createElement("div");
-                    // Add class to the created element
-                    message.setAttribute("class", "no_result");
-                    // Add message text content
-                    message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
-                    // Append message element to the results list
-                    list.prepend(message);
+        });
+    }
+
+    if (get_diagnosis.length) {
+        const auto_diagnosis = new autoComplete({
+            selector: "#get_diagnosis",
+            data: {
+                src: async (query) => {
+                    try {
+                        console.log(query)
+                        // Fetch Data from external Source
+                        const source = await fetch('/export/get_diagnosis/?term=' + query);
+                        // Data should be an array of `Objects` or `Strings`
+                        const data = await source.json();
+                        console.log(data)
+                        return data;
+                    } catch (error) {
+                        return error;
+                    }
+                },
+                keys: ["value"]
+            },
+            threshold: 2,
+            debounce: 300,
+            resultItem: {
+                highlight: true
+            },
+            resultsList: {
+                destination: "#search-results-diagnosis",
+                element: (list, data) => {
+                    //console.log(list)
+                    console.log(data)
+                    if (!data.results.length) {
+                        // Create "No Results" message element
+                        const message = document.createElement("div");
+                        // Add class to the created element
+                        message.setAttribute("class", "no_result");
+                        // Add message text content
+                        message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+                        // Append message element to the results list
+                        list.prepend(message);
+                    }
+                },
+                noResults: true,
+            },
+            events: {
+                input: {
+                    selection: (event) => {
+                        const selection = event.detail.selection.value.value;
+                        console.log(event)
+                        auto_diagnosis.input.value = selection;
+                    }
                 }
             },
-            noResults: true,
-        },
-        events: {
-            input: {
-                selection: (event) => {
-                    const selection = event.detail.selection.value.value;
-                    console.log(event)
-                    auto_diagnosis.input.value = selection;
-                }
-            }
-        },
-    });
+        });
+    }
 
     // $('#get_location').autocomplete({
     //     serviceUrl: "/export/get_locations",
@@ -263,9 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //     },
     // });
 
-
-    $('#get_diseases').on("keyup", function () {
-        var get_diseases = $('#get_diseases');
+    get_diseases.on("keyup", function () {
         fetch_post(
             "/experiment/group_diseases/cid-10/",
             {
@@ -292,7 +299,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function searchSuccessDiseases(data, textStatus, jqXHR) {
         $('#search-results-diagnosis').html(data);
     }
-
 
 });
 

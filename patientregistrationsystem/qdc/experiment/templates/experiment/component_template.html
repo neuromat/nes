@@ -1,94 +1,95 @@
 {% extends "base/template.html" %}
-{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% load i18n static %}
 
 {% block form %}
-    
-    <form id="component_form" method="post" data-bs-toggle="validator" enctype="multipart/form-data">
-    {% csrf_token %}
-{% endblock %}
+    <form id="component_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    {% if component_form.errors %}
-        <script type="text/javascript" defer>
+    {% block content %}
+        {% if component_form.errors %}
+            <script type="text/javascript" defer>
             showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
+            </script>
+        {% endif %}
 
+        <div class="tab-pane fade show active" id="experimentBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a>
+                    </li>
 
-    <div class="tab-pane fade show active" id="experimentBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
-
-                {% if group != None %}
-                    <li class="breadcrumb-item"><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                {% else %}
-                    <li class="breadcrumb-item"><a href="/experiment/{{ experiment.id }}/components">{% trans "Steps of experimental protocol" %}</a></li>
-                {% endif %}
-
-                {% for url_and_name in list_of_breadcrumbs %}
-                    {% if url_and_name != list_of_breadcrumbs|last or can_reuse or reusing or updating and component_configuration == None %}
-                        <li class="breadcrumb-item"><a href="{{ url_and_name.url }}">{{ url_and_name.name }}</a></li>
+                    {% if group != None %}
+                        <li class="breadcrumb-item">
+                            <a href="/experiment/group/{{ group.id }}">{{ group.title }}</a>
+                        </li>
                     {% else %}
-                        <li class="breadcrumb-item active">{{ url_and_name.name }}</li>
+                        <li class="breadcrumb-item">
+                            <a href="/experiment/{{ experiment.id }}/components">{% trans "Steps of experimental protocol" %}</a>
+                        </li>
                     {% endif %}
-                {% endfor %}
 
-                {% block breadcrumb %}
-                {% endblock %}
-            </ol>
-        </nav>
-    </div>
+                    {% for url_and_name in list_of_breadcrumbs %}
+                        {% if url_and_name != list_of_breadcrumbs|last or can_reuse or reusing or updating and component_configuration == None %}
+                            <li class="breadcrumb-item">
+                                <a href="{{ url_and_name.url }}">{{ url_and_name.name }}</a>
+                            </li>
+                        {% else %}
+                            <li class="breadcrumb-item active">
+                                {{ url_and_name.name }}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
 
-    <div class="tab-pane fade show active" id="menuUserTab">
-        <div class="container-fluid">
+                    {% block breadcrumb %}
+                    {% endblock breadcrumb %}
+
+                </ol>
+            </nav>
+        </div>
+
+        <div class="tab-pane fade show active" id="menuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
-                <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <h4>{% trans "Information about" %} {% block component_label %}{% endblock %}</h4>
-                    </div>
-                </div>
+                <h4>
+                    {% trans "Information about" %}
+
+                    {% block component_label %}
+                    {% endblock component_label %}
+
+                </h4>
+                <hr>
                 {% if can_reuse or reusing %}
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             {% if reusing %}
-                                <label class="form-label">{% trans "Identification" %} <b class="text-danger">*</b></label>
+                                <label class="form-label">
+                                    {% trans "Identification" %} <b class="text-danger">*</b>
+                                </label>
                             {% endif %}
                             <div class="dropdown">
                                 <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenu1" data-bs-toggle="dropdown" aria-expanded="true">
                                     {% if component_form.identification.value %}
                                         {{ component_form.identification.value }}
                                     {% else %}
+
                                         {% block component_button_label %}
-                                        {% endblock %}
+                                        {% endblock component_button_label %}
+
                                     {% endif %}
                                     <span class="caret"></span>
                                 </button>
@@ -96,18 +97,27 @@
                                 {% if existing_component_list %}
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                         {% for existing_component in existing_component_list %}
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}{% if position%}?position={{ position }}{% endif %}')">{{ existing_component.identification }}</a></li>
+                                            <li role="presentation">
+                                                <a role="menuitem"
+                                                   tabindex="-1"
+                                                   onclick="redirect_with_number_of_uses('/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}{% if position %}?position={{ position }}{% endif %}')">{{ existing_component.identification }}</a>
+                                            </li>
                                         {% endfor %}
 
-                                        <li role="presentation" class="divider"></li>
+                                        <li role="presentation" class="divider">
+                                        </li>
+
                                         {% block component_add_new %}
-                                        {% endblock %}
+                                        {% endblock component_add_new %}
+
                                     </ul>
                                 {% endif %}
                             </div>
                         </div>
                         {% if reusing %}
+
                             {% include "experiment/duration.html" %}
+
                         {% endif %}
                     </div>
                     <br>
@@ -117,41 +127,49 @@
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label class="form-label" for="identification">{% trans "Identification" %} <b class="text-danger">*</b></label>
+                                <label class="form-label" for="identification">
+                                    {% trans "Identification" %} <b class="text-danger">*</b>
+                                </label>
                                 {{ component_form.identification }}
-                                <div class="form-text with-errors text-danger"></div>
+                                <div class="form-text with-errors text-danger">
+                                </div>
                             </div>
                         </div>
+
                         {% include "experiment/duration.html" %}
+
                     </div>
                 {% endif %}
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-                            <label class="form-label" for="description">{% trans "Description" %}</label>
+                            <label class="form-label" for="description">
+                                {% trans "Description" %}
+                            </label>
                             {{ component_form.description }}
-                            <div class="form-text with-errors text-danger"></div>
+                            <div class="form-text with-errors text-danger">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {% block extra_fields %}
-                {% endblock %}
+                {% endblock extra_fields %}
 
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="form-group">
-
-                            <label for="additional_files" class="form-label">{% trans "Additional files" %}</label>
-                            <br/>
-
+                            <label for="additional_files" class="form-label">
+                                {% trans "Additional files" %}
+                            </label>
+                            <br />
                             {% if creating %}
                                 <input type="file" name="additional_files"  multiple>
-                                <br/>
+                                <br />
                             {% else %}
-                                {% if updating and not component_configuration%}
+                                {% if updating and not component_configuration %}
                                     <input type="file" name="additional_files" multiple>
-                                    <br/>
+                                    <br />
                                 {% endif %}
                             {% endif %}
 
@@ -159,17 +177,24 @@
                                 {% if component_additional_files %}
                                     {% for additional_file in component_additional_files.all %}
                                         <tr>
-                                        <td>{{ additional_file.file.url }}</td>
-                                        <td>
-                                            <button class="btn btn-light" type="button" onclick="location.href='{{ additional_file.file.url }}'"><span class="fa-fw fa fa-download-alt  text-info"></span></button>
-                                        </td>
-                                        <td>{{ additional_file.file.size|filesizeformat }}</td>
-                                        {% if not component_configuration %}
                                             <td>
-                                                <input type="checkbox" name="remove_additional_file_{{ additional_file.id }}"/>
-                                                {% trans "Delete" %}</td>
-                                        {% endif %}
-                                        <br/>
+                                                {{ additional_file.file.url }}
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-light" type="button" onclick="location.href='{{ additional_file.file.url }}'">
+                                                    <span class="fa-fw fa fa-download-alt  text-info"></span>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                {{ additional_file.file.size|filesizeformat }}
+                                            </td>
+                                            {% if not component_configuration %}
+                                                <td>
+                                                    <input type="checkbox" name="remove_additional_file_{{ additional_file.id }}" />
+                                                    {% trans "Delete" %}
+                                                </td>
+                                            {% endif %}
+                                            <br />
                                         </tr>
                                     {% endfor %}
                                 {% endif %}
@@ -198,7 +223,8 @@
                 {% if component_configuration %}
                     <div class="row" style="padding-bottom: 1em">
                         <div class="col-12 col-sm-12">
-                            <a class="btn btn-primary" href="/experiment/component/{% if component_configuration.component.component_type != "block" %}edit/{% endif %}{{ path_of_the_components }}-{{ component_configuration.component.id }}">{% trans "Edit" %}</a>
+                            <a class="btn btn-primary"
+                               href="/experiment/component/{% if component_configuration.component.component_type != "block" %}edit/{% endif %}{{ path_of_the_components }}-{{ component_configuration.component.id }}">{% trans "Edit" %}</a>
                         </div>
                     </div>
                 {% endif %}
@@ -208,13 +234,15 @@
                 {% if not is_configuring_new_experimental_protocol %}
                     <div class="my-3 p-3 bg-body rounded shadow-sm">
                         <div class="row">
-                            <div class="col-12 col-sm-12">
-                                <h4>{% trans "Quantity of uses to be inserted" %} <b class="text-danger">*</b></h4>
-                            </div>
+                            <h4>
+                                {% trans "Quantity of uses to be inserted" %} <b class="text-danger">*</b>
+                            </h4>
+                            <hr>
                             <div class="col-6 col-sm-2">
                                 <div class="form-group">
                                     {{ number_of_uses_form.number_of_uses_to_insert }}
-                                    <div class="form-text with-errors text-danger"></div>
+                                    <div class="form-text with-errors text-danger">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -225,29 +253,36 @@
             {% if component_configuration %}
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <div class="row">
-                        <div class="col-12 col-sm-12">
-                            <h4>{% trans "Information about this use of step" %}</h4>
-                        </div>
+                        <h4>
+                            {% trans "Information about this use of step" %}
+                        </h4>
+                        <hr>
                     </div>
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label class="form-label" for="name" class="form-label">{% trans "Name" %}</label>
-                                    {{ configuration_form.name }}
-                                <div class="form-text with-errors text-danger"></div>
+                                <label class="form-label" for="name">
+                                    {% trans "Name" %}
+                                </label>
+                                {{ configuration_form.name }}
+                                <div class="form-text with-errors text-danger">
+                                </div>
                             </div>
                         </div>
                         {% if type_of_the_parent_block == "sequence" %}
                             <div class="col-12 col-sm-5 offset-1">
                                 <div class="form-group">
-                                    <label>{% trans "Position in the set of steps" %} <b class="text-danger">*</b></label>
+                                    <label>
+                                        {% trans "Position in the set of steps" %} <b class="text-danger">*</b>
+                                    </label>
                                     <div class="input-group  input-group-sm">
                                         {% trans "Execution order from this sub-step does not vary" as text_1 %}
                                         {% trans "This sub-step can be performed anywhere in the parent assembly where there is not a fixed step" as text_2 %}
                                         {% for radio in configuration_form.random_position %}
-                                            <span style="margin-right: 15px;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="
-                                            {% cycle text_1 text_2 %}">
-                                                <div class="radio-inline">{{ radio }}</div>
+                                            <span style="margin-right: 15px;" data-bs-toggle="tooltip" data-bs-placement="bottom" title=" {% cycle text_1 text_2 %}">
+                                                <div class="radio-inline">
+                                                    {{ radio }}
+                                                </div>
                                             </span>
                                         {% endfor %}
                                     </div>
@@ -256,49 +291,68 @@
                         {% endif %}
                     </div>
                     <div class="row">
-                        <div class="col-12 col-sm-3">
-                            <div>
-                                <label for="unlimited_number_of_repetitions" class="form-label">{% trans "Quantity of repetitions" %} <b class="text-danger">*</b></label>
-                                <div class="radio-inline" style="margin-top: 0px">
-                                    <input {% if not can_change %}disabled{% endif %} id="id_repetitions_0" name="unlimited_number_of_repetitions" type="radio" value="unlimited">
-                                        {% trans "Unlimited" %}
-                                </div>
-                                <div class="radio-inline"  style="margin-top: 0px; ">
-                                    <input {% if not can_change %}disabled{% endif %} id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
-                                    <div id="div_form_number_of_repetitions">
-                                        {{ configuration_form.number_of_repetitions }}
-                                        <div class="form-text with-errors text-danger" id="div_for_errors_in_number_of_repetitions"></div>
+                        <div class="col-3">
+                            <label for="unlimited_number_of_repetitions" class="form-label">
+                                {% trans "Quantity of repetitions" %} <b class="text-danger">*</b>
+                            </label>
+                            <div class="radio-inline mt-0">
+                                <input class="form-check-input" {% if not can_change %}disabled{% endif %} id="id_repetitions_0" name="unlimited_number_of_repetitions" type="radio" value="unlimited">
+                                <label class="form-check-label" for="id_repetitions_0">
+                                    {% trans "Unlimited" %}
+                                </label>
+                            </div>
+                            <div class="radio-inline mt-0">
+                                <input class="form-check-input" {% if not can_change %}disabled{% endif %} id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
+                                <label class="form-check-label" for="id_repetitions_1">
+                                    {% trans "Limited" %}
+                                </label>
+                                <div id="div_form_number_of_repetitions">
+                                    {{ configuration_form.number_of_repetitions }}
+                                    <div class="form-text with-errors text-danger" id="div_for_errors_in_number_of_repetitions">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="interval_div">
-                            <div class="col-12 col-sm-6 offset-1">
-                                <label for="undefined_interval" id="undefined_interval_label" class="form-label">{% trans "Interval among repetitions" %} <b class="text-danger">*</b></label>
-                                <div class="radio" style="margin-top: 0px">
-                                    <input {% if not can_change %}disabled{% endif %} id="id_interval_0" name="undefined_interval" type="radio" value="undefined">
-                                        {% trans "Undefined" %}
-                                </div>
-                                <label class="radio">
-                                    <input {% if not can_change %}disabled{% endif %} id="id_interval_1" name="undefined_interval" type="radio" value="limited">
-                                        <div class="col-4 col-sm-4" style="padding-left: 0px">
-                                            <div class="form-group" id="div_form_interval_between_repetitions_value">
-                                                {{ configuration_form.interval_between_repetitions_value }}
-                                                <div class="form-text with-errors text-danger" id="div_for_errors_in_interval_between_repetitions_value"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-4 col-sm-5" style="padding-left: 0px">
-                                            <div class="form-group" id="div_form_interval_between_repetitions_unit">
-                                                {{ configuration_form.interval_between_repetitions_unit }}
-                                                <div class="form-text with-errors text-danger" id="div_for_errors_in_interval_between_repetitions_unit"></div>
-                                            </div>
-                                        </div>
+                        <div class="col-3">
+                            <div id="interval_div">
+                                <label for="undefined_interval" id="undefined_interval_label" class="form-label">
+                                    {% trans "Interval among repetitions" %} <b class="text-danger">*</b>
                                 </label>
+                                <div class="radio-inline mt-0">
+                                    <input class="form-check-input" {% if not can_change %}disabled{% endif %} id="id_interval_0" name="undefined_interval" type="radio" value="undefined">
+                                    <label class="form-check-label" for="id_interval_0">
+                                        {% trans "Undefined" %}
+                                    </label>
+                                </div>
+                                <div class="radio-inline mt-0">
+                                    <input class="form-check-input" {% if not can_change %}disabled{% endif %} id="id_interval_1" name="undefined_interval" type="radio" value="limited">
+                                    <label class="form-check-label" for="id_interval_1">
+                                        {% trans "Definied" %}
+                                    </label>
+                                    <div class="col-12 ps-0">
+                                        <div class="form-group" id="div_form_interval_between_repetitions_value">
+                                            {{ configuration_form.interval_between_repetitions_value }}
+                                            <div class="form-text with-errors text-danger" id="div_for_errors_in_interval_between_repetitions_value">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 ps-0">
+                                        <div class="form-group" id="div_form_interval_between_repetitions_unit">
+                                            {{ configuration_form.interval_between_repetitions_unit }}
+                                            <div class="form-text with-errors text-danger" id="div_for_errors_in_interval_between_repetitions_unit">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6">
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-check form-switch">
                             {{ configuration_form.requires_start_and_end_datetime }}
-                            <label class="form-label">{% trans "Requires start and end date/time" %}</label>
+                            <label class="form-check-label" for="id_requires_start_and_end_datetime">
+                                {% trans "Requires start and end date/time" %}
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -307,21 +361,27 @@
             <div class="btn-toolbar justify-content-between" role="toolbar">
                 {% if not component_configuration and can_change %}
                     {% if component.id in protected_steps %}
-                        <div class="btn-group float-start" data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}">
-                            <button type="button" class="btn btn-danger" disabled="disabled">{% trans "Delete" %}</button>
+                        <div class="btn-group float-start"
+                             data-bs-toggle="tooltip"
+                             data-bs-placement="right"
+                             title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}">
+                            <button type="button" class="btn btn-danger" disabled="disabled">
+                                {% trans "Delete" %}
+                            </button>
                         </div>
                     {% else %}
                         {% if not creating %}
                             <div class="btn-group">
-                                <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
+                                <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">
+                                    {% trans "Delete" %}
+                                </button>
                             </div>
                         {% endif %}
                     {% endif %}
                 {% endif %}
                 {% if updating or creating or component_configuration %}
                     <div class="btn-group float-end">
-                        <button id="submit_button" class="btn btn-primary" style="margin-left: 5px;" {% if not can_change %}disabled{% endif %} type="submit"
-                                name="action" value="save">
+                        <button id="submit_button" class="btn btn-primary" style="margin-left: 5px;" {% if not can_change %}disabled{% endif %} type="submit" name="action" value="save">
                             {% if reusing or can_reuse %}
                                 {% trans "Insert" %}
                             {% else %}
@@ -340,32 +400,38 @@
     </div>
 
     {% if not component_configuration and can_change %}
-        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-             aria-hidden="true">
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
                         {% trans "Are you sure you want to delete step?" %}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            {% trans "Cancel" %}
+                        </button>
+                        <button type="submit" class="btn btn-danger" value="remove" name="action">
+                            {% trans "Delete" %}
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     {% endif %}
 
-    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
+    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
                     {% trans "This experiment/project is in use, you can not change it! Do you want to copy this experiment?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment/project" %}</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        {% trans "Cancel" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">
+                        {% trans "Copy experiment/project" %}
+                    </button>
                 </div>
             </div>
         </div>
@@ -373,10 +439,10 @@
 {% endblock %}
 
 {% block end_form %}
-    </form>
+</form>
 </div>
 {% endblock %}
 
 {% block extrascript %}
-        <script src={% static "site/js/component.js" %}></script>
+    <script src={% static "site/js/component.js" %}></script>
 {% endblock %}

@@ -36,7 +36,7 @@
     {% block content %}
         <div class="tab-pane fade show active" id="subjectBreadCrumb">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                     <li class="breadcrumb-item">
                         <a href={% url "home" %}>{% trans "Home" %}</a>
                     </li>
@@ -52,7 +52,9 @@
                     <li class="breadcrumb-item">
                         <a href="/experiment/group/{{ group.id }}">{{ group.title }}</a>
                     </li>
-                    <li class="breadcrumb-item active">{% trans "Participants and data collections" %}</li>
+                    <li class="breadcrumb-item active">
+                        {% trans "Participants and data collections" %}
+                    </li>
                 </ol>
             </nav>
         </div>
@@ -76,22 +78,20 @@
                                 <div class="col-12 col-sm-12">
                                     <div class="form-group">
                                         <input id="group_id" value="{{ group.id }}" class="d-none">
-                                        <label>{% trans "Add participant" %}</label>
+                                        <label>
+                                            {% trans "Add participant" %}
+                                        </label>
 
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text"> <i class="fa-fw fa fa-search"></i></span>
                                             <input id="search_key"
                                                    class="form-control"
-                                                   {% if perms.patient.sensitive_data_patient %}
-                                                       placeholder="{% trans "Type participant name, CPF or code" %}"
-                                                   {% else %}
-                                                       placeholder="{% trans "Type participant code" %}"
-                                                   {% endif %}
-                                                   type="text"
+                                                   {% if perms.patient.sensitive_data_patient %} placeholder="{% trans "Type participant name, CPF or code" %}" {% else %} placeholder="{% trans "Type participant code" %}" {% endif %}
+                                                   type="search"
                                                    autofocus="true">
                                         </div>
                                         {% csrf_token %}
-                                        <ul id="list_results" class="list-group list-group-flush my-1 participant-list">
+                                        <ul id="list_results" class="list-group list-group-flush my-3 participant-list">
                                         </ul>
                                     </div>
                                 </div>
@@ -144,21 +144,34 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>{% trans "Participant" %}</th>
-                                            <th>{% trans "Term of consent" %}</th>
+                                            <th>
+                                                {% trans "Participant" %}
+                                            </th>
+                                            <th>
+                                                {% trans "Term of consent" %}
+                                            </th>
                                             {% if experimental_protocol_info.number_of_questionnaires %}
-                                                <th>{% trans "Completed questionnaires" %}</th>
+                                                <th>
+                                                    {% trans "Completed questionnaires" %}
+                                                </th>
                                             {% endif %}
-                                            <th class="col-lg-6">{% trans "Data files uploaded" %}</th>
+                                            <th class="col-lg-6">
+                                                {% trans "Data files uploaded" %}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% if subject_list|length == 0 %}
                                             <tr>
-                                                <td>{% trans "(No participant inserted)" %}</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td>
+                                                    {% trans "(No participant inserted)" %}
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                </td>
                                             </tr>
                                         {% else %}
                                             {% for item in subject_list %}
@@ -171,10 +184,7 @@
                                                                title="{% trans "Delete participant" %}"
                                                                onclick="show_modal_remove({{ item.subject.id }});"></a>
                                                         {% endif %}
-                                                        <a data-bs-toggle="tooltip"
-                                                           data-bs-placement="left"
-                                                           title="{% trans "View Participant" %}"
-                                                           href="/patient/{{ item.subject.patient.id }}">{% get_name_or_code item.subject.patient.id %}</a>
+                                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "View Participant" %}" href="/patient/{{ item.subject.patient.id }}">{% get_name_or_code item.subject.patient.id %}</a>
 
                                                     </td>
                                                     <td>
@@ -212,12 +222,7 @@
                                                                     </div>
                                                                     <div class="col-10 col-sm-10">
                                                                         <div class="progress">
-                                                                            <div class="progress-bar
-                                                                                        {% if item.percentage_of_questionnaires == 100.0 %}
-                                                                                            progress-bar-success
-                                                                                        {% else %}
-                                                                                            progress-bar-warning
-                                                                                        {% endif %}"
+                                                                            <div class="progress-bar {% if item.percentage_of_questionnaires == 100.0 %} progress-bar-success {% else %} progress-bar-warning {% endif %}"
                                                                                  role="progressbar"
                                                                                  aria-valuenow="{{ item.number_of_questionnaires_filled }}"
                                                                                  aria-valuemin="0"
@@ -247,12 +252,7 @@
                                                                 </div>
                                                                 <div class="col-8 col-sm-8">
                                                                     <div class="progress">
-                                                                        <div class="progress-bar
-                                                                                    {% if item.percentage_of_eeg_data_files_uploaded == 100.0 %}
-                                                                                        progress-bar-success
-                                                                                    {% else %}
-                                                                                        progress-bar-warning
-                                                                                    {% endif %}"
+                                                                        <div class="progress-bar {% if item.percentage_of_eeg_data_files_uploaded == 100.0 %} progress-bar-success {% else %} progress-bar-warning {% endif %}"
                                                                              role="progressbar"
                                                                              aria-valuenow="{{ item.number_of_eeg_data_files_uploaded }}"
                                                                              aria-valuemin="0"
@@ -278,12 +278,7 @@
                                                                 </div>
                                                                 <div class="col-8 col-sm-8">
                                                                     <div class="progress">
-                                                                        <div class="progress-bar
-                                                                                    {% if item.percentage_of_emg_data_files_uploaded == 100.0 %}
-                                                                                        progress-bar-success
-                                                                                    {% else %}
-                                                                                        progress-bar-warning
-                                                                                    {% endif %}"
+                                                                        <div class="progress-bar {% if item.percentage_of_emg_data_files_uploaded == 100.0 %} progress-bar-success {% else %} progress-bar-warning {% endif %}"
                                                                              role="progressbar"
                                                                              aria-valuenow="{{ item.number_of_emg_data_files_uploaded }}"
                                                                              aria-valuemin="0"
@@ -309,12 +304,7 @@
                                                                 </div>
                                                                 <div class="col-8 col-sm-8">
                                                                     <div class="progress">
-                                                                        <div class="progress-bar
-                                                                                    {% if item.percentage_of_tms_data_files_uploaded == 100.0 %}
-                                                                                        progress-bar-success
-                                                                                    {% else %}
-                                                                                        progress-bar-warning
-                                                                                    {% endif %}"
+                                                                        <div class="progress-bar {% if item.percentage_of_tms_data_files_uploaded == 100.0 %} progress-bar-success {% else %} progress-bar-warning {% endif %}"
                                                                              role="progressbar"
                                                                              aria-valuenow="{{ item.number_of_tms_data_files_uploaded }}"
                                                                              aria-valuemin="0"
@@ -340,12 +330,7 @@
                                                                 </div>
                                                                 <div class="col-8 col-sm-8">
                                                                     <div class="progress">
-                                                                        <div class="progress-bar
-                                                                                    {% if item.percentage_of_digital_game_phase_data_files_uploaded == 100.0 %}
-                                                                                        progress-bar-success
-                                                                                    {% else %}
-                                                                                        progress-bar-warning
-                                                                                    {% endif %}"
+                                                                        <div class="progress-bar {% if item.percentage_of_digital_game_phase_data_files_uploaded == 100.0 %} progress-bar-success {% else %} progress-bar-warning {% endif %}"
                                                                              role="progressbar"
                                                                              aria-valuenow="{{ item.number_of_digital_game_phase_data_files_uploaded }}"
                                                                              aria-valuemin="0"
@@ -371,12 +356,7 @@
                                                                 </div>
                                                                 <div class="col-8 col-sm-8">
                                                                     <div class="progress">
-                                                                        <div class="progress-bar
-                                                                                    {% if item.percentage_of_generic_data_collection_data_files_uploaded == 100.0 %}
-                                                                                        progress-bar-success
-                                                                                    {% else %}
-                                                                                        progress-bar-warning
-                                                                                    {% endif %}"
+                                                                        <div class="progress-bar {% if item.percentage_of_generic_data_collection_data_files_uploaded == 100.0 %} progress-bar-success {% else %} progress-bar-warning {% endif %}"
                                                                              role="progressbar"
                                                                              aria-valuenow="{{ item.number_of_generic_data_collection_data_files_uploaded }}"
                                                                              aria-valuemin="0"
@@ -392,8 +372,9 @@
 
                                                         <div class="row">
                                                             <div class="col-12 col-sm-12">
-                                                                <span style="background-color: steelblue" class="badge.badge-pill">{{ item.number_of_additional_data_uploaded }}</span>
+                                                                <span class="badge bg-success">{{ item.number_of_additional_data_uploaded }}</span>
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data"
+                                                                class="ms-1"
                                                                    data-bs-toggle="tooltip"
                                                                    title="{% trans "Uploaded additional data files" %}">{% trans "Additional" %}</a>
                                                             </div>
@@ -407,7 +388,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 {# tab 'per steps of the experimental protocol' #}
@@ -419,9 +399,15 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>{% trans "Data colletion path" %}</th>
-                                            <th>{% trans "Data type" %}</th>
-                                            <th>{% trans "Number of participants" %}</th>
+                                            <th>
+                                                {% trans "Data colletion path" %}
+                                            </th>
+                                            <th>
+                                                {% trans "Data type" %}
+                                            </th>
+                                            <th>
+                                                {% trans "Number of participants" %}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -443,9 +429,13 @@
                                                             <h6>
                                                                 {% for item in data_collection.path %}
                                                                     {{ item.1 }} >
-                                                                    {% if item.2 %}{{ item.2 }} >{% endif %}
+                                                                    {% if item.2 %}
+                                                                        {{ item.2 }} >
+                                                                    {% endif %}
 
-                                                                    {% if forloop.last %}{{ item.3 }}{% endif %}
+                                                                    {% if forloop.last %}
+                                                                        {{ item.3 }}
+                                                                    {% endif %}
                                                                 {% endfor %}
                                                             </h6>
                                                         </i>
@@ -454,7 +444,9 @@
                                                 </td>
                                                 {% if data_collection.data_list %}
                                                     {% for item_data in data_collection.data_list %}
-                                                        {% if forloop.counter0 != 0 %}<tr>{% endif %}
+                                                        {% if forloop.counter0 != 0 %}
+                                                            <tr>
+                                                            {% endif %}
                                                             <td>
                                                                 <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}">
                                                                     <span class="{{ item_data.icon_class }}"></span> {{ item_data.description }}</a>
@@ -467,11 +459,15 @@
                                                                     {% trans "participants" %}
                                                                 {% endif %}
                                                             </td>
-                                                            {% if forloop.counter0 != 0 %}</tr>{% endif %}
+                                                            {% if forloop.counter0 != 0 %}
+                                                            </tr>
+                                                        {% endif %}
                                                     {% endfor %}
                                                 {% else %}
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td>
+                                                    </td>
+                                                    <td>
+                                                    </td>
                                                 {% endif %}
                                             </tr>
                                         {% endfor %}
@@ -490,45 +486,49 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    {% if perms.experiment.delete_subject and can_change %}
-        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body">{% trans "Are you sure you want to delete participant?" %}</div>
-                    <div class="modal-footer">
-                        <button onclick="disable_remove_button();" type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button disabled="disabled" type="submit" id="remove-participant" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+        {% if perms.experiment.delete_subject and can_change %}
+            <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            {% trans "Are you sure you want to delete participant?" %}
+                        </div>
+                        <div class="modal-footer">
+                            <button onclick="disable_remove_button();" type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                {% trans "Cancel" %}
+                            </button>
+                            <button disabled="disabled" type="submit" id="remove-participant" class="btn btn-danger" value="remove" name="action">
+                                {% trans "Delete" %}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% endif %}
+        {% endif %}
 
-    {% if experimental_protocol_info.number_of_questionnaires %}
-        <div class="modal fade"
-             id="modalImportQuestionnaireResponses"
-             tabindex="-1"
-             role="dialog"
-             aria-labelledby="myModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body">{% trans "Are you sure import questionnaire responses?" %}</div>
-                    <div class="modal-footer">
-                        <button onclick="disable_import_questionnaire_responses_button();" type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                        <a href="/experiment/group/{{ group.id }}/load_questionnaire_data" class="btn btn-primary">{% trans "Import questionnaire responses" %}</a>
+        {% if experimental_protocol_info.number_of_questionnaires %}
+            <div class="modal fade" id="modalImportQuestionnaireResponses" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            {% trans "Are you sure import questionnaire responses?" %}
+                        </div>
+                        <div class="modal-footer">
+                            <button onclick="disable_import_questionnaire_responses_button();" type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                {% trans "Cancel" %}
+                            </button>
+                            <a href="/experiment/group/{{ group.id }}/load_questionnaire_data" class="btn btn-primary">{% trans "Import questionnaire responses" %}</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% endif %}
+        {% endif %}
 
-{% endblock content %}
+    {% endblock content %}
 
-{% block end_form %}
-</form>
+    {% block end_form %}
+    </form>
 {% endblock end_form %}
 
 {% block extrascript %}

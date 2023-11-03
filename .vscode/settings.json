@@ -52,6 +52,7 @@
         "editor.defaultFormatter": "ms-azuretools.vscode-docker"
     },
     "mypy-type-checker.reportingScope": "workspace",
+    "mypy-type-checker.preferDaemon": true,
     "python.testing.unittestArgs": [
         "-v",
         "-s",
@@ -64,7 +65,7 @@
     "[html][django-html][handlebars][hbs][mustache][jinja][jinja-html][nj][njk][nunjucks][twig]": {
         "editor.defaultFormatter": "monosans.djlint"
     },
-    "djlint.enableLinting": true,
+    "djlint.enableLinting": false,
     "djlint.maxLineLength": 180,
     "djlint.useGitignore": true,
     "djlint.lineBreakAfterMultilineTag": true,
@@ -83,9 +84,12 @@
         "load",
     ],
     "djlint.profile": "django",
-    "djlint.ignore": ["D018", "H031"],
+    "djlint.ignore": [
+        "D018",
+        "H031"
+    ],
+    "djlint.extendExclude": [".py"],
     "[django-html]": {
         "editor.defaultFormatter": "monosans.djlint"
     },
-
 }

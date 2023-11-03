@@ -2,6 +2,7 @@
 from django import forms
 from django.core.validators import EMPTY_VALUES
 from django.forms import (
+    CheckboxInput,
     DateInput,
     ModelForm,
     NullBooleanSelect,
@@ -32,7 +33,14 @@ class PatientForm(ModelForm):
         self.fields["country"].initial = "BR"
 
     anonymous = forms.BooleanField(
-        required=False, initial=False, label=_("Anonymous participant?")
+        required=False,
+        initial=False,
+        label=_("Anonymous participant?"),
+        widget=CheckboxInput(
+            attrs={
+                "class": "form-check-input",
+            }
+        ),
     )
 
     class Meta:
@@ -102,7 +110,11 @@ class PatientForm(ModelForm):
             "marital_status": Select(attrs={"class": "form-select"}),
             "country": Select(attrs={"class": "form-select"}),
             "zipcode": TextInput(
-                attrs={"class": "form-control", "pattern": r"\d{5}-?\d{3}"}
+                attrs={
+                    "type": "tel",
+                    "class": "form-control",
+                    "pattern": r"\d{5}-?\d{3}",
+                }
             ),
             "street": TextInput(attrs={"class": "form-control"}),
             "address_number": TextInput(attrs={"class": "form-control"}),
@@ -139,6 +151,7 @@ class TelephoneForm(ModelForm):
         widgets = {
             "number": TextInput(
                 attrs={
+                    "type": "tel",
                     "class": "form-control telephone_number",
                     "pattern": r"^[- ()0-9]+",
                 }

@@ -7,14 +7,14 @@
 {% endblock activeUser %}
 
 {% block form %}
-    <form id="user_form" role="form" method="post" onsubmit="return Validate()" data-bs-toggle="validator">
+    <form id="user_form" role="form" method="post" onsubmit="return Validate()" data-toggle="validator">
         {% csrf_token %}
     {% endblock form %}
 
     {% block content %}
         <div class="tab-pane fade show active" id="equipmentBreadCrumb">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+                <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                     <li class="breadcrumb-item">
                         <a href={% url "home" %}>{% trans "Home" %}</a>
                     </li>

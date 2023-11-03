@@ -9,7 +9,7 @@
                 <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <div class="form-group">
                         <div class="row">
-                            <div class="col col-6 text-end">
+                            <div class="col text-end">
                                 {% if perms.patient.sensitive_data_patient and code %}
                                     <label class="fw-semibold" for="code">{% trans "Code" %}:</label>
                                     <span class="disabled user-select-all">{{ code }}</span>
