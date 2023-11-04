@@ -118,10 +118,14 @@ except:
     python3 -u manage.py shell < /tmp/create_superuser.py || true
     echo "	INFO: import cid10"
     python3 -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
-    
-    mkdir static || true
+
+    mkdir -p static || true
     echo "	INFO: colectstatic"
     python3 -u manage.py collectstatic --no-input || true
+
+    echo "  INFO: compress"
+    python3 -u manage.py compress --force || true
+    
 
     echo "	INFO: populate_history"
     python3 -u manage.py populate_history --auto || true
