@@ -42,8 +42,6 @@ if DEBUG:
         "10.0.2.2",
     ]
 
-DJANGO_LOG_LEVEL = "Info"
-
 
 warnings.filterwarnings(
     "error",

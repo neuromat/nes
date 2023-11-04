@@ -126,7 +126,6 @@ except:
     echo "  INFO: compress"
     python3 -u manage.py compress --force || true
     
-
     echo "	INFO: populate_history"
     python3 -u manage.py populate_history --auto || true
 
