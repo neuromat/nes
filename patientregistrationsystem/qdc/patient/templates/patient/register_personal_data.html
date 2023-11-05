@@ -378,9 +378,9 @@
 
 {% block extrascript %}
     {{ block.super }}
-    <script src={% static "site/js/phone.js" %}></script>
-    <script src={% static "site/js/cep.js" %}></script>
-    <script src={% static "site/js/patient_personal_data.js" %}></script>
+    <script defer src={% static "site/js/phone.js" %}></script>
+    <script defer src={% static "site/js/cep.js" %}></script>
+    <script defer src={% static "site/js/patient_personal_data.js" %}></script>
 
     {% if patient_form.errors %}
         {% for field in patient_form %}
