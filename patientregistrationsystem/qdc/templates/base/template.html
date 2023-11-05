@@ -240,7 +240,7 @@
     {% endcompress %}
 
     {% compress js %}
-        <script type="text/javascript" src="{% static "site/bootstrap-validator-0.11.9/validator.min.js" %}" charset="utf-8"></script>
+        <script type="text/javascript" async src="{% static "site/bootstrap-validator-0.11.9/validator.min.js" %}" charset="utf-8"></script>
     {% endcompress %}
 
     <script type="text/javascript" defer src="{% url "javascript-catalog" %}" charset="utf-8"></script>
