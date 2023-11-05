@@ -378,9 +378,10 @@
 
 {% block extrascript %}
     {{ block.super }}
-    <script defer src={% static "site/js/phone.js" %}></script>
-    <script defer src={% static "site/js/cep.js" %}></script>
-    <script defer src={% static "site/js/patient_personal_data.js" %}></script>
+    <script type="text/javascript" src="{% static "site/cleave.min.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" defer src="{% static "site/js/phone.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" defer src="{% static "site/js/cep.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" defer src="{% static "site/js/patient_personal_data.js" %}" charset="utf-8"></script>
 
     {% if patient_form.errors %}
         {% for field in patient_form %}
