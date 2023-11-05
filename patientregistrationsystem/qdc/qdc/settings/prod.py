@@ -25,7 +25,7 @@ LOGGING = {
         "file": {
             "level": "WARNING",
             "class": "logging.FileHandler",
-            "filename": "debug.log",
+            "filename": BASE_DIR / "debug.log",
         },
         "mail_admins": {
             "level": "ERROR",

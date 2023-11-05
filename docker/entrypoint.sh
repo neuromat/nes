@@ -177,6 +177,12 @@ else
 
     <Directory $NES_PROJECT_PATH/static>
         Require all granted
+
+        <IfModule mod_headers.c>
+            <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf|svg)$">
+                Header set Cache-Control "max-age=31536000, public"
+            </FilesMatch>
+        </IfModule>
     </Directory>
 
     <Directory $NES_PROJECT_PATH>
@@ -220,6 +226,12 @@ else
 
     <Directory $NES_PROJECT_PATH/static>
         Require all granted
+
+        <IfModule mod_headers.c>
+            <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf|svg|ttf|woff2)$">
+                Header set Cache-Control "max-age=31536000, public"
+            </FilesMatch>
+        </IfModule>
     </Directory>
 
     <Directory $NES_PROJECT_PATH>
@@ -257,6 +269,7 @@ else
 
     a2enmod ssl
     a2enmod http2
+    a2enmod headers
     a2dissite 000-default.conf
     a2ensite nes
     a2ensite nes-ssl
