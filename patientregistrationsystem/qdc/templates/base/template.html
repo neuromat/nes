@@ -31,11 +31,11 @@
 
     <body class="bg-body-secondary">
         <header>
-            <form id="language_form" action={% url "set_language" %} method="post">
+            <form id="language_form" action="{% url "set_language" %}" method="post">
                 {% csrf_token %}
                 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark shadow-sm" role="navigation">
                     <div class="container">
-                        <a class="navbar-brand" href={% url "home" %}>{% trans "NES" %}</a>
+                        <a class="navbar-brand" href="{% url "home" %}">{% trans "NES" %}</a>
                         <button type="button"
                                 class="navbar-toggler collapsed"
                                 data-bs-toggle="collapse"
@@ -249,22 +249,20 @@
     <script type="text/javascript" charset="utf-8">
         "use strict";
 
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "success" %}
-                    showSuccessMessage('{{ message }}');
-                {% endif %}
-                {% if message.tags == "warning" %}
-                    showWarningMessage('{{ message }}');
-                {% endif %}
-                {% if message.tags == "error" %}
-                    showErrorMessage('{{ message }}');
-                {% endif %}
-                {% if message.tags == "info" %}
-                    showInfoMessage('{{ message }}');
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                showSuccessMessage('{{ message }}');
+            {% endif %}
+            {% if message.tags == "warning" %}
+                showWarningMessage('{{ message }}');
+            {% endif %}
+            {% if message.tags == "error" %}
+                showErrorMessage('{{ message }}');
+            {% endif %}
+            {% if message.tags == "info" %}
+                showInfoMessage('{{ message }}');
+            {% endif %}
+        {% endfor %}
 
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
