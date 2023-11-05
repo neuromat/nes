@@ -93,8 +93,8 @@
 {% endblock %}
 
 {% block extrascript %}
-    <script src={% static "site/multiselect/multiselect.min.js" %}></script>
-    <script src={% static "site/js/participant_import.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/multiselect/multiselect.min.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/participant_import.js" %}></script>
     <script>
         $(document).ready(function () {
             $('[data-bs-toggle="tooltip"]').tooltip();

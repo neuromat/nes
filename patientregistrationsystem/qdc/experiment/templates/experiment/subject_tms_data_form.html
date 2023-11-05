@@ -409,7 +409,7 @@
 
 {% block extrascript %}
     {{ block.super }}
-    <script src={% static "site/js/research_project.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/research_project.js" %}></script>
     <script>
         $(document).ready(function () {
             var select_tms_setting = $("#id_tms_setting");

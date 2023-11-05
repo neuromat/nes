@@ -295,10 +295,10 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script src={% static "site/js/custom_user.js" %}></script>
-    <script src={% static "site/js/password.js" %}></script>
-    <script src={% static "site/js/password_register.js" %}></script>
-    <script src={% static "site/js/custom_user_validation.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/custom_user.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/password.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/password_register.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/custom_user_validation.js" %}></script>
 
     {% if form.errors %}<script type="text/javascript" defer>showErrorMessage(gettext('Please, correct the fields highlighted.'))</script>{% endif %}
 {% endblock extrascript %}

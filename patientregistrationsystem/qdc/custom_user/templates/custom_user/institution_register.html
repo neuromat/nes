@@ -133,6 +133,6 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" src={% static "site/js/custom_user_validation.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/custom_user_validation.js" %}></script>
     {% if institution_form.errors %}<script type="text/javascript" defer>showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 {% endblock extrascript %}

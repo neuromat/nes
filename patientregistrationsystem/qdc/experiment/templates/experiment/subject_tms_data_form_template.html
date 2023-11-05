@@ -184,7 +184,7 @@
 {% endblock %}
 
 {% block extrascript %}
-    <script src={% static "site/js/research_project.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/research_project.js" %}></script>
     <script>
         $(document).ready(function () {
             var $id_file_format = $("#id_file_format");

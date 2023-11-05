@@ -364,7 +364,7 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script src={% static "site/js/subject_questionnaire_response_form.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/subject_questionnaire_response_form.js" %}></script>
 
     {% if FAIL == False %}
         <script>

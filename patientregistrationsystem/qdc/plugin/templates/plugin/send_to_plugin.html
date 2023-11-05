@@ -320,8 +320,8 @@
 {% endblock content %}
 
 {% block extrascript %}
-    <script src={% static "site/js/experiment_selection.js" %}></script>
-    <script src={% static "site/js/participant_import.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/experiment_selection.js" %}></script>
+    <script type="text/javascript" defer src={% static "site/js/participant_import.js" %}></script>
     <script>
         function validate_plugin_form() {
             if (!$("select[name='patients_selected\\[\\]'] option").length) {
