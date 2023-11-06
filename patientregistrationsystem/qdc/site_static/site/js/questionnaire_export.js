@@ -1,8 +1,9 @@
 /**
  *  select fields from doublelist in export
  */
+"use strict";
 
-jQuery(document).ready(function ($) {
+document.addEventListener("DOMContentLoaded", () => {
     //$("select[name='from[]']").multiselect({ keepRenderingSort: true });
 
     var multiselect_lists = $("select[id ^='multiselect']");
