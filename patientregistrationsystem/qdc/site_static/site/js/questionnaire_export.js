@@ -2,7 +2,7 @@
  *  select fields from doublelist in export
  */
 
-ready(function ($) {
+jQuery(document).ready(function ($) {
     //$("select[name='from[]']").multiselect({ keepRenderingSort: true });
 
     var multiselect_lists = $("select[id ^='multiselect']");
