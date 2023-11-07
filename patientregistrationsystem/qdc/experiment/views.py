@@ -137,6 +137,7 @@ from .forms import (
     SoftwareVersionRegisterForm,
     SourceCodeForm,
     StandardizationSystemRegisterForm,
+    StimuliDataForm,
     StimuliEqRegisterForm,
     StimuliEqSettingForm,
     StimulusForm,
@@ -232,6 +233,7 @@ from .models import (
     SoftwareVersion,
     SourceCode,
     StandardizationSystem,
+    StimuliData,
     StimuliEq,
     StimuliEqSetting,
     Stimulus,
@@ -6220,6 +6222,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         "number_of_eeg_data": 0,
         "number_of_emg_data": 0,
         "number_of_tms_data": 0,
+        "number_of_stimuli_data": 0,
         "number_of_digital_game_phase_data": 0,
         "number_of_generic_data_collection_data": 0,
         "number_of_media_collection_data": 0,
@@ -6263,6 +6266,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         list_of_tms_configuration = create_list_of_trees(
             group.experimental_protocol, "tms"
         )
+        list_of_stimuli_configuration = create_list_of_trees(
+            group.experimental_protocol, "stimuli"
+        )
         list_of_digital_game_phase_configuration = create_list_of_trees(
             group.experimental_protocol, "digital_game_phase"
         )
@@ -6278,6 +6284,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             "number_of_eeg_data": len(list_of_eeg_configuration),
             "number_of_emg_data": len(list_of_emg_configuration),
             "number_of_tms_data": len(list_of_tms_configuration),
+            "number_of_stimuli_data": len(list_of_stimuli_configuration),
             "number_of_digital_game_phase_data": len(
                 list_of_digital_game_phase_configuration
             ),
@@ -6449,6 +6456,29 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     / len(list_of_tms_configuration)
                 )
 
+            # TMS data files
+            number_of_stimuli_data_files_uploaded = 0
+            # for each component_configuration of tms...
+            for stimuli_configuration in list_of_stimuli_configuration:
+                path = [item[0] for item in stimuli_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(
+                    path[-1], path
+                )
+                stimuli_data_files = StimuliData.objects.filter(
+                    subject_of_group=subject_of_group,
+                    data_configuration_tree_id=data_configuration_tree_id,
+                )
+                if stimuli_data_files.count():
+                    number_of_stimuli_data_files_uploaded += 1
+
+            percentage_of_stimuli_data_files_uploaded = 0.0
+            if len(list_of_stimuli_configuration) > 0:
+                percentage_of_stimuli_data_files_uploaded = (
+                    100.0
+                    * number_of_stimuli_data_files_uploaded
+                    / len(list_of_stimuli_configuration)
+                )
+
             # Digital game phase data files
             number_of_digital_game_phase_data_files_uploaded = 0
             # for each component_configuration of tms...
@@ -6532,6 +6562,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 number_of_eeg_data_files_uploaded
                 or number_of_emg_data_files_uploaded
                 or number_of_tms_data_files_uploaded
+                or number_of_stimuli_data_files_uploaded
                 or number_of_digital_game_phase_data_files_uploaded
                 or number_of_generic_data_collection_data_files_uploaded
                 or number_of_media_collection_data_files_uploaded
@@ -6562,6 +6593,11 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     "total_of_tms_data_files": len(list_of_tms_configuration),
                     "percentage_of_tms_data_files_uploaded": int(
                         percentage_of_tms_data_files_uploaded
+                    ),
+                    "number_of_stimuli_data_files_uploaded": number_of_stimuli_data_files_uploaded,
+                    "total_of_stimuli_data_files": len(list_of_stimuli_configuration),
+                    "percentage_of_stimuli_data_files_uploaded": int(
+                        percentage_of_stimuli_data_files_uploaded
                     ),
                     "number_of_digital_game_phase_data_files_uploaded": number_of_digital_game_phase_data_files_uploaded,
                     "total_of_digital_game_phase_data_files": len(
@@ -9136,6 +9172,251 @@ def eeg_electrode_position_collection_status_change_the_order(
     redirect_url = reverse("eeg_data_view", args=(position_status.eeg_data_id, "2"))
 
     return HttpResponseRedirect(redirect_url)
+
+
+# @login_required
+# @permission_required("experiment.view_researchproject")
+# def subject_stimuli_view(
+#     request,
+#     group_id,
+#     subject_id,
+#     template_name="experiment/subject_stimuli_collection_list.html",
+# ):
+#     group = get_object_or_404(Group, id=group_id)
+#     subject = get_object_or_404(Subject, id=subject_id)
+
+#     stimuli_collections = []
+
+#     list_of_paths = create_list_of_trees(group.experimental_protocol, "stimuli")
+
+#     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+#     for path in list_of_paths:
+#         stimuli_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+#         data_configuration_tree_id = list_data_configuration_tree(
+#             stimuli_configuration.id, [item[0] for item in path]
+#         )
+
+#         stimuli_data_files = StimuliData.objects.filter(
+#             subject_of_group=subject_of_group,
+#             data_configuration_tree__id=data_configuration_tree_id,
+#         )
+
+#         stimuli_collections.append(
+#             {
+#                 "stimuli_configuration": stimuli_configuration,
+#                 "path": path,
+#                 "stimuli_data_files": stimuli_data_files,
+#             }
+#         )
+
+#     context = {
+#         "can_change": get_can_change(request.user, group.experiment.research_project),
+#         "group": group,
+#         "subject": subject,
+#         "stimuli_collections": stimuli_collections,
+#     }
+
+#     return render(request, template_name, context)
+
+
+# @login_required
+# @permission_required("experiment.add_questionnaireresponse")
+# def subject_stimuli_data_create(
+#     request,
+#     group_id,
+#     subject_id,
+#     stimuli_configuration_id,
+#     template_name="experiment/subject_stimuli_data_form.html",
+# ):
+#     group = get_object_or_404(Group, id=group_id)
+
+#     list_of_path = [int(item) for item in stimuli_configuration_id.split("-")]
+#     stimuli_configuration_id = list_of_path[-1]
+
+#     check_can_change(request.user, group.experiment.research_project)
+
+#     stimuli_configuration = get_object_or_404(
+#         ComponentConfiguration, id=stimuli_configuration_id
+#     )
+#     stimuli_step = get_object_or_404(Stimulus, id=stimuli_configuration.component_id)
+
+#     redirect_url = None
+#     stimuli_data_id = None
+
+#     stimuli_data_form = StimuliDataForm(
+#         None,
+#         initial={
+#             "experiment": group.experiment,
+#             "stimuli_setting": stimuli_step.stimuli_setting,
+#         },
+#     )
+
+#     stimuli_setting = get_object_or_404(
+#         StimuliEqSetting, id=stimuli_step.stimuli_setting
+#     )
+
+#     if request.method == "POST":
+#         if request.POST["action"] == "save":
+#             stimuli_data_form = StimuliDataForm(request.POST, request.FILES)
+
+#             if stimuli_data_form.is_valid():
+#                 data_configuration_tree_id = list_data_configuration_tree(
+#                     stimuli_configuration_id, list_of_path
+#                 )
+#                 if not data_configuration_tree_id:
+#                     data_configuration_tree_id = create_data_configuration_tree(
+#                         list_of_path
+#                     )
+
+#                 subject = get_object_or_404(Subject, pk=subject_id)
+#                 subject_of_group = get_object_or_404(
+#                     SubjectOfGroup, subject=subject, group_id=group_id
+#                 )
+
+#                 stimuli_data_added = stimuli_data_form.save(commit=False)
+#                 stimuli_data_added.subject_of_group = subject_of_group
+#                 stimuli_data_added.component_configuration = stimuli_configuration
+#                 stimuli_data_added.data_configuration_tree_id = (
+#                     data_configuration_tree_id
+#                 )
+
+#                 # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+#                 # the following error 'TMSData' object has no attribute 'group'
+#                 stimuli_data_added.group = group
+#                 stimuli_data_added.subject = subject
+
+#                 stimuli_data_added.save()
+
+#                 messages.success(
+#                     request, _("Stimuli data collection created successfully.")
+#                 )
+
+#                 redirect_url = reverse(
+#                     "stimuli_data_view", args=(stimuli_data_added.id,)
+#                 )
+#                 # redirect_url = reverse("subjects", args=(group.id,))
+#                 return HttpResponseRedirect(redirect_url)
+
+#     context = {
+#         "can_change": True,
+#         "creating": True,
+#         "editing": True,
+#         "group": group,
+#         "stimuli_configuration": stimuli_configuration,
+#         "stimuli_data_form": stimuli_data_form,
+#         "stimuli_data_id": stimuli_data_id,
+#         "stimuli_setting_default_id": stimuli_step.stimuli_setting.id,
+#         "subject": get_object_or_404(Subject, pk=subject_id),
+#         "URL": redirect_url,
+#         "tab": "1",
+#     }
+
+#     return render(request, template_name, context)
+
+
+# @login_required
+# @permission_required("experiment.change_experiment")
+# def stimuli_data_view(
+#     request, stimuli_data_id, template_name="experiment/subject_stimuli_data_form.html"
+# ):
+#     stimuli_data = get_object_or_404(StimuliData, pk=stimuli_data_id)
+#     stimuli_step = get_object_or_404(
+#         TMS,
+#         id=stimuli_data.data_configuration_tree.component_configuration.component.id,
+#     )
+
+#     stimuli_data_form = StimuliDataForm(request.POST or None, instance=stimuli_data)
+
+#     for field in stimuli_data_form.fields:
+#         stimuli_data_form.fields[field].widget.attrs["disabled"] = True
+
+#     if request.method == "POST":
+#         if request.POST["action"] == "remove":
+#             check_can_change(
+#                 request.user,
+#                 stimuli_data.subject_of_group.group.experiment.research_project,
+#             )
+
+#             subject_of_group = stimuli_data.subject_of_group
+#             stimuli_data.delete()
+#             messages.success(request, _("Stimuli data removed successfully."))
+#             return redirect(
+#                 "subject_stimuli_view",
+#                 group_id=subject_of_group.group_id,
+#                 subject_id=subject_of_group.subject_id,
+#             )
+
+#     context = {
+#         "can_change": get_can_change(
+#             request.user,
+#             stimuli_data.subject_of_group.group.experiment.research_project,
+#         ),
+#         "editing": False,
+#         "group": stimuli_data.subject_of_group.group,
+#         "subject": stimuli_data.subject_of_group.subject,
+#         "stimuli_data_form": stimuli_data_form,
+#         "stimuli_data": stimuli_data,
+#         "stimuli_setting_default_id": stimuli_step.stimuli_setting.id,
+#         "tab": "1",
+#     }
+
+#     return render(request, template_name, context)
+
+
+# @login_required
+# @permission_required("experiment.change_experiment")
+# def stimuli_data_edit(
+#     request, stimuli_data_id, template_name="experiment/subject_stimuli_data_form.html"
+# ):
+#     stimuli_data = get_object_or_404(StimuliData, pk=stimuli_data_id)
+
+#     stimuli_step = get_object_or_404(
+#         Stimulus,
+#         id=stimuli_data.data_configuration_tree.component_configuration.component.id,
+#     )
+
+#     check_can_change(
+#         request.user, stimuli_data.subject_of_group.group.experiment.research_project
+#     )
+
+#     if request.method == "POST":
+#         if request.POST["action"] == "save":
+#             stimuli_data_form = StimuliDataForm(
+#                 request.POST, request.FILES, instance=stimuli_data
+#             )
+#             if stimuli_data_form.is_valid() and stimuli_data_form.has_changed():
+#                 stimuli_data_to_update = stimuli_data_form.save(commit=False)
+#                 stimuli_data_to_update.group = stimuli_data.subject_of_group.group
+#                 stimuli_data_to_update.subject = stimuli_data.subject_of_group.subject
+#                 stimuli_data_to_update.save()
+
+#                 messages.success(request, _("Stimuli data updated successfully."))
+#             else:
+#                 messages.success(request, _("There is no changes to save."))
+
+#             redirect_url = reverse("stimuli_data_view", args=(stimuli_data_id,))
+
+#         return HttpResponseRedirect(redirect_url)
+
+#     else:
+#         stimuli_data_form = StimuliDataForm(
+#             request.POST or None,
+#             instance=stimuli_data,
+#             initial={"experiment": stimuli_data.subject_of_group.group.experiment},
+#         )
+
+#     context = {
+#         "group": stimuli_data.subject_of_group.group,
+#         "subject": stimuli_data.subject_of_group.subject,
+#         "stimuli_data_form": stimuli_data_form,
+#         "stimuli_data": stimuli_data,
+#         "editing": True,
+#         "tab": tab,
+#     }
+
+#     return render(request, template_name, context)
 
 
 @login_required

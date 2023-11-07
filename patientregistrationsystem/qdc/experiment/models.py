@@ -1256,6 +1256,10 @@ class Stimulus(Component):
         upload_to=get_stimulus_media_file_dir, null=True, blank=True
     )
 
+    stimuli_setting = models.ForeignKey(
+        StimuliEqSetting, on_delete=models.CASCADE, null=True, blank=True
+    )
+
     def save(self, *args, **kwargs) -> None:
         super(Component, self).save(*args, **kwargs)
 
@@ -1773,6 +1777,13 @@ class SourceCode(models.Model):
     # @_history_user.setter
     # def _history_user(self, value):
     #     self.changed_by = value
+
+
+class StimuliData(DataFile, DataCollection):
+    history = HistoricalRecords()
+
+    def __str__(self) -> str:
+        return self.description
 
 
 class EEGData(DataFile, DataCollection):

@@ -2,7 +2,8 @@
  * Created by mruizo on 27/01/17.
  */
 
-$(document).ready(function () {
+"use strict";
+ready(function () {
 
     $('#get_diagnosis').on("keyup", function () {
         var get_diagnosis = $('#get_diagnosis');

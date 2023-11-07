@@ -42,8 +42,9 @@
             <div class="my-3 p-3 bg-body rounded shadow-sm">
                 <div class="row">
                     <div class="col-12 col-lg-12">
+                        <h4>{% trans "Term of consent" %}</h4>
+                        <hr>
                         <div class="form-group">
-                            <label class="form-label">{% trans "Term of consent" %}</label>
                             <br>
                             {% if not file_list %}
                                 <div class="row">
@@ -75,14 +76,15 @@
                 </div>
             </div>
             <div class="btn-toolbar justify-content-between" role="toolbar">
-                {% if not file_list %}
-                    {# This div has to exist so that the upload and cancel buttons appear separated from each other. #}
-                    <div class="btn-group"></div>
-                    <div class="btn-group">
-                        <button id="save_file"  type="submit" name="action" value="upload" class="btn btn-primary">{% trans "Upload" %}</button>
-                    </div>
-                {% endif %}
                 <div class="btn-group">
+                </div>
+                <div class="btn-group">
+                    {% if not file_list %}
+                        {# This div has to exist so that the upload and cancel buttons appear separated from each other. #}
+                        <div class="btn-group">
+                            <button id="save_file"  type="submit" name="action" value="upload" class="btn btn-primary">{% trans "Upload" %}</button>
+                        </div>
+                    {% endif %}
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-light">{% trans "Back" %}</a>
                 </div>
             </div>

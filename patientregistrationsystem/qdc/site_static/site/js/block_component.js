@@ -3,7 +3,7 @@
  */
 "use strict";
 
-$(document).ready(
+ready(
     function () {
         var id_number_of_mandatory_components = $("#id_number_of_mandatory_components");
         var all_mandatory_components = $("#id_all_mandatory");

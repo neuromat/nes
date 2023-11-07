@@ -28,6 +28,15 @@
     <div class="row">
         <div class="col-6 col-sm-6">
             <div class="form-group">
+                <label class="form-label">{% trans "Stimulus Setting" %}<b class="text-danger">*</b></label>
+                    {{ specific_form.stimuli_setting }}
+                <div class="form-text with-errors text-danger"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 col-sm-6">
+            <div class="form-group">
                 <label class="form-label">{% trans "Stimulus type" %}<b class="text-danger">*</b></label>
                     {{ specific_form.stimulus_type }}
                 <div class="form-text with-errors text-danger"></div>
@@ -40,7 +49,7 @@
             <div class="form-group">
                 <label class="form-label">{% trans "Media file" %}</label>
                 <br/>
-                {% if reusing or not can_change or component_configuration %}
+                {% if reusing or not can_change or component_configuration %}             
                     {% if specific_form.media_file.value %}
                         {{ specific_form.media_file.value }}
                     {% else %}

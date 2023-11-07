@@ -1,0 +1,201 @@
+{% extends "base/template.html" %}
+
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
+
+{% load i18n static %}
+
+{% load subjects_tags %}
+
+{% block form %}
+    <form id="subject_form" method="post">
+        {% csrf_token %}
+    {% endblock form %}
+
+    {% block content %}
+        <div class="tab-pane fade show active" id="subjectBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}">{{ group.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        {% get_name_or_code subject.patient.id %}
+                    </li>
+                    <li class="breadcrumb-item active">
+                        {% trans "Stimuli data files" %}
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <div hidden="hidden">
+            <input id="process_requisition" type="text" value="{{ process_requisition }}">
+        </div>
+
+        <div class="tab-pane fade show active" id="menuUserTab">
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        {% trans "Stimuli path" %}
+                                    </th>
+                                    <th>
+                                        {% trans "Stimuli data file" %}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if not stimuli_collections %}
+                                    <tr>
+                                        <td>
+                                            {% trans "(No Stimuli collection)" %}
+                                        </td>
+                                        <td>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    {% for stimuli_collection in stimuli_collections %}
+                                        <tr>
+                                            <td>
+                                                <b>{{ stimuli_collection.stimuli_configuration.component.identification }}</b>
+                                                <blockquote>
+                                                    <i>
+                                                        <h6>
+                                                            {% for item in stimuli_collection.path %}
+                                                                {{ item.1 }} >
+                                                                {% if item.2 %}
+                                                                    {{ item.2 }} >
+                                                                {% endif %}
+
+                                                                {% if forloop.last %}
+                                                                    {{ item.3 }}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </h6>
+                                                    </i>
+                                                </blockquote>
+                                            </td>
+                                            <td>
+                                                <table>
+                                                    {% for stimuli_data in stimuli_collection.stimuli_data_list %}
+                                                        <tr>
+                                                            <td>
+                                                                <a href="/experiment/stimuli_data/{{ stimuli_data.id }}/1" data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "See details" %}">
+                                                                    {{ stimuli_data.description }}
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                {{ stimuli_data.date }}
+                                                            </td>
+                                                            <td>
+                                                                {{ stimuli_data.file_format.name }}
+                                                            </td>
+                                                            <td>
+                                                                <table>
+                                                                    {% for stimuli_file in stimuli_data.stimuli_file_list %}
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ stimuli_file.file.size|filesizeformat }}
+                                                                            </td>
+                                                                            <td>
+                                                                                <a href="{{ stimuli_file.file.url }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Download file" %}"><span class="fa-fw fa fa-download"></span></a>
+                                                                            </td>
+                                                                            <td>
+                                                                                {% if stimuli_file.can_export_to_nwb %}
+                                                                                    <a onclick="handle_processing();"
+                                                                                       href="/experiment/stimuli_file/{{ stimuli_file.id }}/export_nwb/{{ stimuli_collection.stimuli_configuration.id }}{{ forloop.counter }}/{{ process_requisition }}"
+                                                                                       data-bs-toggle="tooltip"
+                                                                                       data-bs-placement="top"
+                                                                                       title="{% trans "Export nwb file format" %}">
+                                                                                        <span class="fa-fw fa fa-upload"></span>
+                                                                                    </a>
+                                                                                {% else %}
+                                                                                    <span data-bs-toggle="tooltip"
+                                                                                          data-bs-placement="top"
+                                                                                          title="{% trans "Unable to export as nwb file. The uploaded data file is not an Stimuli file. Its format is not valid, or the number of channels is not set." %}"
+                                                                                          style="color: grey"
+                                                                                          class="fa-fw fa fa-upload"></span>
+                                                                                {% endif %}
+                                                                            </td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    <tr>
+                                                        <td colspan="7">
+                                                            <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/stimuli/{% for item in stimuli_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_stimuli_data">
+                                                                <span class="fa-fw fa fa-plus"></span>
+                                                                {% trans "New Stimuli data file" %}
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-toolbar justify-content-between" role="toolbar">
+                <div class="btn-group float-end">
+                </div>
+                <div class="btn-group float-end">
+                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-light">{% trans "Back" %}</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="pleaseWaitDialog" class="modal fade" data-bs-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            {% trans "Exporting data file in NWB format" %}
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <label id="label_process_requisition_status">
+                            {% trans "Waiting for status..." %}
+                        </label>
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock content %}
+
+    {% block end_form %}
+    </form>
+{% endblock end_form %}
+
+{% block extrascript %}
+    <script type="text/javascript" defer src={% static "site/js/subject_stimuli_collection_list.js" %}></script>
+{% endblock extrascript %}

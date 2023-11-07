@@ -188,6 +188,7 @@
 
                                                     </td>
                                                     <td>
+                                                        <div class="row">
                                                         <div class="col-2 col-sm-2">
                                                             {% if can_change and perms.patient.sensitive_data_patient %}
                                                                 <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file"
@@ -197,16 +198,17 @@
                                                                     <span class="fa-fw fa fa-paperclip"></span>
                                                                 </a>
                                                             {% else %}
-                                                                <span class="fa-fw fa fa-paperclip"></span>
+                                                                <span class="fa-fw fa fa-paperclip text-secondary"></span>
                                                             {% endif %}
                                                         </div>
                                                         <div class="col-10 col-sm-10">
                                                             {% if item.consent %}
-                                                                <span class="label label-success">{% trans "Attached" %}</span>
+                                                                <span class="label text-success">{% trans "Attached" %}</span>
                                                             {% else %}
-                                                                <span class="label label-warning">{% trans "No attachments" %}</span>
+                                                                <span class="label text-warning">{% trans "No attachments" %}</span>
                                                             {% endif %}
                                                         </div>
+                                                    </div>
                                                     </td>
                                                     {% if experimental_protocol_info.number_of_questionnaires %}
                                                         <td>
@@ -312,6 +314,32 @@
                                                                              style="color: #000000;
                                                                                     width: {{ item.percentage_of_tms_data_files_uploaded }}%">
                                                                             <span>{{ item.number_of_tms_data_files_uploaded }}/{{ item.total_of_tms_data_files }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+
+                                                        {% if experimental_protocol_info.number_of_stimuli_data %}
+                                                            <div class="row">
+                                                                <div class="col-4 col-sm-4">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/stimuli"
+                                                                       data-bs-toggle="tooltip"
+                                                                       data-bs-placement="top"
+                                                                       title="{% trans "Uploaded Stimuli data files" %}">
+                                                                        <span class="fa-fw fa fa-headphones"></span> {% trans "Stimuli" %}
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-8 col-sm-8">
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar {% if item.percentage_of_stimuli_data_files_uploaded == 100.0 %} progress-bar-success {% else %} progress-bar-warning {% endif %}"
+                                                                             role="progressbar"
+                                                                             aria-valuenow="{{ item.number_of_stimuli_data_files_uploaded }}"
+                                                                             aria-valuemin="0"
+                                                                             aria-valuemax="{{ item.total_of_stimuli_data_files }}"
+                                                                             style="color: #000000;
+                                                                                    width: {{ item.percentage_of_stimuli_data_files_uploaded }}%">
+                                                                            <span>{{ item.number_of_stimuli_data_files_uploaded }}/{{ item.total_of_stimuli_data_files }}</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>

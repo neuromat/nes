@@ -87,6 +87,7 @@ from experiment.models import (
     SoftwareVersion,
     SourceCode,
     StandardizationSystem,
+    StimuliData,
     StimuliEq,
     StimuliEqSetting,
     Stimulus,
@@ -331,7 +332,7 @@ class InstructionForm(ModelForm):
 class StimulusForm(ModelForm):
     class Meta:
         model = Stimulus
-        fields = ["stimulus_type", "media_file"]
+        fields = ["stimulus_type", "media_file", "stimuli_setting"]
 
         widgets = {
             "stimulus_type": Select(
@@ -340,7 +341,14 @@ class StimulusForm(ModelForm):
                     "required": "",
                     "data-error": _("Stimulus type must be filled."),
                 }
-            )
+            ),
+            "stimuli_setting": Select(
+                attrs={
+                    "class": "form-select",
+                    "required": "",
+                    "data-error": _("Stimulus setting must be filled."),
+                }
+            ),
         }
 
 
@@ -777,6 +785,79 @@ class EEGDataForm(ModelForm):
                     self.fields["eeg_cap_size"].queryset = EEGCapSize.objects.filter(
                         eeg_electrode_cap_id=eeg_electrode_net_id
                     )
+
+
+class StimuliDataForm(ModelForm):
+    fields: dict[str, Any]
+
+    class Meta:
+        model = StimuliData
+
+        fields = [
+            "date",
+            "time",
+            "file_format",
+            "description",
+            # 'file',
+            "file_format_description",
+        ]
+
+        widgets = {
+            "date": TextInput(
+                # format=_("%m/%d/%Y"),
+                attrs={
+                    "type": "date",
+                    "pattern": r"\d{4}-\d{2}-\d{2}",
+                    # "class": "form-control datepicker",
+                    "class": "form-control",
+                    "placeholder": _("mm/dd/yyyy"),
+                    "required": "",
+                    "data-error": _("Date must be completed"),
+                },
+            ),
+            "time": TimeInput(
+                attrs={
+                    "type": "Time",
+                    "class": "form-control",
+                    "placeholder": "HH:mm",
+                    "pattern": r"\d{2}:\d{2}",
+                }
+            ),
+            "file_format": Select(
+                attrs={
+                    "class": "form-select",
+                    "required": "",
+                    "data-error": _("File format must be chosen."),
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "class": "form-control",
+                    "style": "resize: vertical;",
+                    "rows": "4",
+                    "required": "",
+                    "data-error": _("Description must be filled."),
+                }
+            ),
+            "file_format_description": Textarea(
+                attrs={
+                    "class": "form-control",
+                    "style": "resize: vertical;",
+                    "rows": "4",
+                    "required": "",
+                    "data-error": _("File format description must be filled."),
+                }
+            ),
+            # It is not possible to set the 'required' attribute because it affects the edit screen
+            # 'file': FileInput(attrs={'required': ""})
+        }
+
+    def __init__(self, *args, **kwargs) -> None:
+        super(StimuliDataForm, self).__init__(*args, **kwargs)
+
+        self.fields["file_format"].queryset = FileFormat.objects.filter(
+            tags__name="EEG"
+        )
 
 
 class SourceCodeForm(ModelForm):

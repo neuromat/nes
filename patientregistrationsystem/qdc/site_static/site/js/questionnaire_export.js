@@ -23,14 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function updateFieldsSelectionCounter() {
-
     var multiselect_to = $("select[name='to[]']");
     var fields_counter = $("span[id ^='badge']");
 
     $(fields_counter).each(function (index, element) {
         $(element).text(multiselect_to.eq(index).children().length);
     });
-
 }
 
 function updateFieldsSelectionCounter_Experiment() {
@@ -40,21 +38,20 @@ function updateFieldsSelectionCounter_Experiment() {
     $(fields_counter).each(function (index, element) {
         $(element).text(multiselect_to.eq(index).children().length);
     });
-
 }
 
 function validateFormExport() {
     var checkbox_per_participant = $("#id_per_participant").prop("checked");
     var checkbox_per_questionnaire = $("#id_per_questionnaire").prop("checked");
     var select_participants_attributes = $("select[name='patient_selected'] option:selected").length
-    var fields_selected = 0;
-    var fields_counter = $("span[id ^='badge']");
+    var fields_selected = $("select[name='to[]'] option:selected").length;
+    // var fields_counter = $("span[id ^='badge']");
 
-    $(fields_counter).each(function (index, element) {
-        fields_selected = fields_selected + parseInt($(element).text());
-    });
+    // $(fields_counter).each(function (index, element) {
+    //     fields_selected = fields_selected + parseInt($(element).text());
+    // });
 
-    if (fields_selected) {
+    if (fields_selected > 0) {
         if (!(checkbox_per_participant || checkbox_per_questionnaire)) {
             // error: when there is at least one questionnaire field selected,
             // per participant/questionnaire must be selected
@@ -75,7 +72,6 @@ function validateFormExport() {
     }
 
     return 0;
-
 }
 
 function onClickRun() {

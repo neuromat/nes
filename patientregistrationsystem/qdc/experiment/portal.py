@@ -1336,11 +1336,13 @@ def send_research_project_to_portal(experiment: Experiment):
     return portal_research_project
 
 
-def send_researcher_to_portal(research_project_id, researcher: User):
+def send_researcher_to_portal(research_project_id, researcher: User | None):
     rest = RestApiClient()
 
     if not rest.active:
         return None
+
+    assert researcher is not None
 
     params: dict[str, Any] = {
         "id": research_project_id,

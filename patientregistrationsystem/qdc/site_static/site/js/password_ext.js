@@ -3,7 +3,7 @@
  */
 "use strict";
 
-$(document).ready(function(){
+ready(function(){
     $( "form" ).on("submit", function( event ) {
         if(checkPass())
             event.preventDefault();
