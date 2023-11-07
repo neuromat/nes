@@ -218,7 +218,7 @@
                 {% endif %}
 
                 {% block extra_fields_bellow_edit %}
-                {% endblock %}
+                {% endblock extra_fields_bellow_edit %}
 
                 {% if component_configuration %}
                     <div class="row" style="padding-bottom: 1em">
@@ -436,13 +436,13 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
 
 {% block end_form %}
 </form>
 </div>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
     <script type="text/javascript" defer src={% static "site/js/component.js" %}></script>
-{% endblock %}
+{% endblock extrascript %}

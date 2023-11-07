@@ -32,7 +32,7 @@ class InputExport:
 
     def read(self, input_filename, update_input_data=True) -> dict[str, Any]:
         with open(input_filename.encode("utf-8"), "r") as input_file:
-            input_data_temp = load(self.data, input_file)
+            input_data_temp = load(input_file)
 
             if update_input_data:
                 self.data = input_data_temp

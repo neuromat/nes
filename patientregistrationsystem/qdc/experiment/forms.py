@@ -544,6 +544,7 @@ class ResearchProjectOwnerForm(ModelForm):
 
 
 class ResearchProjectForm(ModelForm):
+    _errors: dict[str, Any] = {}
     fields: dict[str, Any]
 
     class Meta:

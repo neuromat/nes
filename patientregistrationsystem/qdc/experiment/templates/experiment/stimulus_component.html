@@ -3,43 +3,53 @@
 {% load i18n static %}
 
 {% block breadcrumb %}
-
     {% if creating %}
-        <li class="breadcrumb-item active">{% trans "New stimulus" %}</li>
+        <li class="breadcrumb-item active">
+            {% trans "New stimulus" %}
+        </li>
     {% endif %}
+{% endblock breadcrumb %}
 
-{% endblock %}
-
-{% block component_label %}{% trans "the stimulus" %}{% endblock %}
+{% block component_label %}
+    {% trans "the stimulus" %}
+{% endblock component_label %}
 
 {% block component_add_new %}
     <li role="presentation">
-        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/stimulus{% if position %}?position={{ position }}{% endif %}')">
+        <a role="menuitem"
+           tabindex="-1"
+           onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/stimulus{% if position %}?position={{ position }}{% endif %}')">
             << {% trans "New stimulus" %} >>
         </a>
     </li>
-{% endblock %}
+{% endblock component_add_new %}
 
 {% block component_button_label %}
     {% trans "New stimulus" %}
-{% endblock %}
+{% endblock component_button_label %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-6 col-sm-6">
             <div class="form-group">
-                <label class="form-label">{% trans "Stimulus Setting" %}<b class="text-danger">*</b></label>
-                    {{ specific_form.stimuli_setting }}
-                <div class="form-text with-errors text-danger"></div>
+                <label class="form-label">
+                    {% trans "Stimulus Setting" %}<b class="text-danger">*</b>
+                </label>
+                {{ specific_form.stimuli_setting }}
+                <div class="form-text with-errors text-danger">
+                </div>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-6 col-sm-6">
             <div class="form-group">
-                <label class="form-label">{% trans "Stimulus type" %}<b class="text-danger">*</b></label>
-                    {{ specific_form.stimulus_type }}
-                <div class="form-text with-errors text-danger"></div>
+                <label class="form-label">
+                    {% trans "Stimulus type" %}<b class="text-danger">*</b>
+                </label>
+                {{ specific_form.stimulus_type }}
+                <div class="form-text with-errors text-danger">
+                </div>
             </div>
         </div>
     </div>
@@ -47,9 +57,12 @@
     <div class="row">
         <div class="col-12 col-sm-12">
             <div class="form-group">
-                <label class="form-label">{% trans "Media file" %}</label>
-                <br/>
-                {% if reusing or not can_change or component_configuration %}             
+                <label class="form-label">
+                    {% trans "Media file" %}
+                </label>
+                <br />
+                {% if reusing or not can_change or component_configuration %}
+
                     {% if specific_form.media_file.value %}
                         {{ specific_form.media_file.value }}
                     {% else %}
@@ -61,8 +74,7 @@
             </div>
         </div>
     </div>
-
-{% endblock %}
+{% endblock extra_fields %}
 
 {# In case of inclusion of javascript, insert parent template scripts #}
 {#{% block extrascript %}#}
