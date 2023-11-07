@@ -16,14 +16,14 @@
         <link rel="preload" href="{% static "site/css/nes.css" %}" as="style" />
         <link rel="preload" href="{% static "site/js/theme_picker.js" %}" as="script" />
 
-        {% comment %} {% compress css file base_nes_css %}  {% endcomment %}
         <link rel="stylesheet" href="{% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %}" charset="utf-8">
-        <link rel="stylesheet" href="{% static "site/font-awesome-4.7.0/css/font-awesome.min.css" %}" charset="utf-8">
-        <link rel="stylesheet" href="{% static "site/css/nes.css" %}" charset="utf-8">
-        <link rel="stylesheet" href="{% static "site/css/breadcrumb.css" %}" charset="utf-8">
-        {% comment %} {% endcompress %}  {% endcomment %}
-
         <script type="text/javascript" src="{% static "site/js/theme_picker.js" %}" charset="utf-8"></script>
+
+        {% compress css file base_nes_css %}
+            <link rel="stylesheet" href="{% static "site/font-awesome-4.7.0/css/font-awesome.min.css" %}" charset="utf-8">
+            <link rel="stylesheet" href="{% static "site/css/nes.css" %}" charset="utf-8">
+            <link rel="stylesheet" href="{% static "site/css/breadcrumb.css" %}" charset="utf-8">
+        {% endcompress %}
 
         {% block extrahead %}
         {% endblock extrahead %}
