@@ -8,44 +8,6 @@
 
 {% load subjects_tags %}
 
-
-{% block extrahead %}
-    <style>
-        {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
-        .header-fixed {
-            width: 100%
-        }
-
-        .header-fixed > thead,
-        .header-fixed > tbody,
-        .header-fixed > thead > tr,
-        .header-fixed > tbody > tr,
-        .header-fixed > thead > tr > th,
-        .header-fixed > tbody > tr > td {
-            display: block;
-        }
-
-        .header-fixed > tbody > tr:after,
-        .header-fixed > thead > tr:after {
-            content: ' ';
-            display: block;
-            visibility: hidden;
-            clear: both;
-        }
-
-        .header-fixed > tbody {
-            overflow-y: auto;
-            height: 400px;
-        }
-
-        .header-fixed > tbody > tr > td,
-        .header-fixed > thead > tr > th {
-            width: 50%;
-            float: left;
-        }
-    </style>
-{% endblock %}
-
 {% block form %}
 
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
@@ -81,327 +43,342 @@
                     </li>
 
                     {% if creating %}
-                        <li class="breadcrumb-item active">{% trans "New TMS stimulation setting" %}</li>
+                        <li class="breadcrumb-item active">
+                            {% trans "New TMS stimulation setting" %}
+                        </li>
                     {% else %}
-                        <li class="breadcrumb-item active">{{ tms_data_form.description.value }}</li>
+                        <li class="breadcrumb-item active">
+                            {{ tms_data_form.description.value }}
+                        </li>
                     {% endif %}
 
                 </ol>
             </nav>
         </div>
 
-        {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}<script>showSuccessMessage('{{ message }}')</script>{% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-        {% endif %} {% endcomment %}
-
-        {% if tms_data_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
+        {% if tms_data_form.errors %}
+            <script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>
+        {% endif %}
 
         <div class="tab-pane fade show active" id="menuUserTab">
-            <div class="container-fluid">
-                <div class="my-3 p-3 bg-body rounded shadow-sm">
-
-                    <h4>{% trans "TMS stimulation setting" %}</h4>
-
-                    <ul class="nav nav-tabs">
-
-                        {% if creating or editing %}
-                            <li {% if tab == "1" %}class="active"{% else %}class="disabled"{% endif %}>
-                                <a href="#">{% trans "Stimulation description" %}</a>
-                            </li>
-                            {#                        <li {% if tab == "2" %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Coil orientation" %}</a>#}
-                            <li {% if tab == "2" %}class="active"{% else %}class="disabled"{% endif %}>
-                                {#                            <a href="#">{% trans "Position setting" %}</a>#}
-                                <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_register">{% trans "Hotspot position" %}</a>
-                            </li>
-                        {% else %}
-                            <li {% if tab == "1" %}class="active"{% endif %}>
-                                {#                            <a data-bs-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>#}
-                                <a href="/experiment/tms_data/{{ tms_data.id }}">{% trans "Stimulation description" %}</a>
-                            </li>
-                            <li {% if tab == "2" %}class="active"{% endif %}>
-                                <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view">{% trans "Hotspot position" %}</a>
-                            </li>
-                        {% endif %}
-
-                    </ul>
-
-                    <div class="tab-content">
-
-                        <div id="data_collection" {% if tab == "1" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
-
-                            <h4></h4>
-                            <div hidden="hidden">
-                                <input id="pulse_type" type="text" value="{{ tms_data.tms_setting.tms_device_setting.pulse_stimulus_type }}">
-                            </div>
-                            <div class="row">
-                                <div class="col-6 col-sm-6">
-                                    <div class="form-group {% if tms_data_form.errors.date %}is-invalid{% endif %}">
-                                        <label class="form-label">
-                                            {% trans "Date" %}<b class="text-danger">*</b>
-                                        </label>
-                                        {{ tms_data_form.date }}
-                                        <div class="form-text with-errors text-danger">
-                                            {% for error in tms_data_form.date.errors %}{{ error }}{% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-6 col-sm-6">
-                                    <div class="form-group {% if tms_data_form.errors.time %}is-invalid{% endif %}">
-                                        <label class="form-label">{% trans "Hour" %}</label>
-                                        {{ tms_data_form.time }}
-                                        <div class="form-text with-errors text-danger">
-                                            {% for error in tms_data_form.time.errors %}{{ error }}{% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="row">
-                                <div class="col-6 col-sm-6">
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            {% trans "TMS setting" %}<b class="text-danger">*</b>
-                                        </label>
-                                        {{ tms_data_form.tms_setting }}
-                                        <div class="form-text with-errors text-danger"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-12 col-sm-12">
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            {% trans "TMS stimulation description" %} <b class="text-danger">*</b>
-                                        </label>
-                                        {{ tms_data_form.description }}
-                                        <div class="form-text with-errors text-danger"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="id_stimulation_setting" class="card  " style="border:1px solid lightgray;">
-                                <div class="card-header">
-                                    <b>{% trans "Stimulation Settings" %} -
-                                        <label id="id_pulse_stimulus">
-                                            {% if pulse_stimulus %}
-                                                {{ pulse_stimulus }}
-                                            {% else %}
-                                                {% trans "Not configured" %}
-                                            {% endif %}
-                                        </label>
-
-                                    </b>
-                                </div>
-                                <div class="card-body">
-
-                                    <div class="row">
-                                        <div class="col-6 col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">{% trans "Resting motor threshold - RMT (%)" %}</label>
-                                                {{ tms_data_form.resting_motor_threshold }}
-                                                <div class="form-text with-errors text-danger"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-6 col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">{% trans "Test pulse intensity of stimulation (% over the %RMT)" %}</label>
-                                                {{ tms_data_form.test_pulse_intensity_of_simulation }}
-                                                <div class="form-text with-errors text-danger"></div>
-                                            </div>
-                                        </div>
-                                        <div id="second_pulse_intensity" class="col-6 col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">{% trans "Second test pulse intensity of stimulation (% over the %RMT)" %}</label>
-                                                {{ tms_data_form.second_test_pulse_intensity }}
-                                                <div class="form-text with-errors text-danger"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="div_interval_pulses">
-                                        <div class="row">
-                                            <div class="col-6 col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">{% trans "Interval between pulses" %}</label>
-                                                    {{ tms_data_form.interval_between_pulses }}
-                                                    <div class="form-text with-errors text-danger"></div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-6 col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">{% trans "Interval between pulses unit" %}</label>
-                                                    {{ tms_data_form.interval_between_pulses_unit }}
-                                                    <div class="form-text with-errors text-danger"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="div_paired_pulse">
-                                        <div class="row">
-                                            <div class="col-6 col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">{% trans "Time between mep trials" %}</label>
-                                                    {{ tms_data_form.time_between_mep_trials }}
-                                                    <div class="form-text with-errors text-danger"></div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-6 col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">{% trans "Time between mep trials unit" %}</label>
-                                                    {{ tms_data_form.time_between_mep_trials_unit }}
-                                                    <div class="form-text with-errors text-danger"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="div_repetitive_pulse">
-                                        <div class="row">
-                                            <div class="col-6 col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">{% trans "Repetitive pulse frequency (Hz)" %}</label>
-                                                    {{ tms_data_form.repetitive_pulse_frequency }}
-                                                    <div class="form-text with-errors text-danger"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div id="id_coil_orientation" class="card  " style="border:1px solid lightgray;">
-                                <div class="card-header">
-                                    <b>{% trans "Coil orientation Settings" %}</b>
-                                </div>
-                                <div class="card-body">
-
-                                    <div class="row">
-                                        <div class="col-6 col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">{% trans "Coil orientation" %}</label>
-                                                {{ tms_data_form.coil_orientation }}
-                                                <div class="form-text with-errors text-danger"></div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-6 col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">{% trans "Orientation angle" %}</label>
-                                                {{ tms_data_form.coil_orientation_angle }}
-                                                <div class="form-text with-errors text-danger"></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="card-body">
-                                            <img src="{% static "imgs/coil_orientation2.svg" %}"
-                                                 class="img-fluid mx-auto.d-block"
-                                                 width="800"
-                                                 height="600"
-                                                 style="margin: auto">
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            {% if not editing and can_change %}
-                                <div class="btn-group">
-                                    <a href="/experiment/tms_data/edit/{{ tms_data.id }}/1" class="btn btn-primary">{% trans "Edit" %}</a>
-                                </div>
-
-                                <div class="btn-toolbar float-end">
-                                    <div class="btn-group">
-                                        <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view" class="btn btn-light">{% trans "Next" %} <span class="fa-fw fa fa-arrow-right"></span></a>
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                        </div>
-
-                        <div id="position_setting" {% if tab == "2" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
-
-                            {% block subcontent %}{% endblock %}
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="btn-toolbar justify-content-between" role="toolbar">
-                    <div class="btn-group">
-                        {% if not editing and can_change %}
-                            <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
-                        {% endif %}
-                    </div>
-                    {% if editing %}
-                        <div class="btn-group float-end">
-                            <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
-
-                            {% if creating %}
-                                <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms" class="btn btn-light">{% trans "Cancel" %}</a>
-                            {% else %}
-                                {% if tab == "1" %}
-                                    <a href="/experiment/tms_data/{{ tms_data.id }}/" class="btn btn-light">{% trans "Cancel" %}</a>
-                                {% endif %}
-                                {% if tab == "2" %}
-                                    <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view/" class="btn btn-light">{% trans "Cancel" %}</a>
-                                {% endif %}
-                            {% endif %}
-
-                        </div>
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                <h4>
+                    {% trans "TMS stimulation setting" %}
+                </h4>
+                <hr>
+                <ul class="nav nav-tabs">
+                    {% if creating or editing %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if tab == "1" %}active{% else %}disabled{% endif %}" href="#">{% trans "Stimulation description" %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if tab == "2" %}active{% else %}disabled{% endif %}" href="/experiment/tms_data/{{ tms_data.id }}/position_setting_register">{% trans "Hotspot position" %}</a>
+                        </li>
                     {% else %}
-                        <div class="btn-group float-end">
-                            <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms" class="btn btn-light">{% trans "Back" %}</a>
-                        </div>
+                        <li class="nav-item">
+                            <a class="nav-link  {% if tab == "1" %}active{% endif %}" href="/experiment/tms_data/{{ tms_data.id }}">{% trans "Stimulation description" %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link  {% if tab == "2" %}active{% endif %}" href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view">{% trans "Hotspot position" %}</a>
+                        </li>
                     {% endif %}
 
+                </ul>
+
+                <div class="tab-content">
+                    <div id="data_collection" {% if tab == "1" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
+                        <h4>
+                        </h4>
+                        <div hidden="hidden">
+                            <input id="pulse_type" type="text" value="{{ tms_data.tms_setting.tms_device_setting.pulse_stimulus_type }}">
+                        </div>
+                        <div class="row">
+                            <div class="col-6 col-sm-6">
+                                <div class="form-group {% if tms_data_form.errors.date %}is-invalid{% endif %}">
+                                    <label class="form-label">
+                                        {% trans "Date" %}<b class="text-danger">*</b>
+                                    </label>
+                                    {{ tms_data_form.date }}
+                                    <div class="form-text with-errors text-danger">
+                                        {% for error in tms_data_form.date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-6">
+                                <div class="form-group {% if tms_data_form.errors.time %}is-invalid{% endif %}">
+                                    <label class="form-label">
+                                        {% trans "Hour" %}
+                                    </label>
+                                    {{ tms_data_form.time }}
+                                    <div class="form-text with-errors text-danger">
+                                        {% for error in tms_data_form.time.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        {% trans "TMS setting" %}<b class="text-danger">*</b>
+                                    </label>
+                                    {{ tms_data_form.tms_setting }}
+                                    <div class="form-text with-errors text-danger">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        {% trans "TMS stimulation description" %} <b class="text-danger">*</b>
+                                    </label>
+                                    {{ tms_data_form.description }}
+                                    <div class="form-text with-errors text-danger">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="id_stimulation_setting" class="card  " style="border:1px solid lightgray;">
+                            <div class="card-header">
+                                <b>{% trans "Stimulation Settings" %} -
+                                    <label id="id_pulse_stimulus">
+                                        {% if pulse_stimulus %}
+                                            {{ pulse_stimulus }}
+                                        {% else %}
+                                            {% trans "Not configured" %}
+                                        {% endif %}
+                                    </label>
+                                </b>
+                            </div>
+                            <div class="card-body">
+
+                                <div class="row">
+                                    <div class="col-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {% trans "Resting motor threshold - RMT (%)" %}
+                                            </label>
+                                            {{ tms_data_form.resting_motor_threshold }}
+                                            <div class="form-text with-errors text-danger">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {% trans "Test pulse intensity of stimulation (% over the %RMT)" %}
+                                            </label>
+                                            {{ tms_data_form.test_pulse_intensity_of_simulation }}
+                                            <div class="form-text with-errors text-danger">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="second_pulse_intensity" class="col-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {% trans "Second test pulse intensity of stimulation (% over the %RMT)" %}
+                                            </label>
+                                            {{ tms_data_form.second_test_pulse_intensity }}
+                                            <div class="form-text with-errors text-danger">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="div_interval_pulses">
+                                    <div class="row">
+                                        <div class="col-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    {% trans "Interval between pulses" %}
+                                                </label>
+                                                {{ tms_data_form.interval_between_pulses }}
+                                                <div class="form-text with-errors text-danger">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    {% trans "Interval between pulses unit" %}
+                                                </label>
+                                                {{ tms_data_form.interval_between_pulses_unit }}
+                                                <div class="form-text with-errors text-danger">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="div_paired_pulse">
+                                    <div class="row">
+                                        <div class="col-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    {% trans "Time between mep trials" %}
+                                                </label>
+                                                {{ tms_data_form.time_between_mep_trials }}
+                                                <div class="form-text with-errors text-danger">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    {% trans "Time between mep trials unit" %}
+                                                </label>
+                                                {{ tms_data_form.time_between_mep_trials_unit }}
+                                                <div class="form-text with-errors text-danger">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="div_repetitive_pulse">
+                                    <div class="row">
+                                        <div class="col-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    {% trans "Repetitive pulse frequency (Hz)" %}
+                                                </label>
+                                                {{ tms_data_form.repetitive_pulse_frequency }}
+                                                <div class="form-text with-errors text-danger">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="id_coil_orientation" class="card  " style="border:1px solid lightgray;">
+                            <div class="card-header">
+                                <b>{% trans "Coil orientation Settings" %}</b>
+                            </div>
+                            <div class="card-body">
+
+                                <div class="row">
+                                    <div class="col-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {% trans "Coil orientation" %}
+                                            </label>
+                                            {{ tms_data_form.coil_orientation }}
+                                            <div class="form-text with-errors text-danger">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {% trans "Orientation angle" %}
+                                            </label>
+                                            {{ tms_data_form.coil_orientation_angle }}
+                                            <div class="form-text with-errors text-danger">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="card-body">
+                                        <img src="{% static "imgs/coil_orientation2.svg" %}" class="img-fluid mx-auto.d-block" width="800" height="600" style="margin: auto">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if not editing and can_change %}
+                            <div class="btn-group">
+                                <a href="/experiment/tms_data/edit/{{ tms_data.id }}/1" class="btn btn-primary">{% trans "Edit" %}</a>
+                            </div>
+
+                            <div class="btn-toolbar float-end">
+                                <div class="btn-group">
+                                    <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view" class="btn btn-light">{% trans "Next" %} <span class="fa-fw fa fa-arrow-right"></span></a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div id="position_setting" {% if tab == "2" %}class="tab-pane fade show active"{% else %}class="tab-pane fade"{% endif %}>
+
+                        {% block subcontent %}
+                        {% endblock subcontent %}
+                    </div>
                 </div>
+            </div>
+
+            <div class="btn-toolbar justify-content-between" role="toolbar">
+                <div class="btn-group">
+                    {% if not editing and can_change %}
+                        <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">
+                            {% trans "Delete" %}
+                        </button>
+                    {% endif %}
+                </div>
+                {% if editing %}
+                    <div class="btn-group float-end">
+                        <button type="submit" name="action" value="save" class="btn btn-primary">
+                            {% trans "Save" %}
+                        </button>
+
+                        {% if creating %}
+                            <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms" class="btn btn-light">{% trans "Cancel" %}</a>
+                        {% else %}
+                            {% if tab == "1" %}
+                                <a href="/experiment/tms_data/{{ tms_data.id }}/" class="btn btn-light">{% trans "Cancel" %}</a>
+                            {% endif %}
+                            {% if tab == "2" %}
+                                <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view/" class="btn btn-light">{% trans "Cancel" %}</a>
+                            {% endif %}
+                        {% endif %}
+
+                    </div>
+                {% else %}
+                    <div class="btn-group float-end">
+                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms" class="btn btn-light">{% trans "Back" %}</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
         <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-body">{% trans "Are you sure you want to delete TMS data?" %}</div>
+                    <div class="modal-body">
+                        {% trans "Are you sure you want to delete TMS data?" %}
+                    </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="disableRemoveButton()">
+                            {% trans "Cancel" %}
+                        </button>
+                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">
+                            {% trans "Delete" %}
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-
-    {% endblock %}
+    {% endblock content %}
 
     {% block end_form %}
     </form>

@@ -3,42 +3,7 @@
 {% load i18n static %}
 {% load subjects_tags %}
 
-{% block extrahead %}
-    <style>
-        {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
-        .header-fixed {
-            width: 100%
-        }
 
-        .header-fixed > thead,
-        .header-fixed > tbody,
-        .header-fixed > thead > tr,
-        .header-fixed > tbody > tr,
-        .header-fixed > thead > tr > th,
-        .header-fixed > tbody > tr > td {
-            display: block;
-        }
-
-        .header-fixed > tbody > tr:after,
-        .header-fixed > thead > tr:after {
-            content: ' ';
-            display: block;
-            visibility: hidden;
-            clear: both;
-        }
-
-        .header-fixed > tbody {
-            overflow-y: auto;
-            height: 400px;
-        }
-
-        .header-fixed > tbody > tr > td,
-        .header-fixed > thead > tr > th {
-            width: 50%;
-            float: left;
-        }
-    </style>
-{% endblock %}
 
 {% block form %}
     

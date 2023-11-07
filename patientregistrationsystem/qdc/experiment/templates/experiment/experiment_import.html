@@ -27,7 +27,7 @@
         </nav>
     </div>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" data-toggle="validator">
         {% csrf_token %}
         <div class="tab-pane fade show active" id="mainMenuUserTab">
             <div class="my-3 p-3 bg-body rounded shadow-sm">
@@ -52,7 +52,7 @@
                     {% endif %}
                 </p>
                 <div class="form-group">
-                    <input type="file" name="file">
+                    <input type="file" name="file" required>
                 </div>
             </div>
 
