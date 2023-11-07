@@ -27,39 +27,40 @@
         </nav>
     </div>
 
-    <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="my-3 p-3 bg-body rounded shadow-sm">
-            {% if research_project_id %}
-                <h3>{% trans "Import Experiment/Project" %}</h3>
-            {% else %}
-                <h3>{% trans "Import Study/Experiment" %}</h3>
-            {% endif %}
-            <h4>
-                <em>{% trans "Choose a .zip file previously exported by NES" %}</em>
-            </h4>
-            <p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="tab-pane fade show active" id="mainMenuUserTab">
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
                 {% if research_project_id %}
-                    {% trans "This will create a whole new Experiment/Project. The extension of objects that will be imported depends upon the stuff inside json file." %}
+                    <h4>
+                        {% trans "Import Experiment/Project" %}
+                    </h4>
                 {% else %}
-                    {% trans "This will create a whole new Study/Experiment. The extension of objects that will be imported depends upon the stuff inside zip file." %}
+                    <h4>
+                        {% trans "Import Study" %}
+                    </h4>
                 {% endif %}
-            </p>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
+                <hr>
+                <h4>
+                    <em>{% trans "Choose a .zip file previously exported by NES" %}</em>
+                </h4>
+                <p>
+                    {% if research_project_id %}
+                        {% trans "This will create a whole new Experiment/Project. The extension of objects that will be imported depends upon the stuff inside json file." %}
+                    {% else %}
+                        {% trans "This will create a whole new Study. The extension of objects that will be imported depends upon the stuff inside zip file." %}
+                    {% endif %}
+                </p>
                 <div class="form-group">
                     <input type="file" name="file">
                 </div>
-                <div class="form-group">
-                    <input type="submit" class="btn btn-primary">
-                </div>
-            </form>
-        </div>
+            </div>
 
-        <div class="btn-group float-end">
-            <br>
-            <a href="/experiment/research_project/{% if research_project_id %}{{ research_project_id }}{% else %}list{% endif %}"
-               class="btn btn-light">{% trans "Cancel" %}</a>
-        </div>
+            <div class="btn-group float-end">
+                <input type="submit" class="btn btn-primary">
+                <a href="/experiment/research_project/{% if research_project_id %}{{ research_project_id }}{% else %}list{% endif %}" class="btn btn-light">{% trans "Cancel" %}</a>
+            </div>
+        </form>
     </div>
 {% endblock content %}
 
