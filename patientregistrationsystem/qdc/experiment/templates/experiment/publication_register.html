@@ -224,6 +224,6 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    {% if publication_form.errors %}<script type="text/javascript" defer>showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
+    {% if publication_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
     <script type="text/javascript" defer src={% static "site/js/publication_register.js" %}></script>
 {% endblock extrascript %}

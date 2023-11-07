@@ -134,5 +134,5 @@
 
 {% block extrascript %}
     <script type="text/javascript" defer src={% static "site/js/custom_user_validation.js" %}></script>
-    {% if institution_form.errors %}<script type="text/javascript" defer>showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
+    {% if institution_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 {% endblock extrascript %}

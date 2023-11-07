@@ -49,21 +49,19 @@
             z-index: 2;
           }
           
-          .form-signin input[type="text"] {
+          .form-signin input[id="id_username"] {
             margin-bottom: -1px;
             border-bottom-right-radius: 0;
             border-bottom-left-radius: 0;
           }
           
-          .form-signin input[type="password"] {
+          .form-signin input[id="id_password"] {
             margin-bottom: 10px;
             border-top-left-radius: 0;
             border-top-right-radius: 0;
           }
         .form-signin input[id="old_password"] {
-            margin-bottom: -1px;
-            border-bottom-right-radius: 0;
-            border-bottom-left-radius: 0;
+
         }
         .form-signin input[id="id_new_password1"] {
             margin-bottom: -1px;
@@ -93,10 +91,11 @@
 
     <script type="text/javascript" src="{% static "site/bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js" %}"></script>
     <script type="text/javascript" src="{% static "site/bootstrap-show-toast/bootstrap-show-toast.min.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" src="{% static "site/js/validate.js" %}"></script>
+    {% comment %} <script type="text/javascript" async src="{% static "site/bootstrap-validator-0.11.9/validator.min.js" %}" charset="utf-8"></script> {% endcomment %}
+    {% comment %} <script type="text/javascript" src="{% static "site/js/validate.js" %}"></script> {% endcomment %}
     <script type="text/javascript" src="{% static "site/js/nes_utils.js" %}"></script>
 
-    <script type="text/javascript" defer src="{% url "javascript-catalog" %}"></script>
+    <script type="text/javascript" src="{% url "javascript-catalog" %}"></script>
 
     {% for message in messages %}
       {% if message.tags == "success" %}
@@ -116,7 +115,7 @@
       {% endif %}
     {% endfor %}
 
-    <script type="text/javascript" defer>
+    <script type="text/javascript">
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     </script>

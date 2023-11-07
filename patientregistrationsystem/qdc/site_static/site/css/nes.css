@@ -1,7 +1,6 @@
 html {
     position: relative;
     min-height: 100%;
-    /* overflow-y: overlay !important */
 }
 
 body {

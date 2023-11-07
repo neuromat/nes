@@ -227,7 +227,7 @@
 {% block extrascript %}
     <script type="text/javascript" defer src={% static "site/js/questionnaire_export.js" %}></script>
     {% if export_form.errors %}
-        <script type="text/javascript" defer>
+        <script type="text/javascript">
             showErrorMessage(gettext('Please, correct the highlighted fields.'))
         </script>
     {% endif %}

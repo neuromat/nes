@@ -59,6 +59,6 @@
 
 {% block extrascript %}
     {% if form.non_field_errors %}
-        <script type="text/javascript" defer>{% for error in form.non_field_errors %}showErrorMessageTemporary(gettext('{{ error }}'));{% endfor %}</script>
+        <script type="text/javascript">{% for error in form.non_field_errors %}showErrorMessageTemporary(gettext('{{ error }}'));{% endfor %}</script>
     {% endif %}
 {% endblock extrascript %}

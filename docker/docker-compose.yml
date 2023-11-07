@@ -73,6 +73,7 @@ services:
       dockerfile: docker/Dockerfile
       args:
         DEBUG: 0
+        HTTPS_CERT_KEY: SMIJz45XdhGCDCUzVSOoVYMrb4X2kN6l
     command: sleep infinity
     restart: unless-stopped
     tty: true

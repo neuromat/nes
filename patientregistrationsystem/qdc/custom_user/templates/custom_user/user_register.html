@@ -300,5 +300,5 @@
     <script type="text/javascript" defer src={% static "site/js/password_register.js" %}></script>
     <script type="text/javascript" defer src={% static "site/js/custom_user_validation.js" %}></script>
 
-    {% if form.errors %}<script type="text/javascript" defer>showErrorMessage(gettext('Please, correct the fields highlighted.'))</script>{% endif %}
+    {% if form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct the fields highlighted.'))</script>{% endif %}
 {% endblock extrascript %}
