@@ -3,7 +3,6 @@
 {% load i18n static %}
 
 {% block extrahead %}
-<link rel="stylesheet" href="{% static "site/virtual-select.min.css" %}" charset="utf-8">
 {% endblock extrahead %}
 
 {% block activeExport %}
@@ -157,7 +156,9 @@
                                                                 name="to[]"
                                                                 size="13"
                                                                 id="multiselect_{{ survey.index }}"
-                                                                {% comment %} name="from[]" {% endcomment %}
+                                                                {% comment %}
+                                                                name="from[]"
+                                                                {% endcomment %}
                                                                 multiple="multiple"
                                                                 data-bs-error="{% trans "Please, select a questionnaire from the list." %}">
                                                             {% for field in survey.output_list %}
@@ -300,13 +301,9 @@
 
 {% block extrascript %}
     <script type="text/javascript" defer src={% static "site/js/questionnaire_export.js" %}></script>
-    <script type="text/javascript" src={% static "site/virtual-select.min.js" %}></script>
     <script type="text/javascript">
-
         {% if export_form.errors %}
             showErrorMessage(gettext('Please, correct the highlighted fields.'))
         {% endif %}
-
-
     </script>
 {% endblock extrascript %}

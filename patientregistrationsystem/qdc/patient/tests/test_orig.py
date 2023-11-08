@@ -742,7 +742,7 @@ class PatientFormValidation(TestCase):
         self.data[SEARCH_TEXT] = ""
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertIsNone(response.context["patients"])
+        self.assertEqual(response.context["patients"], [])
 
     def test_patient_list(self):
         """
