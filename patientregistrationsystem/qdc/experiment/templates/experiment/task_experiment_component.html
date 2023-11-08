@@ -1,31 +1,37 @@
 {% extends "experiment/component_template.html" %}
 
-{% load i18n static %}
+{% load i18n %}
 
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="breadcrumb-item active">{% trans "New task for experimenter" %}</li>
+        <li class="breadcrumb-item active">
+            {% trans "New task for experimenter" %}
+        </li>
     {% endif %}
 
-{% endblock %}
+{% endblock breadcrumb %}
 
-{% block component_label %}a tarefa para o experimentador{% endblock %}
+{% block component_label %}
+    a tarefa para o experimentador
+{% endblock component_label %}
 
 {% block component_add_new %}
     <li role="presentation">
-        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/task_experiment{% if position %}?position={{ position }}{% endif %}')">
+        <a role="menuitem"
+           tabindex="-1"
+           onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/task_experiment{% if position %}?position={{ position }}{% endif %}')">
             << {% trans "New task for experimenter" %} >>
         </a>
     </li>
-{% endblock %}
+{% endblock component_add_new %}
 
 {% block component_button_label %}
     {% trans "New task for experimenter" %}
-{% endblock %}
+{% endblock component_button_label %}
 
 {% block extra_fields %}
-{% endblock %}
+{% endblock extra_fields %}
 
 {# In case of inclusion of javascript, insert parent template scripts #}
 {#{% block extrascript %}#}

@@ -1,7 +1,7 @@
 {% extends "base/template.html" %}
 {% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
 
-{% load i18n static %}
+{% load i18n %}
 {% load subjects_tags %}
 
 {% block form %}
@@ -16,7 +16,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
     
-                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="{% url "home" %}">{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>

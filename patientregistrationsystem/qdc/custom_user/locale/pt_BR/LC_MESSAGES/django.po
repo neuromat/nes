@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-30 22:28-0300\n"
-"PO-Revision-Date: 2023-10-02 12:30-0300\n"
-"Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
+"PO-Revision-Date: 2023-11-08 17:28-0300\n"
+"Last-Translator:   <lapis@peb.ufrj.br>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,7 @@ msgstr "Entrar último nome"
 
 #: custom_user/forms.py:59 custom_user/forms.py:222
 msgid "Type e-mail"
-msgstr "Entra e-mail"
+msgstr "Entrar e-mail"
 
 #: custom_user/forms.py:62 custom_user/forms.py:225
 msgid "Invalid e-mail"
@@ -38,16 +38,15 @@ msgid "Type user name"
 msgstr "Entrar nome do usuário"
 
 #: custom_user/forms.py:81
-#, fuzzy
 #| msgid ""
-#| "Username must start with a letter and contain only alphanumeric "
-#| "characters (6-30)"
+#| "Username must start with a letter and contain only alphanumeric characters "
+#| "(6-30)"
 msgid ""
 "Username must start with a letter and contain only alphanumeric characters "
 "(5-30)"
 msgstr ""
 "Nome de usuário deve começar com uma letra e ter apenas caracteres "
-"alfanuméricos"
+"alfanuméricos (5-30)"
 
 #: custom_user/forms.py:92 custom_user/forms.py:135
 #: custom_user/templates/custom_user/user_register.html:185
@@ -159,14 +158,13 @@ msgid "Back"
 msgstr "Voltar"
 
 #: custom_user/templates/custom_user/institution_register.html:118
-#, fuzzy
 #| msgid "Delete"
 msgid "Delete?"
-msgstr "Remover"
+msgstr "Remover?"
 
 #: custom_user/templates/custom_user/institution_register.html:121
 msgid "Are you sure you want to delete this institution?"
-msgstr "Tem certeza que deseja excluir esta instituição?"
+msgstr "Tem certeza de que deseja excluir esta instituição?"
 
 #: custom_user/templates/custom_user/institution_register.html:124
 #: custom_user/templates/custom_user/user_register.html:247
@@ -334,8 +332,8 @@ msgid ""
 "This institution cannot be removed because there is (are) other "
 "institution(s) associated with it."
 msgstr ""
-"Esta instituição não pode ser removida porque há outra instituição associada "
-"a ela."
+"Esta instituição não pode ser removida porque há outra instituição associada"
+" a ela."
 
 #: custom_user/views.py:324
 msgid "Institution removed successfully."

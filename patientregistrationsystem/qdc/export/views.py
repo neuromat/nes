@@ -561,7 +561,7 @@ def export_view(request, template_name="export/export_data.html"):
     selected_participant = []
     selected_diagnosis = []
     selected_ev_quest_experiments = []
-    questionnaires_fields_list = []
+    questionnaires_fields_list: list[dict[str, Any]] = []
     questionnaires_experiment_fields_list = []
     language_code = request.LANGUAGE_CODE
 
@@ -1271,7 +1271,9 @@ def get_questionnaire_experiment_fields(
     return questionnaires_included
 
 
-def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
+def get_questionnaire_fields(
+    questionnaire_code_list: list[int], current_language: str = "pt-BR"
+) -> tuple[int, list[dict[str, Any]]]:
     """
     :param questionnaire_code_list: list with questionnaire id to be
     formatted with json file
@@ -1345,12 +1347,16 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
 
 def get_some_token(questionnaire_lime_survey, questionnaire_id):
     survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
-    some_patient_response = QuestionnaireResponse.objects.filter(survey=survey).first()
+    assert survey is not None
+    some_patient_response: QuestionnaireResponse | None = (
+        QuestionnaireResponse.objects.filter(survey=survey).first()
+    )
     if not some_patient_response:
         some_patient_response = ExperimentQuestionnaireResponse.objects.filter(
             data_configuration_tree__component_configuration__component__questionnaire__survey_id=survey.id
         ).first()
 
+    assert some_patient_response is not None
     token = questionnaire_lime_survey.get_participant_properties(
         questionnaire_id, some_patient_response.token_id, "token"
     )

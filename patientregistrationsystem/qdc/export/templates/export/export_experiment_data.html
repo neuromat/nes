@@ -16,7 +16,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                     <li class="breadcrumb-item">
-                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                        <a href="{% url "home" %}">{% trans "Home" %}</a>
                     </li>
                     <li class="breadcrumb-item">
                         <a href="/export">{% trans "Export" %}</a>
@@ -253,8 +253,7 @@
                                                         <div class="card-header">
                                                             <h9 class="card-title">
                                                             <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_{{ survey.index }}">
-                                                                <span style="background-color: #428bca" id="badge_{{ survey.index }}" class="badge.badge-pill">{{ survey.selected_counter }}</span> {{ survey.sid }}
-                                                            - {{ survey.title }} </a>
+                                                                <span id="badge_{{ survey.index }}" class="badge bg-info me-1">{{ survey.selected_counter }}</span>{{ survey.sid }} - {{ survey.title }}</a>
                                                             </h9>
                                                         </div>
                                                         <div id="collapse_{{ survey.index }}" class=" collapse">
@@ -361,9 +360,8 @@
                                                         <div class="card-header">
                                                             <h9 class="card-title">
                                                             <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_{{ survey.index }}">
-                                                                <span style="background-color: #428bca" id="badge_experiment_{{ survey.index }}" class="badge.badge-pill">{{ survey.selected_field_counter }}</span>
-                                                                {{ survey.sid }}
-                                                            - {{ survey.title }} - {{ survey.group_title }} </a>
+                                                                <span id="badge_experiment_{{ survey.index }}" class="badge bg-info me-1">{{ survey.selected_field_counter }}</span>{{ survey.sid }} - {{ survey.title }} - {{ survey.group_title }}
+                                                            </a>
                                                             </h9>
                                                         </div>
                                                         <div id="collapse_{{ survey.index }}" class=" collapse">
@@ -530,7 +528,7 @@
                         </button>
                     </div>
                     <div class="btn-group">
-                        <a href="/home/" class="btn btn-light">{% trans "Cancel" %}</a>
+                        <a href="{% url "home" %}" class="btn btn-light">{% trans "Cancel" %}</a>
                     </div>
                 </div>
             </div>

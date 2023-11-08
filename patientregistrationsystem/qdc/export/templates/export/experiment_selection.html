@@ -1,102 +1,139 @@
 {% extends "base/template.html" %}
 
-{% load i18n %}
+{% load i18n static %}
 
-{% block activeExport %} active{% endblock activeExport %}
+{% block activeExport %}
+    active
+{% endblock activeExport %}
 
 {% block form %}
     <form id="user_form" method="post" data-toggle="validator">
-    {% csrf_token %}
-{% endblock form %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
-    <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
-                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
-                <li class="breadcrumb-item"><a href="/export/">{% trans "Export" %}</a></li>
-                <li class="breadcrumb-item active">{% trans "Experiment/Project selection" %}</li>
-            </ol>
-        </nav>
-    </div>
+    {% block content %}
+        <div class="tab-pane fade show active" id="participantsSelectionBreadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/export/">{% trans "Export" %}</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        {% trans "Experiment/Project selection" %}
+                    </li>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="tab-pane fade show active" id="mainMenuUserTab">
-        <div class="my-3 p-3 bg-body rounded shadow-sm" id="studies_container">
-            <h4>{% trans "Filters selection" %}</h4>
-            <hr>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-12 col-sm-12">
-                        <label for="id_research_projects" class="form-label">{% trans "Studies" %} <b class="text-danger">*</b></label>
-                        <select class="form-select" id="id_research_projects" name="research_projects_selected">
-                            <option value>-------</option>
-                            {% for research_project in research_projects %}
-                                <option {% if research_project.id == research_project_selected.id %}selected="selected"{% endif %} value="{{ research_project.id }}">{{ research_project.title }}</option>
-                            {% endfor %}
-                        </select>
-                        <div class="form-text with-errors text-danger"></div>
+        <div class="tab-pane fade show active" id="mainMenuUserTab">
+            <div class="my-3 p-3 bg-body rounded shadow-sm" id="studies_container">
+                <h4>
+                    {% trans "Filters selection" %}
+                </h4>
+                <hr>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12 col-sm-12">
+                            <label for="id_research_projects" class="form-label">
+                                {% trans "Studies" %} <b class="text-danger">*</b>
+                            </label>
+                            <select class="form-select" id="id_research_projects" name="research_projects_selected">
+                                <option value>
+                                    -------
+                                </option>
+                                {% for research_project in research_projects %}
+                                    <option {% if research_project.id == research_project_selected.id %}selected="selected"{% endif %} value="{{ research_project.id }}">
+                                        {{ research_project.title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text with-errors text-danger">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12 col-12">
+                            <label for="id_experiments" class="form-label">
+                                {% trans "Experiments" %} <b class="text-danger">*</b>
+                            </label>
+                            <select class="form-select" id="id_experiments" name="experiment_selected">
+                                <option value>
+                                    -------
+                                </option>
+                                {% for experiment in experiment_list %}
+                                    <option {% if not creating and experiment.id == experiment_selected.id %}selected="selected"{% endif %} value="{{ experiment.id }}">
+                                        {{ experiment.title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12 col-12">
+                            <label for="group_selected" class="form-label">
+                                {% trans "Groups" %} <b class="text-danger">*</b>
+                            </label>
+                            <select class="form-control" id="group_selected" name="group_selected" multiple="multiple">
+                                {% for group in group_list %}
+                                    <option title="{{ group.title }}" value="{{ group.id }}">
+                                        {{ group.title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <label class="form-label">
+                                {% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-sm-6">
+                    <div class="form-group">
+                        <label class="form-label" for="id_license">
+                            {% trans "License" %}
+                        </label>
+                        <div id="id_license" class="form-check">
+                            <input type="radio" class="form-check-input" name="license" id="license1" value="0" checked>
+                            <label class="form-check-label" for="license1">
+                                Creative Commons
+                            </label>
+                            <br>
+                            <input type="radio" class="form-check-input" name="license" id="license2" value="1">
+                            <label class="form-check-label"for="license2">
+                                Copyright
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-12 col-12">
-                        <label for="id_experiments" class="form-label">{% trans "Experiments" %} <b class="text-danger">*</b></label>
-                        <select class="form-select" id="id_experiments" name="experiment_selected">
-                            <option value>-------</option>
-                            {% for experiment in experiment_list %}
-                                <option {% if not creating and experiment.id == experiment_selected.id %}selected="selected"{% endif %} value="{{ experiment.id }}">{{ experiment.title }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+            <div class="btn-toolbar justify-content-between">
+                <div class="btn-group">
+                    <button type="submit" name="action" value="next-step-participants" class="btn btn-primary">
+                        {% trans "Next" %}
+                        <span class="fa-fw fa fa-forward"></span>
+                    </button>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-12 col-12">
-                        <label for="group_selected" class="form-label">{% trans "Groups" %} <b class="text-danger">*</b></label>
-                        <select class="form-control" id="group_selected" name="group_selected" multiple="multiple">
-                            {% for group in group_list %}
-                                <option title="{{ group.title }}" value="{{ group.id }}">{{ group.title }}</option>
-                            {% endfor %}
-                        </select>
-                        <label class="form-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group mt-1">
-                <p><strong>{% trans "License" %}</strong></p>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="license" id="license1" value="0" checked>
-                    <label class="form-check-label" for="license1">Creative Commons</label><br>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="license" id="license2" value="1">
-                    <label class="form-check-label" for="license2">Copyright</label>
+                <div class="btn-group">
+                    <a href="/export/" class="btn btn-light">{% trans "Cancel" %}</a>
                 </div>
             </div>
         </div>
+    {% endblock content %}
 
-        <div class="btn-toolbar justify-content-between">
-            <div class="btn-group">
-                <button type="submit" name="action" value="next-step-participants" class="btn btn-primary">
-                    {% trans "Next" %}
-                    <span class="fa-fw fa fa-forward"></span>
-                </button>
-            </div>
-            <div class="btn-group">
-                <a href="/export/" class="btn btn-light">{% trans "Cancel" %}</a>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
 {% endblock end_form %}
 
 {% block extrascript %}
-    {% load static %}
+    
+
     <script type="text/javascript" defer src={% static "site/js/experiment_selection.js" %}></script>
 {% endblock extrascript %}

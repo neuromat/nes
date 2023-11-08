@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-30 22:28-0300\n"
-"PO-Revision-Date: 2023-10-02 12:49-0300\n"
-"Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
+"POT-Creation-Date: 2023-11-08 17:26-0300\n"
+"PO-Revision-Date: 2023-11-08 17:45-0300\n"
+"Last-Translator:   <lapis@peb.ufrj.br>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -679,58 +679,57 @@ msgid "Administrator"
 msgstr "Administrador"
 
 #: configuration/templates/configuration/links_list.html:14
-#: templates/base/template.html:113
-#: templates/registration/change_password_custom.html:65
+#: templates/base/template.html:112
+#: templates/registration/change_password_custom.html:71
 #: templates/registration/logged_out.html:7
 msgid "Home"
 msgstr "Home"
 
 #: configuration/templates/configuration/links_list.html:16
 #: configuration/templates/configuration/links_list.html:22
-#: templates/base/template.html:195
+#: templates/base/template.html:194
 msgid "Useful Links"
-msgstr ""
+msgstr "Links uteis"
 
 #: configuration/templates/configuration/links_list.html:35
-#, fuzzy
 #| msgid "Add login"
 msgid "Add new link"
-msgstr "Adicionar login"
+msgstr "Adicionar novo link"
 
-#: processing/templates/processing/file_selection.html:37
+#: processing/templates/processing/file_selection.html:16
 msgid "Filters selection"
 msgstr ""
 
-#: processing/templates/processing/file_selection.html:41
-#: templates/base/template.html:130
+#: processing/templates/processing/file_selection.html:20
+#: templates/base/template.html:129
 msgid "Studies"
-msgstr ""
+msgstr "Estudos"
 
-#: processing/templates/processing/file_selection.html:56
-#, fuzzy
+#: processing/templates/processing/file_selection.html:35
 #| msgid "Can add experiment"
 msgid "Experiments"
-msgstr "Pode adicionar experimento"
+msgstr "Experimentos"
 
-#: processing/templates/processing/file_selection.html:70
+#: processing/templates/processing/file_selection.html:49
 msgid "Groups"
-msgstr ""
+msgstr "Grupos"
 
-#: processing/templates/processing/file_selection.html:76
+#: processing/templates/processing/file_selection.html:55
 msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
 msgstr ""
+"* use ctrl+click para selecionar mais que um campo (command+click no Mac)"
 
-#: processing/templates/processing/file_selection.html:84
+#: processing/templates/processing/file_selection.html:63
 msgid "Next"
-msgstr ""
+msgstr "Próximo"
 
-#: processing/templates/processing/file_selection.html:87
+#: processing/templates/processing/file_selection.html:66
 msgid "Cancel"
 msgstr "Cancelar"
 
 #: processing/views.py:88
 msgid "No group(s) selected!"
-msgstr ""
+msgstr "Nenhum grupo selecionado"
 
 #: templates/404.html:8
 msgid "404 Page Not Found"
@@ -756,113 +755,111 @@ msgstr "Administração QDC"
 msgid "Access is not authorized"
 msgstr "Acesso não autorizado"
 
-#: templates/base/contato.html:17 templates/base/template.html:10
-#: templates/base/template_registration.html:13
+#: templates/base/contato.html:24 templates/base/template.html:10
+#: templates/base/template_registration.html:11
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociência - NES"
 
-#: templates/base/contato.html:20
+#: templates/base/contato.html:27
 msgid ""
-"Welcome to NES! If you need help you can check the <a href='https://nes."
-"readthedocs.io/en/latest/userguide/userguide.html'>user guide here</a>. "
-"<br>Please report any bug to the admin."
+"Welcome to NES! If you need help you can check the <a "
+"href='https://nes.readthedocs.io/en/latest/userguide/userguide.html'>user "
+"guide here</a>. <br>Please report any bug to the admin."
 msgstr ""
 
-#: templates/base/template.html:32
+#: templates/base/template.html:38
 msgid "NES"
-msgstr ""
+msgstr "NES"
 
-#: templates/base/template.html:78
+#: templates/base/template.html:77
 msgid "Admin"
-msgstr ""
+msgstr "Admin"
 
-#: templates/base/template.html:80
+#: templates/base/template.html:79
 msgid "Change password"
 msgstr "Alterar senha"
 
-#: templates/base/template.html:81
+#: templates/base/template.html:80
 msgid "Help"
 msgstr ""
 
-#: templates/base/template.html:82
-#: templates/registration/change_password_custom.html:67
+#: templates/base/template.html:81
+#: templates/registration/change_password_custom.html:73
 msgid "Logout"
 msgstr "Logout"
 
-#: templates/base/template.html:90
+#: templates/base/template.html:89
 msgid "Light Theme"
 msgstr ""
 
-#: templates/base/template.html:91
+#: templates/base/template.html:90
 msgid "Dark Theme"
 msgstr ""
 
-#: templates/base/template.html:119
+#: templates/base/template.html:118
 msgid "Add people that participated in the experiments"
 msgstr ""
 
-#: templates/base/template.html:121
+#: templates/base/template.html:120
 msgid "Participants"
 msgstr ""
 
-#: templates/base/template.html:128 templates/base/template.html:137
+#: templates/base/template.html:127 templates/base/template.html:136
 msgid "Add publications"
 msgstr ""
 
-#: templates/base/template.html:139
+#: templates/base/template.html:138
 msgid "Publications"
 msgstr ""
 
-#: templates/base/template.html:146 templates/base/template.html:155
+#: templates/base/template.html:145 templates/base/template.html:154
 msgid "Add users and institutions to the database"
 msgstr ""
 
-#: templates/base/template.html:148
-#, fuzzy
+#: templates/base/template.html:147
 #| msgid "Can add questionnaire"
 msgid "Questionnaires"
-msgstr "Pode adicionar questinário"
+msgstr "Questinários"
 
-#: templates/base/template.html:157
-#, fuzzy
+#: templates/base/template.html:156
 #| msgid "Junior researcher"
 msgid "Researchers"
-msgstr "Pesquisador júnior"
+msgstr "Pesquisadores"
 
-#: templates/base/template.html:164
+#: templates/base/template.html:163
 msgid "Export your projects"
-msgstr ""
+msgstr "Exportar seus projetos"
 
-#: templates/base/template.html:166
+#: templates/base/template.html:165
 msgid "Export"
-msgstr ""
+msgstr "Exportar"
 
-#: templates/base/template.html:173
+#: templates/base/template.html:172
 msgid "Here you can setup the equipments used in the projects"
 msgstr ""
 
-#: templates/base/template.html:175
+#: templates/base/template.html:174
 msgid "Set up"
 msgstr ""
 
-#: templates/base/template.html:187
+#: templates/base/template.html:186
 msgid "Plugin"
-msgstr ""
+msgstr "Plugin"
 
-#: templates/base/template.html:193
+#: templates/base/template.html:192
 msgid "Useful links of tools"
 msgstr ""
 
-#: templates/base/template.html:205
+#: templates/base/template.html:203
 msgid "Please enable Javascript"
-msgstr ""
+msgstr "Por favor habilite o Javascript"
 
-#: templates/registration/change_password_custom.html:15
+#: templates/registration/change_password_custom.html:16
 msgid "Password change"
 msgstr "Alterar senha"
 
-#: templates/registration/change_password_custom.html:36
-#: templates/registration/password_reset_confirm.html:21
+#: templates/registration/change_password_custom.html:40
+#: templates/registration/password_reset_confirm.html:22
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
@@ -870,7 +867,7 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: templates/registration/change_password_custom.html:60
+#: templates/registration/change_password_custom.html:65
 msgid "Save"
 msgstr "Salvar"
 
@@ -878,7 +875,7 @@ msgstr "Salvar"
 msgid "Thanks for spending some quality time with the Web site today."
 msgstr "Obrigado por passar momentos de qualidade com o site hoje."
 
-#: templates/registration/logged_out.html:16
+#: templates/registration/logged_out.html:17
 msgid "Log in again"
 msgstr "Faça login novamente"
 
@@ -888,7 +885,7 @@ msgstr "Usuário"
 
 #: templates/registration/login.html:30
 msgid "Username must contain only letters, numbers and periods(.)"
-msgstr ""
+msgstr "Nome de usuário deve conter apenas letras, números e pontos"
 
 #: templates/registration/login.html:40 templates/registration/login.html:42
 msgid "Password"
@@ -906,16 +903,14 @@ msgstr "Esqueci minha senha"
 msgid ""
 "Hi, is everything ok?\n"
 "\n"
-"    You are receiving this e-mail for password definition into your user "
-"account.\n"
+"    You are receiving this e-mail for password definition into your user account.\n"
 "\n"
 "    Please, go to the next page and enter your password:\n"
 "    "
 msgstr ""
 "Ola tudo bem?\n"
 "\n"
-"    Você está recebendo este e-mail para definição de senha para sua conta "
-"de usuário.\n"
+"    Você está recebendo este e-mail para definição de senha para sua conta de usuário.\n"
 "\n"
 "    Por favor, vá para a seguinte página e entre com uma senha:\n"
 "    "
@@ -950,48 +945,43 @@ msgid "Access"
 msgstr "Acessar"
 
 #: templates/registration/password_reset_confirm.html:13
-#: templates/registration/password_reset_form.html:43
+#: templates/registration/password_reset_form.html:47
 msgid "Reset password"
 msgstr "Redefinir senha"
 
-#: templates/registration/password_reset_confirm.html:22
+#: templates/registration/password_reset_confirm.html:23
 msgid "New password"
 msgstr "Nova senha"
 
-#: templates/registration/password_reset_confirm.html:32
+#: templates/registration/password_reset_confirm.html:33
 msgid "Confirm password"
 msgstr "Confirmar senha"
 
-#: templates/registration/password_reset_confirm.html:36
+#: templates/registration/password_reset_confirm.html:38
 msgid "Confirm"
 msgstr "Confirmar"
 
-#: templates/registration/password_reset_confirm.html:40
+#: templates/registration/password_reset_confirm.html:43
 msgid "Password reset failed."
 msgstr "Redefinição de senha falhou."
 
-#: templates/registration/password_reset_confirm.html:43
-#, fuzzy
+#: templates/registration/password_reset_confirm.html:46
 #| msgid ""
-#| "Invalid link for password reset, possibly because this link has already "
-#| "been used previously. <br/>\n"
+#| "Invalid link for password reset, possibly because this link has already been used previously. <br/>\n"
 #| "                Please, request a new password reset."
 msgid ""
-"Invalid link for password reset, possibly because this link has already been "
-"used previously. <br />\n"
+"Invalid link for password reset, possibly because this link has already been used previously. <br />\n"
 "                Please, request a new password reset."
 msgstr ""
-"Link inválido para redefinição de senha, possivelmente porque este link ja "
-"foi usado anteriormente. <br/>\n"
-"                Por favor, faça uma nova requisição de redefinição de senha."
+"Link inválido para redefinição de senha, possivelmente porque este link ja foi usado anteriormente. <br/>\n"
+" Por favor, faça uma nova requisição de redefinição de senha."
 
 #: templates/registration/password_reset_done.html:9
 msgid ""
 "We sent you a message with instructions to set up your password\n"
 "            for the e-mail provided. "
 msgstr ""
-"Nós enviamos uma mensagem com instruções para configurar a sua senha para o "
-"endereço de\n"
+"Nós enviamos uma mensagem com instruções para configurar a sua senha para o endereço de\n"
 "            e-mail informado. "
 
 #: templates/registration/password_reset_done.html:13
@@ -999,31 +989,26 @@ msgid "You should receive it soon."
 msgstr "Você deve recebê-lo em breve."
 
 #: templates/registration/password_reset_email.html:4
-#, fuzzy
 #| msgid ""
 #| "Hi, is everything ok?\n"
 #| "\n"
-#| "        You are receiving this e-mail because you requested a password "
-#| "reset for your user account.\n"
+#| "        You are receiving this e-mail because you requested a password reset for your user account.\n"
 #| "\n"
 #| "        Please, go to the next page and enter a new password:\n"
 #| "    "
 msgid ""
 "Hi, is everything ok?\n"
 "\n"
-"    You are receiving this e-mail because you requested a password reset for "
-"your user account.\n"
+"    You are receiving this e-mail because you requested a password reset for your user account.\n"
 "\n"
 "    Please, go to the next page and enter a new password:\n"
 "    "
 msgstr ""
 "Ola tudo bem?\n"
 "\n"
-"        Você está recebendo este e-mail porque você pediu uma redefinição de "
-"senha para sua conta de usuário.\n"
+"Você está recebendo este e-mail porque você pediu uma redefinição de senha para sua conta de usuário.\n"
 "\n"
-"        Por favor, vá para a seguinte página e entre com uma nova senha:\n"
-"    "
+"Por favor, vá para a seguinte página e entre com uma nova senha:"
 
 #: templates/registration/password_reset_email.html:15
 msgid ""
@@ -1039,12 +1024,12 @@ msgstr ""
 "    Equipe Neuromat.\n"
 "    "
 
-#: templates/registration/password_reset_form.html:22
+#: templates/registration/password_reset_form.html:23
 msgid "Please enter your e-mail to receive instructions for password reset."
 msgstr ""
 "Especifique seu e-mail para receber as instruções para redefinição de senha."
 
-#: templates/registration/password_reset_form.html:34
+#: templates/registration/password_reset_form.html:36
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -1053,17 +1038,14 @@ msgstr "E-mail"
 #~ msgstr "Alterar senha em %(site_name)s"
 
 #, fuzzy
-#~| msgid "Delete institution"
 #~ msgid "Researchers and Institutions"
 #~ msgstr "Remover instituição"
 
 #, fuzzy
-#~| msgid "Senior researcher"
 #~ msgid "Show/Hide researchers"
 #~ msgstr "Pesquisador sênior"
 
 #, fuzzy
-#~| msgid "Junior researcher"
 #~ msgid "Researcher"
 #~ msgstr "Pesquisador júnior"
 
@@ -1071,12 +1053,10 @@ msgstr "E-mail"
 #~ msgstr "Instituição"
 
 #, fuzzy
-#~| msgid "User"
 #~ msgid "Username"
 #~ msgstr "Usuário"
 
 #, fuzzy
-#~| msgid "last name"
 #~ msgid "Citation name"
 #~ msgstr "Sobrenome"
 
@@ -1090,7 +1070,6 @@ msgstr "E-mail"
 #~ msgstr "Instituições"
 
 #, fuzzy
-#~| msgid "Delete institution"
 #~ msgid "Show/Hide institutions"
 #~ msgstr "Remover instituição"
 
@@ -1110,7 +1089,6 @@ msgstr "E-mail"
 #~ msgstr "Visualizar"
 
 #, fuzzy
-#~| msgid "Delete institution"
 #~ msgid "New institution"
 #~ msgstr "Remover instituição"
 
@@ -1151,12 +1129,10 @@ msgstr "E-mail"
 #~ msgstr "Em quais desses perfis o usuário se identifica?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete this researcher?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to deactivate the user?"
 #~ msgid "Are you sure you want to deactivate this researcher's system access?"
 #~ msgstr "Tem certeza que deseja desativar esta pessoa"
 
@@ -1164,45 +1140,30 @@ msgstr "E-mail"
 #~ msgstr "Desativar"
 
 #, fuzzy
-#~| msgid ""
-#~| "Invalid link for password reset, possibly because this link has already "
-#~| "been used previously. <br/>\n"
-#~| "                Please, request a new password reset."
 #~ msgid ""
-#~ "Invalid link for password reset, possibly because this link has already "
-#~ "been used previously. &lt;br/></span>&nbsp;</span><span class=\"r\"></"
-#~ "span></p>\n"
-#~ "    <p class=\"mis show_mis\"><span class=\"n\"><a id=\"t95\" "
-#~ "href=\"#t95\">95</a></span><span class=\"t\"><span "
-#~ "class=\"txt\">                Please, request a new password reset."
+#~ "Invalid link for password reset, possibly because this link has already been used previously. &lt;br/></span>&nbsp;</span><span class=\"r\"></span></p>\n"
+#~ "    <p class=\"mis show_mis\"><span class=\"n\"><a id=\"t95\" href=\"#t95\">95</a></span><span class=\"t\"><span class=\"txt\">                Please, request a new password reset."
 #~ msgstr ""
-#~ "Link inválido para redefinição de senha, possivelmente porque este link "
-#~ "ja foi usado anteriormente. <br/>\n"
-#~ "                Por favor, faça uma nova requisição de redefinição de "
-#~ "senha."
+#~ "Link inválido para redefinição de senha, possivelmente porque este link ja foi usado anteriormente. <br/>\n"
+#~ "                Por favor, faça uma nova requisição de redefinição de senha."
 
 #, fuzzy
-#~| msgid "Can add questionnaire configuration"
 #~ msgid "Questionnaire information"
 #~ msgstr "Pode adicionar configurações ao questionário"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Questionnaire"
 #~ msgstr "Pode adicionar questinário"
 
 #, fuzzy
-#~| msgid "Can delete questionnaire response"
 #~ msgid "Please, select a questionnaire from the list."
 #~ msgstr "Por favor, selecione um questionario da lista"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Question code"
 #~ msgstr "Codigo de Pergunta"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Question"
 #~ msgstr "Pergunta"
 
@@ -1210,152 +1171,122 @@ msgstr "E-mail"
 #~ msgstr "Participante"
 
 #, fuzzy
-#~| msgid "Can change experiment"
 #~ msgid "Used in experiments"
 #~ msgstr "Pode alterar experimento"
 
 #, fuzzy
-#~| msgid "Can add experiment"
 #~ msgid "Experiment:"
 #~ msgstr "Pode adicionar experimento"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete questionnaire?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Doctor"
 #~ msgid "Doctor name"
 #~ msgstr "Médico"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete exam?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Can add diagnosis"
 #~ msgid "Diagnosis"
 #~ msgstr "Pode adicionar diagnóstico"
 
 #, fuzzy
-#~| msgid "Can add diagnosis"
 #~ msgid "(no diagnosis)"
 #~ msgstr "Pode adicionar diagnóstico"
 
 #, fuzzy
-#~| msgid "Insert new"
 #~ msgid "Insert exam"
 #~ msgstr "Inserir novo"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete diagnosis?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Person list"
 #~ msgid "Personal data"
 #~ msgstr "Lista de pessoas"
 
 #, fuzzy
-#~| msgid "Can add social demographic data"
 #~ msgid "Social demographic data"
 #~ msgstr "Pode adicionar dados sociodemográficos"
 
 #, fuzzy
-#~| msgid "Can add social history data"
 #~ msgid "Social history"
 #~ msgstr "Pode adicionar dados de história social"
 
 #, fuzzy
-#~| msgid "Can delete patient"
 #~ msgid "Delete participant"
 #~ msgstr "Pode remover participante"
 
 #, fuzzy
-#~| msgid "Information not saved."
 #~ msgid "Do not save"
 #~ msgstr "Informação não salva."
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete participant?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Can export medical record data"
 #~ msgid "Insert medical record"
 #~ msgstr "Pode exportar dados de registro médico"
 
 #, fuzzy
-#~| msgid "last name"
 #~ msgid "Full name"
 #~ msgstr "Sobrenome"
 
 #, fuzzy
-#~| msgid "Can add medical record data"
 #~ msgid "Medical record"
 #~ msgstr "Pode adicionar dados de registro médico"
 
 #, fuzzy
-#~| msgid "Can add marital status"
 #~ msgid "Marital status"
 #~ msgstr "Pode adicionar estado civil"
 
 #, fuzzy
-#~| msgid "email address"
 #~ msgid "Address"
 #~ msgstr "E-mail"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Questionnaire fills"
 #~ msgstr "Pode adicionar questinário"
 
 #, fuzzy
-#~| msgid "Update password"
 #~ msgid "Updated"
 #~ msgstr "Alterar senha"
 
 #, fuzzy
-#~| msgid "Can change questionnaire"
 #~ msgid "Choose another questionnaire to fill"
 #~ msgstr "Pode alterar questinário"
 
 #, fuzzy
-#~| msgid "Can delete questionnaire"
 #~ msgid "Experiment/Project questionnaires"
 #~ msgstr "Pode remover questinário"
 
 #, fuzzy
-#~| msgid "Can add research project"
 #~ msgid "Research project"
 #~ msgstr "Pode adicionar projeto de pesquisa"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Choose a questionnaire to fill"
 #~ msgstr "Pode adicionar questinário"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Per questionnaire"
 #~ msgstr "Pode adicionar questinário"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Questionnaires from experiments"
 #~ msgstr "Pode adicionar questinário"
 
 #, fuzzy
-#~| msgid "Can add diagnosis"
 #~ msgid "Participants and Diagnosis"
 #~ msgstr "Pode adicionar diagnóstico"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Questionnaires data"
 #~ msgstr "Pode adicionar questinário"
 
@@ -1363,17 +1294,14 @@ msgstr "E-mail"
 #~ msgstr "Exibição da lista"
 
 #, fuzzy
-#~| msgid "Institution"
 #~ msgid "Identification"
 #~ msgstr "Instituição"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete A/D converter?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Information not saved."
 #~ msgid "information"
 #~ msgstr "Informação não salva."
 
@@ -1381,82 +1309,66 @@ msgstr "E-mail"
 #~ msgstr "Inserir"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete step?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Can add patient"
 #~ msgid "Add participant"
 #~ msgstr "Pode adicionar participante"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete amplifier?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Insert new"
 #~ msgid "Insert step"
 #~ msgstr "Inserir novo"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete this coil model?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Senior researcher"
 #~ msgid "New researcher"
 #~ msgstr "Pesquisador sênior"
 
 #, fuzzy
-#~| msgid "Junior researcher"
 #~ msgid "Add researchers"
 #~ msgstr "Pesquisador júnior"
 
 #, fuzzy
-#~| msgid "There is no changes to save."
 #~ msgid "There is no researcher to add!"
 #~ msgstr "Não há alteração para salvar."
 
 #, fuzzy
-#~| msgid "Insert new"
 #~ msgid "Insert new step"
 #~ msgstr "Inserir novo"
 
 #, fuzzy
-#~| msgid "Information not saved."
 #~ msgid "Information about"
 #~ msgstr "Informação não salva."
 
 #, fuzzy
-#~| msgid "Information not saved."
 #~ msgid "Information about this use of step"
 #~ msgstr "Informação não salva."
 
 #, fuzzy
-#~| msgid "There is no changes to save."
 #~ msgid "There is no setting file associated."
 #~ msgstr "Não há alteração para salvar."
 
 #, fuzzy
-#~| msgid "Can delete content type"
 #~ msgid "Delete context tree"
 #~ msgstr "Pode remover tipo"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete this context tree?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this institution?"
 #~ msgid "Are you sure you want to delete this setting from list?"
 #~ msgstr "Tem certeza que deseja remover esta instituição?"
 
 #, fuzzy
-#~| msgid "There is no changes to save."
 #~ msgid "There is no step to transfer"
 #~ msgstr "Não há alteração para salvar."
 
@@ -1464,142 +1376,114 @@ msgstr "E-mail"
 #~ msgstr "Remover"
 
 #, fuzzy
-#~| msgid "Confirm"
 #~ msgid "Conflict"
 #~ msgstr "Confirmar"
 
 #, fuzzy
-#~| msgid "Can add instruction"
 #~ msgid "New instruction"
 #~ msgstr "Pode adicionar instrução"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete localization system?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Institutions"
 #~ msgid "Positions"
 #~ msgstr "Instituições"
 
 #, fuzzy
-#~| msgid "Institution"
 #~ msgid "Position"
 #~ msgstr "Instituição"
 
 #, fuzzy
-#~| msgid "Is_coordinator"
 #~ msgid "Coordinate X"
 #~ msgstr "É coordenador"
 
 #, fuzzy
-#~| msgid "Is_coordinator"
 #~ msgid "Coordinate Y"
 #~ msgstr "É coordenador"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete position?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Delete institution"
 #~ msgid "Delete EEG setting"
 #~ msgstr "Remover instituição"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this institution?"
 #~ msgid "Are you sure you want to delete this EEG setting?"
 #~ msgstr "Tem certeza que deseja remover esta instituição?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete equipment from list?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Add login"
 #~ msgid "Add setting"
 #~ msgstr "Adicionar login"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete EEG electrode net?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete cap size?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete EEG machine?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Can add component"
 #~ msgid "Components"
 #~ msgstr "Pode adicionar componente"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete EEG solution?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete electrode model?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "New password"
 #~ msgid "Low pass"
 #~ msgstr "Nova senha"
 
 #, fuzzy
-#~| msgid "Delete institution"
 #~ msgid "Depth of insertion"
 #~ msgstr "Remover instituição"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete this emg electrode placement?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Add login"
 #~ msgid "Add new"
 #~ msgstr "Adicionar login"
 
 #, fuzzy
-#~| msgid "Delete institution"
 #~ msgid "Delete EMG setting"
 #~ msgstr "Remover instituição"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this institution?"
 #~ msgid "Are you sure you want to delete this EMG setting?"
 #~ msgstr "Tem certeza que deseja remover esta instituição?"
 
 #, fuzzy
-#~| msgid "Last name"
 #~ msgid "Last update"
 #~ msgstr "Sobrenome"
 
 #, fuzzy
-#~| msgid "Senior researcher"
 #~ msgid "No registered researcher"
 #~ msgstr "Pesquisador sênior"
 
 #, fuzzy
-#~| msgid "Can add task for the experimenter"
 #~ msgid "Last update of the experiment:"
 #~ msgstr "Pode adicionar tarefa para o experimentador"
 
 #, fuzzy
-#~| msgid "Can add marital status"
 #~ msgid "Portal status"
 #~ msgstr "Pode adicionar estado civil"
 
@@ -1607,411 +1491,328 @@ msgstr "E-mail"
 #~ msgstr "Pessoa"
 
 #, fuzzy
-#~| msgid "Registers"
 #~ msgid "Not registered"
 #~ msgstr "Cadastros"
 
 #, fuzzy
-#~| msgid "Senior researcher"
 #~ msgid "Remove researcher"
 #~ msgstr "Pesquisador sênior"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete experiment?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to remove this person from this team?"
 #~ msgid "Are you sure you want to remove this researcher?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa da equipe?"
 
 #, fuzzy
-#~| msgid "Can add patient"
 #~ msgid "send patient age"
 #~ msgstr "Pode adicionar participante"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete filter type?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Information not saved."
 #~ msgid "Information type"
 #~ msgstr "Informação não salva."
 
 #, fuzzy
-#~| msgid "Can change instruction"
 #~ msgid "Change institution code"
 #~ msgstr "Pode alterar instrução"
 
 #, fuzzy
-#~| msgid "Delete institution"
 #~ msgid "Create institution code"
 #~ msgstr "Remover instituição"
 
 #, fuzzy
-#~| msgid "Can change group"
 #~ msgid "Change group code"
 #~ msgstr "Pode alterar grupo"
 
 #, fuzzy
-#~| msgid "Can delete group"
 #~ msgid "Create group code"
 #~ msgstr "Pode remover grupo"
 
 #, fuzzy
-#~| msgid "Can change gender"
 #~ msgid "Change game and phase"
 #~ msgstr "Pode alterar sexo"
 
 #, fuzzy
-#~| msgid "Action not available."
 #~ msgid "Image not available."
 #~ msgstr "Ação não disponível."
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete group?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to remove this person from this team?"
 #~ msgid "Are you sure you want to unprovision experimental protocol?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa da equipe?"
 
 #, fuzzy
-#~| msgid "Can change instruction"
 #~ msgid "the instruction"
 #~ msgstr "Pode alterar instrução"
 
 #, fuzzy
-#~| msgid "Institutions list"
 #~ msgid "Instruction text"
 #~ msgstr "Lista de instituições"
 
 #, fuzzy
-#~| msgid "Can change keyword"
 #~ msgid "Add a new keyword"
 #~ msgstr "Pode alterar palavra-chave"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete manufacturer?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete material?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete muscle?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete muscle side?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Can add instruction"
 #~ msgid "Anatomy insertion"
 #~ msgstr "Pode adicionar instrução"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete muscle subdivision?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "New password"
 #~ msgid "New pause"
 #~ msgstr "Nova senha"
 
 #, fuzzy
-#~| msgid "Can change pause"
 #~ msgid "the pause"
 #~ msgstr "Pode alterar pausa"
 
 #, fuzzy
-#~| msgid "Institutions list"
 #~ msgid "Publication list"
 #~ msgstr "Lista de publicações"
 
 #, fuzzy
-#~| msgid "Insert new"
 #~ msgid "Insert new publication"
 #~ msgstr "Inserir novo"
 
 #, fuzzy
-#~| msgid "Institution"
 #~ msgid "Citation"
 #~ msgstr "Instituição"
 
 #, fuzzy
-#~| msgid "Can delete experiment"
 #~ msgid "Related experiments/Projects"
 #~ msgstr "Pode remover experimento"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this institution?"
 #~ msgid "Are you sure you want to delete this publication?"
 #~ msgstr "Tem certeza que deseja remover esta instituição?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to remove this person from this team?"
 #~ msgid "Are you sure you want to remove experiment/project from list?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa da equipe?"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "New questionnaire"
 #~ msgstr "Pode adicionar questinário"
 
 #, fuzzy
-#~| msgid "Can change questionnaire"
 #~ msgid "the questionnaire"
 #~ msgstr "Pode alterar questinário"
 
 #, fuzzy
-#~| msgid "Institution"
 #~ msgid "Identification:"
 #~ msgstr "Instituição"
 
 #, fuzzy
-#~| msgid "last name"
 #~ msgid "Use name:"
 #~ msgstr "Sobrenome"
 
 #, fuzzy
-#~| msgid "Institutions list"
 #~ msgid "Studies list"
 #~ msgstr "Lista de instituições"
 
 #, fuzzy
-#~| msgid "Insert new"
 #~ msgid "Insert new study"
 #~ msgstr "Inserir novo"
 
 #, fuzzy
-#~| msgid "Can add experiment"
 #~ msgid "Copy experiment"
 #~ msgstr "Pode adicionar experimento"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete study?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to remove this person from this team?"
 #~ msgid "Are you sure you want to remove this collaborator from this team?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa da equipe?"
 
 #, fuzzy
-#~| msgid ""
-#~| "Are you sure you want to change the coordinator status for this person?"
 #~ msgid ""
 #~ "Are you sure you want to change the coordinator status for this "
 #~ "collaborator?"
-#~ msgstr ""
-#~ "Tem certeza que deseja alterar o status de coordenador desta pessoa?"
+#~ msgstr "Tem certeza que deseja alterar o status de coordenador desta pessoa?"
 
 #, fuzzy
-#~| msgid "Change Is_coordinator"
 #~ msgid "Change is_coordinator"
 #~ msgstr "Alterar status de coordenador"
 
 #, fuzzy
-#~| msgid "Can add diagnosis"
 #~ msgid "Enter a diagnosis"
 #~ msgstr "Pode adicionar diagnóstico"
 
 #, fuzzy
-#~| msgid "Registers"
 #~ msgid "Basic registers"
 #~ msgstr "Cadastros"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete software?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete software version?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete this Source Code?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete this source code from list?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Can delete payment"
 #~ msgid "EMG electrode placements"
 #~ msgstr "Pode remover pagamento"
 
 #, fuzzy
-#~| msgid "Can delete payment"
 #~ msgid "Insert electrode placement"
 #~ msgstr "Pode remover pagamento"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete this EMG electrode placement system?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete Stimuli Equipment"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this institution?"
 #~ msgid "Are you sure you want to delete this Stimuli Equipment setting?"
 #~ msgstr "Tem certeza que deseja remover esta instituição?"
 
 #, fuzzy
-#~| msgid "Can change stimulus"
 #~ msgid "New stimulus"
 #~ msgstr "Pode alterar estímulo"
 
 #, fuzzy
-#~| msgid "Can change stimulus"
 #~ msgid "the stimulus"
 #~ msgstr "Pode alterar estímulo"
 
 #, fuzzy
-#~| msgid "Can add stimulus type"
 #~ msgid "Stimulus type"
 #~ msgstr "Pode adicionar tipo de estímulo"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete additional data?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete goalkeeper game phase data?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Export was finished correctly"
 #~ msgid "Export nwb file format"
 #~ msgstr "Exportação foi finalizada com sucesso"
 
 #, fuzzy
-#~| msgid "There is no changes to save."
 #~ msgid "There is not image"
 #~ msgstr "Não há alteração para salvar."
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete EEG data?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete EMG data?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete this collection data?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this institution?"
 #~ msgid "Are you sure you want to delete this questionnaire's fill?"
 #~ msgstr "Tem certeza que deseja remover esta instituição?"
 
 #, fuzzy
-#~| msgid "Can delete questionnaire response"
 #~ msgid "Reuse questionnaire response"
 #~ msgstr "Pode remover respostas do questionário"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete TMS data?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Can export questionnaire response"
 #~ msgid "Import questionnaire responses"
 #~ msgstr "Pode exportar respostas do questionário"
 
 #, fuzzy
-#~| msgid "Can delete questionnaire"
 #~ msgid "Completed questionnaires"
 #~ msgstr "Pode remover questinário"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Fill questionnaires"
 #~ msgstr "Pode adicionar questinário"
 
 #, fuzzy
-#~| msgid "Can export questionnaire response"
 #~ msgid "Are you sure import questionnaire responses?"
 #~ msgstr "Pode exportar respostas do questionário"
 
 #, fuzzy
-#~| msgid "Can add task for the experimenter"
 #~ msgid "New task for experimenter"
 #~ msgstr "Pode adicionar tarefa para o experimentador"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete TMS Position?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Delete institution"
 #~ msgid "Delete TMS setting"
 #~ msgstr "Remover instituição"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this institution?"
 #~ msgid "Are you sure you want to delete this TMS setting?"
 #~ msgstr "Tem certeza que deseja remover esta instituição?"
 
 #, fuzzy
-#~| msgid "Can delete stimulus type"
 #~ msgid "Pulse stimulus type"
 #~ msgstr "Pode remover tipo de estímulo"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete person?"
 #~ msgid "Are you sure you want to delete TMS device?"
 #~ msgstr "Tem certeza que deseja remover esta pessoa"
 
 #, fuzzy
-#~| msgid "Are you sure you want to delete this team?"
 #~ msgid "Are you sure you want to delete attachment?"
 #~ msgstr "Tem certeza que deseja remover esta equipe?"
 
 #, fuzzy
-#~| msgid "Can add questionnaire"
 #~ msgid "Questionnaires data to be sent"
 #~ msgstr "Pode adicionar questinário"
 
 #, fuzzy
-#~| msgid "Can change experiment"
 #~ msgid "Per Experiment"
 #~ msgstr "Pode alterar experimento"
 
 #, fuzzy
-#~| msgid "Action not available."
 #~ msgid "Participants available:"
 #~ msgstr "Ação não disponível."
 

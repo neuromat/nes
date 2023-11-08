@@ -1258,8 +1258,8 @@ def limesurvey_available(surveys):
 
 
 def get_questionnaire_language(
-    questionnaire_lime_survey, questionnaire_id, language_code
-):
+    questionnaire_lime_survey, questionnaire_id: int, language_code: str
+) -> str | int:
     language = "pt-BR"
 
     if questionnaire_lime_survey.session_key:

@@ -1,4 +1,6 @@
 from django import template
+from django.forms import Field
+from django.template.defaultfilters import stringfilter
 from patient.models import Patient
 
 register = template.Library()
@@ -17,4 +19,10 @@ def get_name_or_code(context, patient_id) -> str:
 @register.filter(name="add_attr")
 def add_attr(field, attr):
     attrs = {"disabled": attr}
+    return field.as_widget(attrs=attrs)
+
+
+@register.filter(name="add_class")
+def add_class(field, arg):
+    attrs = {"class": arg}
     return field.as_widget(attrs=attrs)

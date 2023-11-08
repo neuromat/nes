@@ -1,6 +1,6 @@
 {% extends "base/template.html" %}
 
-{% load i18n %}
+{% load i18n static %}
 
 {% block activeExport %} active{% endblock %}
 
@@ -80,6 +80,6 @@
 {% endblock %}
 
 {% block extrascript %}
-    {% load static %}
+    
     <script type="text/javascript" defer src={% static "site/js/file_selection.js" %}></script>
 {% endblock %}

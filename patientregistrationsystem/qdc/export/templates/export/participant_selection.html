@@ -1,7 +1,6 @@
 {% extends "base/template.html" %}
 
-{% load i18n %}
-
+{% load i18n static %}
 {% block activeExport %}
     active
 {% endblock activeExport %}
@@ -16,7 +15,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                     <li class="breadcrumb-item">
-                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                        <a href="{% url "home" %}">{% trans "Home" %}</a>
                     </li>
                     <li class="breadcrumb-item">
                         <a href="/export/">{% trans "Export" %}</a>
@@ -178,7 +177,7 @@
 
 {% block extrascript %}
 
-    {% load static %}
+    
 
     <script type="text/javascript" defer src={% static "site/js/participant_selection.js" %}></script>
 {% endblock extrascript %}

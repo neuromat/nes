@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-30 22:28-0300\n"
+"POT-Creation-Date: 2023-11-08 17:26-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,70 +23,70 @@ msgid "Home"
 msgstr "Início"
 
 #: plugin/templates/plugin/send_to_plugin.html:33
-#: plugin/templates/plugin/send_to_plugin.html:43
+#: plugin/templates/plugin/send_to_plugin.html:46
 msgid "Plugin"
 msgstr ""
 
-#: plugin/templates/plugin/send_to_plugin.html:35
+#: plugin/templates/plugin/send_to_plugin.html:36
 msgid "Participants selection"
 msgstr "Seleção de participantes"
 
-#: plugin/templates/plugin/send_to_plugin.html:63
+#: plugin/templates/plugin/send_to_plugin.html:68
 msgid "Questionnaires data to be sent"
 msgstr "Dados de questionários a serem enviados"
 
-#: plugin/templates/plugin/send_to_plugin.html:70
+#: plugin/templates/plugin/send_to_plugin.html:76
 msgid ""
 "Questionnaire title for Unified Admission Assessment not available in en"
 msgstr "Título do Questionário Avaliação de Entrada não disponível em pt-BR"
 
-#: plugin/templates/plugin/send_to_plugin.html:79
+#: plugin/templates/plugin/send_to_plugin.html:85
 msgid "Questionnaire title for Surgical Assessment not available in en"
 msgstr "Título do Questionário Avaliação Cirúrgica não disponível em pt-BR"
 
-#: plugin/templates/plugin/send_to_plugin.html:88
+#: plugin/templates/plugin/send_to_plugin.html:94
 msgid "Questionnaire title for Follow-Up Assessment not available in en"
 msgstr "Título do Questionário Avaliação de Seguimento não disponível em pt-BR"
 
-#: plugin/templates/plugin/send_to_plugin.html:109
+#: plugin/templates/plugin/send_to_plugin.html:115
 msgid "Per Experiment"
 msgstr "Por Experimento"
 
-#: plugin/templates/plugin/send_to_plugin.html:114
+#: plugin/templates/plugin/send_to_plugin.html:121
 #, fuzzy
 #| msgid "Participants selection"
 msgid "Filters selection"
 msgstr "Seleção de participantes"
 
-#: plugin/templates/plugin/send_to_plugin.html:120
+#: plugin/templates/plugin/send_to_plugin.html:128
 msgid "Experiments"
 msgstr "Experimentos"
 
-#: plugin/templates/plugin/send_to_plugin.html:133
-#: plugin/templates/plugin/send_to_plugin.html:214
+#: plugin/templates/plugin/send_to_plugin.html:145
+#: plugin/templates/plugin/send_to_plugin.html:242
 msgid "List of participants"
 msgstr "Lista de participantes"
 
-#: plugin/templates/plugin/send_to_plugin.html:143
-#: plugin/templates/plugin/send_to_plugin.html:219
+#: plugin/templates/plugin/send_to_plugin.html:157
+#: plugin/templates/plugin/send_to_plugin.html:249
 msgid "Participants available:"
 msgstr "Participantes disponíveis:"
 
-#: plugin/templates/plugin/send_to_plugin.html:164
-#: plugin/templates/plugin/send_to_plugin.html:242
+#: plugin/templates/plugin/send_to_plugin.html:184
+#: plugin/templates/plugin/send_to_plugin.html:278
 msgid "Participants chosen:"
 msgstr "Participantes escolhidos:"
 
-#: plugin/templates/plugin/send_to_plugin.html:192
-#: plugin/templates/plugin/send_to_plugin.html:269
+#: plugin/templates/plugin/send_to_plugin.html:219
+#: plugin/templates/plugin/send_to_plugin.html:312
 msgid "Send"
 msgstr "Enviar"
 
-#: plugin/templates/plugin/send_to_plugin.html:208
+#: plugin/templates/plugin/send_to_plugin.html:235
 msgid "Per Participant"
 msgstr "Por Participante"
 
-#: plugin/templates/plugin/send_to_plugin.html:272
+#: plugin/templates/plugin/send_to_plugin.html:315
 msgid "Cancel"
 msgstr "Cancelar"
 

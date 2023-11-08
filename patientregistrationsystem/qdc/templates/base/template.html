@@ -13,8 +13,7 @@
         <meta name="author" content="Neuromat, PEB-Lapis">
 
         <link rel="preload" href="{% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %}" as="style" />
-        <link rel="preload" href="{% static "site/css/nes.css" %}" as="style" />
-        <link rel="preload" href="{% static "site/js/theme_picker.js" %}" as="script" />
+        <link rel="modulepreload" href="{% static "site/js/theme_picker.js" %}" as="script" />
 
         <link rel="stylesheet" href="{% static "site/bootstrap-5.3.2-dist/css/bootstrap.min.css" %}" charset="utf-8">
         <script type="text/javascript" src="{% static "site/js/theme_picker.js" %}" charset="utf-8"></script>
@@ -106,7 +105,7 @@
             <div class="row">
                 <div class="col-12 col-lg-3 col-xl-2 mt-0">
                     <nav class="nav nav-pills flex-column flex-sm-row flex-md-row sticky-top my-auto sticky-offset d-lg-block">
-                        <a href={% url "home" %} class="nav-link 
+                        <a href="{% url "home" %}" class="nav-link 
                             {% block activeContact %}{% endblock activeContact %}
                              ">
                             <span class="fa-fw fa fa-home fa-md"></span>
@@ -229,7 +228,7 @@
         </div>
     </footer>
 
-    <button type="button" class="btn btn-danger btn-floating btn-lg" id="btn-back-to-top">
+    <button type="button" class="btn btn-danger btn-floating btn-lg" id="btn-back-to-top" aria-label="back to top button">
         <i class="fa fa-arrow-up"></i>
     </button>
 

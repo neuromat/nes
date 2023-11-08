@@ -1,8 +1,10 @@
 # coding=utf-8
 from typing import Any
 from django.forms import (
+    CheckboxInput,
     ModelForm,
     Form,
+    Select,
     TextInput,
     CharField,
     BooleanField,
@@ -41,32 +43,83 @@ class ExportForm(Form):
         required=False,
         widget=TextInput(attrs={"class": "form-control", "disabled": ""}),
     )
-    per_participant = BooleanField(initial=True, required=False)
-    per_questionnaire = BooleanField(initial=True, required=False)
-    per_eeg_raw_data = BooleanField(initial=True, required=False)
-    per_eeg_nwb_data = BooleanField(initial=True, required=False)
-    per_emg_data = BooleanField(initial=True, required=False)
-    per_tms_data = BooleanField(initial=True, required=False)
-    per_additional_data = BooleanField(initial=True, required=False)
-    per_goalkeeper_game_data = BooleanField(initial=True, required=False)
-    per_stimulus_data = BooleanField(initial=True, required=False)
-    per_generic_data = BooleanField(initial=True, required=False)
-    per_media_data = BooleanField(initial=True, required=False)
+    per_participant = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_questionnaire = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_eeg_raw_data = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_eeg_nwb_data = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_emg_data = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_tms_data = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_additional_data = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_goalkeeper_game_data = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_stimulus_data = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_generic_data = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
+    per_media_data = BooleanField(
+        widget=CheckboxInput(attrs={"class": "form-check-input"}),
+        initial=True,
+        required=False,
+    )
 
     questionnaire_entrance_selected: list = []
 
     headings = ChoiceField(
-        widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False
+        widget=Select(attrs={"class": "form-select"}),
+        choices=HEADINGS_CHOICES,
+        required=False,
     )
     responses = MultipleChoiceField(
         widget=CheckboxSelectMultiple(
-            attrs={"data-error": _("Response must be selected")}
+            attrs={
+                "class": "form-check-input",
+                "data-error": _("Response must be selected"),
+            }
         ),
         choices=RESPONSES_CHOICES,
         required=False,
     )
     filesformat = ChoiceField(
-        widget=RadioSelect(), choices=FORMATS_CHOICES, required=False
+        widget=Select(attrs={"class": "form-select"}),
+        choices=FORMATS_CHOICES,
+        required=False,
     )
 
 

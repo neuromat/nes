@@ -16,7 +16,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                     <li class="breadcrumb-item">
-                        <a href={% url "home" %}>{% trans "Home" %}</a>
+                        <a href="{% url "home" %}">{% trans "Home" %}</a>
                     </li>
                     <li class="breadcrumb-item">
                         <a href="/experiment/research_project/list">{% trans "Studies" %}</a>
@@ -81,11 +81,8 @@
                                 <div class="card-header">
                                     <h9 class="card-title">
                                     <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse_{{ survey_key }}">
-
-                                        <span style="background-color: #428bca" id="badge_{{ survey_key }}" class="badge.badge-pill">{{ survey_value.selected_counter }}</span>
-                                        ({{ survey_key }}) {{ survey_value.title }}
+                                        <span id="badge_{{ survey_key }}" class="badge bg-info me-1">{{ survey_value.selected_counter }}</span>({{ survey_key }}) {{ survey_value.title }}
                                     </a>
-
                                     </h9>
                                 </div>
                                 <div id="collapse_{{ survey_key }}" class=" collapse">

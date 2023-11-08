@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 
 <ul id="ul-diagnosis-list" class="list-group list-group-flush">
     {% if location_list.count > 0 %}
@@ -14,7 +14,7 @@
 
 {% block extrascript %}
 
-    {% load static %}
+    
 
     <script type="text/javascript" defer src={% static "site/js/participant_selection.js" %}></script>
 {% endblock extrascript %}

@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-30 22:28-0300\n"
-"PO-Revision-Date: 2023-10-02 12:58-0300\n"
-"Last-Translator: Mateus Costa <nes_admin@nesmail.com>\n"
+"POT-Creation-Date: 2023-11-08 17:26-0300\n"
+"PO-Revision-Date: 2023-11-08 17:51-0300\n"
+"Last-Translator:   <lapis@peb.ufrj.br>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -26,51 +26,51 @@ msgstr "Código de Participante"
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/export.py:3991 export/export.py:5674 export/views.py:1613
+#: export/export.py:3991 export/export.py:5675 export/views.py:1619
 msgid "Yes"
 msgstr "Sim"
 
-#: export/export.py:3991 export/export.py:5674 export/views.py:1615
+#: export/export.py:3991 export/export.py:5675 export/views.py:1621
 msgid "No"
 msgstr "Não"
 
-#: export/forms.py:23
+#: export/forms.py:25
 msgid "Question code"
 msgstr "Código da questão"
 
-#: export/forms.py:24
+#: export/forms.py:26
 msgid "Full question text"
 msgstr "Texto completo da pergunta"
 
-#: export/forms.py:25
+#: export/forms.py:27
 msgid "Abbreviated question text"
 msgstr "Texto abreviado da pergunta"
 
-#: export/forms.py:29
+#: export/forms.py:31
 msgid "Answer codes"
 msgstr "Códigos de resposta"
 
-#: export/forms.py:30
+#: export/forms.py:32
 msgid "Full answers"
 msgstr "Respostas completas"
 
-#: export/forms.py:34
+#: export/forms.py:36
 msgid "Comma separated values"
 msgstr "Valores separados por vírgula"
 
-#: export/forms.py:35
+#: export/forms.py:37
 msgid "Tab separated values"
 msgstr "Valores separados por tabulação"
 
-#: export/forms.py:63
+#: export/forms.py:113
 msgid "Response must be selected"
 msgstr "Resposta deve ser selecionada"
 
-#: export/forms.py:130
+#: export/forms.py:183
 msgid "Min age must be filled."
 msgstr "Idade mínima deve ser preenchida."
 
-#: export/forms.py:143
+#: export/forms.py:196
 msgid "Max age must be filled."
 msgstr "Idade máxima deve ser preenchida."
 
@@ -78,270 +78,274 @@ msgstr "Idade máxima deve ser preenchida."
 msgid "No diagnosis found!"
 msgstr "Diagnóstico não encontrado!"
 
-#: export/templates/export/experiment_selection.html:16
-#: export/templates/export/export_data.html:16
+#: export/templates/export/experiment_selection.html:19
+#: export/templates/export/export_data.html:19
 #: export/templates/export/export_experiment_data.html:19
 #: export/templates/export/export_menu.html:11
-#: export/templates/export/participant_selection.html:19
+#: export/templates/export/participant_selection.html:18
 #: export/templates/export/show_selected_participants.html:16
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
-#: export/templates/export/experiment_selection.html:17
-#: export/templates/export/export_data.html:17
+#: export/templates/export/experiment_selection.html:22
+#: export/templates/export/export_data.html:22
 #: export/templates/export/export_experiment_data.html:22
 #: export/templates/export/export_menu.html:12
-#: export/templates/export/participant_selection.html:22
+#: export/templates/export/participant_selection.html:21
 #: export/templates/export/show_selected_participants.html:17
 msgid "Export"
 msgstr "Exportar"
 
-#: export/templates/export/experiment_selection.html:18
+#: export/templates/export/experiment_selection.html:25
 msgid "Experiment/Project selection"
 msgstr "Seleção de experimento/projeto"
 
-#: export/templates/export/experiment_selection.html:25
+#: export/templates/export/experiment_selection.html:34
 msgid "Filters selection"
 msgstr "Seleção de filtros"
 
-#: export/templates/export/experiment_selection.html:30
+#: export/templates/export/experiment_selection.html:41
 msgid "Studies"
 msgstr "Estudos"
 
-#: export/templates/export/experiment_selection.html:45
+#: export/templates/export/experiment_selection.html:63
 msgid "Experiments"
 msgstr "Experimentos"
 
-#: export/templates/export/experiment_selection.html:58
+#: export/templates/export/experiment_selection.html:82
 msgid "Groups"
 msgstr "Grupos"
 
-#: export/templates/export/experiment_selection.html:64
-#: export/templates/export/export_data.html:181
-#: export/templates/export/export_data.html:203
-#: export/templates/export/export_experiment_data.html:430
-#: export/templates/export/export_experiment_data.html:454
+#: export/templates/export/experiment_selection.html:92
+#: export/templates/export/export_data.html:234
+#: export/templates/export/export_data.html:267
+#: export/templates/export/export_experiment_data.html:483
+#: export/templates/export/export_experiment_data.html:515
 msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
 msgstr ""
 "* use control-click para selecionar mais do que um campo. (command-click em "
 "Mac)"
 
-#: export/templates/export/experiment_selection.html:69
-#: export/templates/export/export_data.html:85 export/tests/test_views.py:5847
+#: export/templates/export/experiment_selection.html:100
+#: export/templates/export/export_data.html:101
+#: export/tests/test_views.py:5847
 msgid "License"
 msgstr "Licença"
 
-#: export/templates/export/experiment_selection.html:84
-#: export/templates/export/participant_selection.html:161
+#: export/templates/export/experiment_selection.html:120
+#: export/templates/export/participant_selection.html:162
 #: export/templates/export/show_selected_participants.html:79
 msgid "Next"
 msgstr "Próximo"
 
-#: export/templates/export/experiment_selection.html:89
-#: export/templates/export/export_data.html:217
-#: export/templates/export/export_experiment_data.html:467
-#: export/templates/export/participant_selection.html:167
+#: export/templates/export/experiment_selection.html:125
+#: export/templates/export/export_data.html:289
+#: export/templates/export/export_experiment_data.html:531
+#: export/templates/export/participant_selection.html:168
 #: export/templates/export/show_selected_participants.html:85
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: export/templates/export/export_data.html:18
-#: export/templates/export/export_experiment_data.html:24
+#: export/templates/export/export_data.html:25
+#: export/templates/export/export_experiment_data.html:25
 msgid "Structure and fields selection"
 msgstr "Seleção de estrutura e campos"
 
-#: export/templates/export/export_data.html:27
+#: export/templates/export/export_data.html:36
 msgid "General Information"
 msgstr "Informações Gerais"
 
-#: export/templates/export/export_data.html:32
-#: export/templates/export/export_experiment_data.html:68
+#: export/templates/export/export_data.html:41
+#: export/templates/export/export_experiment_data.html:63
 msgid "At least one option must be selected"
 msgstr "Pelo menos uma das opções deve ser selecionada"
 
-#: export/templates/export/export_data.html:33
+#: export/templates/export/export_data.html:42
 msgid "Information's organization for exportation of questionnaires data"
 msgstr "Organização da informação para exportação dos dados de questionários"
 
-#: export/templates/export/export_data.html:37
-#: export/templates/export/export_experiment_data.html:74 export/views.py:1484
+#: export/templates/export/export_data.html:48
+#: export/templates/export/export_experiment_data.html:70 export/views.py:1490
 msgid "Per participant"
 msgstr "Por participante"
 
-#: export/templates/export/export_data.html:42
-#: export/templates/export/export_experiment_data.html:79
+#: export/templates/export/export_data.html:56
+#: export/templates/export/export_experiment_data.html:78
 msgid "Per questionnaire"
 msgstr "Por questionário"
 
-#: export/templates/export/export_data.html:53
-#: export/templates/export/export_experiment_data.html:89
+#: export/templates/export/export_data.html:73
+#: export/templates/export/export_experiment_data.html:94
 msgid "Headings"
 msgstr "Cabeçalhos"
 
-#: export/templates/export/export_data.html:63
-#: export/templates/export/export_experiment_data.html:96
+#: export/templates/export/export_data.html:81
+#| msgid "File format "
+msgid "File format"
+msgstr "Formato do arquivo"
+
+#: export/templates/export/export_data.html:91
+#: export/templates/export/export_experiment_data.html:107
 msgid "Responses"
 msgstr "Respostas"
 
-#: export/templates/export/export_data.html:75
-msgid "File format "
-msgstr "Formato dos arquivos: "
-
-#: export/templates/export/export_data.html:95
-#: export/templates/export/export_experiment_data.html:199
-#: export/templates/export/export_experiment_data.html:306
+#: export/templates/export/export_data.html:120
+#: export/templates/export/export_experiment_data.html:246
+#: export/templates/export/export_experiment_data.html:353
 msgid "Questionnaire information"
 msgstr "Informações de questionários"
 
-#: export/templates/export/export_data.html:98
+#: export/templates/export/export_data.html:125
 msgid "Questionnaire - Answered by participants"
 msgstr "Questionários - Respondidos pelos participantes"
 
-#: export/templates/export/export_data.html:114
-#: export/templates/export/export_experiment_data.html:216
-#: export/templates/export/export_experiment_data.html:324
+#: export/templates/export/export_data.html:142
+#: export/templates/export/export_experiment_data.html:264
+#: export/templates/export/export_experiment_data.html:372
 msgid "Fields available:"
 msgstr "Campos disponíveis:"
 
-#: export/templates/export/export_data.html:115
-#: export/templates/export/export_experiment_data.html:223
-#: export/templates/export/export_experiment_data.html:331
+#: export/templates/export/export_data.html:153
+#: export/templates/export/export_experiment_data.html:272
+#: export/templates/export/export_experiment_data.html:380
 msgid "Please, select a questionnaire from the list."
 msgstr "Por favor, selecione um questionário da lista"
 
-#: export/templates/export/export_data.html:144
-#: export/templates/export/export_experiment_data.html:254
-#: export/templates/export/export_experiment_data.html:362
-msgid "Fields chosen:"
-msgstr "Campos escolhidos:"
-
-#: export/templates/export/export_data.html:168
-#: export/templates/export/export_experiment_data.html:414
+#: export/templates/export/export_data.html:212
+#: export/templates/export/export_experiment_data.html:461
 msgid "Participants"
 msgstr "Participantes"
 
-#: export/templates/export/export_data.html:173
-#: export/templates/export/export_experiment_data.html:419
+#: export/templates/export/export_data.html:219
+#: export/templates/export/export_experiment_data.html:468
 msgid "Participant fields"
 msgstr "Campos de participante"
 
-#: export/templates/export/export_data.html:175
-#: export/templates/export/export_experiment_data.html:425
+#: export/templates/export/export_data.html:226
+#: export/templates/export/export_experiment_data.html:475
 msgid "Please, select a patient field from the list."
 msgstr "Por favor, selecione um participante da lista"
 
-#: export/templates/export/export_data.html:190
-#: export/templates/export/export_experiment_data.html:438
-#: export/templates/export/participant_selection.html:110
+#: export/templates/export/export_data.html:245
+#: export/templates/export/export_experiment_data.html:493
+#: export/templates/export/participant_selection.html:106
 msgid "Diagnosis"
 msgstr "Diagnóstico"
 
-#: export/templates/export/export_data.html:195
-#: export/templates/export/export_experiment_data.html:443
+#: export/templates/export/export_data.html:252
+#: export/templates/export/export_experiment_data.html:500
 msgid "Diagnosis fields"
 msgstr "Campos de diagnóstico"
 
-#: export/templates/export/export_data.html:197
-#: export/templates/export/export_experiment_data.html:449
+#: export/templates/export/export_data.html:259
+#: export/templates/export/export_experiment_data.html:507
 msgid "Please, select a diagnosis field from the list."
 msgstr "Por favor, selecione um campo de diagnóstico da lista"
 
-#: export/templates/export/export_data.html:213
-#: export/templates/export/export_experiment_data.html:464
+#: export/templates/export/export_data.html:277
+msgid "Nothing to export or error exporting"
+msgstr ""
+
+#: export/templates/export/export_data.html:285
+#: export/templates/export/export_experiment_data.html:527
 msgid "Run"
 msgstr "Executar"
 
-#: export/templates/export/export_experiment_data.html:31
+#: export/templates/export/export_experiment_data.html:34
 msgid "Structure and fields selection for exportation"
 msgstr "Seleção de estrutura e campos para exportação"
 
-#: export/templates/export/export_experiment_data.html:35
+#: export/templates/export/export_experiment_data.html:39
 msgid "General information"
 msgstr "Informações Gerais"
 
-#: export/templates/export/export_experiment_data.html:41
+#: export/templates/export/export_experiment_data.html:42
 msgid "Questionnaire answered by participants"
 msgstr "Questionários respondidos pelos participantes"
 
-#: export/templates/export/export_experiment_data.html:47
+#: export/templates/export/export_experiment_data.html:45
 msgid "Questionnaires from experiments"
 msgstr "Questionários dos experimentos"
 
-#: export/templates/export/export_experiment_data.html:53
+#: export/templates/export/export_experiment_data.html:48
 msgid "Participants and Diagnosis"
 msgstr "Participantes e diagnósticos"
 
-#: export/templates/export/export_experiment_data.html:61
+#: export/templates/export/export_experiment_data.html:57
 msgid "Organization of the information for exportation"
 msgstr "Organização da informação para exportação"
 
-#: export/templates/export/export_experiment_data.html:70
+#: export/templates/export/export_experiment_data.html:64
 msgid "Questionnaires data"
 msgstr "Dados de questionário"
 
-#: export/templates/export/export_experiment_data.html:105
+#: export/templates/export/export_experiment_data.html:122
 msgid "Files format: "
 msgstr "Formato dos arquivos: "
 
-#: export/templates/export/export_experiment_data.html:116
+#: export/templates/export/export_experiment_data.html:139
 msgid "Experiment/Project data collection"
 msgstr "Coleta de dados de experimento/projeto"
 
-#: export/templates/export/export_experiment_data.html:120
+#: export/templates/export/export_experiment_data.html:145
 msgid "EEG Raw Data"
 msgstr "Dados brutos de EEG"
 
-#: export/templates/export/export_experiment_data.html:127
+#: export/templates/export/export_experiment_data.html:155
 msgid "EEG NWB Data"
 msgstr "Dados de EEG em formato NWB"
 
-#: export/templates/export/export_experiment_data.html:134
+#: export/templates/export/export_experiment_data.html:165
 msgid "EMG Data"
 msgstr "Dados de EMG"
 
-#: export/templates/export/export_experiment_data.html:141
+#: export/templates/export/export_experiment_data.html:175
 msgid "TMS Data"
 msgstr "Dados de TMS"
 
-#: export/templates/export/export_experiment_data.html:148
+#: export/templates/export/export_experiment_data.html:185
 msgid "Additional Data"
 msgstr "Dados adicionais"
 
-#: export/templates/export/export_experiment_data.html:155
+#: export/templates/export/export_experiment_data.html:195
 msgid "Goalkeeper game Data"
 msgstr "Dados do Jogo do Goleiro"
 
-#: export/templates/export/export_experiment_data.html:162
+#: export/templates/export/export_experiment_data.html:205
 msgid "Stimulus Data"
 msgstr "Dados de estímulo"
 
-#: export/templates/export/export_experiment_data.html:169
+#: export/templates/export/export_experiment_data.html:215
 msgid "Generic Data"
 msgstr "Dados de coleta genérica"
 
-#: export/templates/export/export_experiment_data.html:176
+#: export/templates/export/export_experiment_data.html:225
 msgid "Media Data"
 msgstr "Dados de mídia"
 
-#: export/templates/export/export_experiment_data.html:281
-#: export/templates/export/export_experiment_data.html:390
+#: export/templates/export/export_experiment_data.html:303
+#: export/templates/export/export_experiment_data.html:411
+msgid "Fields chosen:"
+msgstr "Campos escolhidos:"
+
+#: export/templates/export/export_experiment_data.html:330
+#: export/templates/export/export_experiment_data.html:439
 msgid "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey."
 msgstr "O NES não importa arquivos carregados em questões no Limesurvey"
 
-#: export/templates/export/export_experiment_data.html:282
-#: export/templates/export/export_experiment_data.html:391
+#: export/templates/export/export_experiment_data.html:331
+#: export/templates/export/export_experiment_data.html:440
 msgid "See more details in"
 msgstr "Veja mais detalhes em"
 
-#: export/templates/export/export_experiment_data.html:289
+#: export/templates/export/export_experiment_data.html:339
 msgid "There is no questionnaires for the filtered participants"
 msgstr "Não há questionários para os participantes selecionados"
 
-#: export/templates/export/export_experiment_data.html:398
-#, fuzzy
+#: export/templates/export/export_experiment_data.html:448
 #| msgid "Per questionnaire"
 msgid "There is no questionnairy"
-msgstr "Por questionário"
+msgstr "Não tem nenhum questionário"
 
 #: export/templates/export/export_menu.html:19
 msgid "Select the type of export "
@@ -356,50 +360,50 @@ msgid "No locations found!"
 msgstr "Localização não encontrada!"
 
 #: export/templates/export/participant_selection.html:24
-#: export/templates/export/participant_selection.html:31
+#: export/templates/export/participant_selection.html:33
 msgid "Participants selection"
 msgstr "Seleção de Participantes"
 
-#: export/templates/export/participant_selection.html:41
+#: export/templates/export/participant_selection.html:40
 msgid "All participants"
 msgstr "Todos os participantes"
 
-#: export/templates/export/participant_selection.html:45
+#: export/templates/export/participant_selection.html:46
 #: export/templates/export/show_selected_participants.html:18
 msgid "Selected participants"
 msgstr "Participantes selecionados"
 
-#: export/templates/export/participant_selection.html:53
+#: export/templates/export/participant_selection.html:54
 #: export/templates/export/show_selected_participants.html:40
 #: export/views.py:74
 msgid "Gender"
 msgstr "Sexo"
 
-#: export/templates/export/participant_selection.html:68
+#: export/templates/export/participant_selection.html:66
 #: export/templates/export/show_selected_participants.html:44
 #: export/views.py:86
 msgid "Marital status"
 msgstr "Estado civil"
 
-#: export/templates/export/participant_selection.html:79
+#: export/templates/export/participant_selection.html:78
 msgid "Locations"
 msgstr "Localizações"
 
-#: export/templates/export/participant_selection.html:88
+#: export/templates/export/participant_selection.html:87
 msgid "Enter a city"
 msgstr "Entre com uma cidade"
 
-#: export/templates/export/participant_selection.html:119
+#: export/templates/export/participant_selection.html:115
 msgid "Enter a diagnosis"
 msgstr "Entre com um diagnóstico"
 
-#: export/templates/export/participant_selection.html:136
+#: export/templates/export/participant_selection.html:133
 #: export/templates/export/show_selected_participants.html:39
 #: export/tests/test_views.py:1150 export/views.py:68
 msgid "Age"
 msgstr "Idade"
 
-#: export/templates/export/participant_selection.html:146
+#: export/templates/export/participant_selection.html:145
 msgid "to"
 msgstr "até"
 
@@ -874,91 +878,91 @@ msgstr "Exportação não foi gerada."
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
 
-#: export/views.py:1489
+#: export/views.py:1495
 msgid "Per experiments"
 msgstr "Por experimentos"
 
-#: export/views.py:1535
+#: export/views.py:1541
 msgid "No group(s) selected!"
 msgstr "Nenhum grupo selecionado!"
 
-#: export/views.py:1582
+#: export/views.py:1588
 msgid "Name of use"
 msgstr "Nome do uso"
 
-#: export/views.py:1585
+#: export/views.py:1591
 msgid "Number of repetitions"
 msgstr "Número de repetições"
 
-#: export/views.py:1591
+#: export/views.py:1597
 msgid "Interval between repetitions value"
 msgstr "Valor do entervalo entre repetições"
 
-#: export/views.py:1599
+#: export/views.py:1605
 msgid "Interval between repetitions unit"
 msgstr "Unidade do intervalo entre repetições"
 
-#: export/views.py:1603
+#: export/views.py:1609
 msgid "Order"
 msgstr "Ordem"
 
-#: export/views.py:1606
+#: export/views.py:1612
 msgid "Position in the set of steps "
 msgstr "Posição no conjunto de passos"
 
-#: export/views.py:1606
+#: export/views.py:1612
 msgid "Random"
 msgstr "Aleatório"
 
-#: export/views.py:1608
+#: export/views.py:1614
 msgid "Fixed"
 msgstr "Fixo"
 
-#: export/views.py:1613
+#: export/views.py:1619
 msgid "Requires start and end datetime"
 msgstr "Requer datas de início e fim"
 
-#: export/views.py:1658
+#: export/views.py:1664
 msgid "Identification"
 msgstr "Identificação"
 
-#: export/views.py:1660
+#: export/views.py:1666
 msgid "Description"
 msgstr "Descrição"
 
-#: export/views.py:1662
+#: export/views.py:1668
 msgid "Duration value"
 msgstr "Valor da duração"
 
-#: export/views.py:1664
+#: export/views.py:1670
 msgid "Duration unit"
 msgstr "Unidade da duração"
 
-#: export/views.py:1670
+#: export/views.py:1676
 msgid "Type"
 msgstr "Tipo"
 
-#: export/views.py:1673
+#: export/views.py:1679
 msgid "Number of mandatory components"
 msgstr "Número de passos obrigatórios"
 
-#: export/views.py:1680
+#: export/views.py:1686
 msgid "Text"
 msgstr "Texto"
 
-#: export/views.py:1686
+#: export/views.py:1692
 msgid "LimeSurvey ID"
-msgstr ""
+msgstr "LimeSurvey ID"
 
-#: export/views.py:1697
+#: export/views.py:1703
 msgid "Questionnaire title"
 msgstr "Título do questionário"
 
-#: export/views.py:1704
+#: export/views.py:1710
 msgid "Stimulus type"
 msgstr "Tipo de estímulo"
 
-#: export/views.py:1706
+#: export/views.py:1712
 msgid "Media file"
 msgstr "Arquivo de mídia"
 

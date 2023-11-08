@@ -2,101 +2,120 @@
 
 {% load i18n static %}
 
-{% block activeAdvancedResearchProject %} active{% endblock activeAdvancedResearchProject  %}
+{% block activeAdvancedResearchProject %}
+    active
+{% endblock activeAdvancedResearchProject %}
 
 {% block content %}
-
     <div class="tab-content">
         <div class="tab-pane fade show active" id="selectedParticipantBreadCrumb">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
-                    <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
-                    <li class="breadcrumb-item active">{% trans "Studies" %}</li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        {% trans "Studies" %}
+                    </li>
                 </ol>
             </nav>
         </div>
 
-        <div class="container-fluid">
-            {% if perms.patient.export_patient %}
-                {% if patients %}
-                    <form role="form" action="" method="POST">
+        {% if perms.patient.export_patient %}
+            {% if patients %}
+                <form role="form" action="" method="POST">
                     {% csrf_token %}
-                        <div class="my-3 p-3 bg-body rounded shadow-sm">
-                            <h4>{% trans "Conflict" %}</h4>
-                            <div class="my-3 p-3 bg-body rounded shadow-sm">
-                                {% trans "There is a conflict with one or more participants to be imported with the participants already in the database." %}<br>
-                                {% trans "You can decide whether you want to update the patient in the database or create a new patient them." %}<br><br>
-                                <div class="card  ">
-                                    <div class="card-body">
-                                        <div class="col-lg-5 col-sm-12">
-                                            <div class="form-group">
-                                                <label class="form-label">{% trans "Participants to update/overwrite database" %}: </label>
-                                                <select class="form-control" size="13"
-                                                        id="multiselect_"
-                                                        name="from[]" multiple="multiple">
-                                                    {% for patient in patients %}
-                                                        {% if not patient.selected %}
-                                                            <option title="{% trans "Conflict with"%} {% if patient.name_db %}{{ patient.name_db }}{% else %}{{ patient.code_db }}{% endif %} {% if patient.cpf_db %}({{ patient.cpf_db }}){% endif %}"
-                                                                    value="{{ patient.id_db }}">
-                                                                {% if patient.name_new %}{{ patient.name_new }}{% else %}{{ patient.code_new }}{% endif %} {% if patient.cpf_new %}({{ patient.cpf_new }}){% endif %}
-                                                            </option>
+                    <div class="my-3 p-3 bg-body rounded shadow-sm">
+                        <h4>
+                            {% trans "Conflict" %}
+                        </h4>
+                        <hr>
+                        {% trans "There is a conflict with one or more participants to be imported with the participants already in the database." %}
+                        <br>
+                        {% trans "You can decide whether you want to update the patient in the database or create a new patient them." %}
+                        <br>
+                        <br>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="col-lg-5 col-sm-12">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            {% trans "Participants to update/overwrite database" %}:
+                                        </label>
+                                        <select class="form-select" size="13" id="multiselect_" name="to[]" multiple="multiple">
+                                            {% for patient in patients %}
+                                                {% if not patient.selected %}
+                                                    <option title="{% trans "Conflict with" %} {% if patient.name_db %}{{ patient.name_db }}{% else %}{{ patient.code_db }}{% endif %} {% if patient.cpf_db %}({{ patient.cpf_db }}){% endif %}"
+                                                            value="{{ patient.id_db }}">
+                                                        {% if patient.name_new %}
+                                                            {{ patient.name_new }}
+                                                        {% else %}
+                                                            {{ patient.code_new }}
                                                         {% endif %}
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-2 col-sm-2">
-                                            <button type="button" id="multiselect__rightAll"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-forward"></i></button>
-                                            <button type="button" id="multiselect__rightSelected"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-arrow-right"></i></button>
-                                            <button type="button" id="multiselect__leftSelected"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-arrow-left"></i></button>
-                                            <button type="button" id="multiselect__leftAll"
-                                                    class="btn btn-block"><i
-                                                    class="fa-fw fa fa-backward"></i></button>
-                                        </div>
-                                        <div class="col-lg-5 col-sm-10">
-                                            <label class="form-label">{% trans "New participants" %}: </label>
-                                            <select name="to[]" id="multiselect__to"
-                                                    class="form-control" size="13"
-                                                    multiple="multiple">
-                                                {% for patient in patients %}
-                                                    {% if patient.selected %}
-                                                        <option title="{{ patient.name_new }}"
-                                                                value="{{ patient.id_new }}">
-                                                            {% if patient.name_new %}{{ patient.name_new }}{% else %}{{ patient.code_new }}{% endif %} {% if patient.cpf_new %}({{ patient.cpf_new }}){% endif %}
-                                                        </option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                        </div>
+
+                                                        {% if patient.cpf_new %}
+                                                            ({{ patient.cpf_new }})
+                                                        {% endif %}
+                                                    </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                 </div>
+                                {% comment %} <div class="col-lg-2 col-sm-2">
+                                    <button type="button" id="multiselect__rightAll" class="btn btn-block">
+                                        <i class="fa-fw fa fa-forward"></i>
+                                    </button>
+                                    <button type="button" id="multiselect__rightSelected" class="btn btn-block">
+                                        <i class="fa-fw fa fa-arrow-right"></i>
+                                    </button>
+                                    <button type="button" id="multiselect__leftSelected" class="btn btn-block">
+                                        <i class="fa-fw fa fa-arrow-left"></i>
+                                    </button>
+                                    <button type="button" id="multiselect__leftAll" class="btn btn-block">
+                                        <i class="fa-fw fa fa-backward"></i>
+                                    </button>
+                                </div>
+                                <div class="col-lg-5 col-sm-10">
+                                    <label class="form-label">
+                                        {% trans "New participants" %}:
+                                    </label>
+                                    <select name="to[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">
+                                        {% for patient in patients %}
+                                            {% if patient.selected %}
+                                                <option title="{{ patient.name_new }}" value="{{ patient.id_new }}">
+                                                    {% if patient.name_new %}
+                                                        {{ patient.name_new }}
+                                                    {% else %}
+                                                        {{ patient.code_new }}
+                                                    {% endif %}
+
+                                                    {% if patient.cpf_new %}
+                                                        ({{ patient.cpf_new }})
+                                                    {% endif %}
+                                                </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div> {% endcomment %}
                             </div>
                         </div>
-                        <div class="btn-group float-end">
-                            <button type="submit" class="btn btn-primary" style="margin-left: 5px;" name="action" value="run">{% trans "Run" %}</button>
-                        </div>
-                    </form>
-                {% endif %}
+                    </div>
+                    <div class="btn-group float-start">
+                        <button type="submit" class="btn btn-primary" name="action" value="run">
+                            {% trans "Run" %}
+                        </button>
+                    </div>
+                </form>
             {% endif %}
+        {% endif %}
 
-            <div class="btn-group float-end">
-                <a href="/home/" class="btn btn-light">{% trans "Cancel" %}</a>
-            </div>
+        <div class="btn-group float-end">
+            <a href="{% url "home" %}" class="btn btn-light">{% trans "Cancel" %}</a>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
 
 {% block extrascript %}
     <script type="text/javascript" defer src={% static "site/js/participant_import.js" %}></script>
-    <script>
-        $(document).ready(function () {
-            $('[data-bs-toggle="tooltip"]').tooltip();
-        });
-    </script>
-{% endblock %}
+{% endblock extrascript %}

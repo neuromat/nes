@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-30 22:28-0300\n"
+"POT-Creation-Date: 2023-11-08 17:26-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -196,13 +196,13 @@ msgid "Delete"
 msgstr "Excluir"
 
 #: survey/templates/survey/survey_register.html:289
-#: survey/templates/survey/survey_sensitive_fields.html:67
+#: survey/templates/survey/survey_sensitive_fields.html:69
 msgid "Save"
 msgstr "Salvar"
 
 #: survey/templates/survey/survey_register.html:290
 #: survey/templates/survey/survey_register.html:306
-#: survey/templates/survey/survey_sensitive_fields.html:69
+#: survey/templates/survey/survey_sensitive_fields.html:71
 msgid "Cancel"
 msgstr "Cancelar"
 

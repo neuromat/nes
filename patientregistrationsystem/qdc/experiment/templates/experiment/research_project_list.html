@@ -11,24 +11,34 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                 <li class="breadcrumb-item">
-                    <a href={% url "home" %}>{% trans "Home" %}</a>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
                 </li>
-                <li class="breadcrumb-item active">{% trans "Studies" %}</li>
+                <li class="breadcrumb-item active">
+                    {% trans "Studies" %}
+                </li>
             </ol>
         </nav>
     </div>
 
     <div class="tab-pane fade show active" id="mainMenuUserTab">
         <div class="my-3 p-3 bg-body rounded shadow-sm">
-            <h4>{% trans "Studies list" %}</h4>
+            <h4>
+                {% trans "Studies list" %}
+            </h4>
             <hr>
             <div class="form-group">
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>{% trans "Title" %}</th>
-                            <th>{% trans "Term" %}</th>
-                            <th>{% trans "Responsible" %}</th>
+                            <th>
+                                {% trans "Title" %}
+                            </th>
+                            <th>
+                                {% trans "Term" %}
+                            </th>
+                            <th>
+                                {% trans "Responsible" %}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,10 +46,7 @@
                             <tr>
                                 <td>
                                     {% if perms.experiment.view_researchproject %}
-                                        <a data-bs-toggle="tooltip"
-                                           data-bs-placement="left"
-                                           title="{% trans "Visualize" %}"
-                                           href="/experiment/research_project/{{ research_project.id }}">{{ research_project.title }}</a>
+                                        <a data-bs-toggle="tooltip" data-bs-placement="left" title="{% trans "Visualize" %}" href="/experiment/research_project/{{ research_project.id }}">{{ research_project.title }}</a>
                                     {% else %}
                                         {{ research_project.title }}
                                     {% endif %}
@@ -57,7 +64,9 @@
                                         {{ research_project.start_date }}
                                     {% endif %}
                                 </td>
-                                <td>{{ research_project.owner.first_name }} {{ research_project.owner.last_name }}</td>
+                                <td>
+                                    {{ research_project.owner.first_name }} {{ research_project.owner.last_name }}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -69,7 +78,7 @@
                         <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Insert new study" %}</a>
                     </div>
                     <div class="btn-group">
-                        <a href="/experiment/import" class="btn btn-light">{% trans "Import Study/Experiment" %}</a>
+                        <a href="/experiment/import" class="btn btn-info">{% trans "Import Study" %}</a>
                     </div>
                 </div>
             {% endif %}

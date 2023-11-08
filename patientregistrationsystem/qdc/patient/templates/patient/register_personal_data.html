@@ -1,8 +1,9 @@
 {% extends "patient/register.html" %}
-
 {% load i18n static %}
 
-{% load l10n static %}
+{% load l10n %}
+
+{% load subjects_tags %}
 
 {% block sub_content %}
     <div class="tab-pane {% if currentTab == "0" %}active{% endif %}" id="tab1">
@@ -304,8 +305,8 @@
                                 </div>
                             </div>
                             <div class="col-4 col-sm-2">
-                                <div class="form-group">
-                                    <div>{{ telephone_form.DELETE }}</div>
+                                <div class="form-check form-switch">
+                                    {{ telephone_form.DELETE|add_class:"form-check-input" }}
                                 </div>
                             </div>
                         </div>

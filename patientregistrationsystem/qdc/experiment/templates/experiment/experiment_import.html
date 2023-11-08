@@ -11,7 +11,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
                 <li class="breadcrumb-item">
-                    <a href={% url "home" %}>{% trans "Home" %}</a>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
                 </li>
                 <li class="breadcrumb-item">
                     <a href={% url "research_project_list" %}>{% trans "Studies" %}</a>
@@ -44,16 +44,21 @@
                 <h4>
                     <em>{% trans "Choose a .zip file previously exported by NES" %}</em>
                 </h4>
-                <p>
-                    {% if research_project_id %}
+                {% if research_project_id %}
+                    <p>
                         {% trans "This will create a whole new Experiment/Project. The extension of objects that will be imported depends upon the stuff inside json file." %}
-                    {% else %}
+                    </p>
+                    <div class="form-group">
+                        <input type="file" class="form-control" name="file" accept=".json" required>
+                    </div>
+                {% else %}
+                    <p>
                         {% trans "This will create a whole new Study. The extension of objects that will be imported depends upon the stuff inside zip file." %}
-                    {% endif %}
-                </p>
-                <div class="form-group">
-                    <input type="file" name="file" required>
-                </div>
+                    </p>
+                    <div class="form-group">
+                        <input type="file" class="form-control" name="file" accept=".zip" required>
+                    </div>
+                {% endif %}
             </div>
 
             <div class="btn-group float-end">

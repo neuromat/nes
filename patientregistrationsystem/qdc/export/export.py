@@ -5090,39 +5090,40 @@ class ExportExecution:
                                 export_group_directory,
                                 stimulus_data["directory_step_name"],
                             )
-                            path_stimulus_filename = path.join(
-                                settings.MEDIA_ROOT,
-                                stimulus_data["stimulus_file"].media_file.name,
-                            )
-                            stimulus_filename = path.basename(path_stimulus_filename)
-                            complete_stimulus_data_filename = path.join(
-                                path_stimulus_data, stimulus_filename
-                            )
+                            if stimulus_data["stimulus_file"].media_file.name:
+                                path_stimulus_filename = path.join(
+                                    settings.MEDIA_ROOT,
+                                    stimulus_data["stimulus_file"].media_file.name,
+                                )
+                                stimulus_filename = path.basename(path_stimulus_filename)
+                                complete_stimulus_data_filename = path.join(
+                                    path_stimulus_data, stimulus_filename
+                                )
 
-                            # For datapackage resources
-                            unique_name = slugify(stimulus_filename)
-                            datapackage_resource = {
-                                "name": unique_name,
-                                "title": unique_name,
-                                "path": path.join(
-                                    export_directory_stimulus_data, stimulus_filename
-                                ),
-                                "description": "Stimulus type: %s"
-                                % stimulus_data["stimulus_file"].stimulus_type.name,
-                            }
+                                # For datapackage resources
+                                unique_name = slugify(stimulus_filename)
+                                datapackage_resource = {
+                                    "name": unique_name,
+                                    "title": unique_name,
+                                    "path": path.join(
+                                        export_directory_stimulus_data, stimulus_filename
+                                    ),
+                                    "description": "Stimulus type: %s"
+                                    % stimulus_data["stimulus_file"].stimulus_type.name,
+                                }
 
-                            with open(path_stimulus_filename, "rb") as f:
-                                data = f.read()
-                            with open(complete_stimulus_data_filename, "wb") as f:
-                                f.write(data)
+                                with open(path_stimulus_filename, "rb") as f:
+                                    data = f.read()
+                                with open(complete_stimulus_data_filename, "wb") as f:
+                                    f.write(data)
 
-                            self.files_to_zip_list.append(
-                                [
-                                    complete_stimulus_data_filename,
-                                    export_directory_stimulus_data,
-                                    datapackage_resource,
-                                ]
-                            )
+                                self.files_to_zip_list.append(
+                                    [
+                                        complete_stimulus_data_filename,
+                                        export_directory_stimulus_data,
+                                        datapackage_resource,
+                                    ]
+                                )
 
         return error_msg
 

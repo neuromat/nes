@@ -20,7 +20,7 @@
     <div class="tab-pane fade show active" id="experimentBreadCrumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3"> 
-                <li class="breadcrumb-item"><a href={% url "home" %}>{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="{% url "home" %}">{% trans "Home" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/list/">{% trans "Studies" %}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/research_project/{{ eeg_setting.experiment.research_project.id }}/">{{ eeg_setting.experiment.research_project.title }}</a></li>
                 <li class="breadcrumb-item"><a href="/experiment/{{ eeg_setting.experiment.id }}/">{{ eeg_setting.experiment.title }}</a></li>
