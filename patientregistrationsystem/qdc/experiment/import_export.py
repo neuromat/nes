@@ -10,6 +10,7 @@ from functools import reduce
 from json import JSONDecodeError
 from operator import or_
 from os import path
+from django.core.exceptions import ObjectDoesNotExist
 
 import networkx as nx
 from django.apps import apps
@@ -827,14 +828,17 @@ class ImportExperiment:
         participants_with_conflict = []
         for i in indexes:
             # Check if the patient is already there
-            if data[i]["fields"]["cpf"]:
-                patient_already_in_database = Patient.objects.get(
-                    name=data[i]["fields"]["name"], cpf=data[i]["fields"]["cpf"]
-                )
-            else:
-                patient_already_in_database = Patient.objects.get(
-                    code=data[i]["fields"]["code"]
-                )
+            try:
+                if data[i]["fields"]["cpf"]:
+                    patient_already_in_database = Patient.objects.get(
+                        name=data[i]["fields"]["name"], cpf=data[i]["fields"]["cpf"]
+                    )
+                else:
+                    patient_already_in_database = Patient.objects.get(
+                        code=data[i]["fields"]["code"]
+                    )
+            except ObjectDoesNotExist:
+                continue
 
             if patient_already_in_database:
                 participants_with_conflict.append(
