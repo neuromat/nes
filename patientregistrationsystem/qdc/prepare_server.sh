@@ -9,7 +9,7 @@ python3 -u manage.py shell < add_initial_data.py || true
 echo "	INFO: load_initial_data.py"
 python3 -u manage.py loaddata load_initial_data.json || true
 python3 -u manage.py loaddata load_eeg_initial_data.json || true
-echo "	INFO create cachetable"
+echo "	INFO: create cachetable"
 python3 -u manage.py createcachetable || true
 echo "	INFO: create_super_user.py"
 python3 -u manage.py shell < /tmp/create_superuser.py || true

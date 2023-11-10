@@ -32,7 +32,9 @@
                         </li>
                     {% endif %}
 
-                    <li class="breadcrumb-item">{% trans "Medical assessment" %}</li>
+                    <li class="breadcrumb-item">
+                        {% trans "Medical assessment" %}
+                    </li>
 
                     {% if length == 0 %}
                         <li>
@@ -51,9 +53,13 @@
                     {% endif %}
 
                     {% if viewing %}
-                        <li class="breadcrumb-item active">{% trans "Exam" %}</li>
+                        <li class="breadcrumb-item active">
+                            {% trans "Exam" %}
+                        </li>
                     {% else %}
-                        <li class="breadcrumb-item active">{% trans "New Exam" %}</li>
+                        <li class="breadcrumb-item active">
+                            {% trans "New Exam" %}
+                        </li>
                     {% endif %}
                 </ol>
             </nav>
@@ -70,7 +76,9 @@
                         <div class="form-text with-errors text-danger">
                             {% if complementary_exam_form.date.errors %}
                                 <span>
-                                    {% for error in complementary_exam_form.date_.errors %}{{ error }}{% endfor %}
+                                    {% for error in complementary_exam_form.date_.errors %}
+                                        {{ error }}
+                                    {% endfor %}
                                 </span>
                             {% endif %}
                         </div>
@@ -78,7 +86,9 @@
                 </div>
                 <div class="col-7 col-sm-8">
                     <div class="form-group">
-                        <label class="form-label" for="id_exam_site">{% trans "Performed in" %}</label>
+                        <label class="form-label" for="id_exam_site">
+                            {% trans "Performed in" %}
+                        </label>
                         {{ complementary_exam_form.exam_site }}
                     </div>
                 </div>
@@ -90,20 +100,25 @@
                             {% trans "Description" %} <b class="text-danger">*</b>
                         </label>
                         {{ complementary_exam_form.description }}
-                        <div class="form-text with-errors text-danger"></div>
+                        <div class="form-text with-errors text-danger">
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-5 col-sm-4">
                     <div class="form-group">
-                        <label class="form-label" for="id_doctor_register">{% trans "CRM" %}</label>
+                        <label class="form-label" for="id_doctor_register">
+                            {% trans "CRM" %}
+                        </label>
                         {{ complementary_exam_form.doctor_register }}
                     </div>
                 </div>
                 <div class="col-7 col-sm-8">
                     <div class="form-group">
-                        <label class="form-label" for="id_doctor">{% trans "Doctor name" %}</label>
+                        <label class="form-label" for="id_doctor">
+                            {% trans "Doctor name" %}
+                        </label>
                         {{ complementary_exam_form.doctor }}
                     </div>
                 </div>
@@ -123,7 +138,9 @@
                             <tbody>
                                 {% if not exam_file_list %}
                                     <tr>
-                                        <td>{% trans "(no attachments)" %}</td>
+                                        <td>
+                                            {% trans "(no attachments)" %}
+                                        </td>
                                     </tr>
                                 {% else %}
                                     {% for exam_file in exam_file_list %}
@@ -164,12 +181,21 @@
 
         <div class="btn-group">
             {% if not creating and not viewing %}
-                <button type="button" class="btn btn-danger" onclick="show_modal_remove_for_complementary_exam();">{% trans "Delete" %}</button>
+                <button type="button" class="btn btn-danger" onclick="show_modal_remove_for_complementary_exam();">
+                    {% trans "Delete" %}
+                </button>
             {% endif %}
         </div>
         <div class="btn-group float-end">
+            {% if not viewing %}
+                <button type="submit" name="action" value="save" id="save_exam" class="btn btn-primary">
+                    {% trans "Save" %}
+                </button>
+            {% endif %}
             {% if length == 0 %}
-                <button type="button" class="btn btn-light" onclick="show_modal_remove_exam()">{% trans "Back" %}</button>
+                <button type="button" class="btn btn-light" onclick="show_modal_remove_exam()">
+                    {% trans "Back" %}
+                </button>
             {% else %}
                 {% if not viewing %}
                     <a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status={{ status }}" class="btn btn-light">{% trans "Back" %}</a>
@@ -177,17 +203,18 @@
                     <a href="/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status={{ status }}" class="btn btn-light">{% trans "Back" %}</a>
                 {% endif %}
             {% endif %}
-            {% if not viewing %}
-                <button type="submit" name="action" value="save" id="save_exam" class="btn btn-primary">{% trans "Save" %}</button>
-            {% endif %}
         </div>
 
         <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-body">{% trans "Are you sure you want to delete exam?" %}</div>
+                    <div class="modal-body">
+                        {% trans "Are you sure you want to delete exam?" %}
+                    </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            {% trans "Cancel" %}
+                        </button>
                         <a type="button" class="btn btn-danger" id="removeExam" href="">{% trans "Delete" %}</a>
                     </div>
                 </div>
@@ -197,9 +224,13 @@
         <div class="modal fade" id="modalRemoveExam" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-body">{% trans "As there are no attachments, the exam will be totally excluded. Do you confirm deletion?" %}</div>
+                    <div class="modal-body">
+                        {% trans "As there are no attachments, the exam will be totally excluded. Do you confirm deletion?" %}
+                    </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            {% trans "Cancel" %}
+                        </button>
                         <a type="button" class="btn btn-danger" id="removeExam2" href="">{% trans "Delete" %}</a>
                     </div>
                 </div>
@@ -214,7 +245,9 @@
 {% block extrascript %}
     {% if complementary_exam_form.errors %}
         {% for field in complementary_exam_form %}
-            {% if field.errors %}<script>showErrorMessage('{{ field.errors|striptags }}')</script>{% endif %}
+            {% if field.errors %}
+                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+            {% endif %}
         {% endfor %}
 
         <script type="text/javascript">showErrorMessage(gettext('Exam was not saved. Please, correct fields highlighted.'))</script>

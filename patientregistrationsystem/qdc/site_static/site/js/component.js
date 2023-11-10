@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         manage_interval_disable_flag();
         id_number_of_repetitions.prop('disabled', false);
         id_number_of_repetitions.prop('readonly', false);
-        id_number_of_repetitions.on("focus");
+        id_number_of_repetitions.trigger("focus");
         fix_bootstrap_error_message_repetitions();
     });
 
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
         id_interval_between_repetitions_unit.prop('disabled', false);
         id_interval_between_repetitions_unit.prop('required', true);
 
-        id_interval_between_repetitions_value.on("focus");
+        id_interval_between_repetitions_value.trigger("focus");
     });
 
 });

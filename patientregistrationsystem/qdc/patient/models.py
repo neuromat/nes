@@ -667,7 +667,7 @@ class Diagnosis(models.Model):
 
     def __str__(self) -> str:
         return (
-            str(self.classification_of_diseases)
+            str(self.classification_of_diseases.abbreviated_description)
             + " "
             + str(self.date)
             + " "

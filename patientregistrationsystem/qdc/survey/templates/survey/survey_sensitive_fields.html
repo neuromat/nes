@@ -46,13 +46,13 @@
                                 <tr>
                                     <td>
                                         <input type="checkbox"
+                                            class="form-check-input" 
                                             id="field_{{ field.code }}"
                                             name="field_{{ field.code }}"
                                             {% if field.checked %}checked="checked"{% endif %}
                                             {#                                           {% if localizationsystem.disabled %}disabled{% endif %}#}
                                             >
-
-                                            {{ field.code }}
+                                            <label for="field_{{ field.code }}" class="form-check-label">{{ field.code }}</label>
                                         </td>
                                         <td>{{ field.text|truncatechars:100 }}</td>
                                     </tr>

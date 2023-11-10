@@ -27,7 +27,7 @@ ready(
         not_all_mandatory_components.on("click", function () {
             id_number_of_mandatory_components.prop('disabled', false);
             id_number_of_mandatory_components.prop('required', true);
-            id_number_of_mandatory_components.on("focus");
+            id_number_of_mandatory_components.trigger("focus");
         });
 
         function fix_bootstrap_error_message() {

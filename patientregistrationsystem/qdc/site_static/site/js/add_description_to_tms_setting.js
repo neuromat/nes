@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 select_tmsdevice.html(options);
-                select_tmsdevice.on("change");
+                select_tmsdevice.trigger("change");
             })
             .catch(function (error) {
                 console.log(error);

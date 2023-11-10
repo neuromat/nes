@@ -49,13 +49,12 @@
                         <div class="form-group">
                             <label class="form-label" for="questionnaire_selected">{% trans "Questionnaire" %}</label>
                             <select class="form-select"
-                                    required=""
                                     id="questionnaire_selected"
                                     name="questionnaire_selected"
-                                    {% if not creating %}disabled{% endif %}
+                                    {% if not creating %}disabled{% else %}required{% endif %}
                                     data-bs-error="{% trans "Please, select a questionnaire from the list." %}">
                                 {% if creating %}
-                                    <option selected="selected" value="">---------</option>
+                                    <option selected="selected" value="">--------</option>
                                     {% for survey in questionnaires_list %}<option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>{% endfor %}
                                 {% else %}
                                     <option selected="selected" value="">{{ survey_form.title.value }}</option>

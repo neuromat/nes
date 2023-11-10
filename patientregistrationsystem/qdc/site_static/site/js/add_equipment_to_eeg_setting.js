@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 }
                 select_equipment.html(options);
-                select_equipment.on("change");
+                select_equipment.trigger("change");
             })
             .catch(function (error) {
                 console.log(error);
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             }
 
                             select_localization_system.html(first_option + options);
-                            select_localization_system.on("change");
+                            select_localization_system.trigger("change");
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['identification'] + '</option>';
                         }
                         select_equipment.html(options);
-                        select_equipment.on("change");
+                        select_equipment.trigger("change");
                     })
                     .catch(function (error) {
                         console.log(error);

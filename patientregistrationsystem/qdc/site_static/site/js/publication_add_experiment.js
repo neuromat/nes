@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
             options += '<option value="' + list_of_experiments[i].pk + '">' + list_of_experiments[i].fields['title'] + '</option>';
         }
         select_experiments.html(options);
-        select_experiments.on("change");
+        select_experiments.trigger("change");
 
         // $.getJSON(url, function (list_of_experiments) {
         //     var options = '<option value="" selected="selected">---------</option>';

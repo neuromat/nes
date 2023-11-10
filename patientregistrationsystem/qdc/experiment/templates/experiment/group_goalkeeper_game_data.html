@@ -60,7 +60,7 @@
                                 {{ group.code }}
                             </a>
                         {% else %}
-                            <a class="btn btn-warning" onclick="$('#modalGroupCode').modal('show');$('#group-code').on("focus");">{% trans "Create group code" %}</a>
+                            <a class="btn btn-warning" onclick="$('#modalGroupCode').modal('show');$('#group-code').trigger("focus");">{% trans "Create group code" %}</a>
                         {% endif %}
                     </div>
                     <div class="modal fade" id="modalGroupCode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

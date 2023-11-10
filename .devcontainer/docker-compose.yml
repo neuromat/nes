@@ -102,6 +102,7 @@ services:
       LIMESURVEY_ADMIN_PASSWORD: ${LIMESURVEY_ADMIN_PASSWORD:-lime_admin_password}
       LIMESURVEY_HOST: limesurvey
       LIMESURVEY_PORT: 8080
+      LIMESURVEY_URL_WEB: lapisnes.local
     depends_on:
       - nes_db
       - limesurvey

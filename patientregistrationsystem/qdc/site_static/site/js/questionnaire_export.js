@@ -84,11 +84,11 @@ function onClickRun() {
     else {
         if (check_validation == 1) {
             showErrorMessage(gettext("Either one or both Per participant/Per questionnaire must be set."));
-            $("#id_per_participant").on("focus");
+            $("#id_per_participant").trigger("focus");
         }
         else if (check_validation == 2) {
             showWarningMessage(gettext("At least one questionnaire field have to be set"));
-            $(field_counter).on("focus");
+            $(field_counter).trigger("focus");
         }
         else if (check_validation == 3) {
             showWarningMessage(gettext("At least one field from participant have to be set"));

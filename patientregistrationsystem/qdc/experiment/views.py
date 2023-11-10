@@ -7166,7 +7166,7 @@ def subject_questionnaire_response_start_fill_questionnaire(
         return None, None
 
 
-def get_limesurvey_response_url(questionnaire_response):
+def get_limesurvey_response_url(questionnaire_response) -> str:
     survey_component = (
         questionnaire_response.data_configuration_tree.component_configuration.component
     )

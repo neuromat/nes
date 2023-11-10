@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
             options_placement += '<option value="' + electrode_placement_list[i].id + '">' + electrode_placement_list[i].description + '</option>';
         }
         emg_electrode_placement.html(options_placement);
-        emg_electrode_placement.on("change");
+        emg_electrode_placement.trigger("change");
 
         // $.getJSON(url, function (electrode_placement_list) {
         //     var options_placement = '<option value="" selected="selected">---------</option>';

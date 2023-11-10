@@ -56,7 +56,7 @@ CSRF_TRUSTED_ORIGINS = ["https://localhost:80", "https://$NES_IP", "https://$NES
 		}
 		LIMESURVEY = {
 		    "URL_API": "http://$LIMESURVEY_HOST:$LIMESURVEY_PORT",
-		    "URL_WEB": "http://$LIMESURVEY_HOST:$LIMESURVEY_PORT",
+		    "URL_WEB": "http://$LIMESURVEY_URL_WEB:$LIMESURVEY_PORT",
 		    "USER": "$LIMESURVEY_ADMIN_USER",
 		    "PASSWORD": "$LIMESURVEY_ADMIN_PASSWORD"
 		}
