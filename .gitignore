@@ -5,6 +5,8 @@ htmlcov/
 coverage.xml
 *.cover
 
+*.rdb
+
 
 *.pyc
 patientregistrationsystem/qdc/.idea

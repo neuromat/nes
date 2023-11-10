@@ -1,13 +1,14 @@
-# Created by .gitignore support plugin (hsz.mobi)
-media
-/static
+
 .idea
 *.DS_Store
 db.sqlite3
 __pycache__/
-geckodriver.log
 functional_tests
+
 .coverage*
+
+media/
+static/
 
 qdc/settings/settings_local.py
 qdc/wsgi.py
