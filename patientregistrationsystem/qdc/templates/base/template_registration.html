@@ -99,23 +99,23 @@
 
     {% for message in messages %}
       {% if message.tags == "success" %}
-        <script>showSuccessMessage('{{ message }}')</script>
+        <script type="text/javascript" nonce="{{ request.csp_nonce }}">showSuccessMessage('{{ message }}')</script>
       {% endif %}
 
       {% if message.tags == "warning" %}
-        <script>showWarningMessage('{{ message }}')</script>
+        <script type="text/javascript" nonce="{{ request.csp_nonce }}">showWarningMessage('{{ message }}')</script>
       {% endif %}
 
       {% if message.tags == "error" %}
-        <script>showErrorMessage('{{ message }}')</script>
+        <script type="text/javascript" nonce="{{ request.csp_nonce }}">showErrorMessage('{{ message }}')</script>
       {% endif %}
 
       {% if message.tags == "info" %}
-        <script>showInfoMessage('{{ message }}')</script>
+        <script type="text/javascript" nonce="{{ request.csp_nonce }}">showInfoMessage('{{ message }}')</script>
       {% endif %}
     {% endfor %}
 
-    <script type="text/javascript">
+    <script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     </script>

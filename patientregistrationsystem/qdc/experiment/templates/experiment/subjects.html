@@ -560,9 +560,9 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/subjects.js" %}></script>
-    <script type="text/javascript" defer src={% static "site/js/search_and_table.js" %}></script>
-    <script>
+    <script type="text/javascript" defer  src={% static "site/js/subjects.js" %}></script>
+    <script type="text/javascript" defer  src={% static "site/js/search_and_table.js" %}></script>
+    <script type="text/javascript" nonce="{{ request.csp_nonce }}">
         $(document).ready(function () {
             searchAndTable("/experiment/subject/search/", {"group_id": $("#group_id").val()});
         });

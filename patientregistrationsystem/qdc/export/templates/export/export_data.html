@@ -295,8 +295,8 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/questionnaire_export.js" %}></script>
-    <script type="text/javascript">
+    <script type="text/javascript" defer  src={% static "site/js/questionnaire_export.js" %}></script>
+    <script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">
         {% if export_form.errors %}
             showErrorMessage(gettext('Please, correct the highlighted fields.'))
         {% endif %}

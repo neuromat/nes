@@ -79,7 +79,7 @@
     {% endblock end_form %}
 
     {% block extrascript %}
-        <script>
+        <script type="text/javascript" nonce="{{ request.csp_nonce }}">
         {% if survey_form.errors %}showErrorMessage(gettext('Please, correct the highlighted fields.')){% endif %}
         </script>
     {% endblock extrascript %}

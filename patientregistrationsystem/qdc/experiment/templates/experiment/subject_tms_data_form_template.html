@@ -32,7 +32,7 @@
     </div>
 
     {% if tms_data_form.errors %}
-        <script type="text/javascript">
+        <script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
     {% endif %}
@@ -121,8 +121,8 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/research_project.js" %}></script>
-    <script>
+    <script type="text/javascript" defer  src={% static "site/js/research_project.js" %}></script>
+    <script type="text/javascript" nonce="{{ request.csp_nonce }}">
         $(document).ready(function () {
             var $id_file_format = $("#id_file_format");
             var $id_file_format_description = $("#id_file_format_description");

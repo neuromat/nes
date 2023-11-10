@@ -315,9 +315,9 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script>
+    <script type="text/javascript" nonce="{{ request.csp_nonce }}">
         {% if survey_form.errors %}showErrorMessage(gettext('Please, correct the highlighted fields.')){% endif %}
     </script>
 
-    <script type="text/javascript" defer src={% static "site/js/survey.js" %}></script>
+    <script type="text/javascript" defer  src={% static "site/js/survey.js" %}></script>
 {% endblock extrascript %}

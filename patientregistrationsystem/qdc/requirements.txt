@@ -12,6 +12,7 @@ django-solo>=2.1.0, <2.2
 django-rosetta
 django-debug-toolbar>=4.2, <5.0
 django-extensions>=3.2.3, <4.0
+django-csp
 django_compressor
 
 jsonrpclib==0.2.1

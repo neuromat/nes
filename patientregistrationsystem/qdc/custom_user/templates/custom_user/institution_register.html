@@ -133,6 +133,6 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/custom_user_validation.js" %}></script>
-    {% if institution_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
+    <script type="text/javascript" defer  src={% static "site/js/custom_user_validation.js" %}></script>
+    {% if institution_form.errors %}<script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 {% endblock extrascript %}

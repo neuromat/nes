@@ -379,16 +379,16 @@
 
 {% block extrascript %}
     {{ block.super }}
-    <script type="text/javascript" defer src="{% static "site/cleave.min.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" defer src="{% static "site/js/phone.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" defer src="{% static "site/js/cep.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" defer src="{% static "site/js/patient_personal_data.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" defer  src="{% static "site/cleave.min.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" defer  src="{% static "site/js/phone.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" defer  src="{% static "site/js/cep.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" defer  src="{% static "site/js/patient_personal_data.js" %}" charset="utf-8"></script>
 
     {% if patient_form.errors %}
         {% for field in patient_form %}
-            {% if field.errors %}<script>showErrorMessage('{{ field.errors|striptags }}')</script>{% endif %}
+            {% if field.errors %}<script type="text/javascript" nonce="{{ request.csp_nonce }}">showErrorMessage('{{ field.errors|striptags }}')</script>{% endif %}
         {% endfor %}
 
-        <script type="text/javascript">showErrorMessage(gettext('Participant was not saved. Please, correct fields highlighted.'))</script>
+        <script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">showErrorMessage(gettext('Participant was not saved. Please, correct fields highlighted.'))</script>
     {% endif %}
 {% endblock extrascript %}

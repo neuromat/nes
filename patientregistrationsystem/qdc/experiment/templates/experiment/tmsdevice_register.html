@@ -13,7 +13,7 @@
 
     {% block content %}
 
-        {% if equipment_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
+        {% if equipment_form.errors %}<script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
         <div class="tab-pane fade show active" id="equipmentBreadCrumb">
             <nav aria-label="breadcrumb">
@@ -144,5 +144,5 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/equipment.js" %}></script>
+    <script type="text/javascript" defer  src={% static "site/js/equipment.js" %}></script>
 {% endblock extrascript %}

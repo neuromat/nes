@@ -266,9 +266,9 @@
     {% endblock end_form %}
 
     {% block extrascript %}
-        <script type="text/javascript" defer src={% static "site/js/medical_record.js" %}></script>
+        <script type="text/javascript" defer  src={% static "site/js/medical_record.js" %}></script>
 
         {% if medical_record_form.errors %}
-            <script type="text/javascript">showErrorMessage(gettext('Medical evaluation was not saved. Fields with (*) are obligatory.'))</script>
+            <script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">showErrorMessage(gettext('Medical evaluation was not saved. Fields with (*) are obligatory.'))</script>
         {% endif %}
     {% endblock extrascript %}

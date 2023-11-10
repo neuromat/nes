@@ -51,7 +51,7 @@
             </nav>
         </div>
 
-        {% if emg_data_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
+        {% if emg_data_form.errors %}<script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
         <div class="tab-pane fade show active" id="menuUserTab">
             <div class="container-fluid">
@@ -244,8 +244,8 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/research_project.js" %}></script>
-    <script>
+    <script type="text/javascript" defer  src={% static "site/js/research_project.js" %}></script>
+    <script type="text/javascript" nonce="{{ request.csp_nonce }}">
         $(document).ready(function () {
             var $id_file_format = $("#id_file_format");
             var $id_file_format_description = $("#id_file_format_description");

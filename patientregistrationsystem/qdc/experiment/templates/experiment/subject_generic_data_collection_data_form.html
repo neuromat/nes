@@ -36,30 +36,10 @@
         </nav>
     </div>
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
 
     {% if generic_data_collection_data_form.errors %}
-        <script type="text/javascript">
+        <script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
     {% endif %}
@@ -236,8 +216,8 @@
 {% endblock %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/research_project.js" %}></script>
-    <script>
+    <script type="text/javascript" defer  src={% static "site/js/research_project.js" %}></script>
+    <script type="text/javascript" nonce="{{ request.csp_nonce }}">
         $(document).ready(function () {
             var $id_file_format = $("#id_file_format");
             var $id_file_format_description = $("#id_file_format_description");

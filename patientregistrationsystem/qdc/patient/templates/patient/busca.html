@@ -50,8 +50,8 @@
 {% endblock content %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/search_and_table.js" %}></script>
-    <script>
+    <script type="text/javascript" defer  src={% static "site/js/search_and_table.js" %}></script>
+    <script type="text/javascript" nonce="{{ request.csp_nonce }}">
         $(document).ready(function () {
             searchAndTable("/patient/search/");
         });

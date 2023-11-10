@@ -386,10 +386,10 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/subject_questionnaire_response_form.js" %}></script>
+    <script type="text/javascript" defer  src={% static "site/js/subject_questionnaire_response_form.js" %}></script>
 
     {% if FAIL == False %}
-        <script>
+        <script type="text/javascript" nonce="{{ request.csp_nonce }}">
             $(document).ready(function () {
                 var elem_remove_button = undefined;
                 var elem_fill_button;

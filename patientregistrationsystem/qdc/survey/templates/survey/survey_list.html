@@ -90,5 +90,5 @@
 {% endblock content %}
 
 {% block extrascript %}
-    <script>{% if survey_form.errors %}showErrorMessage(gettext('Please, correct the highlighted fields.')){% endif %}</script>
+    <script type="text/javascript" nonce="{{ request.csp_nonce }}">{% if survey_form.errors %}showErrorMessage(gettext('Please, correct the highlighted fields.')){% endif %}</script>
 {% endblock extrascript %}

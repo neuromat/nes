@@ -12,7 +12,7 @@
 {% block content %}
 
     {% if equipment_form.errors %}
-        <script type="text/javascript">
+        <script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
     {% endif %}
@@ -192,5 +192,5 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/equipment.js" %}></script>
+    <script type="text/javascript" defer  src={% static "site/js/equipment.js" %}></script>
 {% endblock extrascript %}

@@ -49,7 +49,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     ></script>
 
     <!-- bootstrap autocomplete -->
-    <script>
+    <script type="text/javascript" nonce="{{ request.csp_nonce }}">
       jQuery(document).ready(function () {
         var grid = $("#demo").jqGrid({
           datatype: "local",

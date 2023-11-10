@@ -320,9 +320,9 @@
 {% endblock content %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/experiment_selection.js" %}></script>
-    <script type="text/javascript" defer src={% static "site/js/participant_import.js" %}></script>
-    <script>
+    <script type="text/javascript" defer  src={% static "site/js/experiment_selection.js" %}></script>
+    <script type="text/javascript" defer  src={% static "site/js/participant_import.js" %}></script>
+    <script type="text/javascript" nonce="{{ request.csp_nonce }}">
         function validate_plugin_form() {
             if (!$("select[name='patients_selected\\[\\]'] option").length) {
                 showWarningMessage(gettext("Choose at least one participant"));

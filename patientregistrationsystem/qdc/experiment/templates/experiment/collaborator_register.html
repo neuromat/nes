@@ -12,7 +12,7 @@
     {% endblock form %}
 
     {% block content %}
-        {% if collaborator_form.errors %}<script type="text/javascript">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
+        {% if collaborator_form.errors %}<script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">showErrorMessage(gettext('Please, correct fields highlighted.'))</script>{% endif %}
 
         <div class="tab-pane fade show active" id="collaboratorBreadCrumb">
             <nav aria-label="breadcrumb">
@@ -84,5 +84,5 @@
 {% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/experiment_collaborator.js" %}></script>
+    <script type="text/javascript" defer  src={% static "site/js/experiment_collaborator.js" %}></script>
 {% endblock extrascript %}

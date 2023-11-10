@@ -52,6 +52,15 @@ CONN_MAX_AGE = 10 * 60
 CONN_HEALTH_CHECKS = True
 
 
+# Content Security Policy
+
+CSP_IMG_SRC = ["'self'", "data:"]
+CSP_STYLE_SRC = ["'self'", "'unsafe-inline'"]
+CSP_SCRIPT_SRC = ["'self'"]
+CSP_BASE_URI = "'none'"
+CSP_INCLUDE_NONCE_IN = ["script-src"]
+
+
 # Application definition
 
 INSTALLED_APPS: list[str] = [
@@ -87,6 +96,7 @@ PROJECT_APPS: list[str] = [
 INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE: list[str] = [
+    "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # "django.middleware.cache.UpdateCacheMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -165,6 +175,7 @@ COMPRESS_OFFLINE = False
 ROOT_URLCONF = "qdc.urls"
 
 WSGI_APPLICATION = "qdc.wsgi.application"
+
 
 # LimeSurvey configuration
 LIMESURVEY: dict[str, str] = {

@@ -12,7 +12,7 @@
 {% block content %}
 
     {% if position_form.errors %}
-        <script type="text/javascript">
+        <script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
     {% endif %}
@@ -152,5 +152,5 @@
 {% endblock %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/eeg_electrode_localization_system.js" %}></script>
+    <script type="text/javascript" defer  src={% static "site/js/eeg_electrode_localization_system.js" %}></script>
 {% endblock %}

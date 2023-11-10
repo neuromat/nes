@@ -4,12 +4,15 @@ updated to python 3.11
 
 updated to Django 4.2
 
-updated boostrap, jquery and jquery-ui
+updated to boostrap5, jquery3 and removed jquery-ui
 
 changed all the icons to font-awesome
+
 added django-axes to prevent bruteforce login 
 
 added cache (redis)
+
+added CSP (Content Security Policy)
 
 
 ### Improved project structure:
@@ -32,11 +35,6 @@ improved deploy
 
 
 ## TODO:
-
-update to boostrap 4 or 5
-
-update to jquery 3 or remove jquery
-
 finish portuguese translation
 
 change nwb(deprecated) to pynwb

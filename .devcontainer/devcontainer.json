@@ -64,7 +64,8 @@
 				"bibhasdn.django-html",
 				"matangover.mypy",
 				"VisualStudioExptTeam.vscodeintellicode-completions",
-				"monosans.djlint"
+				"monosans.djlint",
+				"github.vscode-github-actions"
 			]
 		}
 	}

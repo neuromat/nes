@@ -3,124 +3,115 @@
 {% load i18n static %}
 
 {% block form %}
-    
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
-    {% csrf_token %}
-{% endblock %}
+        {% csrf_token %}
+    {% endblock form %}
 
-{% block content %}
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    {% if position_form.errors %}
-        <script type="text/javascript">
+    {% block content %}
+        {% if position_form.errors %}
+            <script type="text/javascript" charset="utf-8" nonce="{{ request.csp_nonce }}">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
+            </script>
+        {% endif %}
 
-    <div class="tab-pane fade show active" id="breadCrumb">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
-                <li class="breadcrumb-item"><a href="{% url "home" %}">{% trans "Home" %}</a></li>
-                <li class="breadcrumb-item"><a href="/experiment/eeg_electrode_localization_system/list">{% trans "EEG electrode localization system" %}</a></li>
+        <div class="tab-pane fade show active" id="breadCrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom overflow-hidden text-center bg-body-tertiary border rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/experiment/eeg_electrode_localization_system/list">{% trans "EEG electrode localization system" %}</a>
+                    </li>
 
-                {% if creating %}
-                    <li class="breadcrumb-item"><a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}">{{ localization_system.name }}</a></li>
-                {% else %}
-                    <li class="breadcrumb-item"><a href="/experiment/eeg_electrode_localization_system/{{ position.eeg_electrode_localization_system.id }}">{{ position.eeg_electrode_localization_system.name }}</a></li>
-                {% endif %}
-
-                {% if creating %}
-                    <li class="breadcrumb-item active">{% trans "New electrode coordinates" %}</li>
-                {% else %}
-                    {% if editing %}
-                        <li class="breadcrumb-item"><a href="/experiment/eeg_electrode_position/{{ position.id }}">{{ position.name }}</a></li>
-                        <li class="breadcrumb-item active">{% trans "Editing" %}</li>
+                    {% if creating %}
+                        <li class="breadcrumb-item">
+                            <a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}">{{ localization_system.name }}</a>
+                        </li>
                     {% else %}
-                        <li class="breadcrumb-item active"> {{ position.name }} </li>
+                        <li class="breadcrumb-item">
+                            <a href="/experiment/eeg_electrode_localization_system/{{ position.eeg_electrode_localization_system.id }}">{{ position.eeg_electrode_localization_system.name }}</a>
+                        </li>
                     {% endif %}
-                {% endif %}
-            </ol>
-        </nav>
-    </div>
 
-{% endblock %}
+                    {% if creating %}
+                        <li class="breadcrumb-item active">
+                            {% trans "New electrode coordinates" %}
+                        </li>
+                    {% else %}
+                        {% if editing %}
+                            <li class="breadcrumb-item">
+                                <a href="/experiment/eeg_electrode_position/{{ position.id }}">{{ position.name }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">
+                                {% trans "Editing" %}
+                            </li>
+                        {% else %}
+                            <li class="breadcrumb-item active">
+                                {{ position.name }}
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ol>
+            </nav>
+        </div>
+    {% endblock content %}
 
-{% block subcontent %}
+    {% block subcontent %}
+        <div id="electrode_position" class="tab-pane fade show active">
 
-    <div id="electrode_position" class="tab-pane fade show active">
+            <div hidden="hidden">
+                <input id="map_file" type="text" value="{{ localization_system.map_image_file.url }}">
+            </div>
 
-        <div hidden="hidden">
-            <input id="map_file" type="text" value="{{ localization_system.map_image_file.url }}">
+            <div style="width:100%;">
+                <table>
+                    <tr>
+                        <td width="80%">
+                            <div style="float:left; width: 80%">
+                                <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
+                                </canvas>
+                            </div>
+                        </td>
+
+                        <td width="20%" valign="top">
+                            <label class="form-label" style="margin-left: 10px;">
+                                {% trans "Electrode Cap Coordinates" %}
+                            </label>
+                            <br />
+
+                            <table id="cap_positions" class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            {% trans "Coordinates X - Y" %}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for position in localization_system.electrode_positions.all %}
+                                        <tr>
+                                            <td>
+                                                {{ position.coordinate_x }}
+
+                                                {{ position.coordinate_y }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
-        <div style="width:100%;">
-            <table>
-                <tr>
-                    <td width="80%">
-                        <div style="float:left; width: 80%">
-                            <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
-                            </canvas>
-                        </div>
-                    </td>
+    {% endblock subcontent %}
 
-                    <td width="20%" valign="top">
-                        <label class="form-label" style="margin-left: 10px;">{% trans "Electrode Cap Coordinates" %}</label>
-                        <br/>
-
-                        <table id="cap_positions" class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
-                            <thead>
-                            <tr>
-                                <th>{% trans "Coordinates X - Y" %} </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for position in localization_system.electrode_positions.all %}
-                                <tr>
-                                    <td>
-                                        {{ position.coordinate_x }}
-
-                                        {{ position.coordinate_y }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-
-                    </td>
-
-                </tr>
-            </table>
-
-        </div>
-    </div>
-
-{% endblock %}
-
-{% block end_form %}
+    {% block end_form %}
     </form>
-{% endblock %}
+{% endblock end_form %}
 
 {% block extrascript %}
-    <script type="text/javascript" defer src={% static "site/js/eeg_electrode_cap_coordinates.js" %}></script>
-{% endblock %}
+    <script type="text/javascript" defer  src={% static "site/js/eeg_electrode_cap_coordinates.js" %}></script>
+{% endblock extrascript %}
