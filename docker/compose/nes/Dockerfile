@@ -1,18 +1,20 @@
-FROM python:3.8-alpine3.12 as wheeler
+FROM python:3.8-slim as wheeler
 ENV PYTHONUNBUFFERED=1
 
-RUN apk update && \
-	apk add --no-cache \
-		libpng-dev \
-		freetype-dev \
-		build-base \
-		git \
-		postgresql-dev \
-		openblas-dev \
-		libjpeg-turbo-dev \
-		hdf5-dev && \
-	rm -rf /var/cache/apk/* && \
-	ln -s /usr/include/locale.h /usr/include/xlocale.h
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libpng-dev \
+        libfreetype6-dev \
+        build-essential \
+        git \
+        libpq-dev \
+        libopenblas-dev \
+        libjpeg-dev \
+        libhdf5-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    ln -s /usr/include/locale.h /usr/include/xlocale.h || true
+
+RUN echo "Stopping here for debugging" && exit 1
 
 ARG NES_TAG=unset
 ARG NES_BRANCH=unset
