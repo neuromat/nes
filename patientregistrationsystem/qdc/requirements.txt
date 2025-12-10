@@ -23,7 +23,7 @@ xhtml2pdf==0.2.5
 networkx==2.8.8
 mne==1.3.1
 
-gunicorn==20.1.0
+gunicorn==22.0.0
 
 -e "git+https://github.com/davedash/django-fixture-magic.git#egg=django-fixture-magic"
 -e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
