@@ -6,6 +6,3 @@ pep8==1.7.0
 # Test/data generation
 Faker==0.8.17
 goodtables==2.2.1
-
-# CI helpers
-django-jenkins==0.19.0
