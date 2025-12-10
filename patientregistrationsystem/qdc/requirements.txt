@@ -1,4 +1,4 @@
-Django==1.11.29
+Django==4.2.27
 django-modeltranslation==0.12.2
 django-simple-history==1.9.0
 django-maintenance-mode==0.16.2
