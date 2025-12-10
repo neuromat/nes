@@ -17,7 +17,7 @@ matplotlib==3.7.5
 
 pydot==1.4.2
 coreapi==2.3.3
-GitPython==3.1.43
+GitPython==3.1.41
 reportlab==3.6.6
 xhtml2pdf==0.2.5
 networkx==2.8.8
