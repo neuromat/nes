@@ -65,7 +65,6 @@ class ResearchProject(models.Model):
 
     class Meta:
         permissions = (
-            ("view_researchproject", "Can view research project"),
             ("change_researchproject_from_others", "Can change research project created by others"),
             ("change_researchproject_owner", "Can change research project owner"),
         )
@@ -1215,10 +1214,6 @@ class QuestionnaireResponse(DataCollection):
         User, null=False, related_name='+', on_delete=models.CASCADE)
     history = HistoricalRecords()
     is_completed = models.CharField(max_length=50, default='')
-
-    class Meta:
-        permissions = (
-            ('view_questionnaireresponse', 'Can view questionnaire response'),)
 
     @property
     def _history_user(self):

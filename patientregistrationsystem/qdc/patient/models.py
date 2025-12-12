@@ -376,7 +376,6 @@ class Patient(models.Model):
 
     class Meta:
         permissions = (
-            ("view_patient", "Can view patient"),
             ("export_patient", "Can export patient"),
             ("sensitive_data_patient", "Can view sensitive patient data"),
         )
@@ -565,7 +564,6 @@ class MedicalRecordData(models.Model):
 
     class Meta:
         permissions = (
-            ("view_medicalrecorddata", "Can view medical record"),
             ("export_medicalrecorddata", "Can export medical record"),
         )
 
@@ -647,7 +645,6 @@ class QuestionnaireResponse(models.Model):
 
     class Meta:
         permissions = (
-            ('view_questionnaireresponse', 'Can view questionnaire response'),
             ('export_questionnaireresponse',
              'Can export questionnaire response'),
         )
