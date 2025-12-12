@@ -33,7 +33,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.files import File
 from django.core.files.base import ContentFile
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q, Min
 from django.apps import apps
 from django.db.models.deletion import ProtectedError

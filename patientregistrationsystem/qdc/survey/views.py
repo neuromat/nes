@@ -13,7 +13,7 @@ from operator import itemgetter
 from django.contrib import messages
 from django.contrib.admin.utils import flatten
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render

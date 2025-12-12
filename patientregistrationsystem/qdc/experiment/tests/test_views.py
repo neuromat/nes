@@ -14,7 +14,7 @@ from django.contrib.auth.models import Group, User
 from django.contrib.messages import get_messages
 from django.core.exceptions import PermissionDenied
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files import File
 from django.test import TestCase, override_settings
 from django.utils.encoding import smart_str
