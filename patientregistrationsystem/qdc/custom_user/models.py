@@ -26,7 +26,7 @@ class Institution(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, related_name='user_profile')
+    user = models.OneToOneField(User, related_name='user_profile', on_delete=models.CASCADE)
     institution = models.ForeignKey(Institution, null=True, blank=True)
     login_enabled = models.BooleanField(default=False, choices=LOGIN)
     force_password_change = models.BooleanField(default=True)

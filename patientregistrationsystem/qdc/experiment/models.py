@@ -459,7 +459,7 @@ class EEGSetting(models.Model):
 
 
 class EEGAmplifierSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting')
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting', on_delete=models.CASCADE)
     eeg_amplifier = models.ForeignKey(Amplifier, on_delete=models.CASCADE)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -471,7 +471,7 @@ class EEGAmplifierSetting(models.Model):
 
 
 class EEGSolutionSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_solution_setting')
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_solution_setting', on_delete=models.CASCADE)
     eeg_solution = models.ForeignKey(EEGSolution, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -480,7 +480,7 @@ class EEGSolutionSetting(models.Model):
 
 
 class EEGFilterSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_filter_setting')
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_filter_setting', on_delete=models.CASCADE)
     eeg_filter_type = models.ForeignKey(FilterType, on_delete=models.CASCADE)
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -496,7 +496,7 @@ class EEGFilterSetting(models.Model):
 
 
 class EEGElectrodeLayoutSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_electrode_layout_setting')
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_electrode_layout_setting', on_delete=models.CASCADE)
     eeg_electrode_net_system = models.ForeignKey(EEGElectrodeNetSystem, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -636,7 +636,7 @@ class EMGSetting(models.Model):
 
 
 class EMGDigitalFilterSetting(models.Model):
-    emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_digital_filter_setting')
+    emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_digital_filter_setting', on_delete=models.CASCADE)
     filter_type = models.ForeignKey(FilterType, on_delete=models.CASCADE)
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -652,7 +652,7 @@ class EMGDigitalFilterSetting(models.Model):
 
 
 class EMGADConverterSetting(models.Model):
-    emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_ad_converter_setting')
+    emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_ad_converter_setting', on_delete=models.CASCADE)
     ad_converter = models.ForeignKey(ADConverter, on_delete=models.CASCADE)
     sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
@@ -672,7 +672,7 @@ class EMGElectrodeSetting(models.Model):
 
 class EMGPreamplifierSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
-                                                 primary_key=True, related_name='emg_preamplifier_setting')
+                                                 primary_key=True, related_name='emg_preamplifier_setting', on_delete=models.CASCADE)
     amplifier = models.ForeignKey(Amplifier, on_delete=models.CASCADE)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
@@ -684,7 +684,7 @@ class EMGPreamplifierSetting(models.Model):
 class EMGPreamplifierFilterSetting(models.Model):
     emg_preamplifier_filter_setting = models.OneToOneField(EMGPreamplifierSetting,
                                                            primary_key=True,
-                                                           related_name='emg_preamplifier_filter_setting')
+                                                           related_name='emg_preamplifier_filter_setting', on_delete=models.CASCADE)
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -700,7 +700,7 @@ class EMGPreamplifierFilterSetting(models.Model):
 
 class EMGAmplifierSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
-                                                 primary_key=True, related_name='emg_amplifier_setting')
+                                                 primary_key=True, related_name='emg_amplifier_setting', on_delete=models.CASCADE)
     amplifier = models.ForeignKey(Amplifier, on_delete=models.CASCADE)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
@@ -711,7 +711,7 @@ class EMGAmplifierSetting(models.Model):
 
 class EMGAnalogFilterSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGAmplifierSetting,
-                                                 primary_key=True, related_name='emg_analog_filter_setting')
+                                                 primary_key=True, related_name='emg_analog_filter_setting', on_delete=models.CASCADE)
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -727,7 +727,7 @@ class EMGAnalogFilterSetting(models.Model):
 
 class EMGElectrodePlacementSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(
-        EMGElectrodeSetting, primary_key=True, related_name='emg_electrode_placement_setting'
+        EMGElectrodeSetting, primary_key=True, related_name='emg_electrode_placement_setting', on_delete=models.CASCADE
     )
     emg_electrode_placement = models.ForeignKey(EMGElectrodePlacement, on_delete=models.CASCADE)
     remarks = models.TextField(null=True, blank=True)
@@ -758,7 +758,7 @@ class TMSDeviceSetting(models.Model):
         ("paired_pulse", _("Paired pulse")),
         ("repetitive_pulse", _("Repetitive pulse"))
     )
-    tms_setting = models.OneToOneField(TMSSetting, primary_key=True, related_name='tms_device_setting')
+    tms_setting = models.OneToOneField(TMSSetting, primary_key=True, related_name='tms_device_setting', on_delete=models.CASCADE)
     tms_device = models.ForeignKey(TMSDevice, on_delete=models.CASCADE)
     pulse_stimulus_type = models.CharField(null=True, blank=True, max_length=50, choices=PULSE_STIMULUS_TYPES)
     coil_model = models.ForeignKey(CoilModel, on_delete=models.CASCADE)
@@ -1309,7 +1309,7 @@ class HotSpot(models.Model):
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     hot_spot_map = models.FileField(upload_to=get_data_file_dir, null=True, blank=True)
-    tms_data = models.OneToOneField(TMSData, primary_key=True)
+    tms_data = models.OneToOneField(TMSData, primary_key=True, on_delete=models.CASCADE)
     tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='hotspots', on_delete=models.CASCADE)
 
     def __str__(self):
