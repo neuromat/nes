@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from qdc import views as qdcviews
 from django.contrib.auth import views as authviews
-from django.views.i18n import javascript_catalog
+from django.views.i18n import JavaScriptCatalog
 from django.conf.urls.static import static
 from .forms import PasswordChangeFormCustomized
 from django.contrib import admin
@@ -55,7 +55,7 @@ js_info_dict = {
 }
 
 urlpatterns += [
-    url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript_catalog'),
+    url(r'^jsi18n/$', JavaScriptCatalog.as_view(js_info_dict), name='javascript_catalog'),
 ]
 
 if settings.DEBUG404:
