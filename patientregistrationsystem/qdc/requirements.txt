@@ -1,5 +1,5 @@
 Django==2.2.28
-django-modeltranslation==0.12.2
+django-modeltranslation==0.17.6
 django-simple-history==3.0.0
 django-maintenance-mode==0.16.2
 django-jenkins==0.19.0
