@@ -14,7 +14,7 @@ from custom_user.forms import CustomPasswordResetForm
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^patient/', include('patient.urls')),
     url(r'^user/', include('custom_user.urls')),
     url(r'^experiment/', include('experiment.urls')),
