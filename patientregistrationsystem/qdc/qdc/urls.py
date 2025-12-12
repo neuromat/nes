@@ -55,7 +55,7 @@ js_info_dict = {
 }
 
 urlpatterns += [
-    url(r'^jsi18n/$', JavaScriptCatalog.as_view(js_info_dict), name='javascript_catalog'),
+    url(r'^jsi18n/$', JavaScriptCatalog.as_view(**js_info_dict), name='javascript_catalog'),
 ]
 
 if settings.DEBUG404:
