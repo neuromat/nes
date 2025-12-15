@@ -358,7 +358,7 @@ class Migration(migrations.Migration):
                 ('social_class', models.CharField(blank=True, null=True, max_length=10)),
                 ('changed_by', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
                 ('flesh_tone', models.ForeignKey(to='patient.FleshTone', blank=True, null=True, on_delete=models.CASCADE)),
-                ('patient', models.ForeignKey(to='patient.Patient')),
+                ('patient', models.ForeignKey(to='patient.Patient', on_delete=models.CASCADE)),
                 ('patient_schooling', models.ForeignKey(verbose_name='Schooling of the patient',
                                                         to='patient.Schooling', blank=True,
                                                         related_name='patient_schooling_set', null=True, on_delete=models.CASCADE)),
