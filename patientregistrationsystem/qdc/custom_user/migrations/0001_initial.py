@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                  ),
                 ('force_password_change', models.BooleanField(default=True)),
                 ('institution', models.ForeignKey(blank=True, null=True, to='custom_user.Institution', on_delete=models.CASCADE)),
-                ('user', models.OneToOneField(related_name='user_profile', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='user_profile', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
     ]
