@@ -1510,7 +1510,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tmsdata',
             name='coil_orientation',
-            field=models.ForeignKey(blank=True, null=True, to='experiment.CoilOrientationForeignKey', on_delete=models.CASCADE),
+            field=models.ForeignKey(blank=True, null=True, to='experiment.CoilOrientation', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='tmsdata',
