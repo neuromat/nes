@@ -8,7 +8,7 @@ from operator import itemgetter
 from django.contrib import messages
 from django.contrib.auth import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect

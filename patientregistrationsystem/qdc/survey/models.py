@@ -19,9 +19,6 @@ class Survey(models.Model):
         else:
             return self.code
 
-    class Meta:
-        permissions = (("view_survey", "Can view survey"),)
-
     def save(self, *args, **kwargs):
         if not self.pk:
             self.code = self.create_random_survey_code()
@@ -36,7 +33,7 @@ class Survey(models.Model):
 
 
 class SensitiveQuestion(models.Model):
-    survey = models.ForeignKey(Survey, related_name='sensitive_questions')
+    survey = models.ForeignKey(Survey, related_name='sensitive_questions', on_delete=models.CASCADE)
     code = models.CharField(max_length=150)
     question = models.TextField()
 

@@ -5,7 +5,7 @@ import platform
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import activate, LANGUAGE_SESSION_KEY, ugettext as _

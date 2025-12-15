@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('acronym', models.CharField(unique=True, max_length=30)),
                 ('country', models.CharField(max_length=30)),
                 ('parent', models.ForeignKey(blank=True, related_name='children', null=True,
-                                             to='custom_user.Institution')),
+                                             to='custom_user.Institution', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['name'],
@@ -34,8 +34,8 @@ class Migration(migrations.Migration):
                     choices=[(False, 'No'), (True, 'Yes, a username and password must be configured')], default=False)
                  ),
                 ('force_password_change', models.BooleanField(default=True)),
-                ('institution', models.ForeignKey(blank=True, null=True, to='custom_user.Institution')),
-                ('user', models.OneToOneField(related_name='user_profile', to=settings.AUTH_USER_MODEL)),
+                ('institution', models.ForeignKey(blank=True, null=True, to='custom_user.Institution', on_delete=models.CASCADE)),
+                ('user', models.OneToOneField(related_name='user_profile', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
     ]

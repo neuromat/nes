@@ -65,7 +65,7 @@ class QuestionnaireResponseForm(ModelForm):
 
         widgets = {
             'date': DateInput(
-                format=_("%m/%d/%Y"),
+                format="%m/%d/%Y",
                 attrs={'class': 'form-control datepicker',
                        'placeholder': _('mm/dd/yyyy'), 'required': '',
                        'data-error': _('Fill date must be filled.')},
@@ -311,7 +311,7 @@ class ResearchProjectForm(ModelForm):
                     'data-error': _('Description must be filled.')
                 }),
             'start_date': DateInput(
-                format=_("%m/%d/%Y"),
+                format="%m/%d/%Y",
                 attrs={
                     'id': 'id_start_date', 'class': 'form-control datepicker',
                     'placeholder': _('mm/dd/yyyy'),
@@ -319,7 +319,7 @@ class ResearchProjectForm(ModelForm):
                     'data-error': _("Initial date must be filled.")
                 }, ),
             'end_date': DateInput(
-                format=_("%m/%d/%Y"),
+                format="%m/%d/%Y",
                 attrs={
                     'id': 'id_end_date', 'class': 'form-control datepicker',
                     'placeholder': _('mm/dd/yyyy')
@@ -374,7 +374,7 @@ class EEGDataForm(ModelForm):
                   'file_format_description', 'eeg_setting_reason_for_change']
 
         widgets = {
-            'date': DateInput(format=_("%m/%d/%Y"),
+            'date': DateInput(format="%m/%d/%Y",
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
@@ -908,7 +908,7 @@ class EMGDataForm(ModelForm):
                   'file_format_description', 'emg_setting_reason_for_change']
 
         widgets = {
-            'date': DateInput(format=_("%m/%d/%Y"),
+            'date': DateInput(format="%m/%d/%Y",
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
@@ -953,7 +953,7 @@ class AdditionalDataForm(ModelForm):
                   'file_format_description']
 
         widgets = {
-            'date': DateInput(format=_("%m/%d/%Y"),
+            'date': DateInput(format="%m/%d/%Y",
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
@@ -977,11 +977,11 @@ class SubjectStepDataForm(ModelForm):
         fields = ['start_date', 'start_time', 'end_date', 'end_time']
 
         widgets = {
-            'start_date': DateInput(format=_("%m/%d/%Y"),
+            'start_date': DateInput(format="%m/%d/%Y",
                                     attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                            'required': "", 'data-error': _("Start date must be filled.")}, ),
             'start_time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
-            'end_date': DateInput(format=_("%m/%d/%Y"),
+            'end_date': DateInput(format="%m/%d/%Y",
                                   attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                          'required': "", 'data-error': _("End date must be filled.")}, ),
             'end_time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
@@ -1210,7 +1210,7 @@ class TMSDataForm(ModelForm):
                   'coil_orientation_angle', 'repetitive_pulse_frequency', 'description', 'second_test_pulse_intensity']
 
         widgets = {
-            'date': DateInput(format=_("%m/%d/%Y"),
+            'date': DateInput(format="%m/%d/%Y",
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
@@ -1333,7 +1333,7 @@ class DigitalGamePhaseDataForm(ModelForm):
                   'file_format_description', 'sequence_used_in_context_tree']
 
         widgets = {
-            'date': DateInput(format=_("%m/%d/%Y"),
+            'date': DateInput(format="%m/%d/%Y",
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
@@ -1364,7 +1364,7 @@ class GenericDataCollectionDataForm(ModelForm):
                   'file_format_description']
 
         widgets = {
-            'date': DateInput(format=_("%m/%d/%Y"),
+            'date': DateInput(format="%m/%d/%Y",
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),

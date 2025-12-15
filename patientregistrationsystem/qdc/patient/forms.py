@@ -37,7 +37,7 @@ class PatientForm(ModelForm):
                                     'placeholder': 'xxx.xxx.xxx-xx'}),
             'origin': TextInput(attrs={'class': 'form-control'}),
             'medical_record': TextInput(attrs={'class': 'form-control'}),
-            'date_birth': DateInput(format=_("%m/%d/%Y"), attrs={'class': 'form-control datepicker', 'required': "",
+            'date_birth': DateInput(format="%m/%d/%Y", attrs={'class': 'form-control datepicker', 'required': "",
                                                                  'placeholder': _('mm/dd/yyyy'),
                                                                  'data-error': _('Date of birth must be completed')}),
             'gender': Select(attrs={'class': 'form-control', 'required': "",
@@ -149,7 +149,7 @@ class ComplementaryExamForm(ModelForm):
         fields = ['date', 'description', 'doctor', 'doctor_register', 'exam_site']
 
         widgets = {
-            'date': DateInput(format=_("%m/%d/%Y"),
+            'date': DateInput(format="%m/%d/%Y",
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "", 'data-error': _("Date must be completed")}),
             'description': Textarea(attrs={'class': 'form-control', 'placeholder': _('Description'), 'rows': '4',
@@ -173,7 +173,7 @@ class QuestionnaireResponseForm(ModelForm):
 
         widgets = {
             'date': DateInput(
-                format=_("%m/%d/%Y"),
+                format="%m/%d/%Y",
                 attrs={'class': 'form-control datepicker',
                        'placeholder': _('mm/dd/yyyy'), 'required': '',
                        'data-error': _('Fill date must be filled.')},
