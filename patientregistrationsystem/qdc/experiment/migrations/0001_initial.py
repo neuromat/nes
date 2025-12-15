@@ -1393,7 +1393,7 @@ class Migration(migrations.Migration):
                 ('strand', models.CharField(choices=[('single', 'Single'), ('multi', 'Multi')], max_length=20)),
                 ('length_of_exposed_tip', models.FloatField(validators=[django.core.validators.MinValueValidator(0)],
                                                             blank=True, null=True)),
-                ('insulation_material', models.ForeignKey(blank=True, null=True, to='experiment.Material')),
+                ('insulation_material', models.ForeignKey(blank=True, null=True, to='experiment.Material', on_delete=models.CASCADE)),
             ],
             bases=('experiment.electrodemodel',),
         ),
