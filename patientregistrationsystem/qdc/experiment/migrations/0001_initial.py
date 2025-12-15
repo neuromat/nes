@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('file', models.FileField(upload_to=experiment.models.get_data_file_dir)),
                 ('additional_data', models.ForeignKey(to='experiment.AdditionalData',
-                                                      related_name='additional_data_files')),
+                                                      related_name='additional_data_files', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -136,7 +136,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('brain_area_image', models.FileField(null=True, blank=True,
                                                       upload_to=experiment.models.get_tms_brain_area_dir)),
-                ('brain_area_system', models.ForeignKey(to='experiment.BrainAreaSystem')),
+                ('brain_area_system', models.ForeignKey(to='experiment.BrainAreaSystem', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -234,7 +234,7 @@ class Migration(migrations.Migration):
                 ('component_configuration', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
                                                               to='experiment.ComponentConfiguration')),
                 ('parent', models.ForeignKey(related_name='children', null=True,
-                                             to='experiment.DataConfigurationTree')),
+                                             to='experiment.DataConfigurationTree', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -248,7 +248,7 @@ class Migration(migrations.Migration):
                 ('file_format_description', models.TextField(null=True, blank=True, default='')),
                 ('sequence_used_in_context_tree', models.TextField(null=True, blank=True)),
                 ('data_configuration_tree', models.ForeignKey(blank=True, null=True,
-                                                              to='experiment.DataConfigurationTree')),
+                                                              to='experiment.DataConfigurationTree', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -260,7 +260,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('file', models.FileField(upload_to=experiment.models.get_data_file_dir)),
                 ('digital_game_phase_data', models.ForeignKey(to='experiment.DigitalGamePhaseData',
-                                                              related_name='digital_game_phase_files')),
+                                                              related_name='digital_game_phase_files', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -290,8 +290,8 @@ class Migration(migrations.Migration):
                 ('file_format_description', models.TextField(null=True, blank=True, default='')),
                 ('eeg_setting_reason_for_change', models.TextField(null=True, blank=True, default='')),
                 ('data_configuration_tree', models.ForeignKey(blank=True, null=True,
-                                                              to='experiment.DataConfigurationTree')),
-                ('eeg_cap_size', models.ForeignKey(blank=True, null=True, to='experiment.EEGCapSize')),
+                                                              to='experiment.DataConfigurationTree', on_delete=models.CASCADE)),
+                ('eeg_cap_size', models.ForeignKey(blank=True, null=True, to='experiment.EEGCapSize', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -312,7 +312,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('eeg_electrode_localization_system', models.ForeignKey(to='experiment.EEGElectrodeLocalizationSystem',
-                                                                        related_name='set_of_electrode_net_system')),
+                                                                        related_name='set_of_electrode_net_system', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -326,9 +326,9 @@ class Migration(migrations.Migration):
                                                      blank=True, null=True)),
                 ('channel_default_index', models.IntegerField()),
                 ('eeg_electrode_localization_system', models.ForeignKey(to='experiment.EEGElectrodeLocalizationSystem',
-                                                                        related_name='electrode_positions')),
+                                                                        related_name='electrode_positions', on_delete=models.CASCADE)),
                 ('position_reference', models.ForeignKey(blank=True, related_name='children', null=True,
-                                                         to='experiment.EEGElectrodePosition')),
+                                                         to='experiment.EEGElectrodePosition', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -337,7 +337,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('worked', models.BooleanField()),
                 ('channel_index', models.IntegerField()),
-                ('eeg_data', models.ForeignKey(to='experiment.EEGData', related_name='electrode_positions')),
+                ('eeg_data', models.ForeignKey(to='experiment.EEGData', related_name='electrode_positions', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -346,7 +346,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('used', models.BooleanField()),
                 ('channel_index', models.IntegerField()),
-                ('eeg_electrode_position', models.ForeignKey(to='experiment.EEGElectrodePosition')),
+                ('eeg_electrode_position', models.ForeignKey(to='experiment.EEGElectrodePosition', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -354,7 +354,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('file', models.FileField(upload_to=experiment.models.get_data_file_dir)),
-                ('eeg_data', models.ForeignKey(to='experiment.EEGData', related_name='eeg_files')),
+                ('eeg_data', models.ForeignKey(to='experiment.EEGData', related_name='eeg_files', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -433,7 +433,7 @@ class Migration(migrations.Migration):
                 ('file_format_description', models.TextField(null=True, blank=True, default='')),
                 ('emg_setting_reason_for_change', models.TextField(null=True, blank=True, default='')),
                 ('data_configuration_tree', models.ForeignKey(blank=True, null=True,
-                                                              to='experiment.DataConfigurationTree')),
+                                                              to='experiment.DataConfigurationTree', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -460,7 +460,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('file', models.FileField(upload_to=experiment.models.get_data_file_dir)),
-                ('emg_data', models.ForeignKey(to='experiment.EMGData', related_name='emg_files')),
+                ('emg_data', models.ForeignKey(to='experiment.EMGData', related_name='emg_files', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -513,8 +513,8 @@ class Migration(migrations.Migration):
             name='ExperimentResearcher',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
-                ('experiment', models.ForeignKey(to='experiment.Experiment')),
-                ('researcher', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('experiment', models.ForeignKey(to='experiment.Experiment', on_delete=models.CASCADE)),
+                ('researcher', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -549,8 +549,8 @@ class Migration(migrations.Migration):
                 ('description', models.TextField()),
                 ('file_format_description', models.TextField(null=True, blank=True, default='')),
                 ('data_configuration_tree', models.ForeignKey(blank=True, null=True,
-                                                              to='experiment.DataConfigurationTree')),
-                ('file_format', models.ForeignKey(to='experiment.FileFormat')),
+                                                              to='experiment.DataConfigurationTree', on_delete=models.CASCADE)),
+                ('file_format', models.ForeignKey(to='experiment.FileFormat', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -562,7 +562,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('file', models.FileField(upload_to=experiment.models.get_data_file_dir)),
                 ('generic_data_collection_data', models.ForeignKey(to='experiment.GenericDataCollectionData',
-                                                                   related_name='generic_data_collection_files')),
+                                                                   related_name='generic_data_collection_files', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -578,7 +578,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('phase', models.IntegerField(null=True, blank=True)),
-                ('game', models.ForeignKey(to='experiment.GoalkeeperGame')),
+                ('game', models.ForeignKey(to='experiment.GoalkeeperGame', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -589,7 +589,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField()),
                 ('code', models.CharField(verbose_name='Code', unique=True, max_length=150, null=True, blank=True)),
                 ('classification_of_diseases', models.ManyToManyField(to='patient.ClassificationOfDiseases')),
-                ('experiment', models.ForeignKey(to='experiment.Experiment')),
+                ('experiment', models.ForeignKey(to='experiment.Experiment', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Group',
@@ -895,7 +895,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=150)),
-                ('measure_system', models.ForeignKey(to='experiment.MeasureSystem')),
+                ('measure_system', models.ForeignKey(to='experiment.MeasureSystem', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -910,7 +910,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=150)),
-                ('muscle', models.ForeignKey(to='experiment.Muscle')),
+                ('muscle', models.ForeignKey(to='experiment.Muscle', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -921,7 +921,7 @@ class Migration(migrations.Migration):
                 ('anatomy_origin', models.TextField(null=True, blank=True)),
                 ('anatomy_insertion', models.TextField(null=True, blank=True)),
                 ('anatomy_function', models.TextField(null=True, blank=True)),
-                ('muscle', models.ForeignKey(to='experiment.Muscle')),
+                ('muscle', models.ForeignKey(to='experiment.Muscle', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -929,8 +929,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('question_code', models.CharField(max_length=150)),
-                ('experiment', models.ForeignKey(to='experiment.Experiment', related_name='portal_selected_questions')),
-                ('survey', models.ForeignKey(to='survey.Survey')),
+                ('experiment', models.ForeignKey(to='experiment.Experiment', related_name='portal_selected_questions', on_delete=models.CASCADE)),
+                ('survey', models.ForeignKey(to='survey.Survey', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -952,8 +952,8 @@ class Migration(migrations.Migration):
                 ('time', models.TimeField(null=True, blank=True)),
                 ('token_id', models.IntegerField()),
                 ('data_configuration_tree', models.ForeignKey(blank=True, null=True,
-                                                              to='experiment.DataConfigurationTree')),
-                ('questionnaire_responsible', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='+')),
+                                                              to='experiment.DataConfigurationTree', on_delete=models.CASCADE)),
+                ('questionnaire_responsible', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='+', on_delete=models.CASCADE)),
             ],
             options={
                 'permissions': (('view_questionnaireresponse', 'Can view questionnaire response'),),
@@ -968,7 +968,7 @@ class Migration(migrations.Migration):
                 ('start_date', models.DateField()),
                 ('end_date', models.DateField(null=True, blank=True)),
                 ('keywords', models.ManyToManyField(to='experiment.Keyword')),
-                ('owner', models.ForeignKey(blank=True, null=True, to=settings.AUTH_USER_MODEL)),
+                ('owner', models.ForeignKey(blank=True, null=True, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'permissions': (('view_researchproject', 'Can view research project'),
@@ -988,8 +988,8 @@ class Migration(migrations.Migration):
                 ('sending_datetime', models.DateTimeField(null=True)),
                 ('reason_for_resending', models.CharField(null=True, max_length=500)),
                 ('send_participant_age', models.BooleanField()),
-                ('experiment', models.ForeignKey(to='experiment.Experiment', related_name='schedule_of_sending')),
-                ('responsible', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('experiment', models.ForeignKey(to='experiment.Experiment', related_name='schedule_of_sending', on_delete=models.CASCADE)),
+                ('responsible', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -998,7 +998,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=150)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('manufacturer', models.ForeignKey(to='experiment.Manufacturer')),
+                ('manufacturer', models.ForeignKey(to='experiment.Manufacturer', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1006,7 +1006,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=150)),
-                ('software', models.ForeignKey(to='experiment.Software', related_name='versions')),
+                ('software', models.ForeignKey(to='experiment.Software', related_name='versions', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1030,7 +1030,7 @@ class Migration(migrations.Migration):
             name='Subject',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
-                ('patient', models.ForeignKey(to='patient.Patient')),
+                ('patient', models.ForeignKey(to='patient.Patient', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1038,8 +1038,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('consent_form', models.FileField(null=True, upload_to=experiment.models.get_dir)),
-                ('group', models.ForeignKey(to='experiment.Group')),
-                ('subject', models.ForeignKey(to='experiment.Subject')),
+                ('group', models.ForeignKey(to='experiment.Group', on_delete=models.CASCADE)),
+                ('subject', models.ForeignKey(to='experiment.Subject', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1053,8 +1053,8 @@ class Migration(migrations.Migration):
                                               blank=True, default=datetime.date.today, null=True)),
                 ('end_time', models.TimeField(null=True, blank=True)),
                 ('data_configuration_tree', models.ForeignKey(blank=True, null=True,
-                                                              to='experiment.DataConfigurationTree')),
-                ('subject_of_group', models.ForeignKey(to='experiment.SubjectOfGroup')),
+                                                              to='experiment.DataConfigurationTree', on_delete=models.CASCADE)),
+                ('subject_of_group', models.ForeignKey(to='experiment.SubjectOfGroup', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1116,7 +1116,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(null=True, blank=True)),
                 ('tms_localization_system_image',
                  models.FileField(null=True, blank=True, upload_to=experiment.models.get_tms_localization_system_dir)),
-                ('brain_area', models.ForeignKey(to='experiment.BrainArea')),
+                ('brain_area', models.ForeignKey(to='experiment.BrainArea', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1159,8 +1159,8 @@ class Migration(migrations.Migration):
                              ('gigaohm', 'Gigaohm(s)')],
                     blank=True, max_length=15, null=True)),
                 ('amplifier_detection_type', models.ForeignKey(blank=True, null=True,
-                                                               to='experiment.AmplifierDetectionType')),
-                ('tethering_system', models.ForeignKey(blank=True, null=True, to='experiment.TetheringSystem')),
+                                                               to='experiment.AmplifierDetectionType', on_delete=models.CASCADE)),
+                ('tethering_system', models.ForeignKey(blank=True, null=True, to='experiment.TetheringSystem', on_delete=models.CASCADE)),
             ],
             bases=('experiment.equipment',),
         ),
@@ -1203,7 +1203,7 @@ class Migration(migrations.Migration):
                                                     blank=True, null=True)),
                 ('number_of_channels_used', models.IntegerField(
                     validators=[django.core.validators.MinValueValidator(0)], null=True)),
-                ('eeg_amplifier', models.ForeignKey(to='experiment.Amplifier')),
+                ('eeg_amplifier', models.ForeignKey(to='experiment.Amplifier', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1264,7 +1264,7 @@ class Migration(migrations.Migration):
                                                      serialize=False, to='experiment.EMGSetting')),
                 ('sampling_rate', models.FloatField(validators=[django.core.validators.MinValueValidator(0)],
                                                     blank=True, null=True)),
-                ('ad_converter', models.ForeignKey(to='experiment.ADConverter')),
+                ('ad_converter', models.ForeignKey(to='experiment.ADConverter', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1357,7 +1357,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
                                                        serialize=False, auto_created=True)),
-                ('information_type', models.ForeignKey(to='experiment.InformationType')),
+                ('information_type', models.ForeignKey(to='experiment.InformationType', on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
         ),
@@ -1373,7 +1373,7 @@ class Migration(migrations.Migration):
                                                   upload_to=experiment.models.get_data_file_dir)),
                 ('tms_data', models.OneToOneField(primary_key=True, serialize=False, to='experiment.TMSData')),
                 ('tms_localization_system', models.ForeignKey(to='experiment.TMSLocalizationSystem',
-                                                              related_name='hotspots')),
+                                                              related_name='hotspots', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1437,7 +1437,7 @@ class Migration(migrations.Migration):
                                                        serialize=False, auto_created=True)),
                 ('media_file', models.FileField(null=True, blank=True,
                                                 upload_to=experiment.models.get_stimulus_media_file_dir)),
-                ('stimulus_type', models.ForeignKey(to='experiment.StimulusType')),
+                ('stimulus_type', models.ForeignKey(to='experiment.StimulusType', on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
         ),
@@ -1500,42 +1500,42 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tmssetting',
             name='copied_from',
-            field=models.ForeignKey(related_name='children', null=True, to='experiment.TMSSetting'),
+            field=models.ForeignKey(related_name='children', null=True, to='experiment.TMSSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='tmssetting',
             name='experiment',
-            field=models.ForeignKey(to='experiment.Experiment'),
+            field=models.ForeignKey(to='experiment.Experiment', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='tmsdata',
             name='coil_orientation',
-            field=models.ForeignKey(blank=True, null=True, to='experiment.CoilOrientation'),
+            field=models.ForeignKey(blank=True, null=True, to='experiment.CoilOrientationForeignKey', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='tmsdata',
             name='data_configuration_tree',
-            field=models.ForeignKey(blank=True, null=True, to='experiment.DataConfigurationTree'),
+            field=models.ForeignKey(blank=True, null=True, to='experiment.DataConfigurationTree', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='tmsdata',
             name='direction_of_induced_current',
-            field=models.ForeignKey(blank=True, null=True, to='experiment.DirectionOfTheInducedCurrent'),
+            field=models.ForeignKey(blank=True, null=True, to='experiment.DirectionOfTheInducedCurrent', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='tmsdata',
             name='subject_of_group',
-            field=models.ForeignKey(to='experiment.SubjectOfGroup'),
+            field=models.ForeignKey(to='experiment.SubjectOfGroup', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='tmsdata',
             name='tms_setting',
-            field=models.ForeignKey(to='experiment.TMSSetting'),
+            field=models.ForeignKey(to='experiment.TMSSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='questionnaireresponse',
             name='subject_of_group',
-            field=models.ForeignKey(to='experiment.SubjectOfGroup'),
+            field=models.ForeignKey(to='experiment.SubjectOfGroup', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='historicaltmsdata',
@@ -1635,7 +1635,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='genericdatacollectiondata',
             name='subject_of_group',
-            field=models.ForeignKey(to='experiment.SubjectOfGroup'),
+            field=models.ForeignKey(to='experiment.SubjectOfGroup', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='filtertype',
@@ -1650,12 +1650,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='experiment',
             name='research_project',
-            field=models.ForeignKey(to='experiment.ResearchProject'),
+            field=models.ForeignKey(to='experiment.ResearchProject', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='equipment',
             name='manufacturer',
-            field=models.ForeignKey(to='experiment.Manufacturer', related_name='set_of_equipment'),
+            field=models.ForeignKey(to='experiment.Manufacturer', related_name='set_of_equipment', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='equipment',
@@ -1665,63 +1665,63 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='emgsetting',
             name='acquisition_software_version',
-            field=models.ForeignKey(to='experiment.SoftwareVersion'),
+            field=models.ForeignKey(to='experiment.SoftwareVersion', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgsetting',
             name='copied_from',
-            field=models.ForeignKey(related_name='children', null=True, to='experiment.EMGSetting'),
+            field=models.ForeignKey(related_name='children', null=True, to='experiment.EMGSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgsetting',
             name='experiment',
-            field=models.ForeignKey(to='experiment.Experiment'),
+            field=models.ForeignKey(to='experiment.Experiment', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgelectrodesetting',
             name='electrode',
-            field=models.ForeignKey(to='experiment.ElectrodeModel'),
+            field=models.ForeignKey(to='experiment.ElectrodeModel', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgelectrodesetting',
             name='emg_setting',
-            field=models.ForeignKey(to='experiment.EMGSetting', related_name='emg_electrode_settings'),
+            field=models.ForeignKey(to='experiment.EMGSetting', related_name='emg_electrode_settings', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgelectrodeplacement',
             name='muscle_subdivision',
-            field=models.ForeignKey(to='experiment.MuscleSubdivision'),
+            field=models.ForeignKey(to='experiment.MuscleSubdivision', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgelectrodeplacement',
             name='placement_reference',
             field=models.ForeignKey(blank=True, related_name='children', null=True,
-                                    to='experiment.EMGElectrodePlacement'),
+                                    to='experiment.EMGElectrodePlacement', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgelectrodeplacement',
             name='standardization_system',
-            field=models.ForeignKey(to='experiment.StandardizationSystem', related_name='electrode_placements'),
+            field=models.ForeignKey(to='experiment.StandardizationSystem', related_name='electrode_placements', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgdata',
             name='emg_setting',
-            field=models.ForeignKey(to='experiment.EMGSetting'),
+            field=models.ForeignKey(to='experiment.EMGSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgdata',
             name='file_format',
-            field=models.ForeignKey(to='experiment.FileFormat'),
+            field=models.ForeignKey(to='experiment.FileFormat', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgdata',
             name='subject_of_group',
-            field=models.ForeignKey(to='experiment.SubjectOfGroup'),
+            field=models.ForeignKey(to='experiment.SubjectOfGroup', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='electrodesurfacemeasure',
             name='measure_unit',
-            field=models.ForeignKey(to='experiment.MeasureUnit'),
+            field=models.ForeignKey(to='experiment.MeasureUnit', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='electrodeshape',
@@ -1731,12 +1731,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='electrodemodel',
             name='electrode_configuration',
-            field=models.ForeignKey(blank=True, null=True, to='experiment.ElectrodeConfiguration'),
+            field=models.ForeignKey(blank=True, null=True, to='experiment.ElectrodeConfiguration', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='electrodemodel',
             name='material',
-            field=models.ForeignKey(blank=True, null=True, to='experiment.Material'),
+            field=models.ForeignKey(blank=True, null=True, to='experiment.Material', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='electrodemodel',
@@ -1746,109 +1746,109 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='eegsolution',
             name='manufacturer',
-            field=models.ForeignKey(to='experiment.Manufacturer', related_name='set_of_solution'),
+            field=models.ForeignKey(to='experiment.Manufacturer', related_name='set_of_solution', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegsetting',
             name='copied_from',
-            field=models.ForeignKey(related_name='children', null=True, to='experiment.EEGSetting'),
+            field=models.ForeignKey(related_name='children', null=True, to='experiment.EEGSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegsetting',
             name='experiment',
-            field=models.ForeignKey(to='experiment.Experiment'),
+            field=models.ForeignKey(to='experiment.Experiment', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegelectrodepositionsetting',
             name='electrode_model',
-            field=models.ForeignKey(to='experiment.ElectrodeModel'),
+            field=models.ForeignKey(to='experiment.ElectrodeModel', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegelectrodepositioncollectionstatus',
             name='eeg_electrode_position_setting',
-            field=models.ForeignKey(to='experiment.EEGElectrodePositionSetting'),
+            field=models.ForeignKey(to='experiment.EEGElectrodePositionSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegdata',
             name='eeg_setting',
-            field=models.ForeignKey(to='experiment.EEGSetting'),
+            field=models.ForeignKey(to='experiment.EEGSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegdata',
             name='file_format',
-            field=models.ForeignKey(to='experiment.FileFormat'),
+            field=models.ForeignKey(to='experiment.FileFormat', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegdata',
             name='subject_of_group',
-            field=models.ForeignKey(to='experiment.SubjectOfGroup'),
+            field=models.ForeignKey(to='experiment.SubjectOfGroup', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='digitalgamephasedata',
             name='file_format',
-            field=models.ForeignKey(to='experiment.FileFormat'),
+            field=models.ForeignKey(to='experiment.FileFormat', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='digitalgamephasedata',
             name='subject_of_group',
-            field=models.ForeignKey(to='experiment.SubjectOfGroup'),
+            field=models.ForeignKey(to='experiment.SubjectOfGroup', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='contexttree',
             name='experiment',
-            field=models.ForeignKey(to='experiment.Experiment'),
+            field=models.ForeignKey(to='experiment.Experiment', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='componentconfiguration',
             name='component',
-            field=models.ForeignKey(to='experiment.Component', related_name='configuration'),
+            field=models.ForeignKey(to='experiment.Component', related_name='configuration', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='componentadditionalfile',
             name='component',
-            field=models.ForeignKey(to='experiment.Component', related_name='component_additional_files'),
+            field=models.ForeignKey(to='experiment.Component', related_name='component_additional_files', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='component',
             name='experiment',
-            field=models.ForeignKey(to='experiment.Experiment'),
+            field=models.ForeignKey(to='experiment.Experiment', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='coilmodel',
             name='coil_shape',
-            field=models.ForeignKey(to='experiment.CoilShape'),
+            field=models.ForeignKey(to='experiment.CoilShape', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='coilmodel',
             name='material',
-            field=models.ForeignKey(blank=True, null=True, to='experiment.Material'),
+            field=models.ForeignKey(blank=True, null=True, to='experiment.Material', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='brainarea',
             name='brain_area_system',
-            field=models.ForeignKey(to='experiment.BrainAreaSystem'),
+            field=models.ForeignKey(to='experiment.BrainAreaSystem', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='additionaldata',
             name='data_configuration_tree',
-            field=models.ForeignKey(blank=True, null=True, to='experiment.DataConfigurationTree'),
+            field=models.ForeignKey(blank=True, null=True, to='experiment.DataConfigurationTree', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='additionaldata',
             name='file_format',
-            field=models.ForeignKey(to='experiment.FileFormat'),
+            field=models.ForeignKey(to='experiment.FileFormat', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='additionaldata',
             name='subject_of_group',
-            field=models.ForeignKey(to='experiment.SubjectOfGroup'),
+            field=models.ForeignKey(to='experiment.SubjectOfGroup', on_delete=models.CASCADE),
         ),
         migrations.CreateModel(
             name='EEGElectrodeCap',
             fields=[
                 ('eegelectrodenet_ptr', models.OneToOneField(parent_link=True, to='experiment.EEGElectrodeNet',
                                                              primary_key=True, serialize=False, auto_created=True)),
-                ('material', models.ForeignKey(blank=True, null=True, to='experiment.Material')),
+                ('material', models.ForeignKey(blank=True, null=True, to='experiment.Material', on_delete=models.CASCADE)),
             ],
             bases=('experiment.eegelectrodenet',),
         ),
@@ -1899,22 +1899,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tmsdevicesetting',
             name='coil_model',
-            field=models.ForeignKey(to='experiment.CoilModel'),
+            field=models.ForeignKey(to='experiment.CoilModel', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='tmsdevicesetting',
             name='tms_device',
-            field=models.ForeignKey(to='experiment.TMSDevice'),
+            field=models.ForeignKey(to='experiment.TMSDevice', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='tms',
             name='tms_setting',
-            field=models.ForeignKey(to='experiment.TMSSetting'),
+            field=models.ForeignKey(to='experiment.TMSSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='surfaceelectrode',
             name='electrode_shape',
-            field=models.ForeignKey(to='experiment.ElectrodeShape'),
+            field=models.ForeignKey(to='experiment.ElectrodeShape', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='subjectofgroup',
@@ -1931,52 +1931,52 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='emgpreamplifiersetting',
             name='amplifier',
-            field=models.ForeignKey(to='experiment.Amplifier'),
+            field=models.ForeignKey(to='experiment.Amplifier', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgelectrodeplacementsetting',
             name='emg_electrode_placement',
-            field=models.ForeignKey(to='experiment.EMGElectrodePlacement'),
+            field=models.ForeignKey(to='experiment.EMGElectrodePlacement', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgelectrodeplacementsetting',
             name='muscle_side',
-            field=models.ForeignKey(blank=True, null=True, to='experiment.MuscleSide'),
+            field=models.ForeignKey(blank=True, null=True, to='experiment.MuscleSide', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgdigitalfiltersetting',
             name='filter_type',
-            field=models.ForeignKey(to='experiment.FilterType'),
+            field=models.ForeignKey(to='experiment.FilterType', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emgamplifiersetting',
             name='amplifier',
-            field=models.ForeignKey(to='experiment.Amplifier'),
+            field=models.ForeignKey(to='experiment.Amplifier', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='emg',
             name='emg_setting',
-            field=models.ForeignKey(to='experiment.EMGSetting'),
+            field=models.ForeignKey(to='experiment.EMGSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='electrodesurfacemeasure',
             name='electrode_surface',
-            field=models.ForeignKey(to='experiment.SurfaceElectrode'),
+            field=models.ForeignKey(to='experiment.SurfaceElectrode', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegsolutionsetting',
             name='eeg_solution',
-            field=models.ForeignKey(to='experiment.EEGSolution'),
+            field=models.ForeignKey(to='experiment.EEGSolution', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegfiltersetting',
             name='eeg_filter_type',
-            field=models.ForeignKey(to='experiment.FilterType'),
+            field=models.ForeignKey(to='experiment.FilterType', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegelectrodepositionsetting',
             name='eeg_electrode_layout_setting',
-            field=models.ForeignKey(to='experiment.EEGElectrodeLayoutSetting', related_name='positions_setting'),
+            field=models.ForeignKey(to='experiment.EEGElectrodeLayoutSetting', related_name='positions_setting', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='eegelectrodepositioncollectionstatus',
@@ -1989,37 +1989,37 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='eegelectrodenetsystem',
             name='eeg_electrode_net',
-            field=models.ForeignKey(to='experiment.EEGElectrodeNet', related_name='set_of_electrode_net_system'),
+            field=models.ForeignKey(to='experiment.EEGElectrodeNet', related_name='set_of_electrode_net_system', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegelectrodenet',
             name='electrode_model_default',
-            field=models.ForeignKey(to='experiment.ElectrodeModel'),
+            field=models.ForeignKey(to='experiment.ElectrodeModel', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eegelectrodelayoutsetting',
             name='eeg_electrode_net_system',
-            field=models.ForeignKey(to='experiment.EEGElectrodeNetSystem'),
+            field=models.ForeignKey(to='experiment.EEGElectrodeNetSystem', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='eeg',
             name='eeg_setting',
-            field=models.ForeignKey(to='experiment.EEGSetting'),
+            field=models.ForeignKey(to='experiment.EEGSetting', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='digitalgamephase',
             name='context_tree',
-            field=models.ForeignKey(to='experiment.ContextTree'),
+            field=models.ForeignKey(to='experiment.ContextTree', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='digitalgamephase',
             name='software_version',
-            field=models.ForeignKey(to='experiment.SoftwareVersion'),
+            field=models.ForeignKey(to='experiment.SoftwareVersion', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='componentconfiguration',
             name='parent',
-            field=models.ForeignKey(related_name='children', null=True, to='experiment.Block'),
+            field=models.ForeignKey(related_name='children', null=True, to='experiment.Block', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='eegelectrodepositionsetting',
@@ -2028,7 +2028,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='eegcapsize',
             name='eeg_electrode_cap',
-            field=models.ForeignKey(to='experiment.EEGElectrodeCap'),
+            field=models.ForeignKey(to='experiment.EEGElectrodeCap', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='componentconfiguration',
