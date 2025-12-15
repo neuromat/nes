@@ -1131,7 +1131,7 @@ class Migration(migrations.Migration):
             name='ADConverter',
             fields=[
                 ('equipment_ptr', models.OneToOneField(parent_link=True, to='experiment.Equipment', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('signal_to_noise_rate', models.FloatField(validators=[django.core.validators.MinValueValidator(0)],
                                                            blank=True, null=True)),
                 ('sampling_rate', models.FloatField(validators=[django.core.validators.MinValueValidator(0)],
@@ -1145,7 +1145,7 @@ class Migration(migrations.Migration):
             name='Amplifier',
             fields=[
                 ('equipment_ptr', models.OneToOneField(parent_link=True, to='experiment.Equipment', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('gain', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
                                            null=True)),
                 ('number_of_channels', models.IntegerField(validators=[django.core.validators.MinValueValidator(0)],
@@ -1168,7 +1168,7 @@ class Migration(migrations.Migration):
             name='Block',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('number_of_mandatory_components', models.IntegerField(
                     validators=[django.core.validators.MinValueValidator(0)], blank=True, null=True)),
                 ('type', models.CharField(choices=[('sequence', 'Sequence'), ('parallel_block', 'Parallel')],
@@ -1180,7 +1180,7 @@ class Migration(migrations.Migration):
             name='DigitalGamePhase',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
         ),
@@ -1188,7 +1188,7 @@ class Migration(migrations.Migration):
             name='EEG',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
         ),
@@ -1196,7 +1196,7 @@ class Migration(migrations.Migration):
             name='EEGAmplifierSetting',
             fields=[
                 ('eeg_setting', models.OneToOneField(related_name='eeg_amplifier_setting', primary_key=True,
-                                                     serialize=False, to='experiment.EEGSetting')),
+                                                     serialize=False, to='experiment.EEGSetting', on_delete=models.CASCADE)),
                 ('gain', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
                                            null=True)),
                 ('sampling_rate', models.FloatField(validators=[django.core.validators.MinValueValidator(0)],
@@ -1210,14 +1210,14 @@ class Migration(migrations.Migration):
             name='EEGElectrodeLayoutSetting',
             fields=[
                 ('eeg_setting', models.OneToOneField(related_name='eeg_electrode_layout_setting', primary_key=True,
-                                                     serialize=False, to='experiment.EEGSetting')),
+                                                     serialize=False, to='experiment.EEGSetting', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='EEGElectrodeNet',
             fields=[
                 ('equipment_ptr', models.OneToOneField(parent_link=True, to='experiment.Equipment', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
             ],
             bases=('experiment.equipment',),
         ),
@@ -1225,7 +1225,7 @@ class Migration(migrations.Migration):
             name='EEGFilterSetting',
             fields=[
                 ('eeg_setting', models.OneToOneField(related_name='eeg_filter_setting', primary_key=True,
-                                                     serialize=False, to='experiment.EEGSetting')),
+                                                     serialize=False, to='experiment.EEGSetting', on_delete=models.CASCADE)),
                 ('high_pass', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
                                                 null=True)),
                 ('low_pass', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
@@ -1246,14 +1246,14 @@ class Migration(migrations.Migration):
             name='EEGSolutionSetting',
             fields=[
                 ('eeg_setting', models.OneToOneField(related_name='eeg_solution_setting', primary_key=True,
-                                                     serialize=False, to='experiment.EEGSetting')),
+                                                     serialize=False, to='experiment.EEGSetting', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='EMG',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
         ),
@@ -1261,7 +1261,7 @@ class Migration(migrations.Migration):
             name='EMGADConverterSetting',
             fields=[
                 ('emg_setting', models.OneToOneField(related_name='emg_ad_converter_setting', primary_key=True,
-                                                     serialize=False, to='experiment.EMGSetting')),
+                                                     serialize=False, to='experiment.EMGSetting', on_delete=models.CASCADE)),
                 ('sampling_rate', models.FloatField(validators=[django.core.validators.MinValueValidator(0)],
                                                     blank=True, null=True)),
                 ('ad_converter', models.ForeignKey(to='experiment.ADConverter', on_delete=models.CASCADE)),
@@ -1271,7 +1271,7 @@ class Migration(migrations.Migration):
             name='EMGAmplifierSetting',
             fields=[
                 ('emg_electrode_setting', models.OneToOneField(related_name='emg_amplifier_setting', primary_key=True,
-                                                               serialize=False, to='experiment.EMGElectrodeSetting')),
+                                                               serialize=False, to='experiment.EMGElectrodeSetting', on_delete=models.CASCADE)),
                 ('gain', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
                                            null=True)),
             ],
@@ -1280,7 +1280,7 @@ class Migration(migrations.Migration):
             name='EMGDigitalFilterSetting',
             fields=[
                 ('emg_setting', models.OneToOneField(related_name='emg_digital_filter_setting', primary_key=True,
-                                                     serialize=False, to='experiment.EMGSetting')),
+                                                     serialize=False, to='experiment.EMGSetting', on_delete=models.CASCADE)),
                 ('low_pass', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
                                                null=True)),
                 ('high_pass', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
@@ -1302,7 +1302,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('emg_electrode_setting', models.OneToOneField(related_name='emg_electrode_placement_setting',
                                                                primary_key=True, serialize=False,
-                                                               to='experiment.EMGElectrodeSetting')),
+                                                               to='experiment.EMGElectrodeSetting', on_delete=models.CASCADE)),
                 ('remarks', models.TextField(null=True, blank=True)),
             ],
         ),
@@ -1311,7 +1311,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('emgelectrodeplacement_ptr', models.OneToOneField(
                     parent_link=True, to='experiment.EMGElectrodePlacement', primary_key=True, serialize=False,
-                    auto_created=True)),
+                    auto_created=True, on_delete=models.CASCADE)),
                 ('method_of_insertion', models.TextField(null=True, blank=True)),
                 ('depth_of_insertion', models.TextField(null=True, blank=True)),
             ],
@@ -1322,7 +1322,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('emgelectrodeplacement_ptr', models.OneToOneField(
                     parent_link=True, to='experiment.EMGElectrodePlacement', primary_key=True, serialize=False,
-                    auto_created=True)),
+                    auto_created=True, on_delete=models.CASCADE)),
                 ('depth_of_insertion', models.TextField(null=True, blank=True)),
             ],
             bases=('experiment.emgelectrodeplacement',),
@@ -1332,7 +1332,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('emg_electrode_setting', models.OneToOneField(related_name='emg_preamplifier_setting',
                                                                primary_key=True, serialize=False,
-                                                               to='experiment.EMGElectrodeSetting')),
+                                                               to='experiment.EMGElectrodeSetting', on_delete=models.CASCADE)),
                 ('gain', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
                                            null=True)),
             ],
@@ -1343,7 +1343,7 @@ class Migration(migrations.Migration):
                 ('emgelectrodeplacement_ptr', models.OneToOneField(parent_link=True,
                                                                    to='experiment.EMGElectrodePlacement',
                                                                    primary_key=True, serialize=False,
-                                                                   auto_created=True)),
+                                                                   auto_created=True, on_delete=models.CASCADE)),
                 ('start_posture', models.TextField(null=True, blank=True)),
                 ('orientation', models.TextField(null=True, blank=True)),
                 ('fixation_on_the_skin', models.TextField(null=True, blank=True)),
@@ -1356,7 +1356,7 @@ class Migration(migrations.Migration):
             name='GenericDataCollection',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('information_type', models.ForeignKey(to='experiment.InformationType', on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
@@ -1371,7 +1371,7 @@ class Migration(migrations.Migration):
                                                      blank=True, null=True)),
                 ('hot_spot_map', models.FileField(null=True, blank=True,
                                                   upload_to=experiment.models.get_data_file_dir)),
-                ('tms_data', models.OneToOneField(primary_key=True, serialize=False, to='experiment.TMSData')),
+                ('tms_data', models.OneToOneField(primary_key=True, serialize=False, to='experiment.TMSData', on_delete=models.CASCADE)),
                 ('tms_localization_system', models.ForeignKey(to='experiment.TMSLocalizationSystem',
                                                               related_name='hotspots', on_delete=models.CASCADE)),
             ],
@@ -1380,7 +1380,7 @@ class Migration(migrations.Migration):
             name='Instruction',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('text', models.TextField()),
             ],
             bases=('experiment.component',),
@@ -1389,7 +1389,7 @@ class Migration(migrations.Migration):
             name='IntramuscularElectrode',
             fields=[
                 ('electrodemodel_ptr', models.OneToOneField(parent_link=True, to='experiment.ElectrodeModel',
-                                                            primary_key=True, serialize=False, auto_created=True)),
+                                                            primary_key=True, serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('strand', models.CharField(choices=[('single', 'Single'), ('multi', 'Multi')], max_length=20)),
                 ('length_of_exposed_tip', models.FloatField(validators=[django.core.validators.MinValueValidator(0)],
                                                             blank=True, null=True)),
@@ -1401,7 +1401,7 @@ class Migration(migrations.Migration):
             name='NeedleElectrode',
             fields=[
                 ('electrodemodel_ptr', models.OneToOneField(parent_link=True, to='experiment.ElectrodeModel',
-                                                            primary_key=True, serialize=False, auto_created=True)),
+                                                            primary_key=True, serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('size', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
                                            null=True)),
                 ('size_unit', models.CharField(choices=[('mm', 'millimeter(s)'), ('cm', 'centimeter(s)')], blank=True,
@@ -1417,7 +1417,7 @@ class Migration(migrations.Migration):
             name='Pause',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
         ),
@@ -1425,7 +1425,7 @@ class Migration(migrations.Migration):
             name='Questionnaire',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('survey', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='survey.Survey')),
             ],
             bases=('experiment.component',),
@@ -1434,7 +1434,7 @@ class Migration(migrations.Migration):
             name='Stimulus',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('media_file', models.FileField(null=True, blank=True,
                                                 upload_to=experiment.models.get_stimulus_media_file_dir)),
                 ('stimulus_type', models.ForeignKey(to='experiment.StimulusType', on_delete=models.CASCADE)),
@@ -1445,7 +1445,7 @@ class Migration(migrations.Migration):
             name='SurfaceElectrode',
             fields=[
                 ('electrodemodel_ptr', models.OneToOneField(parent_link=True, to='experiment.ElectrodeModel',
-                                                            primary_key=True, serialize=False, auto_created=True)),
+                                                            primary_key=True, serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('conduction_type', models.CharField(choices=[('gelled', 'Gelled'), ('dry', 'Dry')], max_length=20)),
                 ('electrode_mode', models.CharField(choices=[('active', 'Active'), ('passive', 'Passive')],
                                                     max_length=20)),
@@ -1456,7 +1456,7 @@ class Migration(migrations.Migration):
             name='Task',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
         ),
@@ -1464,7 +1464,7 @@ class Migration(migrations.Migration):
             name='TaskForTheExperimenter',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
         ),
@@ -1472,7 +1472,7 @@ class Migration(migrations.Migration):
             name='TMS',
             fields=[
                 ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
             ],
             bases=('experiment.component',),
         ),
@@ -1480,7 +1480,7 @@ class Migration(migrations.Migration):
             name='TMSDevice',
             fields=[
                 ('equipment_ptr', models.OneToOneField(parent_link=True, to='experiment.Equipment', primary_key=True,
-                                                       serialize=False, auto_created=True)),
+                                                       serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('pulse_type', models.CharField(choices=[('monophase', 'Monophase'), ('biphase', 'Biphase')],
                                                 blank=True, max_length=50, null=True)),
             ],
@@ -1490,7 +1490,7 @@ class Migration(migrations.Migration):
             name='TMSDeviceSetting',
             fields=[
                 ('tms_setting', models.OneToOneField(related_name='tms_device_setting', primary_key=True,
-                                                     serialize=False, to='experiment.TMSSetting')),
+                                                     serialize=False, to='experiment.TMSSetting', on_delete=models.CASCADE)),
                 ('pulse_stimulus_type', models.CharField(
                     choices=[('single_pulse', 'Single pulse'), ('paired_pulse', 'Paired pulse'),
                              ('repetitive_pulse', 'Repetitive pulse')],
@@ -1847,7 +1847,7 @@ class Migration(migrations.Migration):
             name='EEGElectrodeCap',
             fields=[
                 ('eegelectrodenet_ptr', models.OneToOneField(parent_link=True, to='experiment.EEGElectrodeNet',
-                                                             primary_key=True, serialize=False, auto_created=True)),
+                                                             primary_key=True, serialize=False, auto_created=True, on_delete=models.CASCADE)),
                 ('material', models.ForeignKey(blank=True, null=True, to='experiment.Material', on_delete=models.CASCADE)),
             ],
             bases=('experiment.eegelectrodenet',),
@@ -1857,7 +1857,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('emg_electrode_setting', models.OneToOneField(related_name='emg_analog_filter_setting',
                                                                primary_key=True, serialize=False,
-                                                               to='experiment.EMGAmplifierSetting')),
+                                                               to='experiment.EMGAmplifierSetting', on_delete=models.CASCADE)),
                 ('low_pass', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
                                                null=True)),
                 ('high_pass', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
@@ -1879,7 +1879,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('emg_preamplifier_filter_setting', models.OneToOneField(related_name='emg_preamplifier_filter_setting',
                                                                          primary_key=True, serialize=False,
-                                                                         to='experiment.EMGPreamplifierSetting')),
+                                                                         to='experiment.EMGPreamplifierSetting', on_delete=models.CASCADE)),
                 ('low_pass', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
                                                null=True)),
                 ('high_pass', models.FloatField(validators=[django.core.validators.MinValueValidator(0)], blank=True,
