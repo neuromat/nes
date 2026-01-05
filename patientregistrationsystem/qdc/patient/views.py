@@ -552,7 +552,7 @@ def patient_view_questionnaires(request, patient, context, is_update):
     for subject_of_group in subject_of_group_list:
         experiment_questionnaire_responses = \
             ExperimentQuestionnaireResponse.objects.filter(
-                subject_of_group=subject_of_group)
+                subject_of_group__in=subject_of_group)
         for questionnaire_response in experiment_questionnaire_responses:
             component_configuration = \
                 questionnaire_response.data_configuration_tree.component_configuration
