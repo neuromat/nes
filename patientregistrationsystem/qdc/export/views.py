@@ -1133,7 +1133,7 @@ def experiment_selection(request, template_name='export/experiment_selection.htm
             if groups_selected:
                 for group_selected_id in groups_selected:
                     group_selected = Group.objects.filter(pk=group_selected_id)
-                    subject_of_groups = SubjectOfGroup.objects.filter(group=group_selected)
+                    subject_of_groups = SubjectOfGroup.objects.filter(group__in=group_selected)
                     for subject_of_group in subject_of_groups:
                         patient = subject_of_group.subject.patient
                         if patient.id not in subject_list:
