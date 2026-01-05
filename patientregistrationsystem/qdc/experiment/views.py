@@ -4315,7 +4315,7 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
                                                           eeg_electrode_localization_system=localization_system)
         if net_system:
             localization_system.checked = True
-            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
+            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system__in=net_system):
                 localization_system.used = True
                 localization_system.disabled = True
 
@@ -4391,7 +4391,7 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
                                                           eeg_electrode_localization_system=localization_system)
         if net_system:
             localization_system.checked = True
-            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
+            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system__in=net_system):
                 localization_system.used = True
 
     context = {"can_change": True,
