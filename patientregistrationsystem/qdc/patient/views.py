@@ -548,7 +548,7 @@ def patient_view_questionnaires(request, patient, context, is_update):
     # Questionnaires filled in an experiment group
     questionnaires_data = []
     subject = Subject.objects.filter(patient=patient)
-    subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
+    subject_of_group_list = SubjectOfGroup.objects.filter(subject__in=subject)
     for subject_of_group in subject_of_group_list:
         experiment_questionnaire_responses = \
             ExperimentQuestionnaireResponse.objects.filter(
