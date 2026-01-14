@@ -16,7 +16,7 @@ class Institution(models.Model):
     name = models.CharField(max_length=150)
     acronym = models.CharField(max_length=30, unique=True)
     country = models.CharField(max_length=30, choices=COUNTRIES)
-    parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s' % self.name
@@ -26,8 +26,8 @@ class Institution(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, related_name='user_profile')
-    institution = models.ForeignKey(Institution, null=True, blank=True)
+    user = models.OneToOneField(User, related_name='user_profile', on_delete=models.CASCADE)
+    institution = models.ForeignKey(Institution, null=True, blank=True, on_delete=models.CASCADE)
     login_enabled = models.BooleanField(default=False, choices=LOGIN)
     force_password_change = models.BooleanField(default=True)
     citation_name = models.CharField(max_length=150, blank=True, default="")

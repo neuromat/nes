@@ -249,7 +249,7 @@ class EEGElectrodeNETRegisterFormValidation(TestCase):
         tag = Tag.objects.create(name='EEG')
 
         electrodemodel = ElectrodeModel.objects.create(name='Electrodemodel', electrode_type='surface')
-        electrodemodel.tags = [tag.id]
+        electrodemodel.tags.set([tag.id])
 
         self.data = {
             'manufacturer': manufacturer.id,

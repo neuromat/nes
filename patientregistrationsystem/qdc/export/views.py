@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core import serializers
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext as ug_, ugettext_lazy as _
@@ -1133,7 +1133,7 @@ def experiment_selection(request, template_name='export/experiment_selection.htm
             if groups_selected:
                 for group_selected_id in groups_selected:
                     group_selected = Group.objects.filter(pk=group_selected_id)
-                    subject_of_groups = SubjectOfGroup.objects.filter(group=group_selected)
+                    subject_of_groups = SubjectOfGroup.objects.filter(group__in=group_selected)
                     for subject_of_group in subject_of_groups:
                         patient = subject_of_group.subject.patient
                         if patient.id not in subject_list:

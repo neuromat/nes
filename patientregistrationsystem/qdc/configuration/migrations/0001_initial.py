@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 ('url', models.URLField(null=True, blank=True)),
                 ('logo', models.FileField(upload_to=configuration.models.get_institution_logo_dir, null=True,
                                           blank=True)),
-                ('institution', models.ForeignKey(to='custom_user.Institution', null=True, blank=True)),
+                ('institution', models.ForeignKey(to='custom_user.Institution', null=True, blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

@@ -6,7 +6,7 @@ import tempfile
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _

@@ -69,7 +69,7 @@ PROJECT_APPS = (
 
 INSTALLED_APPS += PROJECT_APPS
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,8 +79,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'qdc.middleware.PasswordChangeMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-    'maintenance_mode.middleware.MaintenanceModeMiddleware'
-)
+    'maintenance_mode.middleware.MaintenanceModeMiddleware',
+]
 
 CONTEXT_PROCESSORS = {
     'maintenance_mode.context_processors.maintenance_mode'

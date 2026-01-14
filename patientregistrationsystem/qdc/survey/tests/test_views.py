@@ -2,7 +2,7 @@ from base64 import b64decode
 from unittest.mock import patch
 
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 

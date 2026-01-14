@@ -33,7 +33,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.files import File
 from django.core.files.base import ContentFile
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q, Min
 from django.apps import apps
 from django.db.models.deletion import ProtectedError
@@ -4315,7 +4315,7 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
                                                           eeg_electrode_localization_system=localization_system)
         if net_system:
             localization_system.checked = True
-            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
+            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system__in=net_system):
                 localization_system.used = True
                 localization_system.disabled = True
 
@@ -4356,7 +4356,7 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
     if request.method == "POST":
         if request.POST['action'] == "remove":
             net_system = EEGElectrodeNetSystem.objects.filter(eeg_electrode_net=eegelectrodenet)
-            if net_system and EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
+            if net_system and EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system__in=net_system):
                 messages.error(request,
                                _('EEG electrode net cannot be removed because it is used in EEG electrode system.'))
                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
@@ -4391,7 +4391,7 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
                                                           eeg_electrode_localization_system=localization_system)
         if net_system:
             localization_system.checked = True
-            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
+            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system__in=net_system):
                 localization_system.used = True
 
     context = {"can_change": True,
