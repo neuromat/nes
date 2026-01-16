@@ -1,4 +1,4 @@
-FROM python:3.8-alpine3.12 as wheeler
+FROM python:3.8-alpine3.12 AS wheeler
 ENV PYTHONUNBUFFERED=1
 
 
