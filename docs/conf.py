@@ -18,8 +18,8 @@ project = u'NES'
 copyright = u'NeuroMat, 2021'
 author = u'NeuroMat'
 
-version = u'1.73.0'
-release = u'1.73.'
+version = u'1.72.7'
+release = u'1.72.7'
 
 language = 'en'
 
