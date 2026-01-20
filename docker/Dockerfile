@@ -8,6 +8,7 @@ RUN apk update && \
 		freetype-dev \
 		build-base \
 		git \
+		linux-headers-$(uname -r) \
 		# The limesurvey version compatible with NES isn't compatible with Postgresql11+ \\
 		postgresql-bdr-dev \
 		openblas-dev \
