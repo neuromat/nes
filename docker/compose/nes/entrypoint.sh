@@ -36,26 +36,6 @@ then
 	exit 1
 fi
 
-if [ -f "${NES_SETUP_PATH}"/wsgi.py ]
-then
-	echo "INFO: NES wsgi.py file already provisioned"
-else
-	echo "INFO: Creating NES wsgi.py file"
-	cat <<-EOF > "${NES_SETUP_PATH}"/wsgi.py
-		import os
-		import sys
-		import site
-		paths = ["$NES_PROJECT_PATH", "$NES_DIR", "/usr/local", "/usr/bin", "/bin",]
-		for path in paths:
-		    if path not in sys.path:
-		        sys.path.append(path)
-		os.environ.setdefault("DJANGO_SETTINGS_MODULE", "qdc.settings")
-		from django.core.wsgi import get_wsgi_application
-		application = get_wsgi_application()
-	EOF
-	chown -R nobody "${NES_SETUP_PATH}"/wsgi.py
-fi
-
 if [ -f "${NES_SETUP_PATH}"/settings_local.py ]
 then
 	echo "INFO: NES settings_local.py file already provisioned"
