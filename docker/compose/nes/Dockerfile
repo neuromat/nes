@@ -4,10 +4,12 @@
 FROM python:3.8-slim as builder
 ENV PYTHONUNBUFFERED=1
 
+# TODO: clean up unnecessary packages
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends \
 		git \
 		build-essential \
+		python3-distutils \
 		libpq-dev \
 		libpq5 \
 		libopenblas-dev \
@@ -35,12 +37,27 @@ WORKDIR $NES_DIR
 
 SHELL ["/bin/sh","-exc"]
 
+# TODO: clean up unnecessary packages
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends \
+		git \
+		build-essential \
+		python3-distutils \
+		libpq-dev \
+		libpq5 \
+		libopenblas-dev \
+		libjpeg62-turbo-dev \
+		libpng-dev \
+		libfreetype6-dev \
+		graphviz \
+		libhdf5-dev && \
+	rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder $NES_DIR $NES_DIR
 
-
-ENV NES_IP ${NES_IP:-0.0.0.0}
-ENV NES_PORT ${NES_PORT:-8000}
+ENV NES_IP=${NES_IP:-0.0.0.0}
+ENV NES_PORT=${NES_PORT:-8000}
 
 COPY ./docker/compose/nes/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
