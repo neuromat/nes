@@ -13,8 +13,8 @@ NES_DB_PORT=${NES_DB_PORT:-'5432'}
 NES_DB_PASSWORD=${NES_DB_PASSWORD:-'nes_password'}
 
 # External LimeSurvey settings
-LIMESURVEY_HOST=${LIMESURVEY_HOST:-'localhost'}
-LIMESURVEY_PORT=${LIMESURVEY_PORT:-'8080'}
+LIMESURVEY_API_URL=${LIMESURVEY_API_URL:-'http://localhost:8080'}
+LIMESURVEY_WEB_URL=${LIMESURVEY_WEB_URL:-'http://localhost:8080'}
 LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-'limesurvey_admin'}
 LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-'limesurvey_admin_password'}
 
@@ -59,8 +59,8 @@ else
 		    }
 		}
 		LIMESURVEY = {
-		    "URL_API": "http://$LIMESURVEY_HOST:$LIMESURVEY_PORT",
-		    "URL_WEB": "http://$LIMESURVEY_HOST:$LIMESURVEY_PORT",
+		    "URL_API": "$LIMESURVEY_API_URL",
+		    "URL_WEB": "$LIMESURVEY_WEB_URL",
 		    "USER": "$LIMESURVEY_ADMIN_USER",
 		    "PASSWORD": "$LIMESURVEY_ADMIN_PASSWORD"
 		}
@@ -69,15 +69,12 @@ else
 	chown -R nobody "${NES_SETUP_PATH}"/settings_local.py
 fi
 
-while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"
-do
-	sleep 0.2
-done
+# while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"
+# do
+# 	sleep 0.2
+# done
 
-if [ -f "${NES_DIR}"/.nes_initialization.placeholder ]
-then
-	echo "INFO: NES data has already been initialized"
-else
+if [ ! -f "${NES_DIR}"/.nes_initialized.placeholder ] && [ "$DB_INIT" = "1" ]; then
 	echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
 	cd "$NES_PROJECT_PATH"
 
@@ -88,20 +85,17 @@ else
 	EOF
 
 	python3 -u manage.py migrate
-	# Different versions may have different commands
 	python3 -u manage.py shell < add_initial_data.py  || true
 	python3 -u manage.py loaddata load_initial_data.json || true
-	python3 -u manage.py shell < /tmp/create_superuser.py || true
-	python3 -u manage.py import_icd_cid --file icd10cid10v2017.csv || true
 	python3 -u manage.py createcachetable || true
 
 	rm /tmp/create_superuser.py
 
-	# If NES was installed from a release it won't have a .git directory
-	chown -R nobody "${NES_DIR}"/.git  || true
-	chown -R nobody "${NES_DIR}"/patientregistrationsystem
-
-	touch "${NES_DIR}"/.nes_initialization.placeholder
+	touch "${NES_DIR}"/.nes_initialized.placeholder
 fi
+
+# If NES was installed from a release it won't have a .git directory
+chown -R nobody "${NES_DIR}"/.git  || true
+chown -R nobody "${NES_DIR}"/patientregistrationsystem
 
 exec "$@"
