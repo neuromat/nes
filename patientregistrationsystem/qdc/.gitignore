@@ -4,7 +4,6 @@ media
 .idea
 qdc/settings_local.py
 *.DS_Store
-qdc/wsgi.py
 db.sqlite3
 __pycache__/
 geckodriver.log
