@@ -62,4 +62,4 @@ ENV NES_PORT=${NES_PORT:-8000}
 COPY ./docker/compose/nes/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-# CMD [ "/bin/sh", "-c", "/usr/bin/python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]
+CMD [ "/bin/sh", "-c", "/usr/bin/python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]
