@@ -13,11 +13,10 @@ services:
     build:
       context: ../../..
       dockerfile: docker/compose/nes/Dockerfile
-    # command: python nes/patientregistrationsystem/qdc/manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     environment:
-      DB_INIT: "1"
       NES_DB_HOST: db
       NES_DB: nes_db
       NES_DB_USER: nes_user
