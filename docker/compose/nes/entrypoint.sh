@@ -74,7 +74,7 @@ fi
 # 	sleep 0.2
 # done
 
-if [ ! -f "${NES_DIR}"/.nes_initialized.placeholder ] && [ "$DB_INIT" = "1" ]; then
+if [ ! -f "${NES_DIR}"/.nes_initialized.placeholder ]; then
 	echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
 	cd "$NES_PROJECT_PATH"
 
@@ -88,6 +88,7 @@ if [ ! -f "${NES_DIR}"/.nes_initialized.placeholder ] && [ "$DB_INIT" = "1" ]; t
 	python3 -u manage.py shell < add_initial_data.py  || true
 	python3 -u manage.py loaddata load_initial_data.json || true
 	python3 -u manage.py createcachetable || true
+	python3 -u manage.py shell < /tmp/create_superuser.py
 
 	rm /tmp/create_superuser.py
 
