@@ -198,6 +198,9 @@ FIXTURE_DIRS = (
 # The maximum number of parameters that may be received via GET or POST
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
+# Fase3a: evita migração implícita p/ BigAutoField no Django 3.2+. Revisar na 5.2.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 

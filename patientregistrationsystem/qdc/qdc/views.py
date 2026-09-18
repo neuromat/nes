@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.translation import activate, LANGUAGE_SESSION_KEY, ugettext as _
+from django.utils.translation import activate, LANGUAGE_SESSION_KEY, gettext as _
 from django.utils.safestring import mark_safe
 from git import Repo
 import pip

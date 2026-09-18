@@ -7,7 +7,7 @@ from operator import itemgetter
 from io import StringIO
 
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey

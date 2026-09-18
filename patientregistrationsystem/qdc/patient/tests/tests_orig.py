@@ -24,7 +24,7 @@ from django.shortcuts import get_object_or_404
 from django.test import TestCase, Client
 from django.test import override_settings
 from django.test.client import RequestFactory
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from faker import Factory
 
 from experiment.models import Experiment, Group, Subject, \

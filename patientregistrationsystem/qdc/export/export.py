@@ -15,7 +15,7 @@ from django.conf import settings
 from django.core.files import File
 from django.db.models import CharField, DateField, TextField, FloatField, BooleanField, NullBooleanField
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.apps import apps
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify

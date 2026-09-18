@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django.core.validators import EMPTY_VALUES
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, TypedChoiceField
 from django.forms.widgets import Textarea
 

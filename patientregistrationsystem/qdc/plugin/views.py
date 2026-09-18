@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse as ExperimentResponse, Questionnaire, Component, Group, \
     SubjectOfGroup

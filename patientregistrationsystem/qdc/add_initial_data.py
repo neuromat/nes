@@ -2,7 +2,7 @@
 
 # This file was created based on what is explained in:
 # https://code.djangoproject.com/wiki/InitialSQLDataDiangoORMWay
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 

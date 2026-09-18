@@ -11,7 +11,7 @@ from django.template import loader
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils.http import int_to_base36
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from custom_user.models import User, UserProfile, Institution
 from custom_user.tests_helper import create_user

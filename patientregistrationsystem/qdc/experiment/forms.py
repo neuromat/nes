@@ -5,7 +5,7 @@ from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, Type
     ValidationError, Form, IntegerField, NumberInput, TimeInput, URLInput, ModelChoiceField
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, Component, Stimulus, Block, \
     Instruction, ComponentConfiguration, ResearchProject, EEGData, EEGSetting, Equipment, EEG, EMG, Amplifier, \
