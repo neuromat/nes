@@ -60,10 +60,9 @@ services:
     # Neuroscience Experiments System
     nes:
         build:
-            context: nes/
-            dockerfile: Dockerfile
-            args:
-            - NES_BRANCH=master
+            # Fase6: contexto na raiz p/ COPY do código local (era nes/ + git clone).
+            context: ../..
+            dockerfile: docker/compose/nes/Dockerfile
         volumes:
             - "nes_data:/nes"
         environment:

@@ -1,0 +1,18 @@
+# Fase6: contexto agora é a raiz do repo (build usa COPY do código local).
+# Exclui o que o runtime não precisa para enxugar o contexto.
+.git
+/docs
+/resources
+/inspection
+/_windows
+/*.xml
+/*.rst
+/*.md
+/*.TXT
+/*.txt
+/Makefile
+/make.bat
+/Dockerfile
+/.dockerignore
+/.gitignore
+/.readthedocs.yaml
