@@ -1,7 +1,7 @@
 services:
     # Postgres_LimeSurvey
     db_limesurvey:
-        image: postgres:16-alpine
+        image: docker.io/library/postgres:16-alpine
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U limesurvey_user -d limesurvey_db"]
             interval: 10s
@@ -42,7 +42,7 @@ services:
 
     # Postgres_NES
     db_nes:
-        image: postgres:16-alpine
+        image: docker.io/library/postgres:16-alpine
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U nes_user -d nes_db"]
             interval: 10s
@@ -63,7 +63,7 @@ services:
             context: nes/
             dockerfile: Dockerfile
             args:
-            - NES_BRANCH=dev
+            - NES_BRANCH=master
         volumes:
             - "nes_data:/nes"
         environment:
