@@ -19,7 +19,10 @@ LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-'limesurvey_admin'}
 LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-'limesurvey_admin_password'}
 
 # NES specific settings
-NES_SECRET_KEY=${NES_SECRET_KEY:-'your_secret_key'}
+# Fase8: sem chave no env, gera uma aleatória (64 chars) em vez do antigo default fixo
+# 'your_secret_key'. Vale por volume (só usada ao provisionar settings_local.py);
+# produção deve fixar NES_SECRET_KEY estável no compose/segredo.
+NES_SECRET_KEY=${NES_SECRET_KEY:-$(tr -dc 'A-Za-z0-9' </dev/urandom 2>/dev/null | head -c64)}
 NES_IP=${NES_IP:-'0.0.0.0'}
 NES_PORT=${NES_PORT:-'8000'}
 # Fase6: DEBUG via env (era hardcoded True). Produção/staging: NES_DEBUG=False.

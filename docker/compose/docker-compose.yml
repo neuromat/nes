@@ -76,7 +76,9 @@ services:
             - LIMESURVEY_PORT=8080
             - LIMESURVEY_ADMIN_USER=limesurvey_admin
             - LIMESURVEY_ADMIN_PASSWORD=limesurvey_admin_password
-            - NES_SECRET_KEY=_my_very_secret_key_
+            # Fase8: sem NES_SECRET_KEY o entrypoint gera uma aleatória por volume.
+            # Produção: descomente e fixe chave estável com 50+ chars.
+            - NES_SECRET_KEY=troque-por-64-chars-aleatorios-estaveis
             - NES_IP=0.0.0.0
             - NES_PORT=8000
             - NES_ADMIN_USER=nes_admin

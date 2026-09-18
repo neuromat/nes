@@ -229,7 +229,19 @@ MEDIA_URL = '/media/'
 
 try:
     from .settings_local import *
+    _NES_HAS_SETTINGS_LOCAL = True
 except ImportError:
-    pass
+    _NES_HAS_SETTINGS_LOCAL = False
+
+# Fase8: check --deploy W009. Com DEBUG=False em ambiente provisionado
+# (settings_local presente, ex. entrypoint do compose), chave curta/fraca
+# recusa o boot. Checkout bare sem settings_local segue avisando via W009.
+# Operador deve exportar NES_SECRET_KEY (ou settings_local) com 50+ chars.
+if not DEBUG and _NES_HAS_SETTINGS_LOCAL and (len(SECRET_KEY) < 50 or len(set(SECRET_KEY)) < 5):
+    from django.core.exceptions import ImproperlyConfigured
+    raise ImproperlyConfigured(
+        'Fase8: SECRET_KEY fraca com DEBUG=False. Exporte NES_SECRET_KEY com '
+        '50+ caracteres aleatórios.'
+    )
 
 VERSION = '1.73.0'
