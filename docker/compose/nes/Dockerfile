@@ -58,6 +58,10 @@ RUN pip3 install -U pip "setuptools<81" wheel && \
 		rm -rf /wheels && \
 		rm -rf /root/.cache/pip*
 
+# Fase7b: coleta estáticos no build (gunicorn não serve; STATIC_ROOT vai p/ whitenoise/nginx).
+# Roda com defaults do settings (sem settings_local/DB) — collectstatic não precisa de banco.
+RUN python3 ${NES_DIR}/patientregistrationsystem/qdc/manage.py collectstatic --noinput -v1
+
 VOLUME $NES_DIR
 
 COPY docker/compose/nes/entrypoint.sh /
