@@ -1,18 +1,19 @@
-FROM python:3.8-alpine3.12 as wheeler
+# Fase1: passo intermediário py3.10-slim (antes de 3.12 no Django 5.2). Django ainda 2.2.
+FROM python:3.10-slim as wheeler
 ENV PYTHONUNBUFFERED=1
 
-RUN apk update && \
-	apk add --no-cache \
-		libpng-dev \
-		freetype-dev \
-		build-base \
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends \
+		build-essential \
 		git \
-		postgresql-dev \
-		openblas-dev \
-		libjpeg-turbo-dev \
-		hdf5-dev && \
-	rm -rf /var/cache/apk/* && \
-	ln -s /usr/include/locale.h /usr/include/xlocale.h
+		libpq-dev \
+		libhdf5-dev \
+		libjpeg-dev \
+		libpng-dev \
+		libfreetype6-dev \
+		libopenblas-dev \
+		wget && \
+	rm -rf /var/lib/apt/lists/*
 
 ARG NES_TAG=unset
 ARG NES_BRANCH=unset
@@ -46,21 +47,19 @@ RUN pip3 install -U pip setuptools wheel && \
 	pip3 install -r requirement/requirements.txt && \
 	pip3 wheel -r requirement/requirements.txt
 
-FROM alpine:3.12
+# Fase1: runtime alinhado ao wheeler (py3.10-slim). Django ainda 2.2.
+FROM python:3.10-slim
 
 SHELL ["/bin/sh","-exc"]
 
-RUN apk update && \
-	apk add --no-cache \
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends \
 		git \
-		libpq \
-		openblas-dev \
-		libjpeg-turbo-dev \
-		python3 \
-		py3-pip \
-		graphviz \
-		hdf5-dev && \
-	rm -rf /var/cache/apk/*
+		libpq5 \
+		libhdf5-103 \
+		libjpeg62-turbo \
+		graphviz && \
+	rm -rf /var/lib/apt/lists/*
 
 ARG NES_DIR=/nes
 ENV NES_DIR=$NES_DIR
@@ -83,4 +82,4 @@ ENV NES_PORT ${NES_PORT:-8000}
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD [ "/bin/sh", "-c", "/usr/bin/python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]
+CMD [ "/bin/sh", "-c", "python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]

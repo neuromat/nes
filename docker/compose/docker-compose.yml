@@ -1,9 +1,12 @@
-version: '2'
-
 services:
     # Postgres_LimeSurvey
     db_limesurvey:
-        image: postgres:11-alpine
+        image: postgres:16-alpine
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U limesurvey_user -d limesurvey_db"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         volumes:
             - "limesurvey_pgdata:/var/lib/postgresql/data"
         environment:
@@ -39,7 +42,12 @@ services:
 
     # Postgres_NES
     db_nes:
-        image: postgres:alpine
+        image: postgres:16-alpine
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U nes_user -d nes_db"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         volumes:
             - "nes_pgdata:/var/lib/postgresql/data"
         environment:

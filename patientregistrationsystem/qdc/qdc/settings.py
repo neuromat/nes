@@ -19,7 +19,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+# Fase1: via env (compose já passa NES_SECRET_KEY). Mantém compatível com Django 2.2.
+SECRET_KEY = os.environ.get('NES_SECRET_KEY', '') or 'unsafe-dev-only'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -32,7 +33,9 @@ DEBUG404 = False
 # SECURITY WARNING: don't run with "is testing" in production
 IS_TESTING = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# Fase1: hosts via env NES_ALLOWED_HOSTS (vírgula), + defaults locais. Compatível Django 2.2.
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get(
+    'NES_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if h.strip()]
 
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -198,7 +201,8 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_ROOT = ''
+# Fase1: STATIC_ROOT via env, default coletável. Compatível Django 2.2.
+STATIC_ROOT = os.environ.get('NES_STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
 STATIC_URL = '/static/'
 
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
