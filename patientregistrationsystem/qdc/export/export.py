@@ -13,7 +13,7 @@ from os import path, makedirs
 
 from django.conf import settings
 from django.core.files import File
-from django.db.models import CharField, DateField, TextField, FloatField, BooleanField, NullBooleanField
+from django.db.models import CharField, DateField, TextField, FloatField, BooleanField
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext as _
 from django.apps import apps
@@ -2796,7 +2796,7 @@ class ExportExecution:
         elif model_field is FloatField:
             # TODO (NES-987): change for 'number' cf. https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
             return 'number'
-        elif model_field is BooleanField or model_field is NullBooleanField:
+        elif model_field is BooleanField:
             return 'boolean'
 
     def _set_datapackage_table_schema(self, headers, model_fields):

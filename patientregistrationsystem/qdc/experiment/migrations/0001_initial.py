@@ -211,7 +211,7 @@ class Migration(migrations.Migration):
                     blank=True, max_length=15, null=True)
                  ),
                 ('order', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
-                ('random_position', models.NullBooleanField()),
+                ('random_position', models.BooleanField(null=True)),
                 ('requires_start_and_end_datetime', models.BooleanField(default=False)),
             ],
         ),

@@ -1,11 +1,12 @@
-Django==3.2.25
-# Fase3a: 2.2.28 -> 3.2.25 LTS. Python 3.10 ok.
-django-modeltranslation==0.18.9
-# Fase3a: 0.17.7 -> 0.18.9 (exige Django>=3.2, ok agora).
+Django==4.2.30
+# Fase3b: 3.2.25 -> 4.2.30 LTS. Python 3.10 ok.
+django-modeltranslation==0.18.11
+# Fase3b: 0.18.9 -> 0.18.11 (Django 4.2 ok, resolve limpo com history 3.3.0).
 django-simple-history==3.3.0
 # Fase2: 3.0.0 -> 3.3.0 (última com Django 2.2 + py3.10).
 django-maintenance-mode==0.16.2
-django-solo==1.1.5
+django-solo==2.2.0
+# Fase3b: 1.1.5 -> 2.2.0 (1.x importa django.conf.urls.url, removido no 4.0).
 # Fase2: django-jenkins removido (morto, sem import no código, bloqueia 4.x).
 # Substituto: pytest + pytest-django (Fase 3).
 jsonrpc-requests==0.2

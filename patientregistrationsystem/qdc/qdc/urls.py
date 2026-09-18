@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.urls import include, re_path
+from django.urls import include, re_path, reverse_lazy
 from qdc import views as qdcviews
 from django.contrib.auth import views as authviews
 from django.views.i18n import JavaScriptCatalog
@@ -24,21 +24,23 @@ urlpatterns = [
     re_path(r'^home/$', qdcviews.contact, name='contact'),
     re_path(r'^accounts/login/$', authviews.LoginView.as_view(), name='login'),
     re_path(r'^account/', include('django.contrib.auth.urls')),
-    re_path(r'^logout/$', authviews.logout_then_login, {'login_url': '/home'}, name='logout'),
-    re_path(r'^password_change/$', authviews.PasswordChangeView.as_view(),
-        {'template_name': 'registration/change_password_custom.html',
-         'post_change_redirect': 'password_changed',
-         'password_change_form': PasswordChangeFormCustomized}, name='password_change'),
+    # Fase3b: logout_then_login removido no 4.1. LogoutView aceita GET no 4.2 (POST passa a exigir na 5.0).
+    re_path(r'^logout/$', authviews.LogoutView.as_view(next_page='/home'), name='logout'),
+    re_path(r'^password_change/$', authviews.PasswordChangeView.as_view(
+        template_name='registration/change_password_custom.html',
+        success_url=reverse_lazy('password_changed'),
+        form_class=PasswordChangeFormCustomized), name='password_change'),
     re_path(r'^password_changed_redirected/$', qdcviews.password_changed, name='password_changed'),
     re_path(r'^password_change/done/$', authviews.PasswordChangeDoneView.as_view(), name='password_change_done'),
-    re_path(r'^user/password/reset/$', authviews.PasswordResetView.as_view(),
-        {'post_reset_redirect': '/user/password/reset/done/', 'password_reset_form': CustomPasswordResetForm},
+    re_path(r'^user/password/reset/$', authviews.PasswordResetView.as_view(
+        success_url='/user/password/reset/done/', form_class=CustomPasswordResetForm),
         name="password_reset"),
     re_path(r'^user/password/reset/done/$',
      authviews.PasswordResetDoneView.as_view()),
-    re_path(r'^user/password/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
-     authviews.PasswordResetConfirmView.as_view(),
-     {'post_reset_redirect': '/user/password/done/'}),
+    # Fase3b: uidb36 -> uidb64 (nome esperado pela view moderna). post_reset_redirect -> success_url.
+    re_path(r'^user/password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
+     authviews.PasswordResetConfirmView.as_view(
+        success_url='/user/password/done/')),
     re_path(r'^user/password/done/$',
      authviews.PasswordResetCompleteView.as_view()),
     re_path(r'^$', qdcviews.contact, name='contact'),

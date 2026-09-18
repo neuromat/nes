@@ -8,7 +8,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.translation import activate, LANGUAGE_SESSION_KEY, gettext as _
+from django.utils.translation import activate, gettext as _
+# Fase3b: LANGUAGE_SESSION_KEY removido no Django 4.0. Mantém escrita legada + cookie p/ persistir.
 from django.utils.safestring import mark_safe
 from git import Repo
 import pip
@@ -53,13 +54,20 @@ def contact(request):
     return render(request, 'quiz/contato.html', context)
 
 
+# Fase3b: LANGUAGE_SESSION_KEY removido no Django 4.0 (ver import acima).
+LANGUAGE_SESSION_KEY = '_language'
+
+
 @login_required
 def language_change(request, language_code):
 
     activate(language_code)
     request.session[LANGUAGE_SESSION_KEY] = language_code
 
-    return HttpResponseRedirect(request.GET['next'])
+    response = HttpResponseRedirect(request.GET['next'])
+    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language_code)
+
+    return response
 
 
 @login_required

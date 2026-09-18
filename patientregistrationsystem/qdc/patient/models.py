@@ -446,7 +446,7 @@ class SocialDemographicData(models.Model):
     religion = models.ForeignKey(Religion, null=True, blank=True, on_delete=models.CASCADE)
     profession = models.CharField(null=True, blank=True, max_length=50)
     occupation = models.CharField(null=True, blank=True, max_length=50)
-    benefit_government = models.NullBooleanField(blank=True)
+    benefit_government = models.BooleanField(null=True, blank=True)
     payment = models.ForeignKey(Payment, null=True, blank=True, on_delete=models.CASCADE)
     flesh_tone = models.ForeignKey(FleshTone, null=True, blank=True, on_delete=models.CASCADE)
     patient_schooling = models.ForeignKey(Schooling, verbose_name=_('Schooling of the patient'),
@@ -525,10 +525,10 @@ class SocialDemographicData(models.Model):
 
 class SocialHistoryData(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    smoker = models.NullBooleanField(blank=True)
+    smoker = models.BooleanField(null=True, blank=True)
     amount_cigarettes = models.ForeignKey(AmountCigarettes, null=True, blank=True, on_delete=models.CASCADE)
-    ex_smoker = models.NullBooleanField(blank=True)
-    alcoholic = models.NullBooleanField(blank=True)
+    ex_smoker = models.BooleanField(null=True, blank=True)
+    alcoholic = models.BooleanField(null=True, blank=True)
     alcohol_frequency = models.ForeignKey(AlcoholFrequency, null=True, blank=True, on_delete=models.CASCADE)
     alcohol_period = models.ForeignKey(AlcoholPeriod, null=True, blank=True, on_delete=models.CASCADE)
     drugs = models.CharField(max_length=25, null=True, blank=True)

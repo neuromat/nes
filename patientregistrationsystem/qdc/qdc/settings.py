@@ -170,7 +170,7 @@ TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
-USE_L10N = True
+# Fase3b: USE_L10N removido (deprecated 4.0, removido 5.0). No 4.x formatação local é o padrão.
 
 USE_TZ = True
 

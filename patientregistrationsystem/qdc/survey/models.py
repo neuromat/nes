@@ -9,7 +9,7 @@ class Survey(models.Model):
     is_initial_evaluation = models.BooleanField(default=True)
     pt_title = models.CharField(null=True, max_length=255, default=None)
     en_title = models.CharField(null=True, max_length=255, default=None)
-    is_active = models.NullBooleanField(default=None)
+    is_active = models.BooleanField(null=True, default=None)
 
     def __str__(self):
         if self.en_title:
