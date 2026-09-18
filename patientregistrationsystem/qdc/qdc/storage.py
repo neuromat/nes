@@ -1,7 +1,7 @@
-from django.contrib.staticfiles.storage import ManifestStaticFilesStorage
+from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 
-class LegacyManifestStaticFilesStorage(ManifestStaticFilesStorage):
+class LegacyManifestStaticFilesStorage(CompressedManifestStaticFilesStorage):
     """Manifest storage tolerante a assets faltantes.
 
     Fase5: libs vendored (Bootstrap 3 era, ex. BootstrapFormHelpers)

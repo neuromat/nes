@@ -75,6 +75,8 @@ INSTALLED_APPS += PROJECT_APPS
 MIDDLEWARE = [
     # Fase6: primeiro p/ ativar SECURE_* (check --deploy W001).
     'django.middleware.security.SecurityMiddleware',
+    # Fase7c: serve STATIC_ROOT com compressão (gunicorn não serve estático).
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
