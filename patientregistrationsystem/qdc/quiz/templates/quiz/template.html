@@ -124,7 +124,7 @@
                     </a>
                     <ul class="dropdown dropdown-user dropdown-menu" role="menu">
                         <li><a href="/password_change"><span class="fa fa-key"></span> {% trans "Change password" %}</a></li>
-                        <li><a href="{% url 'logout' %}"><span class="fa fa-power-off"></span> {% trans "Logout" %}</a></li>
+                        <li><form method="post" action="{% url 'logout' %}" style="margin:0">{% csrf_token %}<button type="submit" class="btn btn-link" style="display:block;width:100%;text-align:left;color:#333;text-decoration:none;padding:3px 20px;"><span class="fa fa-power-off"></span> {% trans "Logout" %}</button></form></li>
                     </ul>
 
                 </li>

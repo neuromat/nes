@@ -1,5 +1,5 @@
-Django==4.2.30
-# Fase3b: 3.2.25 -> 4.2.30 LTS. Python 3.10 ok.
+Django==5.2.17
+# Fase3c: 4.2.30 -> 5.2.17 LTS (alvo). Python 3.10 ok (3.10+ suportado). 3.12 + numpy novo ficam p/ hardening.
 django-modeltranslation==0.18.11
 # Fase3b: 0.18.9 -> 0.18.11 (Django 4.2 ok, resolve limpo com history 3.3.0).
 django-simple-history==3.3.0
