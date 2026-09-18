@@ -83,10 +83,19 @@ services:
             - NES_ADMIN_USER=nes_admin
             - NES_ADMIN_EMAIL=nes_admin@nesmail.com
             - NES_ADMIN_PASSWORD=nes_admin_password
+            # Fase6: staging/produção roda sem DEBUG. Dev local pode sobrescrever p/ True.
+            - NES_DEBUG=False
         stdin_open: true
         tty: true
         ports:
          - "8000:8000"
+        # Fase6: healthcheck via stdlib (imagem slim sem curl/wget).
+        healthcheck:
+            test: ["CMD-SHELL", "python3 -c \"import urllib.request,os; urllib.request.urlopen('http://localhost:'+os.environ.get('NES_PORT','8000')+'/admin/login/')\""]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 120s
         depends_on:
             - db_nes
             - limesurvey

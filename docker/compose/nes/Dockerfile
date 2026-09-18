@@ -83,4 +83,5 @@ ENV NES_PORT ${NES_PORT:-8000}
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD [ "/bin/sh", "-c", "python3 -u ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]
+# Fase6: gunicorn em vez de runserver (produção). 3 workers, timeout folgado p/ exports.
+CMD [ "/bin/sh", "-c", "python3 -m gunicorn qdc.wsgi:application --bind $NES_IP:$NES_PORT --workers 3 --timeout 120 --chdir ${NES_DIR}/patientregistrationsystem/qdc" ]

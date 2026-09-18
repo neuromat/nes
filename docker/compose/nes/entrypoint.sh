@@ -22,6 +22,8 @@ LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-'limesurvey_admin_passwor
 NES_SECRET_KEY=${NES_SECRET_KEY:-'your_secret_key'}
 NES_IP=${NES_IP:-'0.0.0.0'}
 NES_PORT=${NES_PORT:-'8000'}
+# Fase6: DEBUG via env (era hardcoded True). Produção/staging: NES_DEBUG=False.
+NES_DEBUG=${NES_DEBUG:-'True'}
 NES_ADMIN_USER=${NES_ADMIN_USER:-'nes_admin'}
 NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-'nes_admin@nesmail.com'}
 NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-'nes_admin_password'}
@@ -63,8 +65,8 @@ else
 	echo "INFO: Creating NES settings_local.py file"
 	cat <<-EOF > "${NES_SETUP_PATH}"/settings_local.py
 		SECRET_KEY = "$NES_SECRET_KEY"
-		DEBUG = True
-		DEBUG404 = True
+		DEBUG = $NES_DEBUG
+		DEBUG404 = $NES_DEBUG
 		TEMPLATE_DEBUG = DEBUG
 		IS_TESTING = False
 		ALLOWED_HOSTS = ["localhost","127.0.0.1","$NES_IP"]
