@@ -1,0 +1,123 @@
+name: CI
+
+# Fase CI: jobs build e test são independentes (sem needs entre eles).
+# - build: imagem de produção -> ghcr.io
+# - test: suite completa do Django (manage.py test roda tudo, inclusive
+#   integration/tests, que exige LimeSurvey e falha sem ele — ver nota no job).
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.10"
+  DJANGO_SETTINGS_MODULE: qdc.settings
+
+jobs:
+  build:
+    name: build / push ghcr.io
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          # ghcr.io/<owner>/<repo> (metadata-action já normaliza p/ minúsculas)
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          # Mesmo contexto do deploy (fase 7a): raiz do repo + COPY do código.
+          context: .
+          file: docker/compose/nes/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  test:
+    name: test / suite Django completa
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    services:
+      postgres:
+        image: docker.io/library/postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nes_test
+        options: >-
+          --health-cmd "pg_isready -U postgres -d nes_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: System libs (hdf5/jpeg/png/freetype/pq p/ scientific stack)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq git libpq-dev libhdf5-dev libjpeg-dev \
+            libpng-dev libfreetype6-dev gettext
+
+      - name: Install deps
+        run: pip install -r patientregistrationsystem/qdc/requirements.txt
+
+      - name: settings_local de CI (não commitado; fase 8 exige chave 50+)
+        run: |
+          cat > patientregistrationsystem/qdc/qdc/settings_local.py <<'EOF'
+          SECRET_KEY = 'ci-only-insecure-0123456789abcdef0123456789abcdef01'
+          DEBUG = False
+          ALLOWED_HOSTS = ['*']
+          DATABASES = {
+              'default': {
+                  'ENGINE': 'django.db.backends.postgresql',
+                  'NAME': 'nes_test',
+                  'USER': 'postgres',
+                  'PASSWORD': 'postgres',
+                  'HOST': 'localhost',
+                  'PORT': '5432',
+              }
+          }
+          EOF
+          python - <<'PYEOF'
+          import re
+          src = open('patientregistrationsystem/qdc/qdc/settings_local.py').read()
+          key = re.search(r"SECRET_KEY = '([^']+)'", src).group(1)
+          assert len(key) >= 50 and len(set(key)) >= 5, f'chave CI fraca: {len(key)}'
+          print(f'settings_local CI ok (SECRET {len(key)} chars)')
+          PYEOF
+
+      - name: Django check
+        working-directory: patientregistrationsystem/qdc
+        run: python manage.py check
+
+      - name: Suite completa
+        working-directory: patientregistrationsystem/qdc
+        # Roda TUDO (unit + integration). integration/tests e partes de
+        # survey/experiment exigem LimeSurvey/Portal live e falham sem eles;
+        # essas falhas são esperadas fora de staging e devem ser triadas,
+        # não silenciadas com exclude.
+        run: python manage.py test -v1
