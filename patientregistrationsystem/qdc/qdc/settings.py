@@ -208,6 +208,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 STATIC_ROOT = os.environ.get('NES_STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
 STATIC_URL = '/static/'
 
+# Fase5: storage com hash p/ cache busting (estilo STORAGES do 4.2+; STATICFILES_STORAGE removido no 5.1).
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'qdc.storage.LegacyManifestStaticFilesStorage'},
+}
+
+# Fase5: baseline de headers. CSP enforce fica p/ depois (muito JS inline legado) —
+# quando for a hora, usar django-csp em modo report-only primeiro.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
