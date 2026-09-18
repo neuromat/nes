@@ -1,12 +1,17 @@
 Django==2.2.28
-django-modeltranslation==0.17.6
-django-simple-history==3.0.0
+# Fase2: Django ainda pinado. Deps desbloqueadoras p/ 3.2/4.2.
+django-modeltranslation==0.17.7
+# Fase2: 0.17.6 -> 0.17.7 (última 0.17.x com Django 2.2. 0.18.x exige Django>=3.2).
+django-simple-history==3.3.0
+# Fase2: 3.0.0 -> 3.3.0 (última com Django 2.2 + py3.10).
 django-maintenance-mode==0.16.2
-django-jenkins==0.19.0
 django-solo==1.1.5
+# Fase2: django-jenkins removido (morto, sem import no código, bloqueia 4.x).
+# Substituto: pytest + pytest-django (Fase 3).
 jsonrpc-requests==0.2
 
-psycopg2-binary==2.8.6
+psycopg2-binary==2.9.9
+# Fase2: 2.8.6 -> 2.9.9 (py3.10 + Django 2.2 ok).
 
 python-dateutil==2.8.2
 

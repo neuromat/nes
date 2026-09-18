@@ -51,7 +51,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_jenkins',
+    # Fase2: django_jenkins removido (morto, bloqueia Django 4.x). Ver requirements.txt.
     'simple_history',
     'jsonrpc_requests',
     'solo',

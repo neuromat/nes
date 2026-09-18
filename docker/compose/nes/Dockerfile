@@ -43,7 +43,7 @@ RUN mkdir -p /wheels/requirement && \
 
 WORKDIR /wheels
 
-RUN pip3 install -U pip setuptools wheel && \
+RUN pip3 install -U pip "setuptools<81" wheel && \
 	pip3 install -r requirement/requirements.txt && \
 	pip3 wheel -r requirement/requirements.txt
 
@@ -56,9 +56,10 @@ RUN apt-get update && \
 	apt-get install -y --no-install-recommends \
 		git \
 		libpq5 \
-		libhdf5-103 \
+		libhdf5-310 \
 		libjpeg62-turbo \
-		graphviz && \
+		graphviz \
+		netcat-openbsd && \
 	rm -rf /var/lib/apt/lists/*
 
 ARG NES_DIR=/nes
@@ -68,7 +69,7 @@ COPY --from=wheeler /wheels /wheels
 
 COPY --from=wheeler $NES_DIR $NES_DIR
 
-RUN pip3 install -U pip setuptools wheel && \
+RUN pip3 install -U pip "setuptools<81" wheel && \
 	pip3 install -r /wheels/requirement/requirements.txt -f /wheels && \
 		rm -rf /wheels && \
 		rm -rf /root/.cache/pip*
