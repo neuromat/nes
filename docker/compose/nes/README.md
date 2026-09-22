@@ -103,6 +103,7 @@ The entrypoint will set the required application settings and run the initial sc
 | LIMESURVEY_ADMIN_USER     | LimeSurvey Admin User                                |
 | LIMESURVEY_ADMIN_PASSWORD | LimeSurvey Admin Password                            |
 | NES_SECRET_KEY            | NES Secret Key for Django deployment                 |
+| NES_ALLOWED_HOSTS         | Public hosts for Django ALLOWED_HOSTS, comma-separated (loopback is always included) |
 | NES_IP                    | NES IP address to be user by Django                  |
 | NES_PORT                  | NES port to be used by Django                        |
 | NES_ADMIN_USER            | NES Admin User                                       |

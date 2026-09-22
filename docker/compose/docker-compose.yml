@@ -1,24 +1,72 @@
+# ==============================================================================
+# NES + LimeSurvey — compose de PRODUÇÃO (sem nginx)
+# ==============================================================================
+# Arquitetura: gunicorn (NES) + Apache (LimeSurvey) expostos direto, sem
+# reverse proxy. Nginx é dispensável aqui porque o NES serve os estáticos
+# via whitenoise (collectstatic roda no build) e o LimeSurvey já embute o
+# Apache. Se um dia precisar de terminação TLS/roteamento por domínio, aí
+# sim adicione um serviço de proxy na frente.
+#
+# Uso:
+#   1. Defina as variáveis obrigatórias (compose falha rápido se faltarem):
+#        NES_SECRET_KEY, NES_DB_PASSWORD, LIMESURVEY_DB_PASSWORD,
+#        NES_ADMIN_PASSWORD, LIMESURVEY_ADMIN_PASSWORD
+#      via ambiente ou arquivo .env ao lado deste yml. Gere valores fortes:
+#        openssl rand -hex 32     # senhas
+#        openssl rand -base64 48  # NES_SECRET_KEY (50+ chars)
+#   2. Suba:  docker compose -f docker/compose/docker-compose.yml up -d --build
+#   3. Acompanhe a carga inicial (migrations + ICD, demora):
+#        docker compose -f docker/compose/docker-compose.yml logs -f nes
+#   4. Acesse: http://<host>:8000 (NES) e http://<host>:8080 (LimeSurvey)
+#
+# Notas:
+# - Gunicorn/Apache falam HTTP puro. Se exposto na internet, termine TLS
+#   antes (firewall/LB com certificado) — sem isso, senhas trafegam abertas.
+# - Bancos NÃO publicam porta no host (só rede interna `backend`).
+# - settings_local.py e .nes_initialization.placeholder são gerados UMA VEZ
+#   nos volumes nes_data/limesurvey_data. Exceção: ALLOWED_HOSTS é
+#   sincronizado de NES_ALLOWED_HOSTS a cada boot. Demais chaves (DEBUG,
+#   SECRET_KEY, DB) só valem no primeiro provisionamento: para regenerá-las,
+#   remova SÓ o volume de app (nunca o *_pgdata):
+#     docker compose stop nes && docker volume rm <projeto>_nes_data
+#   (veja o nome exato com `docker volume ls`).
+# - Backup: volumes nes_pgdata e limesurvey_pgdata (pg_dump além do snapshot
+#   do volume). Ex.: docker compose exec db_nes pg_dump -U "$NES_DB_USER" \
+#     "$NES_DB" > backup_nes.sql
+# ==============================================================================
+
 services:
     # Postgres_LimeSurvey
     db_limesurvey:
         image: docker.io/library/postgres:16-alpine
-        healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U limesurvey_user -d limesurvey_db"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
+        restart: unless-stopped
         volumes:
             - "limesurvey_pgdata:/var/lib/postgresql/data"
         environment:
-            - POSTGRES_PASSWORD=limesurvey_password
-            - POSTGRES_DB=limesurvey_db
-            - POSTGRES_USER=limesurvey_user
+            - POSTGRES_USER=${LIMESURVEY_DB_USER:-limesurvey_user}
+            - POSTGRES_PASSWORD=${LIMESURVEY_DB_PASSWORD:?Defina LIMESURVEY_DB_PASSWORD no .env}
+            - POSTGRES_DB=${LIMESURVEY_DB:-limesurvey_db}
+        networks:
+            - backend
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${LIMESURVEY_DB_USER:-limesurvey_user} -d ${LIMESURVEY_DB:-limesurvey_db}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "3"
 
-    # LimeSurvey
+    # LimeSurvey (Apache próprio, sem proxy na frente)
     limesurvey:
         build:
             context: limesurvey/
             dockerfile: Dockerfile
+        image: limesurvey:prod
+        restart: unless-stopped
         volumes:
             - "limesurvey_data:/var/www/limesurvey"
         environment:
@@ -26,71 +74,104 @@ services:
             - LIMESURVEY_DB_TYPE=pgsql
             - LIMESURVEY_DB_HOST=db_limesurvey
             - LIMESURVEY_DB_PORT=5432
-            - LIMESURVEY_DB=limesurvey_db
-            - LIMESURVEY_DB_TABLE_PREFIX=lime_
-            - LIMESURVEY_DB_USER=limesurvey_user
-            - LIMESURVEY_DB_PASSWORD=limesurvey_password
-            - LIMESURVEY_ADMIN_USER=limesurvey_admin
-            - LIMESURVEY_ADMIN_NAME=limesurvey_admin
-            - LIMESURVEY_ADMIN_EMAIL=limesurvey@limemail.com
-            - LIMESURVEY_ADMIN_PASSWORD=limesurvey_admin_password
-            - LIMESURVEY_URL_FORMAT=path
+            - LIMESURVEY_DB=${LIMESURVEY_DB:-limesurvey_db}
+            - LIMESURVEY_DB_TABLE_PREFIX=${LIMESURVEY_DB_TABLE_PREFIX:-lime_}
+            - LIMESURVEY_DB_USER=${LIMESURVEY_DB_USER:-limesurvey_user}
+            - LIMESURVEY_DB_PASSWORD=${LIMESURVEY_DB_PASSWORD:?Defina LIMESURVEY_DB_PASSWORD no .env}
+            - LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-limesurvey_admin}
+            - LIMESURVEY_ADMIN_NAME=${LIMESURVEY_ADMIN_NAME:-limesurvey_admin}
+            - LIMESURVEY_ADMIN_EMAIL=${LIMESURVEY_ADMIN_EMAIL:-limesurvey@limemail.com}
+            - LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:?Defina LIMESURVEY_ADMIN_PASSWORD no .env}
+            - LIMESURVEY_URL_FORMAT=${LIMESURVEY_URL_FORMAT:-path}
         ports:
             - "8080:8080"
+        networks:
+            - frontend
+            - backend
         depends_on:
-            - db_limesurvey
+            db_limesurvey:
+                condition: service_healthy
+        healthcheck:
+            # busybox wget existe na imagem alpine.
+            test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ >/dev/null 2>&1 || exit 1"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 60s
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "3"
 
     # Postgres_NES
     db_nes:
         image: docker.io/library/postgres:16-alpine
-        healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U nes_user -d nes_db"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
+        restart: unless-stopped
         volumes:
             - "nes_pgdata:/var/lib/postgresql/data"
         environment:
-            - POSTGRES_PASSWORD=nes_password
-            - POSTGRES_DB=nes_db
-            - POSTGRES_USER=nes_user
+            - POSTGRES_USER=${NES_DB_USER:-nes_user}
+            - POSTGRES_PASSWORD=${NES_DB_PASSWORD:?Defina NES_DB_PASSWORD no .env}
+            - POSTGRES_DB=${NES_DB:-nes_db}
             - POSTGRES_HOST_AUTH_METHOD=md5
             - POSTGRES_INITDB_ARGS=--auth-host=md5
+        networks:
+            - backend
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${NES_DB_USER:-nes_user} -d ${NES_DB:-nes_db}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "3"
 
-    # Neuroscience Experiments System
+    # Neuroscience Experiments System (gunicorn + whitenoise, sem nginx)
     nes:
         build:
-            # Fase6: contexto na raiz p/ COPY do código local (era nes/ + git clone).
+            # Contexto na raiz p/ COPY do código local (era git clone remoto).
             context: ../..
             dockerfile: docker/compose/nes/Dockerfile
+        image: nes:prod
+        restart: unless-stopped
         volumes:
             - "nes_data:/nes"
         environment:
             - NES_DB_TYPE=pgsql
             - NES_DB_HOST=db_nes
-            - NES_DB=nes_db
-            - NES_DB_USER=nes_user
-            - NES_DB_PASSWORD=nes_password
+            - NES_DB=${NES_DB:-nes_db}
+            - NES_DB_USER=${NES_DB_USER:-nes_user}
+            - NES_DB_PASSWORD=${NES_DB_PASSWORD:?Defina NES_DB_PASSWORD no .env}
             - NES_DB_PORT=5432
             - LIMESURVEY_HOST=limesurvey
             - LIMESURVEY_PORT=8080
-            - LIMESURVEY_ADMIN_USER=limesurvey_admin
-            - LIMESURVEY_ADMIN_PASSWORD=limesurvey_admin_password
-            # Fase8: sem NES_SECRET_KEY o entrypoint gera uma aleatória por volume.
-            # Produção: descomente e fixe chave estável com 50+ chars.
-            - NES_SECRET_KEY=troque-por-64-chars-aleatorios-estaveis
+            - LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-limesurvey_admin}
+            - LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:?Defina LIMESURVEY_ADMIN_PASSWORD no .env}
+            # 50+ chars aleatórios. Sem default de propósito: falhar é melhor
+            # que subir prod com chave fraca (settings.py recusa o boot).
+            - NES_SECRET_KEY=${NES_SECRET_KEY:?Defina NES_SECRET_KEY no .env com 50+ chars aleatorios}
             - NES_IP=0.0.0.0
             - NES_PORT=8000
-            - NES_ADMIN_USER=nes_admin
-            - NES_ADMIN_EMAIL=nes_admin@nesmail.com
-            - NES_ADMIN_PASSWORD=nes_admin_password
-            # Fase6: staging/produção roda sem DEBUG. Dev local pode sobrescrever p/ True.
+            - NES_ADMIN_USER=${NES_ADMIN_USER:-nes_admin}
+            - NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-nes_admin@nesmail.com}
+            - NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:?Defina NES_ADMIN_PASSWORD no .env}
+            # Produção roda sem DEBUG. Só vale no primeiro provisionamento
+            # do volume nes_data (ver nota no cabeçalho).
             - NES_DEBUG=False
-        stdin_open: true
-        tty: true
+            # Hosts públicos (ex.: nes.exemplo.com). O entrypoint gera
+            # ALLOWED_HOSTS = loopback + NES_ALLOWED_HOSTS + NES_IP (se
+            # concreto) e sincroniza a linha no settings_local.py a cada boot.
+            - NES_ALLOWED_HOSTS=${NES_ALLOWED_HOSTS:-localhost,127.0.0.1}
         ports:
-         - "8000:8000"
-        # Fase6: healthcheck via stdlib (imagem slim sem curl/wget).
+            - "8000:8000"
+        networks:
+            - frontend
+            - backend
+        # Healthcheck via stdlib (imagem slim sem curl/wget).
         healthcheck:
             test: ["CMD-SHELL", "python3 -c \"import urllib.request,os; urllib.request.urlopen('http://localhost:'+os.environ.get('NES_PORT','8000')+'/admin/login/')\""]
             interval: 30s
@@ -98,8 +179,21 @@ services:
             retries: 3
             start_period: 120s
         depends_on:
-            - db_nes
-            - limesurvey
+            db_nes:
+                condition: service_healthy
+            limesurvey:
+                condition: service_healthy
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+networks:
+    frontend:
+        driver: bridge
+    backend:
+        driver: bridge
 
 volumes:
     limesurvey_pgdata:

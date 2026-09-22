@@ -27,6 +27,11 @@ NES_IP=${NES_IP:-'0.0.0.0'}
 NES_PORT=${NES_PORT:-'8000'}
 # Fase6: DEBUG via env (era hardcoded True). Produção/staging: NES_DEBUG=False.
 NES_DEBUG=${NES_DEBUG:-'True'}
+# Hosts públicos servidos pelo Django, separados por vírgula
+# (ex.: 'nes.exemplo.com,www.nes.exemplo.com'). O loopback é sempre incluído
+# (healthcheck usa localhost) e o settings.py lê a mesma var quando não há
+# settings_local.py.
+NES_ALLOWED_HOSTS=${NES_ALLOWED_HOSTS:-''}
 NES_ADMIN_USER=${NES_ADMIN_USER:-'nes_admin'}
 NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-'nes_admin@nesmail.com'}
 NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-'nes_admin_password'}
@@ -40,6 +45,24 @@ then
 	echo "Unfortunately, for the time being, NES only works with PostgreSQL."
 	exit 1
 fi
+
+# Constrói a lista Python de ALLOWED_HOSTS a partir de NES_ALLOWED_HOSTS:
+# loopback sempre presente + hosts do env + NES_IP quando for um host
+# concreto (compat com o comportamento antigo; 0.0.0.0 é bind, não host).
+_NES_HOSTS_CSV="localhost,127.0.0.1"
+_NES_HOSTS_NORM=$(printf '%s' "$NES_ALLOWED_HOSTS" | tr -d '[:space:]')
+if [ -n "$_NES_HOSTS_NORM" ]; then
+	_NES_HOSTS_CSV="${_NES_HOSTS_CSV},${_NES_HOSTS_NORM}"
+fi
+case "$NES_IP" in
+	''|'0.0.0.0') ;;
+	*) case ",${_NES_HOSTS_CSV}," in
+		*",${NES_IP},"*) ;;
+		*) _NES_HOSTS_CSV="${_NES_HOSTS_CSV},${NES_IP}" ;;
+	esac ;;
+esac
+# "a,,b" -> "a","b"
+NES_ALLOWED_HOSTS_PY=$(printf '%s' "$_NES_HOSTS_CSV" | sed -e 's/,,*/,/g; s/^,//; s/,$//' -e 's/^/"/; s/$/"/; s/,/","/g')
 
 if [ -f "${NES_SETUP_PATH}"/wsgi.py ]
 then
@@ -63,7 +86,8 @@ fi
 
 if [ -f "${NES_SETUP_PATH}"/settings_local.py ]
 then
-	echo "INFO: NES settings_local.py file already provisioned"
+	echo "INFO: NES settings_local.py file already provisioned — syncing ALLOWED_HOSTS from env"
+	sed -i "s|^ALLOWED_HOSTS *=.*|ALLOWED_HOSTS = [$NES_ALLOWED_HOSTS_PY]|" "${NES_SETUP_PATH}"/settings_local.py
 else
 	echo "INFO: Creating NES settings_local.py file"
 	cat <<-EOF > "${NES_SETUP_PATH}"/settings_local.py
@@ -72,7 +96,7 @@ else
 		DEBUG404 = $NES_DEBUG
 		TEMPLATE_DEBUG = DEBUG
 		IS_TESTING = False
-		ALLOWED_HOSTS = ["localhost","127.0.0.1","$NES_IP"]
+		ALLOWED_HOSTS = [$NES_ALLOWED_HOSTS_PY]
 		DATABASES = {
 		    "default": {
 		        "ENGINE": "django.db.backends.postgresql_psycopg2",
